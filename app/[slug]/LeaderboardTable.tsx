@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { GameBoard } from "../../lib/leaderboards";
+import { tmxTrackIds } from "../../lib/tmx-ids";
 
 type SortField = "track" | "time" | "vsRta" | "percentSaved" | "authors" | "date";
 type SortOrder = "asc" | "desc";
@@ -55,6 +56,16 @@ function getTrackDifficultyTint(track: string) {
   }
 }
 
+function isTmnEswcBonusTrack(track: string) {
+  return track.startsWith("Bonus ");
+}
+
+const getTmxLink = (track: string) => {
+  const id = tmxTrackIds[track];
+  if (!id) return null;
+  return `https://tmnf.exchange/trackshow/${id}`;
+};
+
 function formatPercentSaved(time: string, vsRta: string) {
   const timeSeconds = parseClockValue(time);
   const vsSeconds = parseClockValue(vsRta);
@@ -62,21 +73,15 @@ function formatPercentSaved(time: string, vsRta: string) {
   const percent = (-vsSeconds / rtaSeconds) * 100;
 
    let str = Number(percent).toPrecision(3);
-
-  // step 2: trim to max 4 characters (excluding minus sign)
   const isNegative = str.startsWith("-");
   if (isNegative) str = str.slice(1);
-
   if (str.length > 4) {
     str = str.slice(0, 4);
-
-    // avoid trailing decimal point like "12."
     if (str.endsWith(".")) {
       str = str.slice(0, -1);
     }
   }
-
-  return `${isNegative ? "-" : ""}${str}%`;
+  return `${isNegative ? "-" : ""}${str}`;
 }
 
 const TOOLS_LINK = "https://3d.gbx.tools";
@@ -95,7 +100,7 @@ function isRecentEntry(dateStr: string) {
 
 function renderLinks(links: { video: string; replay: string; inputs: string }) {
   return (
-    <div className="flex gap-3">
+    <div className="flex justify-center gap-2">
       <a
         href={links.video}
         target="_blank"
@@ -163,10 +168,19 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
       let bVal: string | number = "";
 
       switch (sortField) {
-        case "track":
+        case "track": {
+          if (game.slug === "tmn-eswc") {
+            const aBonus = isTmnEswcBonusTrack(a.track) ? 1 : 0;
+            const bBonus = isTmnEswcBonusTrack(b.track) ? 1 : 0;
+            if (aBonus !== bBonus) {
+              return sortOrder === "asc" ? aBonus - bBonus : bBonus - aBonus;
+            }
+          }
+
           aVal = a.track;
           bVal = b.track;
           break;
+        }
         case "time":
           aVal = parseClockValue(a.time);
           bVal = parseClockValue(b.time);
@@ -215,60 +229,63 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/90">
-        <table className="min-w-full divide-y divide-slate-800 text-left text-sm">
+        <table className="table-auto w-full divide-y divide-slate-800 text-center text-sm">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th
                 onClick={() => handleSort("track")}
-                className="px-4 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-2 min-w-[100px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
               >
                 Track
                 <SortIndicator field="track" />
               </th>
               <th
                 onClick={() => handleSort("time")}
-                className="px-4 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-2 w-[70px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 Time
                 <SortIndicator field="time" />
               </th>
               <th
                 onClick={() => handleSort("vsRta")}
-                className="px-4 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-2 w-[80px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                vs. RTA
+                vs.RTA
                 <SortIndicator field="vsRta" />
               </th>
               <th
                 onClick={() => handleSort("percentSaved")}
-                className="px-4 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-2 w-[80px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                % Saved
+                %
                 <SortIndicator field="percentSaved" />
               </th>
               <th
                 onClick={() => handleSort("authors")}
-                className="px-4 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-2 w-[320px] max-w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
               >
                 Author(s)
                 <SortIndicator field="authors" />
               </th>
               <th
                 onClick={() => handleSort("date")}
-                className="px-4 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-2 w-[100px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 Date
                 <SortIndicator field="date" />
               </th>
-              <th className="px-4 py-2 font-normal uppercase tracking-[0.18em]">Links</th>
+              <th className="px-2 py-2 w-[150px] font-normal uppercase tracking-[0.18em]">
+                Links
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
             {sortedEntries.map((entry) => {
               const recent = isRecentEntry(entry.date);
               const baseTint = game.slug === "tmnf" ? getTrackDifficultyTint(entry.track) : undefined;
+              const tmxLink = getTmxLink(entry.track);
               const rowStyle = recent
                 ? {
                     backgroundColor: "rgba(56, 189, 248, 0.20)",
@@ -287,13 +304,26 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
                   }`}
                   style={rowStyle}
                 >
-                  <td className="px-4 py-2 text-slate-100">{entry.track}</td>
-                  <td className="px-4 py-2 text-slate-100">{formatClockValue(entry.time)}</td>
-                  <td className="px-4 py-2 text-slate-300">{formatClockValue(entry.vsRta)}</td>
-                  <td className="px-4 py-2 text-slate-300">{formatPercentSaved(entry.time, entry.vsRta)}</td>
-                  <td className="px-4 py-2 text-slate-100">{entry.authors.join(", ")}</td>
-                  <td className="px-4 py-2 text-slate-300">{entry.date}</td>
-                  <td className="px-4 py-2">{renderLinks(entry.links)}</td>
+                  <td className="px-1.5 py-2 text-slate-100">
+                    {tmxLink ? (
+                      <a
+                        href={tmxLink}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sky-400 hover:text-sky-300"
+                      >
+                        {entry.track}
+                      </a>
+                    ) : (
+                      entry.track
+                    )}
+                  </td>
+                  <td className="px-1.5 py-2 text-slate-100 whitespace-nowrap">{formatClockValue(entry.time)}</td>
+                  <td className="px-1.5 py-2 text-slate-300 whitespace-nowrap">{formatClockValue(entry.vsRta)}</td>
+                  <td className="px-1.5 py-2 text-slate-300 whitespace-nowrap">{formatPercentSaved(entry.time, entry.vsRta)}</td>
+                  <td className="px-1.5 py-2 text-slate-100 break-words max-w-[320px] whitespace-normal">{entry.authors.join(", ")}</td>
+                  <td className="px-1.5 py-2 text-slate-300 whitespace-nowrap">{entry.date}</td>
+                  <td className="px-1.5 py-2">{renderLinks(entry.links)}</td>
                 </tr>
               );
             })}

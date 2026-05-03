@@ -25,7 +25,7 @@ export const leaderboards: GameBoard[] = [
     description: "Current WR TAS records per TMNF track, with video, replay and raw input links.",
     entries: [
   {
-    track: "A01",
+    track: "A01-Race",
     time: "0:17.61",
     vsRta: "-6.16",
     authors: ["igntuL", "Na'Guul", "trabadia", "Lukalyc"],
@@ -37,7 +37,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A02",
+    track: "A02-Race",
     time: "0:14.72",
     vsRta: "-0.54",
     authors: ["CrizpyCheese"],
@@ -49,7 +49,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A03",
+    track: "A03-Race",
     time: "0:17.43",
     vsRta: "-0.80",
     authors: ["Winterly", "trabadia"],
@@ -61,7 +61,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A04",
+    track: "A04-Acrobatic",
     time: "0:5.73",
     vsRta: "-0.05",
     authors: ["Don Johnson"],
@@ -73,7 +73,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A05",
+    track: "A05-Race",
     time: "0:15.63",
     vsRta: "-0.42",
     authors: ["CrizpyCheese"],
@@ -85,7 +85,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A06",
+    track: "A06-Obstacle",
     time: "0:20.86",
     vsRta: "-6.64",
     authors: ["Thoman", "mufattmf", "igntuL", "CrizpyCheese"],
@@ -97,7 +97,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A07",
+    track: "A07-Race",
     time: "0:22.46",
     vsRta: "-3.72",
     authors: ["Bice", "Winterly"],
@@ -109,7 +109,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A08",
+    track: "A08-Endurance",
     time: "0:31.32",
     vsRta: "-24.39",
     authors: ["charlie"],
@@ -121,7 +121,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A09",
+    track: "A09-Race",
     time: "0:16.77",
     vsRta: "-7.47",
     authors: ["Bice"],
@@ -133,7 +133,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A10",
+    track: "A10-Acrobatic",
     time: "0:8.71",
     vsRta: "-0.09",
     authors: ["Winterly"],
@@ -145,7 +145,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A11",
+    track: "A11-Race",
     time: "0:17.83",
     vsRta: "-0.52",
     authors: ["CrizpyCheese"],
@@ -157,7 +157,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A12",
+    track: "A12-Speed",
     time: "0:8.85",
     vsRta: "-1.56",
     authors: ["Meable"],
@@ -169,7 +169,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A13",
+    track: "A13-Race",
     time: "0:16.84",
     vsRta: "-10.44",
     authors: ["igntuL", "Bice", "MidnightEuphoria"],
@@ -181,7 +181,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A14",
+    track: "A14-Race",
     time: "0:18.87",
     vsRta: "-1.30",
     authors: ["ezmTAS"],
@@ -193,7 +193,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "A15",
+    track: "A15-Speed",
     time: "0:22.26",
     vsRta: "-2.05",
     authors: ["CrizpyCheese", "plastorex", "gingerroar", "mufattmf"],
@@ -205,7 +205,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B01",
+    track: "B01-Race",
     time: "0:22.05",
     vsRta: "-3.18",
     authors: ["didiking", "mufattmf", "BdcapTAS"],
@@ -217,7 +217,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B02",
+    track: "B02-Race",
     time: "0:22.85",
     vsRta: "-2.06",
     authors: ["Bice", "BdcapTAS", "ezmTAS", "charlie"],
@@ -229,7 +229,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B03",
+    track: "B03-Race",
     time: "0:22.10",
     vsRta: "-2.22",
     authors: ["ezmTAS", "charlie"],
@@ -241,7 +241,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B04",
+    track: "B04-Acrobatic",
     time: "0:5.45",
     vsRta: "-7.02",
     authors: ["Thoman"],
@@ -253,7 +253,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B05",
+    track: "B05-Race",
     time: "0:22.99",
     vsRta: "-2.02",
     authors: ["didiking"],
@@ -265,7 +265,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B06",
+    track: "B06-Obstacle",
     time: "0:25.79",
     vsRta: "-0.91",
     authors: ["threadd", "Kimura", "BdcapTAS"],
@@ -277,7 +277,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B07",
+    track: "B07-Race",
     time: "0:23.97",
     vsRta: "-3.37",
     authors: ["mufattmf", "Thoman"],
@@ -289,7 +289,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B08",
+    track: "B08-Endurance",
     time: "0:43.45",
     vsRta: "-44.74",
     authors: ["Miku", "mufattmf", "Kimura", "Thoman", "xnferno"],
@@ -301,7 +301,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B09",
+    track: "B09-Acrobatic",
     time: "0:12.97",
     vsRta: "-0.03",
     authors: ["igntuL"],
@@ -313,7 +313,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B10",
+    track: "B10-Speed",
     time: "0:18.67",
     vsRta: "-15.77",
     authors: ["Virtuoso", "Molosii"],
@@ -325,7 +325,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B11",
+    track: "B11-Race",
     time: "0:26.60",
     vsRta: "-3.02",
     authors: ["Oogy749", "MidnightEuphoria"],
@@ -337,7 +337,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B12",
+    track: "B12-Race",
     time: "0:19.65",
     vsRta: "-19.34",
     authors: ["Lukalyc", "charlie"],
@@ -349,7 +349,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B13",
+    track: "B13-Obstacle",
     time: "0:19.26",
     vsRta: "-5.65",
     authors: ["threadd", "Molosii"],
@@ -361,7 +361,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B14",
+    track: "B14-Speed",
     time: "0:14.18",
     vsRta: "-16.44",
     authors: ["igntuL", "faiby"],
@@ -373,7 +373,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "B15",
+    track: "B15-Race",
     time: "0:20.60",
     vsRta: "-17.88",
     authors: ["igntuL", "mufattmf", "didiking"],
@@ -385,7 +385,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C01",
+    track: "C01-Race",
     time: "0:18.73",
     vsRta: "-7.90",
     authors: ["mufattmf", "igntuL"],
@@ -397,7 +397,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C02",
+    track: "C02-Race",
     time: "0:30.12",
     vsRta: "-7.77",
     authors: ["Molosii"],
@@ -409,7 +409,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C03",
+    track: "C03-Acrobatic",
     time: "0:10.03",
     vsRta: "-2.01",
     authors: ["charlie", "ezmTAS", "igntuL"],
@@ -421,7 +421,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C04",
+    track: "C04-Race",
     time: "0:19.00",
     vsRta: "-15.61",
     authors: ["charlie"],
@@ -433,7 +433,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C05",
+    track: "C05-Endurance",
     time: "0:59.10",
     vsRta: "-44.17",
     authors: ["threadd", "mufattmf", "Miku"],
@@ -445,7 +445,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C06",
+    track: "C06-Speed",
     time: "0:28.36",
     vsRta: "-23.07",
     authors: ["exlpt"],
@@ -457,7 +457,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C07",
+    track: "C07-Race",
     time: "0:27.12",
     vsRta: "-8.34",
     authors: ["CrizpyCheese", "charlie", "ezmTAS"],
@@ -469,7 +469,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C08",
+    track: "C08-Obstacle",
     time: "0:11.75",
     vsRta: "-13.18",
     authors: ["Don Johnson"],
@@ -481,7 +481,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C09",
+    track: "C09-Race",
     time: "0:24.70",
     vsRta: "-14.51",
     authors: ["threadd"],
@@ -493,7 +493,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C10",
+    track: "C10-Acrobatic",
     time: "0:10.87",
     vsRta: "-0.78",
     authors: ["Don Johnson", "igntuL"],
@@ -505,7 +505,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C11",
+    track: "C11-Race",
     time: "0:22.24",
     vsRta: "-23.64",
     authors: ["Miku", "charlie"],
@@ -517,7 +517,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C12",
+    track: "C12-Obstacle",
     time: "0:17.18",
     vsRta: "-11.69",
     authors: ["Jsap"],
@@ -529,7 +529,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C13",
+    track: "C13-Race",
     time: "0:17.36",
     vsRta: "-22.77",
     authors: ["Don Johnson"],
@@ -541,7 +541,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C14",
+    track: "C14-Endurance",
     time: "0:36.87",
     vsRta: "-1:00.78",
     authors: ["mufattmf", "Stuntlover"],
@@ -553,7 +553,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "C15",
+    track: "C15-Speed",
     time: "0:27.58",
     vsRta: "-19.09",
     authors: ["BdcapTAS", "Lukalyc"],
@@ -565,7 +565,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D01",
+    track: "D01-Race",
     time: "1:22.55",
     vsRta: "-53.08",
     authors: ["threadd", "Louis", "Bice"],
@@ -577,7 +577,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D02",
+    track: "D02-Race",
     time: "0:18.26",
     vsRta: "-26.98",
     authors: ["charlie"],
@@ -589,7 +589,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D03",
+    track: "D03-Acrobatic",
     time: "0:8.61",
     vsRta: "-5.63",
     authors: ["Don Johnson", "Virtuoso", "MidnightEuphoria"],
@@ -601,7 +601,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D04",
+    track: "D04-Race",
     time: "0:24.05",
     vsRta: "-17.63",
     authors: ["mufattmf", "Thoman"],
@@ -613,7 +613,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D05",
+    track: "D05-Race",
     time: "0:27.93",
     vsRta: "-29.75",
     authors: ["Dacuber"],
@@ -625,7 +625,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D06",
+    track: "D06-Obstacle",
     time: "0:21.65",
     vsRta: "-34.99",
     authors: ["charlie", "goldenowl"],
@@ -637,7 +637,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D07",
+    track: "D07-Race",
     time: "0:19.67",
     vsRta: "-26.12",
     authors: ["charlie", "maB-TM", "Sneak", "Sheezu", "mufattmf", "logout", "BdcapTAS", "goldenowl"],
@@ -649,7 +649,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D08",
+    track: "D08-Speed",
     time: "0:26.93",
     vsRta: "-20.40",
     authors: ["Lukalyc", "threadd"],
@@ -661,7 +661,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D09",
+    track: "D09-Obstacle",
     time: "0:26.19",
     vsRta: "-14.27",
     authors: ["Gl1tch3D", "GorillaKing", "Jsap", "LittleD3m0", "mufattmf", "maB-TM", "ezmTAS", "Kimura"],
@@ -673,7 +673,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D10",
+    track: "D10-Race",
     time: "0:29.37",
     vsRta: "-13.93",
     authors: ["Virtuoso", "Jsap", "Thoman", "mufattmf"],
@@ -685,7 +685,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D11",
+    track: "D11-Acrobatic",
     time: "0:8.94",
     vsRta: "-0.23",
     authors: ["faiby"],
@@ -697,7 +697,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D12",
+    track: "D12-Speed",
     time: "0:19.51",
     vsRta: "-18.85",
     authors: ["threadd"],
@@ -709,7 +709,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D13",
+    track: "D13-Race",
     time: "0:29.59",
     vsRta: "-32.94",
     authors: ["Bice", "CrizpyCheese", "mufattmf", "goldenowl"],
@@ -721,7 +721,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D14",
+    track: "D14-Endurance",
     time: "0:41.94",
     vsRta: "-1:52.07",
     authors: ["charlie", "Miku", "Kimura", "Bice", "TTR_Mc 77", "Thoman", "Louis", "BdcapTAS"],
@@ -733,7 +733,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "D15",
+    track: "D15-Endurance",
     time: "3:07.61",
     vsRta: "-3:53.85",
     authors: ["GorillaKing", "Faasquit", "ezmTAS"],
@@ -745,7 +745,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "E01",
+    track: "E01-Obstacle",
     time: "0:18.07",
     vsRta: "-25.50",
     authors: ["threadd", "Virtuoso"],
@@ -757,7 +757,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "E02",
+    track: "E02-Endurance",
     time: "0:44.43",
     vsRta: "-2:38.88",
     authors: ["Virtuoso"],
@@ -769,7 +769,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "E03",
+    track: "E03-Endurance",
     time: "2:45.62",
     vsRta: "-1:48.61",
     authors: ["Lukalyc"],
@@ -781,7 +781,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "E04",
+    track: "E04-Obstacle",
     time: "0:42.54",
     vsRta: "-45.94",
     authors: ["threadd", "mufattmf"],
@@ -793,7 +793,7 @@ export const leaderboards: GameBoard[] = [
     },
   },
   {
-    track: "E05",
+    track: "E05-Endurance",
     time: "18:29.59",
     vsRta: "-34:55.55",
     authors: ["mufattmf", "igntuL", "Vogtek", "charlie", "Jsap", "Thoman"],
