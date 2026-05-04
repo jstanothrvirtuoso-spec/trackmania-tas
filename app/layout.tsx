@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { RtaProvider } from "../lib/RtaContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trackmania TAS Leaderboards",
-  description: "Clean Trackmania TAS leaderboards by game, track, authors, and links.",
+  title: "TrackMania TAS Leaderboards",
+  description: "Clean TrackMania TAS leaderboards by game, track, authors, and links.",
 };
 
 export default function RootLayout({
@@ -30,9 +31,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <RtaProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </RtaProvider>
       </body>
     </html>
   );

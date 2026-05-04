@@ -9,6 +9,15 @@ export type TasEntry = {
     replay: string;
     inputs: string;
   };
+  rtaWr?: {
+    record: string;
+    player: string;
+    date: string;
+    links: {
+      video: string;
+      replay: string;
+    };
+  };
 };
 
 export type GameBoard = {
@@ -31,9 +40,18 @@ export const leaderboards: GameBoard[] = [
     authors: ["igntuL", "Na'Guul", "trabadia", "Lukalyc"],
     date: "2023-07-22",
     links: {
-      video: "",
-      replay: "",
-      inputs: "",
+      video: "https://youtu.be/-GXxiQ7QtQA",
+      replay: "https://drive.google.com/uc?export=download&id=1R7X8S0yoO_OCyaBT9Bc41bKWlcHpUHNq",
+      inputs: "https://pastebin.com/19huKLQv",
+    },
+    rtaWr: {
+      record: "0:23.77",
+      player: "Slim",
+      date: "2023-07-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=P_ApLNHWDog",
+        replay: "https://tmnf.exchange/recordgbx/12847157",
+      },
     },
   },
   {
@@ -47,6 +65,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:15.26",
+      player: "Spam",
+      date: "2026-01-20",
+      links: {
+        video: "https://www.youtube.com/watch?v=example2",
+        replay: "https://example.com/replay2",
+      },
+    },
   },
   {
     track: "A03-Race",
@@ -58,6 +85,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:18.23",
+      player: "Slim",
+      date: "2025-01-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -71,6 +107,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:5.78",
+      player: "Spam",
+      date: "2024-11-20",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "A05-Race",
@@ -82,6 +127,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:16.05",
+      player: "Slim",
+      date: "2026-03-10",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -95,6 +149,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:27.50",
+      player: "Spam",
+      date: "2024-02-25",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "A07-Race",
@@ -106,6 +169,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:26.18",
+      player: "Slim",
+      date: "2024-08-20",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -119,6 +191,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:55.71",
+      player: "Spam",
+      date: "2026-04-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "A09-Race",
@@ -130,6 +211,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:24.24",
+      player: "Slim",
+      date: "2025-11-20",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -143,6 +233,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:8.80",
+      player: "Spam",
+      date: "2025-02-10",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "A11-Race",
@@ -154,6 +253,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:18.35",
+      player: "Slim",
+      date: "2026-03-12",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -167,6 +275,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:10.41",
+      player: "Spam",
+      date: "2026-02-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "A13-Race",
@@ -178,6 +295,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:27.28",
+      player: "Slim",
+      date: "2026-02-25",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -191,6 +317,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:20.17",
+      player: "Spam",
+      date: "2025-09-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "A15-Speed",
@@ -202,6 +337,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:24.31",
+      player: "Slim",
+      date: "2024-02-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -215,6 +359,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:25.23",
+      player: "Slim",
+      date: "2026-02-20",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "B02-Race",
@@ -226,6 +379,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:24.91",
+      player: "Spam",
+      date: "2025-04-10",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -239,6 +401,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:24.32",
+      player: "Slim",
+      date: "2025-05-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "B04-Acrobatic",
@@ -250,6 +421,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:12.47",
+      player: "Spam",
+      date: "2025-07-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -263,6 +443,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:25.01",
+      player: "Slim",
+      date: "2023-05-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "B06-Obstacle",
@@ -274,6 +463,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:26.70",
+      player: "Spam",
+      date: "2026-01-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -287,6 +485,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:27.34",
+      player: "Slim",
+      date: "2025-02-18",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "B08-Endurance",
@@ -298,6 +505,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "1:28.19",
+      player: "Spam",
+      date: "2025-12-25",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -311,6 +527,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:13.00",
+      player: "Slim",
+      date: "2024-02-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "B10-Speed",
@@ -322,6 +547,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:34.44",
+      player: "Spam",
+      date: "2023-08-05",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -335,6 +569,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:29.62",
+      player: "Slim",
+      date: "2026-03-28",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "B12-Race",
@@ -346,6 +589,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:38.99",
+      player: "Spam",
+      date: "2025-03-10",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -359,6 +611,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:24.91",
+      player: "Slim",
+      date: "2023-07-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "B14-Speed",
@@ -370,6 +631,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:30.62",
+      player: "Spam",
+      date: "2026-04-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -383,6 +653,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:38.48",
+      player: "Slim",
+      date: "2024-06-28",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C01-Race",
@@ -394,6 +673,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:26.63",
+      player: "Slim",
+      date: "2024-02-18",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -407,6 +695,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:37.89",
+      player: "Spam",
+      date: "2023-06-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C03-Acrobatic",
@@ -418,6 +715,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:12.04",
+      player: "Slim",
+      date: "2026-04-08",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -431,6 +737,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:34.61",
+      player: "Spam",
+      date: "2026-01-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C05-Endurance",
@@ -442,6 +757,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "1:43.27",
+      player: "Slim",
+      date: "2023-12-16",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -455,6 +779,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:51.43",
+      player: "Spam",
+      date: "2023-07-05",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C07-Race",
@@ -466,6 +799,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:35.46",
+      player: "Slim",
+      date: "2024-08-16",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -479,6 +821,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:24.93",
+      player: "Spam",
+      date: "2024-08-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C09-Race",
@@ -490,6 +841,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:39.21",
+      player: "Slim",
+      date: "2023-01-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -503,6 +863,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:11.65",
+      player: "Spam",
+      date: "2025-08-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C11-Race",
@@ -514,6 +883,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:45.88",
+      player: "Slim",
+      date: "2026-01-17",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -527,6 +905,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:28.87",
+      player: "Spam",
+      date: "2023-11-28",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C13-Race",
@@ -538,6 +925,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:40.13",
+      player: "Slim",
+      date: "2022-02-01",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -551,6 +947,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "1:37.65",
+      player: "Spam",
+      date: "2024-02-15",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "C15-Speed",
@@ -562,6 +967,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:46.67",
+      player: "Slim",
+      date: "2026-02-08",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -575,6 +989,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "2:15.63",
+      player: "Slim",
+      date: "2022-10-05",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "D02-Race",
@@ -586,6 +1009,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:45.24",
+      player: "Spam",
+      date: "2025-03-16",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -599,6 +1031,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:14.24",
+      player: "Slim",
+      date: "2026-02-04",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "D04-Race",
@@ -610,6 +1051,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:41.68",
+      player: "Spam",
+      date: "2025-02-18",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -623,6 +1073,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:57.68",
+      player: "Slim",
+      date: "2025-01-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "D06-Obstacle",
@@ -634,6 +1093,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:56.64",
+      player: "Spam",
+      date: "2024-11-29",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -647,6 +1115,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:45.79",
+      player: "Slim",
+      date: "2024-09-19",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "D08-Speed",
@@ -658,6 +1135,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:47.33",
+      player: "Spam",
+      date: "2024-02-27",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -671,6 +1157,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:40.46",
+      player: "Slim",
+      date: "2026-01-02",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "D10-Race",
@@ -682,6 +1177,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:43.30",
+      player: "Spam",
+      date: "2023-05-28",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -695,6 +1199,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "0:9.17",
+      player: "Slim",
+      date: "2025-12-26",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "D12-Speed",
@@ -706,6 +1219,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:38.36",
+      player: "Spam",
+      date: "2023-04-29",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -719,6 +1241,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "1:02.53",
+      player: "Slim",
+      date: "2024-06-16",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "D14-Endurance",
@@ -730,6 +1261,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "2:34.01",
+      player: "Spam",
+      date: "2025-10-20",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -743,6 +1283,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "7:01.46",
+      player: "Slim",
+      date: "2024-06-25",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "E01-Obstacle",
@@ -754,6 +1303,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "0:43.57",
+      player: "Slim",
+      date: "2023-07-22",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -767,6 +1325,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "3:23.31",
+      player: "Spam",
+      date: "2022-08-20",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "E03-Endurance",
@@ -778,6 +1345,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "4:34.23",
+      player: "Slim",
+      date: "2024-11-07",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
   {
@@ -791,6 +1367,15 @@ export const leaderboards: GameBoard[] = [
       replay: "",
       inputs: "",
     },
+    rtaWr: {
+      record: "1:28.48",
+      player: "Spam",
+      date: "2023-12-31",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
+    },
   },
   {
     track: "E05-Endurance",
@@ -802,6 +1387,15 @@ export const leaderboards: GameBoard[] = [
       video: "",
       replay: "",
       inputs: "",
+    },
+    rtaWr: {
+      record: "53:25.14",
+      player: "Slim",
+      date: "2025-05-10",
+      links: {
+        video: "https://www.youtube.com/watch?v=example",
+        replay: "https://example.com/replay",
+      },
     },
   },
     ],
