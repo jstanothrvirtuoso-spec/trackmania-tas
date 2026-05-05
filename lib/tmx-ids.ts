@@ -6,6 +6,7 @@ export type TrackInfo = {
 };
 
 export const tmxTrackIds: Record<string, TrackInfo> = {
+  // TMNF tracks
   "A01-Race": { id: 2233, category: "White", environment: "Stadium" },
   "A02-Race": { id: 2236, category: "White", environment: "Stadium" },
   "A03-Race": { id: 2239, category: "White", environment: "Stadium" },
@@ -72,6 +73,7 @@ export const tmxTrackIds: Record<string, TrackInfo> = {
   "E04-Obstacle": { id: 2454, category: "Black", environment: "Stadium" },
   "E05-Endurance": { id: 2455, category: "Black", environment: "Stadium" },
 
+  // No Cut tracks
   "A02 - No Cut": { id: 9421268, category: "White", environment: "Stadium" },
   "A05 - No Cut": { id: 7712299, category: "White", environment: "Stadium" },
   "A06 - No Cut": { id: 7712302, category: "White", environment: "Stadium" },

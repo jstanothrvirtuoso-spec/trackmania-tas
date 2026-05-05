@@ -43,8 +43,22 @@ function formatClockValue(value: string): string {
 
 function getTrackDifficultyTint(track: string) {
   const trackInfo = tmxTrackIds[track];
-  if (!trackInfo?.category) return "transparent";
-  switch (trackInfo.category) {
+  const trackLetter = track.match(/^[A-E]/)?.[0];
+  const inferredCategory =
+    trackLetter === "A"
+      ? "White"
+      : trackLetter === "B"
+        ? "Green"
+        : trackLetter === "C"
+          ? "Blue"
+          : trackLetter === "D"
+            ? "Red"
+            : trackLetter === "E"
+              ? "Black"
+              : undefined;
+  const category = trackInfo?.category ?? inferredCategory;
+
+  switch (category) {
     case "White":
       return "rgba(255, 255, 255, 0.08)"; // white tint
     case "Green":
@@ -56,7 +70,7 @@ function getTrackDifficultyTint(track: string) {
     case "Black":
       return "rgba(0, 0, 0, 0.48)"; // subtle dark/black tint
     default:
-      return "transparent";
+      return undefined;
   }
 }
 
@@ -99,7 +113,7 @@ function renderRtaLinks(links: { video: string; replay: string }) {
         target="_blank"
         rel="noreferrer"
         title="Watch video"
-        className="text-sky-400 hover:text-sky-300 transition"
+        className="text-red-500 hover:text-red-400 transition"
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -147,7 +161,7 @@ function renderLinks(links: { video: string; replay: string; inputs: string }) {
         target="_blank"
         rel="noreferrer"
         title="Watch video"
-        className="text-sky-400 hover:text-sky-300 transition"
+        className="text-red-500 hover:text-red-400 transition"
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -404,7 +418,7 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
             {filteredEntries.map((entry) => {
               const recent = isRecentEntry(entry.date);
               const tmxLink = getTmxLink(entry.track);
-              const baseTint = game.slug === "tmnf" ? getTrackDifficultyTint(entry.track) : undefined;
+              const baseTint = game.slug.startsWith("tmnf") ? getTrackDifficultyTint(entry.track) : undefined;
               const rowStyle = recent
                 ? {
                     backgroundColor: "rgba(56, 189, 248, 0.20)",
