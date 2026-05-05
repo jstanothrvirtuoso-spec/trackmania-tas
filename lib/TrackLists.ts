@@ -5,7 +5,7 @@ export type TrackInfo = {
   environment: string;
 };
 
-export const tmxTrackIds: Record<string, TrackInfo> = {
+export const tracksTMNF: Record<string, TrackInfo> = {
   "A01-Race": { id: 2233, category: "White", environment: "Stadium" },
   "A02-Race": { id: 2236, category: "White", environment: "Stadium" },
   "A03-Race": { id: 2239, category: "White", environment: "Stadium" },

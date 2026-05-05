@@ -1,13 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { leaderboards } from "../lib/leaderboards";
-import { useRta } from "../lib/RtaContext";
+import { useVisibleTables } from "../lib/RtaContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { showRta, setShowRta } = useRta();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { showRta, showTimeSaved, setShowRta, setShowTimeSaved } = useVisibleTables();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur-md">
@@ -30,22 +45,41 @@ export default function Header() {
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setShowRta(!showRta)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ring-1 ${
-                showRta
-                  ? "bg-emerald-900/40 text-emerald-300 ring-emerald-700/50 hover:bg-emerald-900/60"
-                  : "bg-slate-800 text-slate-300 ring-slate-700 hover:bg-slate-700 hover:text-white"
-              }`}
-              title={showRta ? "Hide RTA records" : "Show RTA records"}
-            >
-              Show RTA
-              {showRta && (
-                <svg className="w-4 h-4 ml-1 inline" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none flex items-center gap-2"
+              >
+                Tables
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute top-full mt-1 w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50">
+                  <div className="p-2">
+                    <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={showRta}
+                        onChange={(e) => setShowRta(e.target.checked)}
+                        className="rounded"
+                      />
+                      RTA
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={showTimeSaved}
+                        onChange={(e) => setShowTimeSaved(e.target.checked)}
+                        className="rounded"
+                      />
+                      Time Saved
+                    </label>
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
             <button className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 ring-1 ring-slate-700 transition hover:bg-slate-700 hover:text-white">
               Submit TAS
             </button>

@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { GameBoard } from "../../lib/leaderboards";
-import { tmxTrackIds } from "../../lib/tmx-ids";
-import { useRta } from "../../lib/RtaContext";
+import { tracksTMNF } from "../../lib/TrackLists";
+import { useVisibleTables } from "../../lib/RtaContext";
 
 type SortField = "track" | "time" | "vsRta" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
@@ -39,8 +39,12 @@ function formatClockValue(value: string): string {
   return `${sign}${minutes}:${remainder}`;
 }
 
+const CATEGORY_ORDER = ["White", "Green", "Blue", "Red", "Black"] as const;
+
+type CategoryName = (typeof CATEGORY_ORDER)[number];
+
 function getTrackDifficultyTint(track: string) {
-  const trackInfo = tmxTrackIds[track];
+  const trackInfo = tracksTMNF[track];
   if (!trackInfo.category) return "transparent";
   switch (trackInfo.category) {
     case "White":
@@ -63,7 +67,7 @@ function isTmnEswcBonusTrack(track: string) {
 }
 
 const getTmxLink = (track: string) => {
-  const trackInfo = tmxTrackIds[track];
+  const trackInfo = tracksTMNF[track];
   if (!trackInfo.id) return null;
   return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
 };
@@ -185,11 +189,15 @@ function renderLinks(links: { video: string; replay: string; inputs: string }) {
   );
 }
 
-export default function LeaderboardTable({ game }: { game: GameBoard }) {
+interface RecordTableProps {
+  game: GameBoard;
+  selectedAuthor: string;
+}
+
+export default function RecordTable({ game, selectedAuthor }: RecordTableProps) {
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
-  const { showRta } = useRta();
+  const { showRta } = useVisibleTables();
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -273,18 +281,6 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
     return sorted;
   }, [game.entries, sortField, sortOrder]);
 
-  const authorOptions = useMemo(() => {
-    const authorCount = new Map<string, number>();
-    game.entries.forEach((entry) => {
-      entry.authors.forEach((author) => {
-        authorCount.set(author, (authorCount.get(author) || 0) + 1);
-      });
-    });
-    return Array.from(authorCount.entries())
-      .sort((a, b) => b[1] - a[1]) // Sort by TAS count descending
-      .map(([author, count]) => ({ author, count }));
-  }, [game.entries]);
-
   const filteredEntries = useMemo(() => {
     if (!selectedAuthor) return sortedEntries;
     return sortedEntries.filter((entry) => entry.authors.includes(selectedAuthor));
@@ -296,69 +292,58 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
   };
 
   return (
-    <div className="mx-auto w-fit px-4 py-4">
-      <div className="mb-4 flex justify-end">
-        <select
-          value={selectedAuthor}
-          onChange={(e) => setSelectedAuthor(e.target.value)}
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none"
-        >
-          <option value="">All Authors</option>
-          {authorOptions.map(({ author, count }) => (
-            <option key={author} value={author}>
-              {author} ({count} TAS{count !== 1 ? "es" : ""})
-            </option>
-          ))}
-        </select>
-      </div>
-      
+    <div className="px-4 pb-4">
       <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/90">
-        <table className="table-auto w-full divide-y divide-slate-800 text-center text-sm">
-          <thead className="bg-slate-900/90 text-slate-400">
+          <table className="table-auto w-full divide-y divide-slate-800 text-center text-sm">
+            <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th
                 onClick={() => handleSort("track")}
-                className="px-2 py-2 min-w-[100px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-1.5 min-w-[100px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
               >
                 Track
                 <SortIndicator field="track" />
               </th>
+              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("time")}
-                className="px-2 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 Time
                 <SortIndicator field="time" />
               </th>
               <th
                 onClick={() => handleSort("vsRta")}
-                className="px-2 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 Diff
                 <SortIndicator field="vsRta" />
               </th>
               <th
                 onClick={() => handleSort("percentSaved")}
-                className="px-2 py-2 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 %
                 <SortIndicator field="percentSaved" />
               </th>
+              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("authors")}
-                className="px-2 py-2 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-1.5 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
               >
                 Author(s)
                 <SortIndicator field="authors" />
               </th>
+              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("date")}
-                className="px-2 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 Date
                 <SortIndicator field="date" />
               </th>
-              <th className="px-2 py-2 w-[150px] font-normal uppercase tracking-[0.18em]">
+              <th className="border-l border-slate-800"></th>
+              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
                 Links
               </th>
 
@@ -369,26 +354,26 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
                       </th>
                       <th 
                         onClick={() => handleSort("rtaTime")}
-                        className="px-2 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                        className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                       >
                         RTA
                         <SortIndicator field="rtaTime" />
                       </th>
                       <th 
                         onClick={() => handleSort("rtaPlayer")}
-                        className="px-2 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                        className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                       >
                         Player
                         <SortIndicator field="rtaPlayer" />
                       </th>
                       <th 
                         onClick={() => handleSort("rtaDate")}
-                        className="px-2 py-2 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                        className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                       >
                         Date
                         <SortIndicator field="rtaDate" />
                       </th>
-                      <th className="px-2 py-2 w-[80px] font-normal uppercase tracking-[0.18em]">
+                      <th className="px-2 py-1.5 w-[80px] font-normal uppercase tracking-[0.18em]">
                         Links
                       </th>
                     </>
@@ -402,7 +387,7 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
               const baseTint = game.slug === "tmnf" ? getTrackDifficultyTint(entry.track) : undefined;
               const rowStyle = recent
                 ? {
-                    backgroundColor: "rgba(56, 189, 248, 0.20)",
+                    backgroundColor: "rgba(56, 191, 248, 0.29)",
                     color: "#e0f2fe",
                     boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.24)",
                   }
@@ -413,7 +398,7 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
               return (
                 <tr
                   key={entry.track}
-                  className={`border-b border-slate-800 last:border-b-0 transition h-[35px] ${
+                  className={`border-b border-slate-800 last:border-b-0 transition h-[32px] ${
                     recent ? "italic" : "hover:bg-slate-900/50"
                   }`}
                   style={rowStyle}
@@ -432,12 +417,16 @@ export default function LeaderboardTable({ game }: { game: GameBoard }) {
                       entry.track
                     )}
                   </td>
+                  <td className="border-l border-slate-800"></td>
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{formatClockValue(entry.time)}</td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{formatClockValue(entry.vsRta)}</td>
+                  <td className="px-1.5 py-1 text-slate-100 text-center italic font-bold align-middle">{formatClockValue(entry.vsRta)}</td>
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{formatPercentSaved(entry.time, entry.vsRta)}</td>
+                  <td className="border-l border-slate-800"></td>
                   <td className="px-1.5 py-1 text-slate-100 break-words min-w-[320px] whitespace-normal text-center align-middle">{entry.authors.join(", ")}</td>
-                  <td className="px-1.5 py-1 text-slate-100 whitespace-nowrap text-center align-middle">{entry.date}</td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{renderLinks(entry.links)}</td>
+                  <td className="border-l border-slate-800"></td>
+                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">{entry.date}</td>
+                  <td className="border-l border-slate-800"></td>
+                  <td className="px-3 py-1 text-slate-100 text-center align-middle">{renderLinks(entry.links)}</td>
                   {showRta && (
                     <>
                       <td className="pl-6 border-l border-slate-800"></td>
