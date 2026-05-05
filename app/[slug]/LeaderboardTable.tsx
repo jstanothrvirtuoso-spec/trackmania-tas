@@ -26,6 +26,8 @@ function parseClockValue(value: string): number {
 }
 
 function formatClockValue(value: string): string {
+  if (!value.trim()) return "-";
+
   const seconds = parseClockValue(value);
   const sign = seconds < 0 ? "-" : "";
   const absSeconds = Math.abs(seconds);
@@ -41,7 +43,7 @@ function formatClockValue(value: string): string {
 
 function getTrackDifficultyTint(track: string) {
   const trackInfo = tmxTrackIds[track];
-  if (!trackInfo.category) return "transparent";
+  if (!trackInfo?.category) return "transparent";
   switch (trackInfo.category) {
     case "White":
       return "rgba(255, 255, 255, 0.08)"; // white tint
@@ -64,15 +66,18 @@ function isTmnEswcBonusTrack(track: string) {
 
 const getTmxLink = (track: string) => {
   const trackInfo = tmxTrackIds[track];
-  if (!trackInfo.id) return null;
+  if (!trackInfo?.id) return null;
   return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
 };
 
 function formatPercentSaved(time: string, vsRta: string) {
+  if (!time.trim() || !vsRta.trim()) return "-";
+
   const timeSeconds = parseClockValue(time);
   const vsSeconds = parseClockValue(vsRta);
   const rtaSeconds = timeSeconds - vsSeconds;
   const percent = (-vsSeconds / rtaSeconds) * 100;
+  if (!Number.isFinite(percent)) return "-";
 
    let str = Number(percent).toPrecision(3);
   const isNegative = str.startsWith("-");
