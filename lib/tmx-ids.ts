@@ -71,4 +71,10 @@ export const tmxTrackIds: Record<string, TrackInfo> = {
   "E03-Endurance": { id: 2451, category: "Black", environment: "Stadium" },
   "E04-Obstacle": { id: 2454, category: "Black", environment: "Stadium" },
   "E05-Endurance": { id: 2455, category: "Black", environment: "Stadium" },
+
+  "A02 - No Cut": { id: 9421268, category: "White", environment: "Stadium" },
+  "A05 - No Cut": { id: 7712299, category: "White", environment: "Stadium" },
+  "A06 - No Cut": { id: 7712302, category: "White", environment: "Stadium" },
+  "A08 - No Cut": { id: 7712307, category: "White", environment: "Stadium" },
+  "A09 - No Cut": { id: 7712311, category: "White", environment: "Stadium" },
 };
