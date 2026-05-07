@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { GameBoard } from "../../lib/leaderboards";
-import { tracksTMNF } from "../../lib/TrackLists";
-import { useVisibleTables } from "../../lib/RtaContext";
+import { categories, Category, Game, trackList, gameSets } from "../../lib/TrackLists";
+import { TasRecords, TasEntry } from "../../lib/TasRecords";
+import { RtaRecords, RtaEntry } from "../../lib/RtaRecords";
+import { useVisibleTables } from "../../lib/VisibleTablesContext";
 
-type SortField = "track" | "time" | "vsRta" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
+type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
 
 function parseClockValue(value: string): number {
@@ -39,14 +40,30 @@ function formatClockValue(value: string): string {
   return `${sign}${minutes}:${remainder}`;
 }
 
-const CATEGORY_ORDER = ["White", "Green", "Blue", "Red", "Black"] as const;
+function formatTimeDifference(diffMs: number): string {
+  const sign = diffMs > 0 ? "+" : "-";
+  const abs = Math.abs(diffMs);
 
-type CategoryName = (typeof CATEGORY_ORDER)[number];
+  const minutes = Math.floor(abs / 60000);
+  const seconds = Math.floor((abs % 60000) / 1000);
+  const centiseconds = Math.floor((abs % 1000) / 10);
 
-function getTrackDifficultyTint(track: string) {
-  const trackInfo = tracksTMNF[track];
-  if (!trackInfo.category) return "transparent";
-  switch (trackInfo.category) {
+  if (minutes > 0) {
+    return `${sign}${minutes}:${seconds
+      .toString()
+      .padStart(2, "0")}.${centiseconds
+      .toString()
+      .padStart(2, "0")}`;
+  }
+
+  return `${sign}${seconds}.${centiseconds
+    .toString()
+    .padStart(2, "0")}`;
+}
+
+function getTrackDifficultyTint(category?: string) {
+  if (!category) return "transparent";
+  switch (category) {
     case "White":
       return "rgba(255, 255, 255, 0.08)"; // white tint
     case "Green":
@@ -62,80 +79,23 @@ function getTrackDifficultyTint(track: string) {
   }
 }
 
-function isTmnEswcBonusTrack(track: string) {
-  return track.startsWith("Bonus ");
-}
+function formatPercentSaved(timeMs: number, rtaMs: number) {
+  const percent = ((timeMs - rtaMs) / rtaMs) * 100;
 
-const getTmxLink = (track: string) => {
-  const trackInfo = tracksTMNF[track];
-  if (!trackInfo.id) return null;
-  return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
-};
+  let str = Number(percent).toPrecision(3);
 
-function formatPercentSaved(time: string, vsRta: string) {
-  const timeSeconds = parseClockValue(time);
-  const vsSeconds = parseClockValue(vsRta);
-  const rtaSeconds = timeSeconds - vsSeconds;
-  const percent = (-vsSeconds / rtaSeconds) * 100;
-
-   let str = Number(percent).toPrecision(3);
   const isNegative = str.startsWith("-");
   if (isNegative) str = str.slice(1);
+
   if (str.length > 4) {
     str = str.slice(0, 4);
+
     if (str.endsWith(".")) {
       str = str.slice(0, -1);
     }
   }
+
   return `${isNegative ? "-" : ""}${str}`;
-}
-
-function renderRtaLinks(links: { video: string; replay: string }) {
-  return (
-    <div className="flex justify-center gap-2">
-      <a
-        href={links.video}
-        target="_blank"
-        rel="noreferrer"
-        title="Watch video"
-        className="text-sky-400 hover:text-sky-300 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-        </svg>
-      </a>
-      <a
-        href={links.replay}
-        target="_blank"
-        rel="noreferrer"
-        title="Download replay"
-        className="text-emerald-400 hover:text-emerald-300 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
-      </a>
-    </div>
-  );
-}
-
-function isRecentEntry(dateStr: string) {
-  const entryDate = new Date(dateStr);
-  if (Number.isNaN(entryDate.getTime())) {
-    return false;
-  }
-
-  const now = new Date();
-  const diff = now.getTime() - entryDate.getTime();
-  const oneMonth = 30 * 24 * 60 * 60 * 1000;
-  return diff >= 0 && diff <= oneMonth;
-}
-
-function get3dGbxUrl(url?: string) {
-  const id = url ? new URL(url).searchParams.get("id") : null;
-  return id
-    ? `https://3d.gbx.tools/view/replay?gd=${id}`
-    : "https://3d.gbx.tools";
 }
 
 function renderLinks(links: { video: string; replay: string; inputs: string }) {
@@ -146,7 +106,7 @@ function renderLinks(links: { video: string; replay: string; inputs: string }) {
         target="_blank"
         rel="noreferrer"
         title="Watch video"
-        className="text-sky-400 hover:text-sky-300 transition"
+        className="text-red-500 hover:text-red-400 transition"
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -189,84 +149,186 @@ function renderLinks(links: { video: string; replay: string; inputs: string }) {
   );
 }
 
-interface RecordTableProps {
-  game: GameBoard;
-  selectedAuthor: string;
+function renderRtaLinks(links: { video: string; replay: string }) {
+  return (
+    <div className="flex justify-center gap-2">
+      <a
+        href={links.video}
+        target="_blank"
+        rel="noreferrer"
+        title="Watch video"
+        className="text-red-500 hover:text-red-400 transition"
+      >
+        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+        </svg>
+      </a>
+      <a
+        href={links.replay}
+        target="_blank"
+        rel="noreferrer"
+        title="Download replay"
+        className="text-emerald-400 hover:text-emerald-300 transition"
+      >
+        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg>
+      </a>
+    </div>
+  );
 }
 
-export default function RecordTable({ game, selectedAuthor }: RecordTableProps) {
+function isRecentEntry(dateStr: string) {
+  const entryDate = new Date(dateStr);
+  if (Number.isNaN(entryDate.getTime())) {
+    return false;
+  }
+
+  const now = new Date();
+  const diff = now.getTime() - entryDate.getTime();
+  const oneMonth = 30 * 24 * 60 * 60 * 1000;
+  return diff >= 0 && diff <= oneMonth;
+}
+
+function get3dGbxUrl(url?: string) {
+  const id = url ? new URL(url).searchParams.get("id") : null;
+  return id
+    ? `https://3d.gbx.tools/view/replay?gd=${id}`
+    : "https://3d.gbx.tools";
+}
+
+const getTmxLink = (trackInfo: { id?: number } | null) => {
+  if (!trackInfo?.id) return null;
+  return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
+};
+
+interface RecordTableProps {
+  game: Game;
+  selectedAuthor: string;
+  selectedCategory: Category;
+}
+
+export default function RecordTable({ game, selectedAuthor, selectedCategory }: RecordTableProps) {
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const { showRta } = useVisibleTables();
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
+  const allowedCategories = useMemo(() => {
+    const targetCategory = game === "TMNF No Cut" ? "No Cut" : selectedCategory;
+    const index = categories.indexOf(targetCategory);
+    return new Set(categories.slice(index));
+  }, [selectedCategory]);
 
-  const sortedEntries = useMemo(() => {
-    const sorted = [...game.entries].sort((a, b) => {
+  const rows = useMemo(() => {
+    const bestTasByTrack = new Map<string, TasEntry>();
+    const bestRtaByTrack = new Map<string, RtaEntry>();
+    const targetGame = game === "TMNF No Cut" ? "TMNF" : game;
+
+    Object.values(TasRecords)
+      .filter((e) => e.game === targetGame)
+      .filter((e) => allowedCategories.has(e.category))
+      .forEach((entry) => {
+        const existing = bestTasByTrack.get(entry.track);
+
+        if (
+          !existing ||
+          entry.timeMs < existing.timeMs ||
+          (
+            entry.timeMs === existing.timeMs &&
+            new Date(entry.date).getTime() <
+              new Date(existing.date).getTime()
+          )
+        ) {
+          bestTasByTrack.set(entry.track, entry);
+        }
+      });
+
+    Object.values(RtaRecords)
+      .filter((e) => e.game === game)
+      .forEach((entry) => {
+        const existing = bestRtaByTrack.get(entry.track);
+
+        if (
+          !existing ||
+          entry.timeMs < existing.timeMs ||
+          (
+            entry.timeMs === existing.timeMs &&
+            new Date(entry.date).getTime() <
+              new Date(existing.date).getTime()
+          )
+        ) {
+          bestRtaByTrack.set(entry.track, entry);
+        }
+      });
+
+    return Object.entries(trackList)
+      .filter(([, info]) => info.game === game)
+      .map(([track, trackInfo]) => ({
+        track,
+        trackInfo,
+        tas: bestTasByTrack.get(trackInfo.track || track) ?? null,
+        rta: bestRtaByTrack.get(trackInfo.track || track) ?? null,
+      }));
+  }, [game, selectedCategory]);
+
+  const sortedRows = useMemo(() => {
+    const sorted = [...rows].sort((a, b) => {
       let aVal: string | number = "";
       let bVal: string | number = "";
 
+      const aHasEntry = Boolean(a.tas);
+      const bHasEntry = Boolean(b.tas);
+      const aHasRta = Boolean(a.rta);
+      const bHasRta = Boolean(b.rta);
+
       switch (sortField) {
         case "track": {
-          if (game.slug === "tmn-eswc") {
-            const aBonus = isTmnEswcBonusTrack(a.track) ? 1 : 0;
-            const bBonus = isTmnEswcBonusTrack(b.track) ? 1 : 0;
-            if (aBonus !== bBonus) {
-              return sortOrder === "asc" ? aBonus - bBonus : bBonus - aBonus;
-            }
-          }
-
-          aVal = a.track;
-          bVal = b.track;
+          const gameSet = gameSets[game] as readonly string[];
+          const aCategoryIndex = gameSet.indexOf(a.trackInfo.category);
+          const bCategoryIndex = gameSet.indexOf(b.trackInfo.category);
+          aVal = `${aCategoryIndex.toString().padStart(2, "0")}-${a.track}`;
+          bVal = `${bCategoryIndex.toString().padStart(2, "0")}-${b.track}`;
           break;
         }
         case "time":
-          aVal = parseClockValue(a.time);
-          bVal = parseClockValue(b.time);
+          if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
+          aVal = a.tas ? a.tas.timeMs : 0;
+          bVal = b.tas ? b.tas.timeMs : 0;
           break;
-        case "vsRta":
-          aVal = parseClockValue(a.vsRta);
-          bVal = parseClockValue(b.vsRta);
+        case "diff":
+          if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
+          aVal = a.tas && a.rta ? a.tas.timeMs - a.rta.timeMs : 0;
+          bVal = b.tas && b.rta ? b.tas.timeMs - b.rta.timeMs : 0;
+          break;
+        case "percentSaved":
+          if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
+          aVal = a.tas && a.rta ? (a.tas.timeMs - a.rta.timeMs) / a.rta.timeMs : 0;
+          bVal = b.tas && b.rta ? (b.tas.timeMs - b.rta.timeMs) / b.rta.timeMs : 0;
           break;
         case "authors":
-          aVal = a.authors.join(", ");
-          bVal = b.authors.join(", ");
+          if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
+          aVal = a.tas ? a.tas.authors.join(", ") : "";
+          bVal = b.tas ? b.tas.authors.join(", ") : "";
           break;
         case "date":
-          aVal = a.date;
-          bVal = b.date;
+          if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
+          aVal = a.tas?.date ?? "";
+          bVal = b.tas?.date ?? "";
           break;
-        case "percentSaved": {
-          const aTime = parseClockValue(a.time);
-          const aVs = parseClockValue(a.vsRta);
-          const aRta = aTime - aVs;
-
-          const bTime = parseClockValue(b.time);
-          const bVs = parseClockValue(b.vsRta);
-          const bRta = bTime - bVs;
-
-          aVal = aRta !== 0 ? (aVs / aRta) * 100 : 0;
-          bVal = bRta !== 0 ? (bVs / bRta) * 100 : 0;
-          break;
-        }
         case "rtaDate":
-          aVal = a.rtaWr?.date || "";
-          bVal = b.rtaWr?.date || "";
+          if (aHasRta !== bHasRta) return aHasRta ? -1 : 1;
+          aVal = a.rta?.date || "";
+          bVal = b.rta?.date || "";
           break;
         case "rtaPlayer":
-          aVal = a.rtaWr?.player || "";
-          bVal = b.rtaWr?.player || "";
+          if (aHasRta !== bHasRta) return aHasRta ? -1 : 1;
+          aVal = a.rta?.player || "";
+          bVal = b.rta?.player || "";
           break;
         case "rtaTime":
-          aVal = parseClockValue(a.rtaWr?.record || "");
-          bVal = parseClockValue(b.rtaWr?.record || "");
+          if (aHasRta !== bHasRta) return aHasRta ? -1 : 1;
+          aVal = parseClockValue(a.rta?.record || "");
+          bVal = parseClockValue(b.rta?.record || "");
           break;
       }
 
@@ -279,12 +341,21 @@ export default function RecordTable({ game, selectedAuthor }: RecordTableProps) 
     });
 
     return sorted;
-  }, [game.entries, sortField, sortOrder]);
+  }, [rows, sortField, sortOrder]);
 
-  const filteredEntries = useMemo(() => {
-    if (!selectedAuthor) return sortedEntries;
-    return sortedEntries.filter((entry) => entry.authors.includes(selectedAuthor));
-  }, [sortedEntries, selectedAuthor]);
+  const filteredRows = useMemo(() => {
+    if (!selectedAuthor) return sortedRows;
+    return sortedRows.filter((row) => row.tas?.authors.includes(selectedAuthor));
+  }, [sortedRows, selectedAuthor]);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   const SortIndicator = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
@@ -313,11 +384,11 @@ export default function RecordTable({ game, selectedAuthor }: RecordTableProps) 
                 <SortIndicator field="time" />
               </th>
               <th
-                onClick={() => handleSort("vsRta")}
+                onClick={() => handleSort("diff")}
                 className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 Diff
-                <SortIndicator field="vsRta" />
+                <SortIndicator field="diff" />
               </th>
               <th
                 onClick={() => handleSort("percentSaved")}
@@ -341,6 +412,9 @@ export default function RecordTable({ game, selectedAuthor }: RecordTableProps) 
               >
                 Date
                 <SortIndicator field="date" />
+              </th>
+              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
+                Cat.
               </th>
               <th className="border-l border-slate-800"></th>
               <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
@@ -381,10 +455,11 @@ export default function RecordTable({ game, selectedAuthor }: RecordTableProps) 
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
-            {filteredEntries.map((entry) => {
-              const recent = isRecentEntry(entry.date);
-              const tmxLink = getTmxLink(entry.track);
-              const baseTint = game.slug === "tmnf" ? getTrackDifficultyTint(entry.track) : undefined;
+            {filteredRows.map((row) => {
+              const entry = row.tas;
+              const recent = entry ? isRecentEntry(entry.date) : false;
+              const tmxLink = getTmxLink(row.trackInfo);
+              const baseTint = getTrackDifficultyTint(row.trackInfo.category);
               const rowStyle = recent
                 ? {
                     backgroundColor: "rgba(56, 191, 248, 0.29)",
@@ -397,7 +472,7 @@ export default function RecordTable({ game, selectedAuthor }: RecordTableProps) 
 
               return (
                 <tr
-                  key={entry.track}
+                  key={row.track}
                   className={`border-b border-slate-800 last:border-b-0 transition h-[32px] ${
                     recent ? "italic" : "hover:bg-slate-900/50"
                   }`}
@@ -411,30 +486,55 @@ export default function RecordTable({ game, selectedAuthor }: RecordTableProps) 
                         rel="noreferrer"
                         className="text-sky-400 hover:text-sky-300"
                       >
-                        {entry.track}
+                        {row.track}
                       </a>
                     ) : (
-                      entry.track
+                      row.track
                     )}
                   </td>
                   <td className="border-l border-slate-800"></td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{formatClockValue(entry.time)}</td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center italic font-bold align-middle">{formatClockValue(entry.vsRta)}</td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{formatPercentSaved(entry.time, entry.vsRta)}</td>
+                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                    {entry ? formatClockValue(entry.record) : "-"}
+                  </td>
+                  <td className="px-1.5 py-1 text-slate-100 text-center italic font-bold align-middle">
+                    {entry && row.rta
+                      ? formatTimeDifference(entry.timeMs - row.rta.timeMs)
+                      : "-"}
+                  </td>
+                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                    {entry && row.rta
+                      ? formatPercentSaved(entry.timeMs, row.rta.timeMs)
+                      : "-"}
+                  </td>
                   <td className="border-l border-slate-800"></td>
-                  <td className="px-1.5 py-1 text-slate-100 break-words min-w-[320px] whitespace-normal text-center align-middle">{entry.authors.join(", ")}</td>
+                  <td className="px-1.5 py-1 text-slate-100 break-words min-w-[320px] whitespace-normal text-center align-middle">
+                    {entry ? entry.authors.join(", ") : "-"}
+                  </td>
                   <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">{entry.date}</td>
+                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">
+                    {entry ? entry.date : "-"}
+                  </td>
+                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">
+                    {entry ? entry.category : "-"}
+                  </td>
                   <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-1 text-slate-100 text-center align-middle">{renderLinks(entry.links)}</td>
+                  <td className="px-3 py-1 text-slate-100 text-center align-middle">
+                    {entry ? renderLinks({ video: entry.video, replay: entry.replay, inputs: entry.inputs }) : "-"}
+                  </td>
                   {showRta && (
                     <>
                       <td className="pl-6 border-l border-slate-800"></td>
-                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{entry.rtaWr ? formatClockValue(entry.rtaWr.record) : "-"}</td>
-                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{entry.rtaWr?.player}</td>
-                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">{entry.rtaWr?.date}</td>
                       <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
-                        {entry.rtaWr ? renderRtaLinks(entry.rtaWr.links) : "-"}
+                        {row.rta ? formatClockValue(row.rta.record) : "-"}
+                      </td>
+                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                        {row.rta?.player ?? "-"}
+                      </td>
+                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                        {row.rta?.date ?? "-"}
+                      </td>
+                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                        {row.rta ? renderRtaLinks({ video: row.rta.video, replay: row.rta.replay }) : "-"}
                       </td>
                     </>
                   )}

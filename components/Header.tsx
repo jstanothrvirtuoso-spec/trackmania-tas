@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { leaderboards } from "../lib/leaderboards";
-import { useVisibleTables } from "../lib/RtaContext";
+import { gameLinks } from "../lib/TrackLists";
+import { useVisibleTables } from "../lib/VisibleTablesContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function Header() {
               TrackMania TAS
             </Link>
             <nav className="hidden md:flex items-center gap-6">
-              {leaderboards.map((game) => (
+              {gameLinks.map((game) => (
                 <Link
                   key={game.slug}
                   href={`/${game.slug}`}
@@ -96,7 +96,7 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden mt-4 border-t border-slate-800 pt-4">
             <nav className="flex flex-col gap-4">
-              {leaderboards.map((game) => (
+              {gameLinks.map((game) => (
                 <Link
                   key={game.slug}
                   href={`/${game.slug}`}

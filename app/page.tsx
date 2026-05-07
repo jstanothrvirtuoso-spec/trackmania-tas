@@ -1,7 +1,8 @@
 "use client";
 
+import { TasEntry, TasRecords } from "@/lib/TasRecords";
+import { RtaRecords } from "@/lib/RtaRecords";
 import { useMemo, useState } from "react";
-import { leaderboards } from "../lib/leaderboards";
 
 type AuthorStat = {
   author: string;
@@ -12,23 +13,6 @@ type AuthorStat = {
 
 type SortField = "author" | "tases" | "contributions" | "totalSaved";
 type SortOrder = "asc" | "desc";
-
-function parseClockValue(value: string): number {
-  const trimmed = value.trim();
-  const negative = trimmed.startsWith("-");
-  const positiveValue = negative ? trimmed.slice(1) : trimmed;
-  const parts = positiveValue.split(":");
-
-  let seconds = 0;
-  if (parts.length === 1) {
-    seconds = parseFloat(parts[0]) || 0;
-  } else {
-    const minutes = parseInt(parts[0], 10) || 0;
-    seconds = minutes * 60 + (parseFloat(parts[1]) || 0);
-  }
-
-  return negative ? -seconds : seconds;
-}
 
 function formatSeconds(seconds: number): string {
   const absSeconds = Math.abs(seconds);
@@ -46,34 +30,65 @@ export default function Home() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const authorStats = useMemo(() => {
-    const authorMap = new Map<string, AuthorStat>();
+  const authorMap = new Map<string, AuthorStat>();
 
-    leaderboards.forEach((game) => {
-      game.entries.forEach((entry) => {
-        const savedSeconds = Math.abs(parseClockValue(entry.vsRta));
-        const numAuthors = entry.authors.length;
-        const contributionPerAuthor = 1 / numAuthors;
-        const savedPerAuthor = savedSeconds / numAuthors;
-        entry.authors.forEach((author) => {
-          const current = authorMap.get(author);
-          if (current) {
-            current.tases += 1;
-            current.contributions += contributionPerAuthor;
-            current.totalSaved += savedPerAuthor;
-          } else {
-            authorMap.set(author, {
-              author,
-              tases: 1,
-              contributions: contributionPerAuthor,
-              totalSaved: savedPerAuthor,
-            });
-          }
+  const bestTasByTrack = new Map<string, TasEntry>();
+
+  Object.values(TasRecords).forEach((entry) => {
+    const existing = bestTasByTrack.get(entry.track);
+
+    if (
+      !existing ||
+      entry.timeMs < existing.timeMs ||
+      (
+        entry.timeMs === existing.timeMs &&
+        new Date(entry.date).getTime() <
+          new Date(existing.date).getTime()
+      )
+    ) {
+      bestTasByTrack.set(entry.track, entry);
+    }
+  });
+
+  bestTasByTrack.forEach((entry) => {
+    const rta = RtaRecords
+      .filter(
+        (r) =>
+          r.game === entry.game &&
+          r.track === entry.track
+      )
+      .sort((a, b) => a.timeMs - b.timeMs)[0];
+
+    const savedMs = rta
+      ? Math.max(0, rta.timeMs - entry.timeMs)
+      : 0;
+
+    const contributionPerAuthor =
+      1 / entry.authors.length;
+
+    const savedPerAuthor =
+      savedMs / entry.authors.length;
+
+    entry.authors.forEach((author) => {
+      const current = authorMap.get(author);
+
+      if (current) {
+        current.tases += 1;
+        current.contributions += contributionPerAuthor;
+        current.totalSaved += savedPerAuthor;
+      } else {
+        authorMap.set(author, {
+          author,
+          tases: 1,
+          contributions: contributionPerAuthor,
+          totalSaved: savedPerAuthor,
         });
-      });
+      }
     });
+  });
 
-    return Array.from(authorMap.values());
-  }, []);
+  return Array.from(authorMap.values());
+}, []);
 
   const sortedAuthorStats = useMemo(() => {
     return [...authorStats].sort((a, b) => {
@@ -181,7 +196,7 @@ export default function Home() {
                 <td className="px-2 py-2 text-slate-100">{author.author}</td>
                 <td className="px-2 py-2 text-slate-100">{author.tases}</td>
                 <td className="px-2 py-2 text-slate-100">{author.contributions.toFixed(2)}</td>
-                <td className="px-2 py-2 text-slate-300">{formatSeconds(author.totalSaved)}</td>
+                <td className="px-2 py-2 text-slate-300">{formatSeconds(author.totalSaved / 1000)}</td>
               </tr>
             ))}
           </tbody>

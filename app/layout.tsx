@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { VisibleTablesProvider } from "../lib/RtaContext";
+import { VisibleTablesProvider } from "../lib/VisibleTablesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
