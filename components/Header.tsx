@@ -109,9 +109,12 @@ export default function Header() {
                 </div>
               )}
             </div>
-            <button className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 ring-1 ring-slate-700 transition hover:bg-slate-700 hover:text-white">
+            <Link
+              href="/submit"
+              className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 ring-1 ring-slate-700 transition hover:bg-slate-700 hover:text-white"
+            >
               Submit TAS
-            </button>
+            </Link>
             <button
               className="md:hidden rounded-md p-2 text-slate-400 hover:text-white"
               onClick={() => setIsMenuOpen(!isMenuOpen)}

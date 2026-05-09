@@ -1,7 +1,8 @@
 "use client";
 
-import { TasEntry, TasRecords } from "@/lib/TasRecords";
+import { TasRecords } from "@/lib/TasRecords";
 import { RtaRecords } from "@/lib/RtaRecords";
+import { TasEntry } from "@/lib/TrackLists";
 import { useMemo, useState } from "react";
 
 type AuthorStat = {
