@@ -1,16 +1,5 @@
 
-import { Game } from "../lib/TrackLists";
-
-export type RtaEntry = {
-  game: Game;
-  track: string;
-  record: string;
-  timeMs: number;
-  player: string;
-  date: string;
-  video: string;
-  replay: string;
-};
+import { RtaEntry } from "../lib/TrackLists";
 
 export const RtaRecords: RtaEntry[] = [
   {

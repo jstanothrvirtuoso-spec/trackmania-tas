@@ -2,47 +2,28 @@
 
 import { useMemo } from "react";
 
-import { gameSets, Game } from "../../lib/TrackLists";
-import { trackList } from "../../lib/TrackLists";
+import { RecordRow } from "../../lib/TrackLists";
 import { TasRecords } from "../../lib/TasRecords";
 import { RtaRecords } from "../../lib/RtaRecords";
 import { useVisibleTables } from "../../lib/VisibleTablesContext";
 
-export function formatClock(timeMs: number): string {
-  const minutes = Math.floor(timeMs / 60000);
-  const seconds = Math.floor((timeMs % 60000) / 1000);
-  const centiseconds = Math.floor((timeMs % 1000) / 10);
+type CategoryTotals = {
+  category: string;
+  tasMs: number;
+  rtaMs: number;
+};
 
-  if (minutes > 0) {
-    return `${minutes}:${seconds
-      .toString()
-      .padStart(2, "0")}.${centiseconds
-      .toString()
-      .padStart(2, "0")}`;
-  }
-
-  return `${seconds}.${centiseconds
-    .toString()
-    .padStart(2, "0")}`;
-}
-
-export function formatTimeDifference(diffMs: number): string {
-  const sign = diffMs > 0 ? "-" : "+";
-  const abs = Math.abs(diffMs);
+function formatTime(timeMs: number, showSign: boolean = false): string {
+  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
+  const abs = Math.abs(timeMs);
 
   const minutes = Math.floor(abs / 60000);
   const seconds = Math.floor((abs % 60000) / 1000);
   const centiseconds = Math.floor((abs % 1000) / 10);
 
-  if (minutes > 0) {
-    return `${sign}${minutes}:${seconds
-      .toString()
-      .padStart(2, "0")}.${centiseconds
-      .toString()
-      .padStart(2, "0")}`;
-  }
-
-  return `${sign}${seconds}.${centiseconds
+  return `${sign}${minutes}:${seconds
+    .toString()
+    .padStart(2, "0")}.${centiseconds
     .toString()
     .padStart(2, "0")}`;
 }
@@ -52,82 +33,51 @@ function formatPercentSaved(diffMs: number, rtaMs: number) {
   return `${((diffMs / rtaMs) * 100).toFixed(2)}%`;
 }
 
-type CategoryTotals = {
-  category: string;
-  tasMs: number;
-  rtaMs: number;
-  count: number;
-};
-
-export default function TimeSaved({ game }: { game: Game }) {
+export default function TimeSaved({ currentRecords }: { currentRecords: RecordRow[] }) {
   const { showTimeSaved } = useVisibleTables();
 
-  if (!showTimeSaved) return null;
+  const categoryTotals = useMemo<CategoryTotals[]>(() => {
+    return Object.values(
+      currentRecords.reduce((acc, row) => {
+        const category = row.trackInfo.category;
 
-  const categoryTotals = useMemo(() => {
-    const bestTasByTrack = new Map<string, number>();
-    const bestRtaByTrack = new Map<string, number>();
-
-    Object.values(TasRecords)
-      .filter((e) => e.game === game)
-      .forEach((entry) => {
-        const existing = bestTasByTrack.get(entry.track);
-
-        if (existing === undefined || entry.timeMs < existing) {
-          bestTasByTrack.set(entry.track, entry.timeMs);
-        }
-      });
-
-    Object.values(RtaRecords)
-      .filter((e) => e.game === game)
-      .forEach((entry) => {
-        const existing = bestRtaByTrack.get(entry.track);
-
-        if (existing === undefined || entry.timeMs < existing) {
-          bestRtaByTrack.set(entry.track, entry.timeMs);
-        }
-      });
-
-    return gameSets[game]
-      .map((category): CategoryTotals => {
-        const tracks = Object.entries(trackList).filter(
-          ([, info]) =>
-            info.game === game &&
-            info.category === category
-        );
-
-        let tasMs = 0;
-        let rtaMs = 0;
-
-        for (const [track] of tracks) {
-          tasMs += bestTasByTrack.get(track) ?? 0;
-          rtaMs += bestRtaByTrack.get(track) ?? 0;
+        if (!acc[category]) {
+          acc[category] = {
+            category,
+            tasMs: 0,
+            rtaMs: 0,
+          };
         }
 
-        return {
-          category,
-          tasMs,
-          rtaMs,
-          count: tracks.length,
-        };
-      })
-      .filter((c) => c.count > 0);
-  }, [game]);
+        if (row.tas && row.rta) {
+          acc[category].tasMs += row.tas.timeMs;
+        } else {
+          acc[category].tasMs += row.rta?.timeMs || 0;
+        }
+
+        if (row.rta) {
+          acc[category].rtaMs += row.rta.timeMs;
+        }
+
+        return acc;
+      }, {} as Record<string, CategoryTotals>)
+    );
+  }, [currentRecords]);
 
   const total = categoryTotals.reduce<CategoryTotals>(
     (acc, curr) => ({
       category: "Total",
       tasMs: acc.tasMs + curr.tasMs,
       rtaMs: acc.rtaMs + curr.rtaMs,
-      count: acc.count + curr.count,
     }),
     {
       category: "Total",
       tasMs: 0,
       rtaMs: 0,
-      count: 0,
     }
   );
+
+  if (!showTimeSaved) return null;
 
   return (
     <aside className="px-4 pb-4">
@@ -181,7 +131,7 @@ export default function TimeSaved({ game }: { game: Game }) {
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="font-sans divide-y divide-slate-800">
             {categoryTotals.map((category) => {
               const hasRta = category.rtaMs > 0;
               const diffMs = category.rtaMs - category.tasMs;
@@ -189,7 +139,10 @@ export default function TimeSaved({ game }: { game: Game }) {
               return (
                 <tr
                   key={category.category}
-                  className="border-b border-slate-800 last:border-b-0"
+                  className="
+                    border-b border-slate-800 last:border-b-0
+                    hover:bg-blue-900/20 transition-colors
+                  "
                 >
                   <td className="px-2 py-[4px] font-medium text-slate-200">
                     {category.category}
@@ -197,16 +150,16 @@ export default function TimeSaved({ game }: { game: Game }) {
 
                   <td className="border-l border-slate-800"></td>
                   <td className="px-3 py-[4px]">
-                    {formatClock(category.tasMs)}
+                    {formatTime(category.tasMs)}
                   </td>
 
                   <td className="px-3 py-[4px]">
-                    {hasRta ? formatClock(category.rtaMs) : "-"}
+                    {hasRta ? formatTime(category.rtaMs) : "-"}
                   </td>
 
                   <td className="border-l border-slate-800"></td>
                   <td className="px-3 py-[4px] italic">
-                    {hasRta ? formatTimeDifference(diffMs) : "-"}
+                    {hasRta ? formatTime(category.tasMs - category.rtaMs, true) : "-"}
                   </td>
 
                   <td className="px-3 py-[4px]">
@@ -218,24 +171,27 @@ export default function TimeSaved({ game }: { game: Game }) {
               );
             })}
 
-            <tr className="border-t-2 border-slate-600 font-semibold text-slate-100">
+            <tr className="
+              border-t-2 border-slate-600 font-semibold text-slate-100
+              hover:bg-blue-900/20 transition-colors
+            ">
               <td className="px-2 py-[4px]">Total</td>
 
               <td className="border-l border-slate-800"></td>
               <td className="px-2 py-[4px]">
-                {formatClock(total.tasMs)}
+                {formatTime(total.tasMs)}
               </td>
 
               <td className="px-2 py-[4px]">
                 {total.rtaMs > 0
-                  ? formatClock(total.rtaMs)
+                  ? formatTime(total.rtaMs)
                   : "-"}
               </td>
 
               <td className="border-l border-slate-800"></td>
               <td className="px-2 py-[4px] italic">
                 {total.rtaMs > 0
-                  ? formatTimeDifference(total.rtaMs - total.tasMs)
+                  ? formatTime(total.tasMs - total.rtaMs, true)
                   : "-"}
               </td>
 

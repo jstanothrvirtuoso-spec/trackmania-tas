@@ -1,48 +1,15 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { categories, Category, Game, trackList, gameSets, Environment } from "../../lib/TrackLists";
-import { TasRecords, TasEntry } from "../../lib/TasRecords";
-import { RtaRecords, RtaEntry } from "../../lib/RtaRecords";
+import { Game, gameSets, Environment, RecordRow } from "../../lib/TrackLists";
 import { useVisibleTables } from "../../lib/VisibleTablesContext";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
 
-function parseClockValue(value: string): number {
-  const trimmed = value.trim();
-  const negative = trimmed.startsWith("-");
-  const positiveValue = negative ? trimmed.slice(1) : trimmed;
-  const parts = positiveValue.split(":");
-
-  let seconds = 0;
-  if (parts.length === 1) {
-    seconds = parseFloat(parts[0]) || 0;
-  } else {
-    const minutes = parseInt(parts[0], 10) || 0;
-    seconds = minutes * 60 + (parseFloat(parts[1]) || 0);
-  }
-
-  return negative ? -seconds : seconds;
-}
-
-function formatClockValue(value: string): string {
-  const seconds = parseClockValue(value);
-  const sign = seconds < 0 ? "-" : "";
-  const absSeconds = Math.abs(seconds);
-
-  if (absSeconds < 60) {
-    return `${sign}${absSeconds.toFixed(2)}`;
-  }
-
-  const minutes = Math.floor(absSeconds / 60);
-  const remainder = (absSeconds % 60).toFixed(2).padStart(5, "0");
-  return `${sign}${minutes}:${remainder}`;
-}
-
-function formatTimeDifference(diffMs: number): string {
-  const sign = diffMs > 0 ? "+" : "-";
-  const abs = Math.abs(diffMs);
+function formatTime(timeMs: number, showSign: boolean = false): string {
+  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
+  const abs = Math.abs(timeMs);
 
   const minutes = Math.floor(abs / 60000);
   const seconds = Math.floor((abs % 60000) / 1000);
@@ -61,38 +28,6 @@ function formatTimeDifference(diffMs: number): string {
     .padStart(2, "0")}`;
 }
 
-function getTrackDifficultyTint(category?: string) {
-  if (!category) return "transparent";
-  switch (category) {
-    case "White":
-      return "rgba(255, 255, 255, 0.08)"; // white tint
-    case "Green":
-      return "rgba(34, 197, 94, 0.05)"; // green tint
-    case "Blue":
-      return "rgba(59, 130, 246, 0.05)"; // blue tint
-    case "Red":
-      return "rgba(252, 0, 0, 0.05)"; // red tint
-    case "Black":
-      return "rgba(0, 0, 0, 0.48)"; // subtle dark/black tint
-    default:
-      return "transparent";
-  }
-}
-
-function getEnvironmentSymbol(env: string) {
-  const key = env.toLowerCase().replace(/\s+/g, "-")
-
-  return (
-    <div className="w-6 h-5 flex items-center justify-center">
-      <img
-        src={`/environments/${key}.webp`}
-        alt={env}
-        className="w-5 h-5"
-      />
-    </div>
-  )
-}
-
 function formatPercentSaved(timeMs: number, rtaMs: number) {
   const percent = ((timeMs - rtaMs) / rtaMs) * 100;
 
@@ -109,7 +44,46 @@ function formatPercentSaved(timeMs: number, rtaMs: number) {
     }
   }
 
-  return `${isNegative ? "-" : ""}${str}`;
+  return `${percent <= 0 ? "" : "+"}${str}`;
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit'
+  }).replace(/ /g, '-')       
+}
+
+function getTrackDifficultyTint(category: string, i: number) {
+  switch (category) {
+    case "White":
+      return `bg-white/${i % 2 === 0 ? "5" : "10"}`;
+    case "Green":
+      return `bg-green-500/${i % 2 === 0 ? "5" : "10"}`;
+    case "Blue":
+      return `bg-blue-500/${i % 2 === 0 ? "5" : "10"}`;
+    case "Red":
+      return `bg-red-500/${i % 2 === 0 ? "5" : "10"}`;
+    case "Black":
+      return `bg-black/${i % 2 === 0 ? "40" : "60"}`;
+    default:
+      return "";
+  }
+}
+
+function getEnvironmentSymbol(env: string) {
+  const key = env.toLowerCase().replace(/\s+/g, "-")
+
+  return (
+    <div className="w-6 h-5 flex items-center justify-center">
+      <img
+        src={`/environments/${key}.webp`}
+        alt={env}
+        className="w-5 h-5"
+      />
+    </div>
+  )
 }
 
 function renderLinks(links: { video: string; replay: string; inputs: string }) {
@@ -208,15 +182,10 @@ function renderRtaLinks(links: { video: string; replay: string }) {
   );
 }
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  }).replace(/ /g, '-')       
-}
+function isRecentEntry(dateStr: string, showRecent: boolean) {
 
-function isRecentEntry(dateStr: string) {
+  if (!showRecent) return false;
+
   const entryDate = new Date(dateStr);
   if (Number.isNaN(entryDate.getTime())) {
     return false;
@@ -249,76 +218,18 @@ const getTmxLink = (trackInfo: { id: number; game: Game }) => {
 
 interface RecordTableProps {
   game: Game;
+  currentRecords: RecordRow[];
   selectedAuthor: string;
-  selectedCategory: Category;
   selectedEnvironment: Environment;
 }
 
-export default function RecordTable({ game, selectedAuthor, selectedCategory, selectedEnvironment }: RecordTableProps) {
+export default function RecordTable({ game, currentRecords, selectedAuthor, selectedEnvironment }: RecordTableProps) {
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const { showRta } = useVisibleTables();
-
-  const allowedCategories = useMemo(() => {
-    const targetCategory = game === "TMNF No Cut" ? "No Cut" : selectedCategory;
-    const index = categories.indexOf(targetCategory);
-    return new Set(categories.slice(index));
-  }, [selectedCategory]);
-
-  const rows = useMemo(() => {
-    const bestTasByTrack = new Map<string, TasEntry>();
-    const bestRtaByTrack = new Map<string, RtaEntry>();
-    const targetGame = game === "TMNF No Cut" ? "TMNF" : game;
-
-    Object.values(TasRecords)
-      .filter((e) => e.game === targetGame)
-      .filter((e) => allowedCategories.has(e.category))
-      .forEach((entry) => {
-        const existing = bestTasByTrack.get(entry.track);
-
-        if (
-          !existing ||
-          entry.timeMs < existing.timeMs ||
-          (
-            entry.timeMs === existing.timeMs &&
-            new Date(entry.date).getTime() <
-              new Date(existing.date).getTime()
-          )
-        ) {
-          bestTasByTrack.set(entry.track, entry);
-        }
-      });
-
-    Object.values(RtaRecords)
-      .filter((e) => e.game === game)
-      .forEach((entry) => {
-        const existing = bestRtaByTrack.get(entry.track);
-
-        if (
-          !existing ||
-          entry.timeMs < existing.timeMs ||
-          (
-            entry.timeMs === existing.timeMs &&
-            new Date(entry.date).getTime() <
-              new Date(existing.date).getTime()
-          )
-        ) {
-          bestRtaByTrack.set(entry.track, entry);
-        }
-      });
-
-    return Object.entries(trackList)
-      .filter(([, info]) => info.game === game)
-      .map(([track, trackInfo]) => ({
-        track,
-        trackInfo,
-        tas: bestTasByTrack.get(trackInfo.track || track) ?? null,
-        rta: bestRtaByTrack.get(trackInfo.track || track) ?? null,
-      }));
-  }, [game, selectedCategory]);
+  const { showRta, showRecent } = useVisibleTables();
 
   const sortedRows = useMemo(() => {
-    const sorted = [...rows].sort((a, b) => {
+    const sorted = [...currentRecords].sort((a, b) => {
       let aVal: string | number = "";
       let bVal: string | number = "";
 
@@ -375,8 +286,8 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory, se
           break;
         case "rtaTime":
           if (aHasRta !== bHasRta) return aHasRta ? -1 : 1;
-          aVal = parseClockValue(a.rta?.record || "");
-          bVal = parseClockValue(b.rta?.record || "");
+          aVal = a.rta?.timeMs || 0;
+          bVal = b.rta?.timeMs || 0;
           break;
       }
 
@@ -389,7 +300,7 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory, se
     });
 
     return sorted;
-  }, [rows, sortField, sortOrder]);
+  }, [currentRecords, sortField, sortOrder]);
 
   const filteredRows = useMemo(() => {
     return sortedRows.filter((row) => {
@@ -505,71 +416,66 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory, se
               </th>
 
               {showRta && (
-                    <>
-                      <th className="pl-6 border-l border-slate-800">
+                <>
+                  <th className="pl-6 border-l border-slate-800">
 
-                      </th>
-                      <th className="border-l border-slate-800"></th>
-                      <th 
-                        onClick={() => handleSort("rtaTime")}
-                        className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <span>RTA</span>
-                          <SortIndicator field="rtaTime" />
-                        </div>
-                      </th>
-                      <th className="border-l border-slate-800"></th>
-                      <th 
-                        onClick={() => handleSort("rtaPlayer")}
-                        className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <span>Player</span>
-                          <SortIndicator field="rtaPlayer" />
-                        </div>
-                      </th>
-                      <th className="border-l border-slate-800"></th>
-                      <th 
-                        onClick={() => handleSort("rtaDate")}
-                        className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <span>Date</span>
-                          <SortIndicator field="rtaDate" />
-                        </div>
-                      </th>
-                      <th className="border-l border-slate-800"></th>
-                      <th className="px-2 py-1.5 w-[80px] font-normal uppercase tracking-[0.18em]">
-                        Links
-                      </th>
-                    </>
-                  )}
+                  </th>
+                  <th className="border-l border-slate-800"></th>
+                  <th 
+                    onClick={() => handleSort("rtaTime")}
+                    className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>RTA</span>
+                      <SortIndicator field="rtaTime" />
+                    </div>
+                  </th>
+                  <th className="border-l border-slate-800"></th>
+                  <th 
+                    onClick={() => handleSort("rtaPlayer")}
+                    className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Player</span>
+                      <SortIndicator field="rtaPlayer" />
+                    </div>
+                  </th>
+                  <th className="border-l border-slate-800"></th>
+                  <th 
+                    onClick={() => handleSort("rtaDate")}
+                    className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Date</span>
+                      <SortIndicator field="rtaDate" />
+                    </div>
+                  </th>
+                  <th className="border-l border-slate-800"></th>
+                  <th className="px-2 py-1.5 w-[80px] font-normal uppercase tracking-[0.18em]">
+                    Links
+                  </th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody className="font-sans divide-y divide-slate-800">
-            {filteredRows.map((row) => {
+            {filteredRows.map((row, i) => {
               const entry = row.tas;
-              const recent = entry ? isRecentEntry(entry.date) : false;
+              const recent = entry ? isRecentEntry(entry.date, showRecent) : false;
               const tmxLink = getTmxLink(row.trackInfo);
-              const baseTint = getTrackDifficultyTint(row.trackInfo.category);
-              const rowStyle = recent
-                ? {
-                    backgroundColor: "rgba(56, 191, 248, 0.29)",
-                    color: "#e0f2fe",
-                    boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.24)",
-                  }
-                : baseTint
-                ? { backgroundColor: baseTint }
-                : undefined;
+              const colour = getTrackDifficultyTint(row.trackInfo.category, i)
 
               return (
                 <tr
                   key={row.track}
-                  className={`border-b border-slate-800 last:border-b-0 transition h-[30px] ${
-                    recent ? "italic" : "hover:bg-slate-900/50"
-                  }`}
-                  style={rowStyle}
+                  className={`
+                    border-b border-slate-800 last:border-b-0 h-[30px]
+                    transition-colors hover:bg-emerald-400/20
+                    ${recent ? "italic bg-sky-400/20 text-sky-100" : colour} 
+                  `}
+                  style={
+                    recent ? { boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.24)" } : undefined
+                  }
                 >
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
                     { getEnvironmentSymbol(row.trackInfo.environment) }
@@ -590,7 +496,7 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory, se
                   </td>
                   <td className="border-l border-slate-800"></td>
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
-                    {entry ? formatClockValue(entry.record) : "-"}
+                    {entry ? formatTime(entry.timeMs) : "-"}
                   </td>
                   <td
                     className={`px-1.5 py-1 text-center italic font-bold align-middle ${
@@ -600,7 +506,7 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory, se
                     }`}
                   >
                     {entry && row.rta
-                      ? formatTimeDifference(entry.timeMs - row.rta.timeMs)
+                      ? formatTime(entry.timeMs - row.rta.timeMs, true)
                       : "-"}
                   </td>
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
@@ -628,7 +534,7 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory, se
                       <td className="pl-6 border-l border-slate-800"></td>
                       <td className="border-l border-slate-800"></td>
                       <td className="px-2 py-1 text-slate-100 text-center align-middle">
-                        {row.rta ? formatClockValue(row.rta.record) : "-"}
+                        {row.rta ? formatTime(row.rta.timeMs) : "-"}
                       </td>
                       <td className="border-l border-slate-800"></td>
                       <td className="px-2 py-1 text-slate-100 text-center align-middle">

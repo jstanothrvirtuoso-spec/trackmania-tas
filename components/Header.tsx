@@ -9,7 +9,7 @@ import { useVisibleTables } from "../lib/VisibleTablesContext";
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { showRta, showTimeSaved, setShowRta, setShowTimeSaved } = useVisibleTables();
+  const { showRta, showTimeSaved, showRecent, showLeaderboard, setShowRta, setShowTimeSaved, setShowRecent, setShowLeaderboard } = useVisibleTables();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const currentGame = pathname.split("/").filter(Boolean)[0];
@@ -59,15 +59,15 @@ export default function Header() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none flex items-center gap-2"
+                className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none flex items-center gap-2 transition hover:bg-slate-700 hover:text-white"
               >
-                Tables
+                Options
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               {isDropdownOpen && (
-                <div className="absolute top-full mt-1 w-48 bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50">
+                <div className="absolute top-full mt-1 text-nowrap bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50">
                   <div className="p-2">
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
                       <input
@@ -86,6 +86,24 @@ export default function Header() {
                         className="rounded"
                       />
                       Time Saved
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={showLeaderboard}
+                        onChange={(e) => setShowLeaderboard(e.target.checked)}
+                        className="rounded"
+                      />
+                      Leaderboard
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={showRecent}
+                        onChange={(e) => setShowRecent(e.target.checked)}
+                        className="rounded"
+                      />
+                      Highlight Recent
                     </label>
                   </div>
                 </div>
