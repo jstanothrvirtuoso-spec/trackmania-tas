@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { categories, Category, Game, trackList, gameSets } from "../../lib/TrackLists";
+import { categories, Category, Game, trackList, gameSets, Environment } from "../../lib/TrackLists";
 import { TasRecords, TasEntry } from "../../lib/TasRecords";
 import { RtaRecords, RtaEntry } from "../../lib/RtaRecords";
 import { useVisibleTables } from "../../lib/VisibleTablesContext";
@@ -79,6 +79,20 @@ function getTrackDifficultyTint(category?: string) {
   }
 }
 
+function getEnvironmentSymbol(env: string) {
+  const key = env.toLowerCase().replace(/\s+/g, "-")
+
+  return (
+    <div className="w-6 h-5 flex items-center justify-center">
+      <img
+        src={`/environments/${key}.webp`}
+        alt={env}
+        className="w-5 h-5"
+      />
+    </div>
+  )
+}
+
 function formatPercentSaved(timeMs: number, rtaMs: number) {
   const percent = ((timeMs - rtaMs) / rtaMs) * 100;
 
@@ -100,82 +114,106 @@ function formatPercentSaved(timeMs: number, rtaMs: number) {
 
 function renderLinks(links: { video: string; replay: string; inputs: string }) {
   return (
-    <div className="flex justify-center gap-2">
-      <a
-        href={links.video}
-        target="_blank"
-        rel="noreferrer"
-        title="Watch video"
-        className="text-red-500 hover:text-red-400 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-        </svg>
-      </a>
-      <a
-        href={links.replay}
-        target="_blank"
-        rel="noreferrer"
-        title="Download replay"
-        className="text-emerald-400 hover:text-emerald-300 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
-      </a>
-      <a
-        href={links.inputs}
-        target="_blank"
-        rel="noreferrer"
-        title="Show inputs"
-        className="text-violet-400 hover:text-violet-300 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-8-6z" />
-        </svg>
-      </a>
-      <a
-        href={get3dGbxUrl(links.replay)}
-        target="_blank"
-        rel="noreferrer"
-        title="Open 3D GBX tools"
-        className="text-orange-400 hover:text-orange-300 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3zM5 5h5V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-5h-2v5H5V5z" />
-        </svg>
-      </a>
+    <div className="flex items-center justify-center gap-1">
+      <div className="w-5 h-5 flex items-center justify-center">
+        {links.video && (
+          <a
+            href={links.video}
+            target="_blank"
+            rel="noreferrer"
+            title="Watch video"
+            className="hover:opacity-80 transition"
+          >
+            <img src="/links/youtube.webp" alt="YouTube" className="w-4 h-4" />
+          </a>
+        )}
+      </div>
+
+      <div className="w-5 h-5 flex items-center justify-center">
+        {links.replay && (
+          <a
+            href={links.replay}
+            target="_blank"
+            rel="noreferrer"
+            title="Download replay"
+            className="hover:opacity-80 transition"
+          >
+            <img src="/links/replay.webp" alt="Replay" className="w-3.5 h-3.5" />
+          </a>
+        )}
+      </div>
+
+      <div className="w-5 h-5 flex items-center justify-center">
+        {links.inputs && (
+          <a
+            href={links.inputs}
+            target="_blank"
+            rel="noreferrer"
+            title="Show inputs"
+            className="hover:opacity-80 transition"
+          >
+            <img src="/links/pastebin.webp" alt="Inputs" className="w-3.5 h-3.5" />
+          </a>
+        )}
+      </div>
+
+      <div className="w-5 h-5 flex items-center justify-center">
+        {links.replay && (
+          <a
+            href={get3dGbxUrl(links.replay)}
+            target="_blank"
+            rel="noreferrer"
+            title="Open 3D GBX tools"
+            className="hover:opacity-80 transition"
+          >
+            <img src="/links/3dgbx.webp" alt="3dGbx" className="w-4 h-4" />
+          </a>
+        )}
+      </div>
     </div>
-  );
+  )
 }
 
 function renderRtaLinks(links: { video: string; replay: string }) {
   return (
-    <div className="flex justify-center gap-2">
-      <a
-        href={links.video}
-        target="_blank"
-        rel="noreferrer"
-        title="Watch video"
-        className="text-red-500 hover:text-red-400 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-        </svg>
-      </a>
-      <a
-        href={links.replay}
-        target="_blank"
-        rel="noreferrer"
-        title="Download replay"
-        className="text-emerald-400 hover:text-emerald-300 transition"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-        </svg>
-      </a>
+    <div className="flex items-center justify-center gap-1">
+      <div className="w-5 h-5 flex items-center justify-center">
+        {links.video && (
+          <a
+            href={links.video}
+            target="_blank"
+            rel="noreferrer"
+            title="Watch video"
+            className="hover:opacity-80 transition"
+          >
+            <img src="/links/youtube.webp" alt="YouTube" className="w-4 h-4" />
+          </a>
+        )}
+      </div>
+
+      <div className="w-5 h-5 flex items-center justify-center">
+        {links.replay && (
+          <a
+            href={links.replay}
+            target="_blank"
+            rel="noreferrer"
+            title="Download replay"
+            className="hover:opacity-80 transition"
+          >
+            <img src="/links/replay.webp" alt="Replay" className="w-3.5 h-3.5" />
+          </a>
+        )}
+      </div>
     </div>
   );
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit'
+  }).replace(/ /g, '-')       
 }
 
 function isRecentEntry(dateStr: string) {
@@ -197,18 +235,26 @@ function get3dGbxUrl(url?: string) {
     : "https://3d.gbx.tools";
 }
 
-const getTmxLink = (trackInfo: { id?: number } | null) => {
-  if (!trackInfo?.id) return null;
-  return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
+const getTmxLink = (trackInfo: { id: number; game: Game }) => {
+  if (trackInfo.game === "TMNF" || trackInfo.game === "TMNF No Cut") {
+    return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
+  } else if (trackInfo.game === "TM2") {
+    return `https://tm2.exchange/trackshow/${trackInfo.id}`;
+  } else if (trackInfo.game === "ESWC") {
+    return `https://nations.tm-exchange.com/trackshow/${trackInfo.id}`;
+  } else {
+    return `https://tmuf.exchange/trackshow/${trackInfo.id}`;
+  }
 };
 
 interface RecordTableProps {
   game: Game;
   selectedAuthor: string;
   selectedCategory: Category;
+  selectedEnvironment: Environment;
 }
 
-export default function RecordTable({ game, selectedAuthor, selectedCategory }: RecordTableProps) {
+export default function RecordTable({ game, selectedAuthor, selectedCategory, selectedEnvironment }: RecordTableProps) {
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const { showRta } = useVisibleTables();
@@ -284,10 +330,12 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
       switch (sortField) {
         case "track": {
           const gameSet = gameSets[game] as readonly string[];
-          const aCategoryIndex = gameSet.indexOf(a.trackInfo.category);
-          const bCategoryIndex = gameSet.indexOf(b.trackInfo.category);
-          aVal = `${aCategoryIndex.toString().padStart(2, "0")}-${a.track}`;
-          bVal = `${bCategoryIndex.toString().padStart(2, "0")}-${b.track}`;
+          const aCategoryIndex = gameSet.indexOf(a.trackInfo.category).toString().padStart(2, "0");
+          const bCategoryIndex = gameSet.indexOf(b.trackInfo.category).toString().padStart(2, "0");
+          const aOrder = a.trackInfo.order ? a.trackInfo.order.toString().padStart(2, "0") : a.track;
+          const bOrder = b.trackInfo.order ? b.trackInfo.order.toString().padStart(2, "0") : b.track;
+          aVal = `${aCategoryIndex}-${aOrder}`;
+          bVal = `${bCategoryIndex}-${bOrder}`;
           break;
         }
         case "time":
@@ -344,9 +392,18 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
   }, [rows, sortField, sortOrder]);
 
   const filteredRows = useMemo(() => {
-    if (!selectedAuthor) return sortedRows;
-    return sortedRows.filter((row) => row.tas?.authors.includes(selectedAuthor));
-  }, [sortedRows, selectedAuthor]);
+    return sortedRows.filter((row) => {
+      const matchesAuthor =
+        !selectedAuthor ||
+        row.tas?.authors.includes(selectedAuthor)
+
+      const matchesEnvironment =
+        selectedEnvironment === "All" ||
+        row.trackInfo.environment === selectedEnvironment
+
+      return matchesEnvironment && matchesAuthor;
+    })
+  }, [sortedRows, selectedAuthor, selectedEnvironment]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -359,59 +416,85 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
 
   const SortIndicator = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
-    return sortOrder === "asc" ? " ↑" : " ↓";
+
+    return (
+      <span className="inline-flex items-center justify-center w-4 h-4 -ml-1.5">
+        {sortOrder === "asc" ? (
+          <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
+            <path d="M10 6l-5 5h10l-5-5z" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
+            <path d="M10 14l5-5H5l5 5z" />
+          </svg>
+        )}
+      </span>
+    );
   };
 
   return (
     <div className="px-4 pb-4">
       <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/90">
-          <table className="table-auto w-full divide-y divide-slate-800 text-center text-sm">
+          <table className="table-auto w-full divide-y divide-slate-500 text-center text-sm">
             <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th
+                colSpan={2}
                 onClick={() => handleSort("track")}
-                className="px-2 py-1.5 min-w-[100px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                Track
-                <SortIndicator field="track" />
+                <div className="flex items-center justify-center gap-1">
+                  <span>Track</span>
+                  <SortIndicator field="track" />
+                </div>
               </th>
               <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("time")}
                 className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                Time
-                <SortIndicator field="time" />
+                <div className="flex items-center justify-center gap-1">
+                  <span>Time</span>
+                  <SortIndicator field="time" />
+                </div>
               </th>
               <th
                 onClick={() => handleSort("diff")}
                 className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                Diff
-                <SortIndicator field="diff" />
+                <div className="flex items-center justify-center gap-1">
+                  <span>Diff</span>
+                  <SortIndicator field="diff" />
+                </div>
               </th>
               <th
                 onClick={() => handleSort("percentSaved")}
                 className="px-2 py-1.5 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                %
-                <SortIndicator field="percentSaved" />
+                <div className="flex items-center justify-center gap-1">
+                  <span>%</span>
+                  <SortIndicator field="percentSaved" />
+                </div>
               </th>
               <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("authors")}
                 className="px-2 py-1.5 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
               >
-                Author(s)
-                <SortIndicator field="authors" />
+                <div className="flex items-center justify-center gap-1">
+                  <span>Authors</span>
+                  <SortIndicator field="authors" />
+                </div>
               </th>
               <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("date")}
                 className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                Date
-                <SortIndicator field="date" />
+                <div className="flex items-center justify-center gap-1">
+                  <span>Date</span>
+                  <SortIndicator field="date" />
+                </div>
               </th>
               <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
                 Cat.
@@ -426,27 +509,37 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
                       <th className="pl-6 border-l border-slate-800">
 
                       </th>
+                      <th className="border-l border-slate-800"></th>
                       <th 
                         onClick={() => handleSort("rtaTime")}
                         className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                       >
-                        RTA
-                        <SortIndicator field="rtaTime" />
+                        <div className="flex items-center justify-center gap-1">
+                          <span>RTA</span>
+                          <SortIndicator field="rtaTime" />
+                        </div>
                       </th>
+                      <th className="border-l border-slate-800"></th>
                       <th 
                         onClick={() => handleSort("rtaPlayer")}
                         className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                       >
-                        Player
-                        <SortIndicator field="rtaPlayer" />
+                        <div className="flex items-center justify-center gap-1">
+                          <span>Player</span>
+                          <SortIndicator field="rtaPlayer" />
+                        </div>
                       </th>
+                      <th className="border-l border-slate-800"></th>
                       <th 
                         onClick={() => handleSort("rtaDate")}
                         className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                       >
-                        Date
-                        <SortIndicator field="rtaDate" />
+                        <div className="flex items-center justify-center gap-1">
+                          <span>Date</span>
+                          <SortIndicator field="rtaDate" />
+                        </div>
                       </th>
+                      <th className="border-l border-slate-800"></th>
                       <th className="px-2 py-1.5 w-[80px] font-normal uppercase tracking-[0.18em]">
                         Links
                       </th>
@@ -454,7 +547,7 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
                   )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800">
+          <tbody className="font-sans divide-y divide-slate-800">
             {filteredRows.map((row) => {
               const entry = row.tas;
               const recent = entry ? isRecentEntry(entry.date) : false;
@@ -473,11 +566,14 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
               return (
                 <tr
                   key={row.track}
-                  className={`border-b border-slate-800 last:border-b-0 transition h-[32px] ${
+                  className={`border-b border-slate-800 last:border-b-0 transition h-[30px] ${
                     recent ? "italic" : "hover:bg-slate-900/50"
                   }`}
                   style={rowStyle}
                 >
+                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                    { getEnvironmentSymbol(row.trackInfo.environment) }
+                  </td>
                   <td className="px-2.5 py-1 text-slate-100 align-middle w-max whitespace-nowrap">
                     {tmxLink ? (
                       <a
@@ -496,7 +592,13 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
                     {entry ? formatClockValue(entry.record) : "-"}
                   </td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center italic font-bold align-middle">
+                  <td
+                    className={`px-1.5 py-1 text-center italic font-bold align-middle ${
+                      entry && row.rta && entry.timeMs - row.rta.timeMs > 0
+                        ? "text-red-300"
+                        : "text-slate-100"
+                    }`}
+                  >
                     {entry && row.rta
                       ? formatTimeDifference(entry.timeMs - row.rta.timeMs)
                       : "-"}
@@ -512,28 +614,32 @@ export default function RecordTable({ game, selectedAuthor, selectedCategory }: 
                   </td>
                   <td className="border-l border-slate-800"></td>
                   <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">
-                    {entry ? entry.date : "-"}
+                    {entry ? formatDate(entry.date) : "-"}
                   </td>
                   <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">
                     {entry ? entry.category : "-"}
                   </td>
                   <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-1 text-slate-100 text-center align-middle">
+                  <td className="px-2 py-1 text-slate-100 text-center align-middle">
                     {entry ? renderLinks({ video: entry.video, replay: entry.replay, inputs: entry.inputs }) : "-"}
                   </td>
                   {showRta && (
                     <>
                       <td className="pl-6 border-l border-slate-800"></td>
-                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                      <td className="border-l border-slate-800"></td>
+                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
                         {row.rta ? formatClockValue(row.rta.record) : "-"}
                       </td>
-                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                      <td className="border-l border-slate-800"></td>
+                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
                         {row.rta?.player ?? "-"}
                       </td>
-                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
-                        {row.rta?.date ?? "-"}
+                      <td className="border-l border-slate-800"></td>
+                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
+                        {row.rta ? formatDate(row.rta.date) : "-"}
                       </td>
-                      <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                      <td className="border-l border-slate-800"></td>
+                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
                         {row.rta ? renderRtaLinks({ video: row.rta.video, replay: row.rta.replay }) : "-"}
                       </td>
                     </>

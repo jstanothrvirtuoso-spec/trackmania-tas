@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { gameLinks } from "../lib/TrackLists";
 import { useVisibleTables } from "../lib/VisibleTablesContext";
@@ -10,6 +11,8 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { showRta, showTimeSaved, setShowRta, setShowTimeSaved } = useVisibleTables();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const currentGame = pathname.split("/").filter(Boolean)[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -33,15 +36,23 @@ export default function Header() {
               TrackMania TAS
             </Link>
             <nav className="hidden md:flex items-center gap-6">
-              {gameLinks.map((game) => (
-                <Link
-                  key={game.slug}
-                  href={`/${game.slug}`}
-                  className="text-sm font-medium text-slate-300 transition hover:text-white"
-                >
-                  {game.name}
-                </Link>
-              ))}
+              {gameLinks.map((game) => {
+                const isActive = currentGame === game.slug;
+
+                return (
+                  <Link
+                    key={game.slug}
+                    href={`/${game.slug}`}
+                    className={`text-sm font-medium transition ${
+                      isActive
+                        ? "text-white border-b border-white"
+                        : "text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    {game.name}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
           <div className="flex items-center gap-4">
@@ -96,16 +107,23 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden mt-4 border-t border-slate-800 pt-4">
             <nav className="flex flex-col gap-4">
-              {gameLinks.map((game) => (
-                <Link
-                  key={game.slug}
-                  href={`/${game.slug}`}
-                  className="text-sm font-medium text-slate-300 transition hover:text-white"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {game.name}
-                </Link>
-              ))}
+              {gameLinks.map((game) => {
+                const isActive = currentGame === game.slug;
+
+                return (
+                  <Link
+                    key={game.slug}
+                    href={`/${game.slug}`}
+                    className={`text-sm font-medium transition ${
+                      isActive
+                        ? "text-white border-b border-white"
+                        : "text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    {game.name}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
         )}

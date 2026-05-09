@@ -2,20 +2,24 @@
 
 import { useMemo } from "react";
 import { TasRecords } from "../../lib/TasRecords";
-import { categories, Category } from "../../lib/TrackLists";
+import { categories, Category, environment, Environment } from "../../lib/TrackLists";
 
 interface HeaderOptionsProps {
   selectedAuthor: string;
   selectedCategory: Category;
+  selectedEnvironment: Environment;
   onAuthorChange: (author: string) => void;
   onCategoryChange: (category: Category) => void;
+  onEnvironmentChange: (environment: Environment) => void;
 }
 
 export default function HeaderOptions({
   selectedAuthor,
   selectedCategory,
+  selectedEnvironment,
   onAuthorChange,
   onCategoryChange,
+  onEnvironmentChange
 }: HeaderOptionsProps) {
 
   const authorOptions = useMemo(() => {
@@ -53,6 +57,17 @@ export default function HeaderOptions({
         {authorOptions.map(({ author, count }) => (
           <option key={author} value={author}>
             {author} ({count} TAS{count !== 1 ? "es" : ""})
+          </option>
+        ))}
+      </select>
+      <select
+        value={selectedEnvironment}
+        onChange={(e) => onEnvironmentChange(e.target.value as Environment)}
+        className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none"
+      >
+        {environment.map((env) => (
+          <option key={env} value={env}>
+            {env}
           </option>
         ))}
       </select>
