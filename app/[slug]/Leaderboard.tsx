@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { RecordRow } from "@/lib/TrackLists";
 import { useVisibleTables } from "@/lib/VisibleTablesContext";
 import { useMemo, useState } from "react";
@@ -32,7 +33,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
         const override = trackList[row.track]?.overrideTimeSaved;
         if (override != null) {
           timeSaved = override * 1000;
-        } else if (row.rta && row.rta.timeMs > row.tas.timeMs) {
+        } else if (row.rta && row.rta.timeMs > row.tas.timeMs && row.trackInfo.category !== "Stunt") {
           timeSaved = row.rta.timeMs - row.tas.timeMs;
         }
 
@@ -197,7 +198,12 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   "
                 >
                   <td className="px-2 py-[4px] font-medium text-slate-200">
-                    {row.author}
+                    <Link
+                      href={`/authors?author=${encodeURIComponent(row.author)}`}
+                      className="hover:text-white underline-offset-2 hover:underline"
+                    >
+                      {row.author}
+                    </Link>
                   </td>
 
                   <td className="border-l border-slate-800"></td>

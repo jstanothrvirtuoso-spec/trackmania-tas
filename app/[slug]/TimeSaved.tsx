@@ -13,7 +13,13 @@ type CategoryTotals = {
   rtaMs: number;
 };
 
-function formatTime(timeMs: number, showSign: boolean = false): string {
+function formatTime(timeMs: number, isStunt: boolean, showSign: boolean = false): string {
+
+  if (isStunt) {
+    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
+    return `${sign}${timeMs / 1000}`
+  }
+
   const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
   const abs = Math.abs(timeMs);
 
@@ -30,7 +36,7 @@ function formatTime(timeMs: number, showSign: boolean = false): string {
 
 function formatPercentSaved(diffMs: number, rtaMs: number) {
   if (rtaMs <= 0) return "-";
-  return `${((diffMs / rtaMs) * 100).toFixed(2)}%`;
+  return `${((diffMs / rtaMs) * 100).toFixed(2)}`;
 }
 
 export default function TimeSaved({ currentRecords }: { currentRecords: RecordRow[] }) {
@@ -39,6 +45,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
   const categoryTotals = useMemo<CategoryTotals[]>(() => {
     return Object.values(
       currentRecords.reduce((acc, row) => {
+        if (!row.rta) return acc;
         const category = row.trackInfo.category;
 
         if (!acc[category]) {
@@ -48,23 +55,18 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
             rtaMs: 0,
           };
         }
-
-        if (row.tas && row.rta) {
-          acc[category].tasMs += row.tas.timeMs;
-        } else {
-          acc[category].tasMs += row.rta?.timeMs || 0;
-        }
-
-        if (row.rta) {
-          acc[category].rtaMs += row.rta.timeMs;
-        }
+        
+        acc[category].tasMs += row.tas ? row.tas.timeMs : row.rta.timeMs;
+        acc[category].rtaMs += row.rta.timeMs;
 
         return acc;
       }, {} as Record<string, CategoryTotals>)
     );
   }, [currentRecords]);
 
-  const total = categoryTotals.reduce<CategoryTotals>(
+  const total = categoryTotals
+  .filter(category => category.category !== "Stunt")
+  .reduce<CategoryTotals>(
     (acc, curr) => ({
       category: "Total",
       tasMs: acc.tasMs + curr.tasMs,
@@ -135,6 +137,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
             {categoryTotals.map((category) => {
               const hasRta = category.rtaMs > 0;
               const diffMs = category.rtaMs - category.tasMs;
+              const isStunt = category.category === "Stunt";
 
               return (
                 <tr
@@ -150,16 +153,16 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
                   <td className="border-l border-slate-800"></td>
                   <td className="px-3 py-[4px]">
-                    {formatTime(category.tasMs)}
+                    {formatTime(category.tasMs, isStunt)}
                   </td>
 
                   <td className="px-3 py-[4px]">
-                    {hasRta ? formatTime(category.rtaMs) : "-"}
+                    {hasRta ? formatTime(category.rtaMs, isStunt) : "-"}
                   </td>
 
                   <td className="border-l border-slate-800"></td>
                   <td className="px-3 py-[4px] italic">
-                    {hasRta ? formatTime(category.tasMs - category.rtaMs, true) : "-"}
+                    {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, true) : "-"}
                   </td>
 
                   <td className="px-3 py-[4px]">
@@ -179,19 +182,19 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
               <td className="border-l border-slate-800"></td>
               <td className="px-2 py-[4px]">
-                {formatTime(total.tasMs)}
+                {formatTime(total.tasMs, false)}
               </td>
 
               <td className="px-2 py-[4px]">
                 {total.rtaMs > 0
-                  ? formatTime(total.rtaMs)
+                  ? formatTime(total.rtaMs, false)
                   : "-"}
               </td>
 
               <td className="border-l border-slate-800"></td>
               <td className="px-2 py-[4px] italic">
                 {total.rtaMs > 0
-                  ? formatTime(total.tasMs - total.rtaMs, true)
+                  ? formatTime(total.tasMs - total.rtaMs, false, true)
                   : "-"}
               </td>
 

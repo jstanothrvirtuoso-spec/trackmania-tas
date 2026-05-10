@@ -47,15 +47,12 @@ export default function HeaderOptions({
 
   const environmentOptions = useMemo(() => {
     const set = new Set<Environment>();
-
     currentRecords.forEach((row) => {
       if (row.trackInfo?.environment) {
         set.add(row.trackInfo.environment);
       }
     });
-
     const ordered = environment.filter((env) => set.has(env));
-
     return ordered.length > 1 ? ["All", ...ordered] : ordered;
   }, [currentRecords]);
 
@@ -94,7 +91,7 @@ export default function HeaderOptions({
           onChange={(e) => onEnvironmentChange(e.target.value as Environment)}
           className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
         >
-          {environment.map((env) => (
+          {environmentOptions.map((env) => (
             <option key={env} value={env}>
               {env}
             </option>

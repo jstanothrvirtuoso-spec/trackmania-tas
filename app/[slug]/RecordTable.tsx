@@ -7,10 +7,15 @@ import { useVisibleTables } from "../../lib/VisibleTablesContext";
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
 
-function formatTime(timeMs: number, showSign: boolean = false): string {
+function formatTime(timeMs: number, isStunt: boolean, showSign: boolean = false): string {
+
+  if (isStunt) {
+    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
+    return `${sign}${timeMs / 1000}`
+  }
+
   const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
   const abs = Math.abs(timeMs);
-
   const minutes = Math.floor(abs / 60000);
   const seconds = Math.floor((abs % 60000) / 1000);
   const centiseconds = Math.floor((abs % 1000) / 10);
@@ -28,9 +33,9 @@ function formatTime(timeMs: number, showSign: boolean = false): string {
     .padStart(2, "0")}`;
 }
 
-function formatPercentSaved(timeMs: number, rtaMs: number) {
-  const percent = ((timeMs - rtaMs) / rtaMs) * 100;
+function formatPercentSaved(timeMs: number, rtaMs: number, isStunt: boolean) {
 
+  const percent = ((timeMs - rtaMs) / rtaMs) * (isStunt ? -100 : 100);
   let str = Number(percent).toPrecision(3);
 
   const isNegative = str.startsWith("-");
@@ -44,7 +49,12 @@ function formatPercentSaved(timeMs: number, rtaMs: number) {
     }
   }
 
-  return `${percent <= 0 ? "" : "+"}${str}`;
+  if (isStunt) {
+    return `${percent <= 0 ? "" : "-"}${str}`;
+  } else {
+    return `${percent <= 0 ? "" : "+"}${str}`;
+  }
+  
 }
 
 function formatDate(dateStr: string) {
@@ -98,7 +108,12 @@ function renderLinks(links: { video: string; replay: string; inputs: string }) {
             title="Watch video"
             className="hover:opacity-80 transition"
           >
-            <img src="/links/youtube.webp" alt="YouTube" className="w-4 h-4" />
+            { links.video.includes("discord.") 
+              ? <img src="/links/discord.webp" alt="Replay" className="w-4 h-4" />
+              : links.video.includes("streamable.com")
+                ? <img src="/links/streamable.webp" alt="Replay" className="w-4.5" />
+                : <img src="/links/youtube.webp" alt="Replay" className="w-4 h-4" />
+            }
           </a>
         )}
       </div>
@@ -112,7 +127,10 @@ function renderLinks(links: { video: string; replay: string; inputs: string }) {
             title="Download replay"
             className="hover:opacity-80 transition"
           >
-            <img src="/links/replay.webp" alt="Replay" className="w-3.5 h-3.5" />
+            { links.replay.includes("discord.") 
+              ? <img src="/links/discord.webp" alt="Replay" className="w-auto h-4" />
+              : <img src="/links/replay.webp" alt="Replay" className="w-3.5 h-3.5" />
+            }
           </a>
         )}
       </div>
@@ -140,7 +158,7 @@ function renderLinks(links: { video: string; replay: string; inputs: string }) {
             title="Open 3D GBX tools"
             className="hover:opacity-80 transition"
           >
-            <img src="/links/3dgbx.webp" alt="3dGbx" className="w-4 h-4" />
+            <img src="/links/3dgbx.webp" alt="3dGbx" className="w-4.5" />
           </a>
         )}
       </div>
@@ -208,7 +226,7 @@ const getTmxLink = (trackInfo: { id: number; game: Game }) => {
   if (trackInfo.game === "TMNF" || trackInfo.game === "TMNF No Cut") {
     return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
   } else if (trackInfo.game === "TM2") {
-    return `https://tm2.exchange/trackshow/${trackInfo.id}`;
+    return `https://tm.mania.exchange/mapshow/${trackInfo.id}`;
   } else if (trackInfo.game === "ESWC") {
     return `https://nations.tm-exchange.com/trackshow/${trackInfo.id}`;
   } else {
@@ -464,6 +482,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               const recent = entry ? isRecentEntry(entry.date, showRecent) : false;
               const tmxLink = getTmxLink(row.trackInfo);
               const colour = getTrackDifficultyTint(row.trackInfo.category, i)
+              const isStunt = row.trackInfo.category === "Stunt"
 
               return (
                 <tr
@@ -496,22 +515,22 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                   </td>
                   <td className="border-l border-slate-800"></td>
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
-                    {entry ? formatTime(entry.timeMs) : "-"}
+                    {entry ? formatTime(entry.timeMs, isStunt) : "-"}
                   </td>
                   <td
                     className={`px-1.5 py-1 text-center italic font-bold align-middle ${
-                      entry && row.rta && entry.timeMs - row.rta.timeMs > 0
+                      entry && row.rta && ((entry.timeMs - row.rta.timeMs > 0 && !isStunt) || (entry.timeMs - row.rta.timeMs < 0 && isStunt))
                         ? "text-red-300"
                         : "text-slate-100"
                     }`}
                   >
                     {entry && row.rta
-                      ? formatTime(entry.timeMs - row.rta.timeMs, true)
+                      ? formatTime(entry.timeMs - row.rta.timeMs, isStunt, true)
                       : "-"}
                   </td>
                   <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
                     {entry && row.rta
-                      ? formatPercentSaved(entry.timeMs, row.rta.timeMs)
+                      ? formatPercentSaved(entry.timeMs, row.rta.timeMs, isStunt)
                       : "-"}
                   </td>
                   <td className="border-l border-slate-800"></td>
@@ -534,7 +553,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                       <td className="pl-6 border-l border-slate-800"></td>
                       <td className="border-l border-slate-800"></td>
                       <td className="px-2 py-1 text-slate-100 text-center align-middle">
-                        {row.rta ? formatTime(row.rta.timeMs) : "-"}
+                        {row.rta ? formatTime(row.rta.timeMs, row.trackInfo.category === "Stunt") : "-"}
                       </td>
                       <td className="border-l border-slate-800"></td>
                       <td className="px-2 py-1 text-slate-100 text-center align-middle">

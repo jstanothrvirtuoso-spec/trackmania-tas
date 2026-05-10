@@ -1,3 +1,30 @@
+//////////////////////////////////////////////////////////////////////////
+// Website for TrackMania Tool-Assisted Speedruns on Nadeo Tracks
+//////////////////////////////////////////////////////////////////////////
+
+// Add page for individual track with all tas runs
+// Add page for individual authors
+// Need to remember user settings (options/categories)
+// Expand home page:
+//  - Medal table
+//  - Game completion table
+//  - Header for introduction
+//  - Time saved leaderboards (open and non-noseboost/uber)
+//  - Current projects? (like TMUF perfection project)
+// Continue working on submit page
+//  - Read track, inputs, and record/time from replay file
+//  - Add registered author list for auto complete
+//  - Submit button, where do requests go?
+// Game tables:
+//  - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
+//  - Add separation between certain categories
+//  - Separate RTA table visually from TAS table
+//  - Recent TAS highlighting should be separate from recent RTA highlighting
+//  - Fix stunt tracks
+// Continue adding RTA records (TMS/TMO/Demo/TM2)
+// Continue adding tracks (TM2, new tracks in Demo/Beta, and StuntRace everywhere)
+// Add database connection (table for TAS and RTA records)
+
 "use client";
 
 import { TasRecords } from "@/lib/TasRecords";
