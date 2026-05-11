@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { RecordRow } from "@/lib/TrackLists";
-import { useVisibleTables } from "@/lib/VisibleTablesContext";
 import { useMemo, useState } from "react";
 import { trackList } from "../../lib/TrackLists"
 
@@ -16,8 +15,7 @@ type LeaderboardRows = {
 };
 
 export default function TimeSaved({ currentRecords }: { currentRecords: RecordRow[] }) {
-  const { showLeaderboard } = useVisibleTables();
-
+  
   const [sortField, setSortField] = useState<SortField>("tases");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
@@ -131,10 +129,8 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
     );
   };
 
-  if (!showLeaderboard) return null;
-  
   return (
-    <aside className="px-4 pb-4">
+    <aside className="pl-5 pb-4">
       <div className="rounded-lg border border-slate-800 text-sm">
         <table className="table-fixed text-center divide-y text-sm">
           <thead className="bg-slate-900/90 text-slate-400">
@@ -142,7 +138,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
               <th
                 onClick={() => handleSort("author")}
-                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Author</span>
@@ -150,21 +146,19 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                 </div>
               </th>
 
-              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("tases")}
-                className="px-2 py-1.5 font-normal tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 border-l border-slate-800 font-normal tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
-                <div className="flex items-center justify-center gap-1">
-                  <span>TASes</span>
+                <div className="flex items-center uppercase justify-center gap-1">
+                  <span>TAS</span>
                   <SortIndicator field="tases" />
                 </div>
               </th>
 
-              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("contributions")}
-                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Cont.</span>
@@ -172,10 +166,9 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                 </div>
               </th>
 
-              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("timeSaved")}
-                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Saved</span>
@@ -206,18 +199,15 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                     </Link>
                   </td>
 
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-[4px]">
+                  <td className="px-3 py-[4px] border-l border-slate-800">
                     {row.tasCount}
                   </td>
 
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-[4px]">
+                  <td className="px-3 py-[4px] border-l border-slate-800">
                     {row.contributions.toFixed(2)}
                   </td>
 
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-[4px]">
+                  <td className="px-3 py-[4px] border-l border-slate-800">
                     {(row.timeSavedMs / 1000).toFixed(2)}
                   </td>
                 </tr>

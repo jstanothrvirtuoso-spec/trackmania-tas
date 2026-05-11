@@ -363,7 +363,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
   };
 
   return (
-    <div className="px-4 pb-4">
+    <div className="pb-4">
       <div className="overflow-x-auto">
         <table className="table-auto w-full text-center text-sm border-separate border-spacing-0">
           <thead className="text-slate-400">
@@ -371,7 +371,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               <th
                 colSpan={2}
                 onClick={() => handleSort("track")}
-                className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tl-lg tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tl-lg tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Track</span>
@@ -380,7 +380,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               </th>
               <th
                 onClick={() => handleSort("time")}
-                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Time</span>
@@ -389,7 +389,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               </th>
               <th
                 onClick={() => handleSort("diff")}
-                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Diff</span>
@@ -398,7 +398,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               </th>
               <th
                 onClick={() => handleSort("percentSaved")}
-                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>%</span>
@@ -407,7 +407,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               </th>
               <th
                 onClick={() => handleSort("authors")}
-                className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-1 bg-slate-900/90 border border-slate-800 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Authors</span>
@@ -416,26 +416,26 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               </th>
               <th
                 onClick={() => handleSort("date")}
-                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Date</span>
                   <SortIndicator field="date" />
                 </div>
               </th>
-              <th className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em]">
+              <th className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em]">
                 Cat.
               </th>
-              <th className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tr-lg tracking-[0.18em]">
+              <th className="px-2 py-1 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tr-lg tracking-[0.18em]">
                 Links
               </th>
 
               {showRta && (
                 <>
-                  <th className="pl-6 bg-transparent"></th>
+                  <th className="pl-5"></th>
                   <th 
                     onClick={() => handleSort("rtaTime")}
-                    className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tl-lg tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                    className="px-2 py-1 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tl-lg tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>RTA</span>
@@ -444,7 +444,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                   </th>
                   <th 
                     onClick={() => handleSort("rtaPlayer")}
-                    className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                    className="px-2 py-1 bg-slate-900/90 border border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>Player</span>
@@ -453,14 +453,14 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                   </th>
                   <th 
                     onClick={() => handleSort("rtaDate")}
-                    className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                    className="px-2 py-1 bg-slate-900/90 border border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>Date</span>
                       <SortIndicator field="rtaDate" />
                     </div>
                   </th>
-                  <th className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 w-[80px] font-normal uppercase rounded-tr-lg tracking-[0.18em]">
+                  <th className="px-2 py-1 bg-slate-900/90 border border-slate-800 w-[80px] font-normal uppercase rounded-tr-lg tracking-[0.18em]">
                     Links
                   </th>
                 </>
@@ -558,7 +558,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                   </td>
                   {showRta && (
                     <>
-                      <td className="pl-6"></td>
+                      <td className="pl-5"></td>
                       <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${rtaColour} ${
                             i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
                           }`}>

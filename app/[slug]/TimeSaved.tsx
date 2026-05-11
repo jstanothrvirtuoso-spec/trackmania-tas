@@ -2,9 +2,6 @@
 
 import { useMemo } from "react";
 import { Game, RecordRow } from "../../lib/TrackLists";
-import { TasRecords } from "../../lib/TasRecords";
-import { RtaRecords } from "../../lib/RtaRecords";
-import { useVisibleTables } from "../../lib/VisibleTablesContext";
 
 type CategoryTotals = {
   category: string;
@@ -38,7 +35,6 @@ function formatPercentSaved(diffMs: number, rtaMs: number) {
 }
 
 export default function TimeSaved({ currentRecords }: { currentRecords: RecordRow[] }) {
-  const { showTimeSaved } = useVisibleTables();
 
   const categoryTotals = useMemo<CategoryTotals[]>(() => {
     return Object.values(
@@ -77,55 +73,49 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
     }
   );
 
-  if (!showTimeSaved) return null;
-
   return (
-    <aside className="px-4 pb-4">
+    <aside className="pl-5 pb-4">
       <div className="rounded-lg border border-slate-800 bg-slate-950/90 text-sm">
         <table className="table-fixed text-center divide-y text-sm">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th
                 rowSpan={2}
-                className="px-2 py-2 align-middle font-normal uppercase tracking-[0.18em] text-center"
+                className="px-4 py-1 align-middle font-normal uppercase tracking-[0.18em] text-center"
               >
                   <div>Nadeo</div>
                   <div>Set</div>
               </th>
 
-              <th className="border-l border-slate-800"></th>
               <th
                 colSpan={2}
-                className="px-2 py-2 border-b border-slate-800 align-middle font-normal uppercase tracking-[0.18em]"
+                className="px-8 py-1 border-b border-l border-slate-800 align-middle font-normal uppercase tracking-[0.18em]"
               >
                 Total Time
               </th>
 
-              <th className="border-l border-slate-800"></th>
               <th
                 colSpan={2}
-                className="px-2 py-2 border-b border-slate-800 align-middle font-normal uppercase tracking-[0.18em]"
+                className="px-8 py-1 border-b border-l border-slate-800 align-middle font-normal uppercase tracking-[0.18em]"
               >
                 Time Saved
               </th>
             </tr>
 
             <tr>
-              <th className="border-l border-slate-800"></th>
-              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
+              <th className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em]">
                 TAS
               </th>
 
-              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
+              <th className="px-2 py-1 font-normal uppercase tracking-[0.18em]">
                 RTA
               </th>
 
-              <th className="border-l border-slate-800"></th>
-              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
+              <th className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em]">
                 Diff
               </th>
 
-              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
+              <th className="px-2 py-1 font-normal uppercase tracking-[0.18em]">
                 %
               </th>
             </tr>
@@ -149,8 +139,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                     {category.category}
                   </td>
 
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-[4px] text-slate-300">
+                  <td className="px-3 py-[4px] border-l border-slate-800 text-slate-300">
                     {formatTime(category.tasMs, isStunt)}
                   </td>
 
@@ -158,12 +147,11 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                     {hasRta ? formatTime(category.rtaMs, isStunt) : "-"}
                   </td>
 
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-[4px] italic">
+                  <td className="px-3 py-[4px] border-l border-slate-800 italic">
                     {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, true) : "-"}
                   </td>
 
-                  <td className="px-3 py-[4px]">
+                  <td className="px-3 py-[4px] font-bold">
                     {hasRta
                       ? formatPercentSaved(diffMs, category.rtaMs)
                       : "-"}
@@ -178,8 +166,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
             ">
               <td className="px-2 py-[4px]">Total</td>
 
-              <td className="border-l border-slate-800"></td>
-              <td className="px-2 py-[4px] text-slate-300">
+              <td className="px-2 py-[4px] border-l border-slate-800 text-slate-300">
                 {formatTime(total.tasMs, false)}
               </td>
 
@@ -189,8 +176,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   : "-"}
               </td>
 
-              <td className="border-l border-slate-800"></td>
-              <td className="px-2 py-[4px] italic">
+              <td className="px-2 py-[4px] border-l border-slate-800 italic">
                 {total.rtaMs > 0
                   ? formatTime(total.tasMs - total.rtaMs, false, true)
                   : "-"}

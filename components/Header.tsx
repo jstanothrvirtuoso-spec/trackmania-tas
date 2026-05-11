@@ -9,7 +9,10 @@ import { useVisibleTables } from "../lib/VisibleTablesContext";
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { showRta, showTimeSaved, showRecent, showLeaderboard, setShowRta, setShowTimeSaved, setShowRecent, setShowLeaderboard } = useVisibleTables();
+  const { 
+    showRta, showTimeSaved, showRecent, showLeaderboard, showRtaLeaderboard, 
+    setShowRta, setShowTimeSaved, setShowRecent, setShowLeaderboard, setShowRtaLeaderboard 
+  } = useVisibleTables();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const currentPage = pathname.split("/").filter(Boolean)[0];
@@ -123,6 +126,15 @@ export default function Header() {
                         className="rounded"
                       />
                       Leaderboard
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={showRtaLeaderboard}
+                        onChange={(e) => setShowRtaLeaderboard(e.target.checked)}
+                        className="rounded"
+                      />
+                      RTA Leaderboard
                     </label>
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
                       <input

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { TasRecords } from "@/lib/TasRecords";
 import { RtaRecords } from "@/lib/RtaRecords";
-import { trackList, TasEntry, RtaEntry } from "@/lib/TrackLists";
+import { trackList, TasEntry, RtaEntry, gameList, environment } from "@/lib/TrackLists";
 
 type RecordRow = {
   track: string;
@@ -81,6 +81,140 @@ function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
   );
 }
 
+function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
+
+  const gameCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    rows.forEach((row) => {
+      if (!row.tas) return;
+
+      const game = row.tas.game;
+
+      counts.set(game, (counts.get(game) || 0) + 1);
+    });
+
+    return gameList
+      .map((game) => [
+        game,
+        counts.get(game) || 0,
+      ] as const)
+      .filter(([, count]) => count > 0);;
+  }, [rows]);
+
+  const maxCount = Math.max(
+    ...gameCounts.map(([, c]) => c),
+    1
+  );
+
+  return (
+    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+        TASes per Game
+      </h2>
+
+      <div className="flex items-end gap-2 h-40">
+        {gameCounts.map(([game, count]) => {
+          const height = (count / maxCount) * 120;
+
+          return (
+            <div
+              key={game}
+              className="flex flex-col items-center gap-1"
+            >
+              <div className="text-xs text-slate-400">
+                {count}
+              </div>
+
+              <div
+                className="w-10 rounded-t bg-cyan-400/70 hover:bg-cyan-300 transition"
+                style={{
+                  height: `${height}px`,
+                  minHeight: "3px",
+                }}
+                title={`${game}: ${count}`}
+              />
+
+              <div className="text-xs text-slate-500">
+                {game}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
+
+  const environmentCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    rows.forEach((row) => {
+      const env = row.trackInfo?.environment;
+
+      if (!env || env === "All") {
+        console.log(row.track, env)
+        return
+      };
+
+      counts.set(env, (counts.get(env) || 0) + 1);
+    });
+
+    return environment
+      .filter((env) => env !== "All")
+      .map((env) => [
+        env,
+        counts.get(env) || 0,
+      ] as const)
+      .filter(([, count]) => count > 0);
+  }, [rows]);
+
+  const maxCount = Math.max(
+    ...environmentCounts.map(([, c]) => c),
+    1
+  );
+
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+        TASes per Environment
+      </h2>
+
+      <div className="flex h-40 items-end gap-2">
+        {environmentCounts.map(([env, count]) => {
+          const height = (count / maxCount) * 120;
+
+          return (
+            <div
+              key={env}
+              className="flex flex-col items-center gap-1"
+            >
+              <div className="text-xs text-slate-400">
+                {count}
+              </div>
+
+              <div
+                className="w-10 rounded-t bg-emerald-400/70 transition hover:bg-emerald-300"
+                style={{
+                  height: `${height}px`,
+                  minHeight: "3px",
+                }}
+                title={`${env}: ${count}`}
+              />
+
+              <div className="text-xs text-slate-500">
+                {env}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function AuthorsPage() {
 
   const searchParams = useSearchParams();
@@ -148,7 +282,7 @@ export default function AuthorsPage() {
   }, [selectedAuthor]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 text-slate-100">
+    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
       <h1 className="text-2xl font-bold mb-6">
         Author Stats
       </h1>
@@ -157,7 +291,7 @@ export default function AuthorsPage() {
         <select
           value={selectedAuthor}
           onChange={(e) => setSelectedAuthor(e.target.value)}
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none"
+          className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none"
         >
           <option value="">Select author</option>
 
@@ -242,7 +376,14 @@ export default function AuthorsPage() {
             </table>
           </div>
 
-          <AuthorYearChart rows={rows} />
+          <div className="flex flex-col items-start gap-4">
+            <div className="flex flex-row gap-4">
+              <AuthorYearChart rows={rows} />
+              <AuthorGameChart rows={rows} />
+            </div>
+
+            <AuthorEnvironmentChart rows={rows} />
+          </div>
         </div>
       )}
     </div>

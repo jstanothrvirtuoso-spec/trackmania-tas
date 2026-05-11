@@ -1,5 +1,6 @@
 
-export type Game = "TMNF" | "TMNF No Cut" | "ESWC" | "TMN Remakes" | "TMUF" | "StarTrack" | "TMS" | "TMO" | "Demo/Beta" | "TM2"
+export const gameList = ["TMNF", "TMNF No Cut", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "TM2"] as const;
+export type Game = (typeof gameList)[number];
 
 export const environment = ["All", "Canyon", "Stadium", "Island", "Desert", "Rally", "Bay", "Coast", "Snow", "Valley", "Lagoon"] as const;
 export type Environment = (typeof environment)[number];

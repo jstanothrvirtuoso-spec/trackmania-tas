@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState, useMemo } from "react";
+import { useVisibleTables } from "@/lib/VisibleTablesContext";
 import { Category, Environment, categories, gameSlugMap } from "../../lib/TrackLists";
 import { TasRecords } from "../../lib/TasRecords";
 import { RtaRecords } from "../../lib/RtaRecords";
@@ -9,6 +10,7 @@ import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
 import TimeSaved from "./TimeSaved";
 import Leaderboard from "./Leaderboard";
+import RtaTable from "./RtaLeaderboard";
 
 export default function GamePage({
   params,
@@ -16,8 +18,8 @@ export default function GamePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-
   const game = gameSlugMap[slug];
+  const { showTimeSaved, showLeaderboard, showRtaLeaderboard } = useVisibleTables();
 
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
@@ -87,7 +89,7 @@ export default function GamePage({
 
   return (
     <div>
-      <div className="flex justify-center px-4 py-3">
+      <div className="flex justify-center py-3">
         <HeaderOptions
           game={game}
           currentRecords={currentRecords}
@@ -108,9 +110,13 @@ export default function GamePage({
           selectedEnvironment={selectedEnvironment}
         />
 
-        <div className="flex flex-col items-start gap-2">
-          <TimeSaved currentRecords={currentRecords} />
-          <Leaderboard currentRecords={currentRecords} />
+        <div className="flex flex-col items-start gap-1">
+          {showTimeSaved && (<TimeSaved currentRecords={currentRecords} />)}
+
+          <div className="flex flex-row items-start gap-1">
+            {showLeaderboard && (<Leaderboard currentRecords={currentRecords} />)}
+            {showRtaLeaderboard && (<RtaTable currentRecords={currentRecords} />)}
+          </div>
         </div>
       </div>
     </div>
