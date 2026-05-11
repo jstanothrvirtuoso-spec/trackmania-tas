@@ -7,7 +7,7 @@ import { useVisibleTables } from "../../lib/VisibleTablesContext";
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
 
-function formatTime(timeMs: number, isStunt: boolean, showSign: boolean = false): string {
+function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean, showSign: boolean = false): string {
 
   if (isStunt) {
     const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
@@ -18,19 +18,20 @@ function formatTime(timeMs: number, isStunt: boolean, showSign: boolean = false)
   const abs = Math.abs(timeMs);
   const minutes = Math.floor(abs / 60000);
   const seconds = Math.floor((abs % 60000) / 1000);
-  const centiseconds = Math.floor((abs % 1000) / 10);
+  const decimals = isTM2 ? 3 : 2
+  const split = isTM2 ? Math.round(abs) % 1000 : Math.round(abs / 10) % 100;
 
   if (minutes > 0) {
     return `${sign}${minutes}:${seconds
       .toString()
-      .padStart(2, "0")}.${centiseconds
+      .padStart(2, "0")}.${split
       .toString()
-      .padStart(2, "0")}`;
+      .padStart(decimals, "0")}`;
   }
 
-  return `${sign}${seconds}.${centiseconds
+  return `${sign}${seconds}.${split
     .toString()
-    .padStart(2, "0")}`;
+    .padStart(decimals, "0")}`;
 }
 
 function formatPercentSaved(timeMs: number, rtaMs: number, isStunt: boolean) {
@@ -68,15 +69,15 @@ function formatDate(dateStr: string) {
 function getTrackDifficultyTint(category: string, i: number) {
   switch (category) {
     case "White":
-      return `bg-white/${i % 2 === 0 ? "5" : "10"}`;
+      return i % 2 === 0 ? "bg-white/10" : "bg-white/15";
     case "Green":
-      return `bg-green-500/${i % 2 === 0 ? "5" : "10"}`;
+      return i % 2 === 0 ? "bg-green-500/10" : "bg-green-500/15";
     case "Blue":
-      return `bg-blue-500/${i % 2 === 0 ? "5" : "10"}`;
+      return  i % 2 === 0 ? "bg-blue-500/10" : "bg-blue-500/15";
     case "Red":
-      return `bg-red-500/${i % 2 === 0 ? "5" : "10"}`;
+      return  i % 2 === 0 ? "bg-red-500/10" : "bg-red-500/15";
     case "Black":
-      return `bg-black/${i % 2 === 0 ? "40" : "60"}`;
+      return i % 2 === 0 ? "bg-black/20" : "bg-black/60";
     default:
       return "";
   }
@@ -363,24 +364,23 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
 
   return (
     <div className="px-4 pb-4">
-      <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/90">
-          <table className="table-auto w-full divide-y divide-slate-500 text-center text-sm">
-            <thead className="bg-slate-900/90 text-slate-400">
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full text-center text-sm border-separate border-spacing-0">
+          <thead className="text-slate-400">
             <tr>
               <th
                 colSpan={2}
                 onClick={() => handleSort("track")}
-                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tl-lg tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Track</span>
                   <SortIndicator field="track" />
                 </div>
               </th>
-              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("time")}
-                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Time</span>
@@ -389,7 +389,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               </th>
               <th
                 onClick={() => handleSort("diff")}
-                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Diff</span>
@@ -398,108 +398,117 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               </th>
               <th
                 onClick={() => handleSort("percentSaved")}
-                className="px-2 py-1.5 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>%</span>
                   <SortIndicator field="percentSaved" />
                 </div>
               </th>
-              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("authors")}
-                className="px-2 py-1.5 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
+                className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Authors</span>
                   <SortIndicator field="authors" />
                 </div>
               </th>
-              <th className="border-l border-slate-800"></th>
               <th
                 onClick={() => handleSort("date")}
-                className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Date</span>
                   <SortIndicator field="date" />
                 </div>
               </th>
-              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
+              <th className="px-2 py-1.5 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em]">
                 Cat.
               </th>
-              <th className="border-l border-slate-800"></th>
-              <th className="px-2 py-1.5 font-normal uppercase tracking-[0.18em]">
+              <th className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tr-lg tracking-[0.18em]">
                 Links
               </th>
 
               {showRta && (
                 <>
-                  <th className="pl-6 border-l border-slate-800">
-
-                  </th>
-                  <th className="border-l border-slate-800"></th>
+                  <th className="pl-6 bg-transparent"></th>
                   <th 
                     onClick={() => handleSort("rtaTime")}
-                    className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                    className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tl-lg tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>RTA</span>
                       <SortIndicator field="rtaTime" />
                     </div>
                   </th>
-                  <th className="border-l border-slate-800"></th>
                   <th 
                     onClick={() => handleSort("rtaPlayer")}
-                    className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                    className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>Player</span>
                       <SortIndicator field="rtaPlayer" />
                     </div>
                   </th>
-                  <th className="border-l border-slate-800"></th>
                   <th 
                     onClick={() => handleSort("rtaDate")}
-                    className="px-2 py-1.5 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                    className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>Date</span>
                       <SortIndicator field="rtaDate" />
                     </div>
                   </th>
-                  <th className="border-l border-slate-800"></th>
-                  <th className="px-2 py-1.5 w-[80px] font-normal uppercase tracking-[0.18em]">
+                  <th className="px-2 py-1.5 bg-slate-900/90 border border-slate-800 w-[80px] font-normal uppercase rounded-tr-lg tracking-[0.18em]">
                     Links
                   </th>
                 </>
               )}
+            </tr>
+            <tr>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
+              <th className="border-b border-slate-400"></th>
             </tr>
           </thead>
           <tbody className="font-sans divide-y divide-slate-800">
             {filteredRows.map((row, i) => {
               const entry = row.tas;
               const recent = entry ? isRecentEntry(entry.date, showRecent) : false;
+              const rtaRecent = row.rta ? isRecentEntry(row.rta.date, showRecent) : false;
               const tmxLink = getTmxLink(row.trackInfo);
               const colour = getTrackDifficultyTint(row.trackInfo.category, i)
+              const bgColour = `${recent ? "italic bg-sky-400/30 text-sky-100" : colour}`
+              const rtaColour = `${rtaRecent ? "italic bg-sky-400/30 text-sky-100" : colour}`
               const isStunt = row.trackInfo.category === "Stunt"
+              const isTM2 = game === "TM2"
 
               return (
                 <tr
                   key={row.track}
-                  className={`
-                    border-b border-slate-800 last:border-b-0 h-[30px]
-                    transition-colors hover:bg-emerald-400/20
-                    ${recent ? "italic bg-sky-400/20 text-sky-100" : colour} 
-                  `}
-                  style={
-                    recent ? { boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.24)" } : undefined
-                  }
+                  className="h-[30px] transition-colors hover:bg-emerald-400/20"
+                  // style={ recent ? { boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.24)" } : undefined }
                 >
-                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
-                    { getEnvironmentSymbol(row.trackInfo.environment) }
+                  <td
+                    className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle ${bgColour} ${
+                      i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
+                    }`}
+                  >
+                    {getEnvironmentSymbol(row.trackInfo.environment)}
                   </td>
-                  <td className="px-2.5 py-1 text-slate-100 align-middle w-max whitespace-nowrap">
+                  <td className={ `pr-2 py-1 text-slate-100 border-b border-slate-800 align-middle w-max whitespace-nowrap ${bgColour}` }>
                     {tmxLink ? (
                       <a
                         href={tmxLink}
@@ -513,58 +522,57 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                       row.track
                     )}
                   </td>
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
-                    {entry ? formatTime(entry.timeMs, isStunt) : "-"}
+                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${bgColour}` }>
+                    {entry ? formatTime(entry.timeMs, isStunt, isTM2) : "-"}
                   </td>
                   <td
-                    className={`px-1.5 py-1 text-center italic font-bold align-middle ${
+                    className={ `px-1.5 py-1 border-b border-slate-800 text-center italic font-bold align-middle ${bgColour} ${
                       entry && row.rta && ((entry.timeMs - row.rta.timeMs > 0 && !isStunt) || (entry.timeMs - row.rta.timeMs < 0 && isStunt))
                         ? "text-red-300"
                         : "text-slate-100"
                     }`}
                   >
                     {entry && row.rta
-                      ? formatTime(entry.timeMs - row.rta.timeMs, isStunt, true)
+                      ? formatTime(entry.timeMs - row.rta.timeMs, isStunt, isTM2, true)
                       : "-"}
                   </td>
-                  <td className="px-1.5 py-1 text-slate-100 text-center align-middle">
+                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-slate-800 text-center align-middle ${bgColour}` }>
                     {entry && row.rta
                       ? formatPercentSaved(entry.timeMs, row.rta.timeMs, isStunt)
                       : "-"}
                   </td>
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-1.5 py-1 text-slate-100 break-words min-w-[320px] whitespace-normal text-center align-middle">
+                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 break-words min-w-[320px] whitespace-normal text-center align-middle ${bgColour}` }>
                     {entry ? entry.authors.join(", ") : "-"}
                   </td>
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">
+                  <td className={ `px-3 py-1 text-slate-100 border-b border-l border-slate-800 whitespace-nowrap text-center align-middle ${bgColour}` }>
                     {entry ? formatDate(entry.date) : "-"}
                   </td>
-                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap text-center align-middle">
+                  <td className={ `px-3 py-1 text-slate-100 border-b border-slate-800 whitespace-nowrap text-center align-middle ${bgColour}` }>
                     {entry ? entry.category : "-"}
                   </td>
-                  <td className="border-l border-slate-800"></td>
-                  <td className="px-2 py-1 text-slate-100 text-center align-middle">
+                  
+                  <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle ${bgColour} ${
+                        i === filteredRows.length - 1 ? "rounded-br-lg" : ""
+                      }`}>
                     {entry ? renderLinks({ video: entry.video, replay: entry.replay, inputs: entry.inputs }) : "-"}
                   </td>
                   {showRta && (
                     <>
-                      <td className="pl-6 border-l border-slate-800"></td>
-                      <td className="border-l border-slate-800"></td>
-                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
-                        {row.rta ? formatTime(row.rta.timeMs, row.trackInfo.category === "Stunt") : "-"}
+                      <td className="pl-6"></td>
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${rtaColour} ${
+                            i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
+                          }`}>
+                        {row.rta ? formatTime(row.rta.timeMs, isStunt, isTM2) : "-"}
                       </td>
-                      <td className="border-l border-slate-800"></td>
-                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${rtaColour}` }>
                         {row.rta?.player ?? "-"}
                       </td>
-                      <td className="border-l border-slate-800"></td>
-                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle whitespace-nowrap ${rtaColour}` }>
                         {row.rta ? formatDate(row.rta.date) : "-"}
                       </td>
-                      <td className="border-l border-slate-800"></td>
-                      <td className="px-2 py-1 text-slate-100 text-center align-middle">
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle ${rtaColour} ${
+                            i === filteredRows.length - 1 ? "rounded-br-lg" : ""
+                          }`}>
                         {row.rta ? renderRtaLinks({ video: row.rta.video, replay: row.rta.replay }) : "-"}
                       </td>
                     </>

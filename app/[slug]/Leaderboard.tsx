@@ -135,7 +135,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
   
   return (
     <aside className="px-4 pb-4">
-      <div className="rounded-lg border border-slate-800 bg-slate-950/90 text-sm">
+      <div className="rounded-lg border border-slate-800 text-sm">
         <table className="table-fixed text-center divide-y text-sm">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
@@ -193,8 +193,8 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   className="
                     border-b border-slate-800 last:border-b-0
                     hover:bg-blue-900/20 transition-colors
-                    odd:bg-violet-500/8
-                    even:bg-pink-500/2
+                    odd:bg-violet-600/10
+                    even:bg-violet-900/7
                   "
                 >
                   <td className="px-2 py-[4px] font-medium text-slate-200">

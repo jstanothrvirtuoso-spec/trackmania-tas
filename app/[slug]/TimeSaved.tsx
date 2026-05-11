@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-
-import { RecordRow } from "../../lib/TrackLists";
+import { Game, RecordRow } from "../../lib/TrackLists";
 import { TasRecords } from "../../lib/TasRecords";
 import { RtaRecords } from "../../lib/RtaRecords";
 import { useVisibleTables } from "../../lib/VisibleTablesContext";
@@ -21,15 +20,14 @@ function formatTime(timeMs: number, isStunt: boolean, showSign: boolean = false)
   }
 
   const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
-  const abs = Math.abs(timeMs);
-
-  const minutes = Math.floor(abs / 60000);
-  const seconds = Math.floor((abs % 60000) / 1000);
-  const centiseconds = Math.floor((abs % 1000) / 10);
+  const abs = Math.round(Math.abs(timeMs) / 10);
+  const minutes = Math.floor(abs / 6000);
+  const seconds = Math.floor((abs % 6000) / 100);
+  const split = Math.round(abs) % 100;
 
   return `${sign}${minutes}:${seconds
     .toString()
-    .padStart(2, "0")}.${centiseconds
+    .padStart(2, "0")}.${split
     .toString()
     .padStart(2, "0")}`;
 }
@@ -63,7 +61,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
       }, {} as Record<string, CategoryTotals>)
     );
   }, [currentRecords]);
-
+  
   const total = categoryTotals
   .filter(category => category.category !== "Stunt")
   .reduce<CategoryTotals>(
@@ -152,11 +150,11 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   </td>
 
                   <td className="border-l border-slate-800"></td>
-                  <td className="px-3 py-[4px]">
+                  <td className="px-3 py-[4px] text-slate-300">
                     {formatTime(category.tasMs, isStunt)}
                   </td>
 
-                  <td className="px-3 py-[4px]">
+                  <td className="px-3 py-[4px] text-slate-300">
                     {hasRta ? formatTime(category.rtaMs, isStunt) : "-"}
                   </td>
 
@@ -181,11 +179,11 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
               <td className="px-2 py-[4px]">Total</td>
 
               <td className="border-l border-slate-800"></td>
-              <td className="px-2 py-[4px]">
+              <td className="px-2 py-[4px] text-slate-300">
                 {formatTime(total.tasMs, false)}
               </td>
 
-              <td className="px-2 py-[4px]">
+              <td className="px-2 py-[4px] text-slate-300">
                 {total.rtaMs > 0
                   ? formatTime(total.rtaMs, false)
                   : "-"}

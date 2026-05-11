@@ -130,7 +130,7 @@ export const trackList: Record<string, TrackInfo> = {
   "D12-Speed": { game: "TMNF", id: 2439, category: "Red", environment: "Stadium" },
   "D13-Race": { game: "TMNF", id: 2441, category: "Red", environment: "Stadium" },
   "D14-Endurance": { game: "TMNF", id: 2443, category: "Red", environment: "Stadium" },
-  "D15-Endurance": { game: "TMNF", id: 2445, category: "Red", environment: "Stadium", overrideTimeSaved: 117.11 },
+  "D15-Endurance": { game: "TMNF", id: 2445, category: "Red", environment: "Stadium", overrideTimeSaved: 60.82 },
   "E01-Obstacle": { game: "TMNF", id: 2447, category: "Black", environment: "Stadium" },
   "E02-Endurance": { game: "TMNF", id: 2449, category: "Black", environment: "Stadium" },
   "E03-Endurance": { game: "TMNF", id: 2451, category: "Black", environment: "Stadium", overrideTimeSaved: 36.06 },
@@ -1300,10 +1300,10 @@ export const trackList: Record<string, TrackInfo> = {
   "D14-Endurance [Beta]": { game: "Demo/Beta", id: 10369965, category: "TMNF Prerelease", environment: "Stadium" },
   "D15-Endurance [Beta]": { game: "Demo/Beta", id: 10369968, category: "TMNF Prerelease", environment: "Stadium" },
   
-  "BenchTMN": { game: "Demo/Beta", id: 2188866, category: "ESWC Beta", environment: "Stadium" },
-  "A-8 [Beta]": { game: "Demo/Beta", id: 2188870, category: "ESWC Beta", environment: "Stadium" },
-  "C-8 [Beta]": { game: "Demo/Beta", id: 2188874, category: "ESWC Beta", environment: "Stadium" },
-  "D-7 [Beta]": { game: "Demo/Beta", id: 2188878, category: "ESWC Beta", environment: "Stadium" },
+  "BenchTMN": { game: "Demo/Beta", id: 2188866, category: "ESWC Beta", environment: "Stadium", order: 1 },
+  "A-8 [Beta]": { game: "Demo/Beta", id: 2188870, category: "ESWC Beta", environment: "Stadium", order: 2 },
+  "C-8 [Beta]": { game: "Demo/Beta", id: 2188874, category: "ESWC Beta", environment: "Stadium", order: 3 },
+  "D-7 [Beta]": { game: "Demo/Beta", id: 2188878, category: "ESWC Beta", environment: "Stadium", order: 4 },
   
   "TM1.0 Gamelive001 [Demo]": { game: "Demo/Beta", id: 7154653, category: "TMX 22nd Anniversary", environment: "Desert" },
   "TM1.0 Gamelive002 [Demo]": { game: "Demo/Beta", id: 7154658, category: "TMX 22nd Anniversary", environment: "Desert" },

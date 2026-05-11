@@ -1,10 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gameLinks, trackList, RtaEntry } from "@/lib/TrackLists";
 import { TasRecords } from "@/lib/TasRecords";
 import { RtaRecords } from "@/lib/RtaRecords";
+
+type GraphCategory = "Open" | "NOseboost" | "No Uber" | "WR Route" | "No Cut" | "RTA"
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit'
+  }).replace(/ /g, '-')       
+}
 
 function generateYAxisTicks(min: number, max: number) {
   const range = max - min;
@@ -48,40 +58,53 @@ function generateYAxisTicks(min: number, max: number) {
 }
 
 function RecordProgressionGraph({
-  points,
-  useMinutes
+  progression,
+  useMinutes,
+  visibleCategories
 }: {
-  points: { date: string; time: number }[];
-  useMinutes: Boolean;
+  progression: Record<GraphCategory, { date: string; time: number }[]>;
+  useMinutes: boolean;
+  visibleCategories: Record<string, boolean>;
 }) {
-  const width = 420;
+  const allPoints = Object.values(progression).flat();
+
+  if (allPoints.length === 0) return null;
+
+  const width = 450;
   const height = 220;
-  const xPadding = 30;
+  const xPadding = 35;
   const yPadding = 20;
 
-  if (points.length === 0) return null;
-
-  const firstDate = new Date(points[0].date).getTime();
+  const visiblePoints = Object.entries(progression)
+    .filter(([category]) => visibleCategories[category])
+    .flatMap(([, points]) => points);
+  const firstDate = Math.min(
+    ...visiblePoints.map((p) =>
+      new Date(p.date).getTime()
+    )
+  );
   const nowDate = Date.now();
-
-  const datePadding =
-    Math.max((nowDate - firstDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
-
+  const datePadding = Math.max((nowDate - firstDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
   const minDate = firstDate - datePadding;
   const maxDate = nowDate;
+  const categoryColours = {
+    "Open": "#c271f8",
+    "NOseboost": "#60a5fa",
+    "No Uber": "#34d399",
+    "WR Route": "#ffc637",
+    "No Cut": "#4d59ff",
+    "RTA": "#fa5252",
+  };
 
-  const rawMinTime = Math.min(...points.map((p) => p.time));
-  const rawMaxTime = Math.max(...points.map((p) => p.time));
-
+  const rawMinTime = Math.min(...visiblePoints.map((p) => p.time));
+  const rawMaxTime = Math.max(...visiblePoints.map((p) => p.time));
   const startYear = new Date(minDate).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
-
-  const paddingSeconds =
-    Math.max((rawMaxTime - rawMinTime) * 0.08, 0.05);
-
+  const paddingSeconds = Math.max((rawMaxTime - rawMinTime) * 0.08, 0.025);
   const minTime = rawMinTime - paddingSeconds;
   const maxTime = rawMaxTime + paddingSeconds;
   const yTicks = generateYAxisTicks(minTime, maxTime);
+  const yTickDecimals = maxTime - minTime <= 0.5 ? 2 : maxTime - minTime <= 0.5 ? 2 : maxTime - minTime <= 5 ? 1 : 0
 
   const xScale = (date: string) => {
     const t = new Date(date).getTime();
@@ -89,7 +112,7 @@ function RecordProgressionGraph({
     return (
       xPadding +
       ((t - minDate) / (maxDate - minDate || 1)) *
-        (width - xPadding * 2)
+        (width - xPadding * 1.5)
     );
   };
 
@@ -102,25 +125,6 @@ function RecordProgressionGraph({
     ((time - chartMin) / (chartMax - chartMin || 1)) *
       (height - yPadding * 2);
 
-  let path = "";
-
-  points.forEach((point, i) => {
-    const x = xScale(point.date);
-    const y = yScale(point.time);
-
-    if (i === 0) {
-      path += `M ${x} ${y}`;
-    } else {
-      path += ` H ${x}`;
-      path += ` V ${y}`;
-    }
-  });
-
-  const lastPoint = points[points.length - 1];
-  if (lastPoint) {
-    path += ` H ${xScale(new Date().toISOString())}`;
-  }
-
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
       <h2 className="mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
@@ -132,7 +136,7 @@ function RecordProgressionGraph({
         <line
           x1={xPadding}
           y1={height - yPadding}
-          x2={width - xPadding}
+          x2={width - xPadding / 2}
           y2={height - yPadding}
           className="stroke-slate-600"
         />
@@ -144,30 +148,6 @@ function RecordProgressionGraph({
           y2={height - yPadding}
           className="stroke-slate-600"
         />
-
-        {/* graph */}
-        <path
-          d={path}
-          fill="none"
-          className="stroke-violet-400"
-          strokeWidth="2"
-        />
-
-        {/* points */}
-        {points.map((p) => {
-          const x = xScale(p.date);
-          const y = yScale(p.time);
-
-          return (
-            <circle
-              key={`${p.date}-${p.time}`}
-              cx={x}
-              cy={y}
-              r={3}
-              className="fill-violet-300"
-            />
-          );
-        })}
 
         {/* year labels */}
         {Array.from(
@@ -203,7 +183,7 @@ function RecordProgressionGraph({
               <line
                 x1={xPadding}
                 y1={y}
-                x2={width - xPadding}
+                x2={width - xPadding / 2}
                 y2={y}
                 className="stroke-slate-800"
               />
@@ -214,12 +194,100 @@ function RecordProgressionGraph({
                 textAnchor="end"
                 className="fill-slate-500 text-[10px]"
               >
-                {tick.toFixed(1)}
+                {tick.toFixed(yTickDecimals)}
               </text>
             </g>
           );
         })}
+
+        {/* graph */}
+        {Object.entries(progression).map(([category, points]) => {
+          if (points.length === 0 || !visibleCategories[category]) return null;
+
+          let path = "";
+
+          points.forEach((point, i) => {
+            const x = xScale(point.date);
+            const y = yScale(point.time);
+
+            if (i === 0) {
+              path += `M ${x} ${y}`;
+            } else {
+              path += ` H ${x}`;
+              path += ` V ${y}`;
+            }
+          });
+
+          const lastPoint = points[points.length - 1];
+
+          if (lastPoint) {
+            path += ` H ${xScale(new Date().toISOString())}`;
+          }
+
+          return (
+            <path
+              key={category}
+              d={path}
+              fill="none"
+              stroke={categoryColours[category as keyof typeof categoryColours]}
+              strokeWidth="2"
+            />
+          );
+        })}
+
+        {/* points */}
+        {Object.entries(progression).flatMap(([category, points]) => {
+          if (!visibleCategories[category]) return [];
+
+          return points.map((p) => {
+            const x = xScale(p.date);
+            const y = yScale(p.time);
+
+            return (
+              <circle
+                key={`${category}-${p.date}-${p.time}`}
+                cx={x}
+                cy={y}
+                r={3}
+                fill={
+                  categoryColours[
+                    category as keyof typeof categoryColours
+                  ]
+                }
+              />
+            );
+          });
+        })}
+
       </svg>
+
+      {/* legend */}
+      <div className="mt-4 flex flex-wrap justify-center gap-4 text-[10px]">
+        {Object.entries(categoryColours).map(([category, colour]) => {
+          const active = visibleCategories[category];
+
+          return (
+            <div
+              key={category}
+              className={`flex items-center gap-2 transition-opacity ${
+                active ? "opacity-100" : "opacity-90"
+              }`}
+            >
+              <div
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: colour }}
+              />
+
+              <span
+                className={active ? "text-slate-300" : "text-slate-600"}
+              >
+                {category}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
     </div>
   );
 }
@@ -232,6 +300,16 @@ export default function TracksPage() {
 
   const [game, setGame] = useState("TMNF");
   const [track, setTrack] = useState("A01-Race");
+  const [isGraphDropdownOpen, setIsGraphDropdownOpen] = useState(false);
+  const graphDropdownRef = useRef<HTMLDivElement>(null);
+  const [visibleCategories, setVisibleCategories] = useState({
+    "Open": true,
+    "NOseboost": true,
+    "No Uber": true,
+    "WR Route": true,
+    "No Cut": true,
+    "RTA": true,
+  });
 
   // Default from URL or fallback
   useEffect(() => {
@@ -259,10 +337,6 @@ export default function TracksPage() {
     router.replace(`/tracks?game=${encodeURIComponent(g)}&track=${encodeURIComponent(t)}`);
   };
 
-  const trackInfo = useMemo(() => {
-    return track ? trackList[track] : null;
-  }, [track]);
-
   const rta = useMemo(() => {
     return RtaRecords
       .filter((r) => r.track === track)
@@ -274,7 +348,7 @@ export default function TracksPage() {
           : best;
       }, null as RtaEntry | null);
   }, [track]);
-  const useMinutes = rta ? rta.timeMs >= 60000 : false;
+  const useMinutes = rta ? rta.timeMs >= 120000 : false;
 
   const tasRows = useMemo(() => {
     if (!track) return [];
@@ -291,26 +365,49 @@ export default function TracksPage() {
         new Date(b.date).getTime()
     );
 
-    const points: {
-      date: string;
-      time: number;
-    }[] = [];
+    const categoryFilters = {
+      "Open": ["Open", "NOseboost", "No Uber", "WR Route", "No Cut"],
+      "NOseboost": ["NOseboost", "No Uber", "WR Route", "No Cut"],
+      "No Uber": ["No Uber", "WR Route", "No Cut"],
+      "WR Route": ["WR Route", "No Cut"],
+      "No Cut": ["No Cut"]
+    } as const;
 
-    let best = Infinity;
+    const buildPoints = (allowed: readonly string[]) => {
+      const points: {
+        date: string;
+        time: number;
+      }[] = [];
 
-    sorted.forEach((tas) => {
-      if (tas.timeMs < best) {
-        best = tas.timeMs;
+      let best = Infinity;
 
-        points.push({
-          date: tas.date,
-          time: useMinutes ?  tas.timeMs / 60000 : tas.timeMs / 1000,
+      sorted
+        .filter((tas) => allowed.includes(tas.category))
+        .forEach((tas) => {
+          if (tas.timeMs < best) {
+            best = tas.timeMs;
+
+            points.push({
+              date: tas.date,
+              time: useMinutes
+                ? tas.timeMs / 60000
+                : tas.timeMs / 1000,
+            });
+          }
         });
-      }
-    });
 
-    return points;
-  }, [tasRows]);
+      return points;
+    };
+
+    return {
+      "Open": buildPoints(categoryFilters["Open"]),
+      "NOseboost": buildPoints(categoryFilters["NOseboost"]),
+      "No Uber": buildPoints(categoryFilters["No Uber"]),
+      "WR Route": buildPoints(categoryFilters["WR Route"]),
+      "No Cut": buildPoints(categoryFilters["No Cut"]),
+      "RTA": rta? [{ date: rta.date, time: useMinutes ? rta.timeMs / 60000 : rta.timeMs / 1000 }]: [],
+    };
+  }, [tasRows, useMinutes]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 text-slate-100">
@@ -349,6 +446,58 @@ export default function TracksPage() {
             </option>
           ))}
         </select>
+
+        <div className="relative" ref={graphDropdownRef}>
+          <button
+            onClick={() => setIsGraphDropdownOpen(!isGraphDropdownOpen)}
+            className="rounded-md bg-slate-800 px-3 py-[5px] transition hover:bg-slate-700"
+          >
+            <span className="flex items-center gap-2">
+              Graph Categories
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </span>
+          </button>
+
+          {isGraphDropdownOpen && (
+            <div className="absolute top-full mt-1 z-50 rounded-md border border-slate-700 bg-slate-800 shadow-lg">
+              <div className="p-2">
+                {Object.entries(visibleCategories).map(
+                  ([category, checked]) => (
+                    <label
+                      key={category}
+                      className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm text-slate-100 hover:bg-slate-700"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) =>
+                          setVisibleCategories((prev) => ({
+                            ...prev,
+                            [category]: e.target.checked,
+                          }))
+                        }
+                      />
+
+                      {category}
+                    </label>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mb-4 mt-6">
@@ -357,7 +506,7 @@ export default function TracksPage() {
         </h1>
 
         <div className="mt-1 text-slate-400">
-          {rta && `RTA: ${rta.record} by ${rta.player}`}
+          {rta && `RTA: ${rta.record} by ${rta.player} (${formatDate(rta.date)})`}
         </div>
       </div>
 
@@ -369,11 +518,11 @@ export default function TracksPage() {
             <table className="border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-700 text-slate-300">
-                  <th className="px-3 py-2 text-left">Record</th>
-                  <th className="px-3 py-2 text-left">Time Saved</th>
-                  <th className="px-3 py-2 text-left">Authors</th>
-                  <th className="px-3 py-2 text-left">Date</th>
-                  <th className="px-3 py-2 text-left">Category</th>
+                  <th className="px-3 py-2 text-center whitespace-nowrap">Record</th>
+                  <th className="px-3 py-2 text-center whitespace-nowrap">Time Saved</th>
+                  <th className="px-3 py-2 text-center whitespace-nowrap">Authors</th>
+                  <th className="px-3 py-2 text-center whitespace-nowrap">Date</th>
+                  <th className="px-3 py-2 text-center whitespace-nowrap">Category</th>
                 </tr>
               </thead>
 
@@ -384,27 +533,27 @@ export default function TracksPage() {
                   return (
                     <tr
                       key={`${tas.record}-${tas.date}`}
-                      className="border-b border-slate-800"
+                      className="border-b border-slate-800 transition-colors hover:bg-emerald-400/20"
                     >
-                      <td className="px-3 py-2 font-medium text-slate-100">
+                      <td className="px-3 py-1.5 text-center font-medium text-slate-200">
                         {tas.record}
                       </td>
 
-                      <td className="px-3 py-2 italic">
+                      <td className="px-3 py-1.5 text-center italic font-bold text-slate-200">
                         {timeSaved > 0
                           ? `+${(timeSaved / 1000).toFixed(2)}`
                           : `${(timeSaved / 1000).toFixed(2)}`}
                       </td>
 
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-1.5 text-center text-slate-200">
                         {tas.authors.join(", ")}
                       </td>
 
-                      <td className="px-3 py-2 text-slate-400">
+                      <td className="px-3 py-1.5 text-center text-slate-400">
                         {tas.date}
                       </td>
                       
-                      <td className="px-3 py-2 text-slate-400">
+                      <td className="px-3 py-1.5 text-center text-slate-400">
                         {tas.category}
                       </td>
                     </tr>
@@ -415,8 +564,9 @@ export default function TracksPage() {
           </div>
 
           <RecordProgressionGraph 
-            points={progression}
+            progression={progression}
             useMinutes={useMinutes}
+            visibleCategories={visibleCategories}
           />
 
         </div>

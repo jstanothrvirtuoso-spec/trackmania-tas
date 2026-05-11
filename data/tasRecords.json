@@ -22875,5 +22875,20 @@
     "video": "https://youtu.be/kUTs84Xv71I?t=205",
     "replay": "",
     "inputs": ""
+  },
+  {
+    "game": "TMNF",
+    "track": "D15-Endurance",
+    "category": "Open",
+    "record": "2:03.54",
+    "timeMs": 123540,
+    "authors": [
+      "charlie",
+	  "mufattmf"
+    ],
+    "date": "2026-05-10",
+    "video": "https://www.youtube.com/watch?v=I1yZNqmx7UA",
+    "replay": "https://drive.google.com/file/d/1vSSAHDmjQdoysZCcaAVLbXhHAL0AjafB/view?usp=drive_link",
+    "inputs": ""
   }
 ]
