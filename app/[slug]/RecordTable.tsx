@@ -84,7 +84,7 @@ function getTrackDifficultyTint(category: string, i: number) {
 }
 
 function getEnvironmentSymbol(env: string) {
-  const key = env.toLowerCase().replace(/\s+/g, "-")
+  const key = env.toLowerCase().replace(/\s+/g, "-").replace("²", "")
 
   return (
     <div className="w-6 h-5 flex items-center justify-center">

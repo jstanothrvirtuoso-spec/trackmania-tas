@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { gameLinks, trackList, RtaEntry } from "@/lib/TrackLists";
+import { gameLinks, trackList, RtaEntry, categoryFilters, Category } from "@/lib/TrackLists";
 import { TasRecords } from "@/lib/TasRecords";
 import { RtaRecords } from "@/lib/RtaRecords";
 
@@ -348,6 +348,7 @@ export default function TracksPage() {
           : best;
       }, null as RtaEntry | null);
   }, [track]);
+
   const useMinutes = rta ? rta.timeMs >= 120000 : false;
 
   const tasRows = useMemo(() => {
@@ -365,15 +366,8 @@ export default function TracksPage() {
         new Date(b.date).getTime()
     );
 
-    const categoryFilters = {
-      "Open": ["Open", "NOseboost", "No Uber", "WR Route", "No Cut"],
-      "NOseboost": ["NOseboost", "No Uber", "WR Route", "No Cut"],
-      "No Uber": ["No Uber", "WR Route", "No Cut"],
-      "WR Route": ["WR Route", "No Cut"],
-      "No Cut": ["No Cut"]
-    } as const;
-
-    const buildPoints = (allowed: readonly string[]) => {
+    const buildPoints = (category: Category) => {
+      const allowedCategories = categoryFilters[category]
       const points: {
         date: string;
         time: number;
@@ -382,7 +376,7 @@ export default function TracksPage() {
       let best = Infinity;
 
       sorted
-        .filter((tas) => allowed.includes(tas.category))
+        .filter((tas) => allowedCategories.has(tas.category))
         .forEach((tas) => {
           if (tas.timeMs < best) {
             best = tas.timeMs;
@@ -400,11 +394,11 @@ export default function TracksPage() {
     };
 
     return {
-      "Open": buildPoints(categoryFilters["Open"]),
-      "NOseboost": buildPoints(categoryFilters["NOseboost"]),
-      "No Uber": buildPoints(categoryFilters["No Uber"]),
-      "WR Route": buildPoints(categoryFilters["WR Route"]),
-      "No Cut": buildPoints(categoryFilters["No Cut"]),
+      "Open": buildPoints("Open"),
+      "NOseboost": buildPoints("NOseboost"),
+      "No Uber": buildPoints("No Uber"),
+      "WR Route": buildPoints("WR Route"),
+      "No Cut": buildPoints("No Cut"),
       "RTA": rta? [{ date: rta.date, time: useMinutes ? rta.timeMs / 60000 : rta.timeMs / 1000 }]: [],
     };
   }, [tasRows, useMinutes]);

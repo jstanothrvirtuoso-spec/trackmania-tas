@@ -3,15 +3,51 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { TasRecords } from "@/lib/TasRecords";
-import { RtaRecords } from "@/lib/RtaRecords";
-import { trackList, TasEntry, RtaEntry, gameList, environment } from "@/lib/TrackLists";
+import { buildBestRtaByTrack, RtaRecords } from "@/lib/RtaRecords";
+import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackLists";
 
 type RecordRow = {
   track: string;
   trackInfo: (typeof trackList)[string];
   tas: TasEntry | null;
   rta: RtaEntry | null;
+  isCurrentBestTas?: boolean
 };
+
+function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean, showSign: boolean = false): string {
+
+  if (isStunt) {
+    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
+    return `${sign}${timeMs / 1000}`
+  }
+
+  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
+  const abs = Math.abs(timeMs);
+  const minutes = Math.floor(abs / 60000);
+  const seconds = Math.floor((abs % 60000) / 1000);
+  const decimals = isTM2 ? 3 : 2
+  const split = isTM2 ? Math.round(abs) % 1000 : Math.round(abs / 10) % 100;
+
+  if (minutes > 0) {
+    return `${sign}${minutes}:${seconds
+      .toString()
+      .padStart(2, "0")}.${split
+      .toString()
+      .padStart(decimals, "0")}`;
+  }
+
+  return `${sign}${seconds}.${split
+    .toString()
+    .padStart(decimals, "0")}`;
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit'
+  }).replace(/ /g, '-')       
+}
 
 function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
 
@@ -152,12 +188,9 @@ function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
     const counts = new Map<string, number>();
 
     rows.forEach((row) => {
-      const env = row.trackInfo?.environment;
+      const env = row.trackInfo.environment;
 
-      if (!env || env === "All") {
-        console.log(row.track, env)
-        return
-      };
+      if (!env || env === "All") return;
 
       counts.set(env, (counts.get(env) || 0) + 1);
     });
@@ -220,6 +253,7 @@ export default function AuthorsPage() {
   const searchParams = useSearchParams();
   const initialAuthor = searchParams.get("author") ?? "";
   const [selectedAuthor, setSelectedAuthor] = useState(initialAuthor);
+  const [hideBeaten, setHideBeaten] = useState(false);
 
   const authorOptions = useMemo(() => {
     const set = new Set<string>();
@@ -231,55 +265,70 @@ export default function AuthorsPage() {
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, []);
 
+  const rtaRecords = useMemo(() => {
+    return buildBestRtaByTrack()
+  }, [RtaRecords])
+
   const rows = useMemo<RecordRow[]>(() => {
     if (!selectedAuthor) return [];
 
-    const bestTasByTrack = new Map<string, TasEntry>();
-    const bestRtaByTrack = new Map<string, RtaEntry>();
+    const bestTasByTrackCategory = new Map<string, TasEntry>();
 
-    TasRecords
-      .filter((tas) => tas.authors.includes(selectedAuthor))
-      .forEach((entry) => {
-        const existing = bestTasByTrack.get(entry.track);
+    TasRecords.forEach((entry) => {
+      Object.entries(categoryFilters).forEach(
+        ([displayCategory, allowedCategories]) => {
+          // Skip if this TAS cannot represent this category
+          if (!allowedCategories.has(entry.category as never)) {
+            return;
+          }
 
-        if (
-          !existing ||
-          entry.timeMs < existing.timeMs ||
-          (
-            entry.timeMs === existing.timeMs &&
-            new Date(entry.date).getTime() <
-              new Date(existing.date).getTime()
-          )
-        ) {
-          bestTasByTrack.set(entry.track, entry);
+          const key = `${entry.track}|${displayCategory}`;
+
+          const existing = bestTasByTrackCategory.get(key);
+
+          if (
+            !existing ||
+            entry.timeMs < existing.timeMs ||
+            (
+              entry.timeMs === existing.timeMs &&
+              new Date(entry.date).getTime() <
+                new Date(existing.date).getTime()
+            )
+          ) {
+            bestTasByTrackCategory.set(key, entry);
+          }
         }
-      });
-
-    RtaRecords.forEach((entry) => {
-      const existing = bestRtaByTrack.get(entry.track);
-
-      if (
-        !existing ||
-        entry.timeMs < existing.timeMs ||
-        (
-          entry.timeMs === existing.timeMs &&
-          new Date(entry.date).getTime() <
-            new Date(existing.date).getTime()
-        )
-      ) {
-        bestRtaByTrack.set(entry.track, entry);
-      }
+      );
     });
 
-    return Array.from(bestTasByTrack.values())
-      .map((tas) => ({
-        track: tas.track,
-        trackInfo: trackList[tas.track],
-        tas,
-        rta: bestRtaByTrack.get(tas.track) ?? null,
-      }))
-      .sort((a, b) => a.tas!.timeMs - b.tas!.timeMs);
+    // ALL TASes by selected author
+    const selectedAuthorTasRecords = TasRecords.filter((tas) =>
+      tas.authors.includes(selectedAuthor)
+    );
+
+    return selectedAuthorTasRecords
+      .map((tas) => {
+        const noCutTrack = `${tas.track.slice(0, 3)} - No Cut`
+        const currentTrack = tas.category === "No Cut"  && trackList[noCutTrack] ? noCutTrack : tas.track
+        const key = `${currentTrack}|${tas.category}`;
+        const currentBest = bestTasByTrackCategory.get(key);
+
+        return {
+          track: currentTrack,
+          trackInfo: trackList[currentTrack],
+          tas,
+          rta: rtaRecords.get(currentTrack) ?? null,
+          isCurrentBestTas: currentBest === tas,
+        };
+      })
+      .sort((a, b) =>
+        String(b.tas!.date).localeCompare(String(a.tas!.date))
+      );
   }, [selectedAuthor]);
+
+  const visibleRows = hideBeaten
+    ? rows.filter((r) => r.isCurrentBestTas)
+    : rows;
 
   return (
     <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
@@ -287,7 +336,7 @@ export default function AuthorsPage() {
         Author Stats
       </h1>
 
-      <div className="mb-6">
+      <div className="mb-6 flex flex-row gap-3 px-4">
         <select
           value={selectedAuthor}
           onChange={(e) => setSelectedAuthor(e.target.value)}
@@ -301,46 +350,68 @@ export default function AuthorsPage() {
             </option>
           ))}
         </select>
+
+        <button
+          onClick={() => setHideBeaten((v) => !v)}
+          className={`
+            rounded-md px-4 py-1.5 text-sm font-semibold
+            transition-all duration-150
+            border
+            ${
+              hideBeaten
+                ? "border-slate-600 bg-emerald-300/15 text-emerald-300 hover:bg-emerald-500/25"
+                : "border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700"
+            }
+          `}
+        >
+          {hideBeaten ? "WRs only" : "All TASes"}
+        </button>
       </div>
 
       {selectedAuthor && (
         <div className="flex items-start gap-8">
           <div className="overflow-x-auto">
-            <table className="border-collapse text-sm">
+            <table className="border-separate border border-slate-800 rounded-lg overflow-hidden text-center text-sm">
               <thead>
                 <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
-                  <th className="px-3 py-2 text-left font-normal">
+                  <th className="px-3 py-2 font-normal">
+                    Date
+                  </th>
+
+                  <th className="px-3 py-2 font-normal">
                     Track
                   </th>
 
-                  <th className="px-3 py-2 text-left font-normal">
+                  <th className="px-3 py-2 font-normal">
                     Game
                   </th>
 
-                  <th className="px-3 py-2 text-left font-normal">
+                  <th className="px-3 py-2 font-normal">
+                    Cat.
+                  </th>
+
+                  <th className="px-3 py-2 font-normal">
                     TAS
                   </th>
 
-                  <th className="px-3 py-2 text-left font-normal">
+                  <th className="px-3 py-2 font-normal">
                     RTA
                   </th>
 
-                  <th className="px-3 py-2 text-left font-normal">
-                    Time Saved
+                  <th className="px-3 py-2 font-normal">
+                    Saved
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {rows.map((row, index) => {
-                  const timeSaved =
-                    row.tas && row.rta
-                      ? row.rta.timeMs - row.tas.timeMs
-                      : 0;
+                {visibleRows.map((row, index) => {
+                  const isStunt = row.trackInfo.category === "Stunt"
+                  const tasGame = row.tas!.game === "TMNF" && row.tas!.category === "No Cut" ? "TMNF No Cut" : row.tas!.game
 
                   return (
                     <tr
-                      key={row.track}
+                      key={ index }
                       className={`
                         border-b border-slate-800
                         ${index % 2 === 0
@@ -349,25 +420,31 @@ export default function AuthorsPage() {
                       `}
                     >
                       <td className="px-3 py-2">
+                        { row.tas ? formatDate(row.tas.date) : "-" }
+                      </td>
+
+                      <td className="px-3 py-2">
                         {row.track}
                       </td>
 
                       <td className="px-3 py-2">
-                        {row.tas ? row.tas.game : "-"}
+                        {tasGame}
                       </td>
 
                       <td className="px-3 py-2">
-                        {row.tas ? row.tas.record : "-"}
+                        {row.tas!.category}
                       </td>
 
                       <td className="px-3 py-2">
-                        {row.rta?.record ?? "-"}
+                        { row.tas ? formatTime(row.tas.timeMs, isStunt, false) : "-"}
+                      </td>
+
+                      <td className="px-3 py-2">
+                        { row.rta ? formatTime(row.rta.timeMs, isStunt, false) : "-" }
                       </td>
 
                       <td className="px-3 py-2 italic">
-                        {timeSaved > 0
-                          ? `-${(timeSaved / 1000).toFixed(2)}`
-                          : "-"}
+                        { row.rta && row.tas ? formatTime(row.tas.timeMs - row.rta.timeMs, isStunt, false, true) : "-" }
                       </td>
                     </tr>
                   );
@@ -378,11 +455,11 @@ export default function AuthorsPage() {
 
           <div className="flex flex-col items-start gap-4">
             <div className="flex flex-row gap-4">
-              <AuthorYearChart rows={rows} />
-              <AuthorGameChart rows={rows} />
+              <AuthorYearChart rows={visibleRows} />
+              <AuthorGameChart rows={visibleRows} />
             </div>
 
-            <AuthorEnvironmentChart rows={rows} />
+            <AuthorEnvironmentChart rows={visibleRows} />
           </div>
         </div>
       )}

@@ -2,9 +2,9 @@
 
 import { use, useState, useMemo } from "react";
 import { useVisibleTables } from "@/lib/VisibleTablesContext";
-import { Category, Environment, categories, gameSlugMap } from "../../lib/TrackLists";
+import { Category, Environment, categories, categoryFilters, gameSlugMap } from "../../lib/TrackLists";
 import { TasRecords } from "../../lib/TasRecords";
-import { RtaRecords } from "../../lib/RtaRecords";
+import { RtaRecords, buildBestRtaByTrack } from "../../lib/RtaRecords";
 import { trackList, TasEntry, RtaEntry } from "../../lib/TrackLists";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
@@ -25,19 +25,16 @@ export default function GamePage({
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
 
-  const allowedCategories = useMemo(() => {
-    const targetCategory = game === "TMNF No Cut" ? "No Cut" : selectedCategory;
-    const index = categories.indexOf(targetCategory);
-    return new Set(categories.slice(index));
-  }, [selectedCategory]);
+  const rtaRecords = useMemo(() => {
+    return buildBestRtaByTrack()
+  }, [RtaRecords])
 
   const currentRecords = useMemo(() => {
     const bestTasByTrack = new Map<string, TasEntry>();
-    const bestRtaByTrack = new Map<string, RtaEntry>();
-    const targetGame = game === "TMNF No Cut" ? "TMNF" : game;
+    const allowedCategories = categoryFilters[selectedCategory]
 
     Object.values(TasRecords)
-      .filter((e) => e.game === targetGame)
+      .filter((e) => e.game === game)
       .filter((e) => allowedCategories.has(e.category))
       .forEach((entry) => {
         const existing = bestTasByTrack.get(entry.track);
@@ -55,31 +52,13 @@ export default function GamePage({
         }
       });
 
-    Object.values(RtaRecords)
-      .filter((e) => e.game === game)
-      .forEach((entry) => {
-        const existing = bestRtaByTrack.get(entry.track);
-
-        if (
-          !existing ||
-          entry.timeMs < existing.timeMs ||
-          (
-            entry.timeMs === existing.timeMs &&
-            new Date(entry.date).getTime() <
-              new Date(existing.date).getTime()
-          )
-        ) {
-          bestRtaByTrack.set(entry.track, entry);
-        }
-      });
-
     return Object.entries(trackList)
       .filter(([, info]) => info.game === game)
       .map(([track, trackInfo]) => ({
         track,
         trackInfo,
-        tas: bestTasByTrack.get(trackInfo.track || track) ?? null,
-        rta: bestRtaByTrack.get(trackInfo.track || track) ?? null,
+        tas: bestTasByTrack.get(track) ?? null,
+        rta: rtaRecords.get(track) ?? null,
       }));
   }, [game, selectedCategory]);
 

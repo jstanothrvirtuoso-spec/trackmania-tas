@@ -131,7 +131,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A08-Endurance",
+    "track": "A08-Endurance No Cut",
     "record": "0:57.89",
     "timeMs": 57890,
     "player": "»RtA«Katic",
@@ -171,7 +171,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "C12-Obstacle",
+    "track": "C12-Obstacle No Cut",
     "record": "0:30.43",
     "timeMs": 30430,
     "player": "Solution",
@@ -181,7 +181,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "B02-Race",
+    "track": "B02-Race No Cut",
     "record": "0:25.38",
     "timeMs": 25380,
     "player": "racehans",
@@ -191,7 +191,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "B03-Race",
+    "track": "B03-Race No Cut",
     "record": "0:25.58",
     "timeMs": 25580,
     "player": "racehans",
@@ -201,7 +201,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "C07-Race",
+    "track": "C07-Race No Cut",
     "record": "0:37.29",
     "timeMs": 37290,
     "player": "racehans",
@@ -211,7 +211,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D14-Endurance",
+    "track": "D14-Endurance No Cut",
     "record": "2:39.17",
     "timeMs": 159170,
     "player": "Storm!Kukker",
@@ -221,7 +221,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D07-Race",
+    "track": "D07-Race No Cut",
     "record": "0:53.43",
     "timeMs": 53430,
     "player": "racehans",
@@ -231,7 +231,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "C04-Race",
+    "track": "C04-Race No Cut",
     "record": "0:37.66",
     "timeMs": 37660,
     "player": "Schmaniol",
@@ -241,7 +241,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A06-Obstacle",
+    "track": "A06-Obstacle No Flip",
     "record": "0:27.94",
     "timeMs": 27940,
     "player": "Fwo.Link",
@@ -271,7 +271,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "B07-Race",
+    "track": "B07-Race No Cut",
     "record": "0:28.60",
     "timeMs": 28600,
     "player": "Simi TM",
@@ -291,7 +291,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D10-Race",
+    "track": "D10-Race No Cut",
     "record": "0:49.38",
     "timeMs": 49380,
     "player": "Wave.Ðemon",
@@ -331,7 +331,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A02-Race",
+    "track": "A02-Race No Cut",
     "record": "0:15.53",
     "timeMs": 15530,
     "player": "social",
@@ -341,7 +341,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D06-Obstacle",
+    "track": "D06-Obstacle No Cut",
     "record": "0:59.31",
     "timeMs": 59310,
     "player": "social",
@@ -351,7 +351,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "E04-Obstacle",
+    "track": "E04-Obstacle No Cut",
     "record": "1:43.13",
     "timeMs": 103130,
     "player": "racehans",
@@ -361,7 +361,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "B12-Race",
+    "track": "B12-Race No Cut",
     "record": "0:41.97",
     "timeMs": 41970,
     "player": "NiteR CSGO<3",
@@ -411,7 +411,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "B05-Race",
+    "track": "B05-Race No Flip",
     "record": "0:25.27",
     "timeMs": 25270,
     "player": "Aynyxamer74",
@@ -441,7 +441,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A09-Race",
+    "track": "A09-Race No Cut",
     "record": "0:24.79",
     "timeMs": 24790,
     "player": "Trinity",
@@ -451,7 +451,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "C09-Race",
+    "track": "C09-Race No Cut",
     "record": "0:44.95",
     "timeMs": 44950,
     "player": "Virtuoso",
@@ -471,7 +471,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A12-Speed",
+    "track": "A12-Speed No Cut",
     "record": "0:18.68",
     "timeMs": 18680,
     "player": "trabadia",
@@ -511,7 +511,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A13-Race",
+    "track": "A13-Race No Cut",
     "record": "0:30.90",
     "timeMs": 30900,
     "player": "swa_rxa4",
@@ -561,7 +561,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D12-Speed",
+    "track": "D12-Speed No Cut",
     "record": "0:38.96",
     "timeMs": 38960,
     "player": "racehans",
@@ -571,7 +571,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A05-Race",
+    "track": "A05-Race No Cut",
     "record": "0:16.43",
     "timeMs": 16430,
     "player": "racehans",
@@ -581,7 +581,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A15-Speed",
+    "track": "A15-Speed No Cut",
     "record": "0:24.41",
     "timeMs": 24410,
     "player": "Fwo.Link",
@@ -591,7 +591,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D02-Race",
+    "track": "D02-Race No Cut",
     "record": "0:47.80",
     "timeMs": 47800,
     "player": "racehans",
@@ -601,7 +601,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A14-Race",
+    "track": "A14-Race No Cut",
     "record": "0:21.10",
     "timeMs": 21100,
     "player": "aest4s",
@@ -611,7 +611,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D05-Race",
+    "track": "D05-Race No Cut",
     "record": "1:02.24",
     "timeMs": 62240,
     "player": "racehans",
@@ -621,7 +621,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "B08-Endurance",
+    "track": "B08-Endurance No Cut",
     "record": "1:29.27",
     "timeMs": 89270,
     "player": "Wave.Ðemon",
@@ -631,7 +631,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "C10-Acrobatic",
+    "track": "C10-Acrobatic No Cut",
     "record": "0:14.16",
     "timeMs": 14160,
     "player": "racehans",
@@ -641,7 +641,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D09-Obstacle",
+    "track": "D09-Obstacle No Cut",
     "record": "0:41.97",
     "timeMs": 41970,
     "player": "Wave.Ðemon",
@@ -711,7 +711,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D04-Race",
+    "track": "D04-Race No Cut",
     "record": "0:45.08",
     "timeMs": 45080,
     "player": "KarjeN",
@@ -721,7 +721,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D03-Acrobatic",
+    "track": "D03-Acrobatic No Cut",
     "record": "0:15.31",
     "timeMs": 15310,
     "player": "Toadscool",
@@ -801,7 +801,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "D11-Acrobatic",
+    "track": "D11-Acrobatic No Cut",
     "record": "0:09.95",
     "timeMs": 9950,
     "player": "Yumlunch",
@@ -1051,7 +1051,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "A06-Obstacle",
+    "track": "A06-Obstacle No Flip",
     "record": "0:27.88",
     "timeMs": 27880,
     "player": "Fwo.Link",
@@ -1061,7 +1061,7 @@
   },
   {
     "game": "TMNF No Cut",
-    "track": "C14-Endurance",
+    "track": "C14-Endurance No Cut",
     "record": "1:46.28",
     "timeMs": 106280,
     "player": "Fwo.aest4s",
@@ -7621,7 +7621,7 @@
   },
   {
     "game": "StarTrack",
-    "track": "StarIslandE ",
+    "track": "StarIslandE",
     "record": "1:00.37",
     "timeMs": 60370,
     "player": "exetic",
