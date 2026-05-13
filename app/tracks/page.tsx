@@ -4,9 +4,37 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gameLinks, trackList, RtaEntry, categoryFilters, Category } from "@/lib/TrackLists";
 import { TasRecords } from "@/lib/TasRecords";
-import { RtaRecords } from "@/lib/RtaRecords";
+import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 
 type GraphCategory = "Open" | "NOseboost" | "No Uber" | "WR Route" | "No Cut" | "RTA"
+const round = (n: number) => Math.round(n * 1000) / 1000;
+
+function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean, showSign: boolean = false): string {
+
+  if (isStunt) {
+    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
+    return `${sign}${timeMs / 1000}`
+  }
+
+  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
+  const abs = Math.abs(timeMs);
+  const minutes = Math.floor(abs / 60000);
+  const seconds = Math.floor((abs % 60000) / 1000);
+  const decimals = isTM2 ? 3 : 2
+  const split = isTM2 ? Math.round(abs) % 1000 : Math.round(abs / 10) % 100;
+
+  if (minutes > 0) {
+    return `${sign}${minutes}:${seconds
+      .toString()
+      .padStart(2, "0")}.${split
+      .toString()
+      .padStart(decimals, "0")}`;
+  }
+
+  return `${sign}${seconds}.${split
+    .toString()
+    .padStart(decimals, "0")}`;
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -46,15 +74,11 @@ function generateYAxisTicks(min: number, max: number) {
 
   const ticks: number[] = [];
 
-  for (
-    let t = tickMin;
-    t <= tickMax + niceStep * 0.5;
-    t += niceStep
-  ) {
-    ticks.push(Number(t.toFixed(6)));
+  for (let i = 0, t = tickMin; t <= tickMax + niceStep * 0.5; i++, t = tickMin + i * niceStep) {
+    ticks.push(t);
   }
 
-  return ticks;
+  return ticks.map((t) => Math.round(t * 1e6) / 1e6);
 }
 
 function RecordProgressionGraph({
@@ -108,22 +132,13 @@ function RecordProgressionGraph({
 
   const xScale = (date: string) => {
     const t = new Date(date).getTime();
-
-    return (
-      xPadding +
-      ((t - minDate) / (maxDate - minDate || 1)) *
-        (width - xPadding * 1.5)
-    );
+    return round(xPadding + ((t - minDate) / (maxDate - minDate || 1)) * (width - xPadding * 1.5));
   };
 
   const chartMin = yTicks[0];
   const chartMax = yTicks[yTicks.length - 1];
 
-  const yScale = (time: number) =>
-    height -
-    yPadding -
-    ((time - chartMin) / (chartMax - chartMin || 1)) *
-      (height - yPadding * 2);
+  const yScale = (time: number) => round(height - yPadding - ((time - chartMin) / (chartMax - chartMin || 1)) * (height - yPadding * 2));
 
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
@@ -298,6 +313,12 @@ export default function TracksPage() {
   const searchParams = useSearchParams();
   const gameOptions = gameLinks.map((g) => g.name);
 
+  const rtaRecords = useRtaRecords();
+  const bestRtaByTrack = useMemo(() => {
+    if (!rtaRecords.length) return new Map();
+    return buildBestRtaByTrack(rtaRecords)
+  }, [rtaRecords])
+
   const [game, setGame] = useState("TMNF");
   const [track, setTrack] = useState("A01-Race");
   const [isGraphDropdownOpen, setIsGraphDropdownOpen] = useState(false);
@@ -337,19 +358,9 @@ export default function TracksPage() {
     router.replace(`/tracks?game=${encodeURIComponent(g)}&track=${encodeURIComponent(t)}`);
   };
 
-  const rta = useMemo(() => {
-    return RtaRecords
-      .filter((r) => r.track === track)
-      .reduce((best, current) => {
-        if (!best) return current;
+  const rta = bestRtaByTrack.get(track)
 
-        return current.timeMs < best.timeMs
-          ? current
-          : best;
-      }, null as RtaEntry | null);
-  }, [track]);
-
-  const useMinutes = rta ? rta.timeMs >= 120000 : false;
+  const useMinutes = rta ? rta.time_ms >= 120000 : false;
 
   const tasRows = useMemo(() => {
     if (!track) return [];
@@ -399,7 +410,7 @@ export default function TracksPage() {
       "No Uber": buildPoints("No Uber"),
       "WR Route": buildPoints("WR Route"),
       "No Cut": buildPoints("No Cut"),
-      "RTA": rta? [{ date: rta.date, time: useMinutes ? rta.timeMs / 60000 : rta.timeMs / 1000 }]: [],
+      "RTA": rta? [{ date: rta.date, time: useMinutes ? rta.time_ms / 60000 : rta.time_ms / 1000 }]: [],
     };
   }, [tasRows, useMinutes]);
 
@@ -500,7 +511,7 @@ export default function TracksPage() {
         </h1>
 
         <div className="mt-1 text-slate-400">
-          {rta && `RTA: ${rta.record} by ${rta.player} (${formatDate(rta.date)})`}
+          {rta && `RTA: ${formatTime(rta.time_ms, false, false)} by ${rta.player} (${formatDate(rta.date)})`}
         </div>
       </div>
 
@@ -522,29 +533,28 @@ export default function TracksPage() {
 
               <tbody>
                 {tasRows.map((tas) => {
-                  const timeSaved = rta ? tas.timeMs - rta.timeMs : 0;
+                  const isStunt = false  // TODO
+                  const isTM2 = false  // TODO
 
                   return (
                     <tr
-                      key={`${tas.record}-${tas.date}`}
+                      key={`${tas.timeMs}-${tas.date}`}
                       className="border-b border-slate-800 transition-colors hover:bg-emerald-400/20"
                     >
                       <td className="px-3 py-1.5 text-center font-medium text-slate-200">
-                        {tas.record}
+                        { formatTime(tas.timeMs, isStunt, isTM2) }
                       </td>
 
                       <td className="px-3 py-1.5 text-center italic font-bold text-slate-200">
-                        {timeSaved > 0
-                          ? `+${(timeSaved / 1000).toFixed(2)}`
-                          : `${(timeSaved / 1000).toFixed(2)}`}
+                        { rta ? formatTime(tas.timeMs - rta.time_ms, isStunt, isTM2, true) : "-" }
                       </td>
 
                       <td className="px-3 py-1.5 text-center text-slate-200">
                         {tas.authors.join(", ")}
                       </td>
 
-                      <td className="px-3 py-1.5 text-center text-slate-400">
-                        {tas.date}
+                      <td className="px-3 py-1.5 text-center text-slate-400 whitespace-nowrap">
+                        { formatDate(tas.date) }
                       </td>
                       
                       <td className="px-3 py-1.5 text-center text-slate-400">

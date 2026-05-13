@@ -28,7 +28,7 @@
 "use client";
 
 import { TasRecords } from "@/lib/TasRecords";
-import { RtaRecords } from "@/lib/RtaRecords";
+import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { TasEntry } from "@/lib/TrackLists";
 import { useMemo, useState } from "react";
 
@@ -57,6 +57,12 @@ export default function Home() {
   const [sortField, setSortField] = useState<SortField>("tases");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
+  const rtaRecords = useRtaRecords();
+  const bestRtaByTrack = useMemo(() => {
+    if (!rtaRecords.length) return new Map();
+    return buildBestRtaByTrack(rtaRecords)
+  }, [rtaRecords])
+
   const authorStats = useMemo(() => {
   const authorMap = new Map<string, AuthorStat>();
 
@@ -79,16 +85,10 @@ export default function Home() {
   });
 
   bestTasByTrack.forEach((entry) => {
-    const rta = RtaRecords
-      .filter(
-        (r) =>
-          r.game === entry.game &&
-          r.track === entry.track
-      )
-      .sort((a, b) => a.timeMs - b.timeMs)[0];
+    const rta = bestRtaByTrack.get(entry.track)
 
     const savedMs = rta
-      ? Math.max(0, rta.timeMs - entry.timeMs)
+      ? Math.max(0, rta.time_ms - entry.timeMs)
       : 0;
 
     const contributionPerAuthor =

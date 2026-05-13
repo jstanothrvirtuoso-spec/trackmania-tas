@@ -48,7 +48,7 @@ export type RtaEntry = {
   game: Game;
   track: string;
   record: string;
-  timeMs: number;
+  time_ms: number;
   player: string;
   date: string;
   video: string;

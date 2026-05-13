@@ -275,13 +275,13 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
           break;
         case "diff":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
-          aVal = a.tas && a.rta ? a.tas.timeMs - a.rta.timeMs : 0;
-          bVal = b.tas && b.rta ? b.tas.timeMs - b.rta.timeMs : 0;
+          aVal = a.tas && a.rta ? a.tas.timeMs - a.rta.time_ms : 0;
+          bVal = b.tas && b.rta ? b.tas.timeMs - b.rta.time_ms : 0;
           break;
         case "percentSaved":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
-          aVal = a.tas && a.rta ? (a.tas.timeMs - a.rta.timeMs) / a.rta.timeMs : 0;
-          bVal = b.tas && b.rta ? (b.tas.timeMs - b.rta.timeMs) / b.rta.timeMs : 0;
+          aVal = a.tas && a.rta ? (a.tas.timeMs - a.rta.time_ms) / a.rta.time_ms : 0;
+          bVal = b.tas && b.rta ? (b.tas.timeMs - b.rta.time_ms) / b.rta.time_ms : 0;
           break;
         case "authors":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
@@ -305,8 +305,8 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
           break;
         case "rtaTime":
           if (aHasRta !== bHasRta) return aHasRta ? -1 : 1;
-          aVal = a.rta?.timeMs || 0;
-          bVal = b.rta?.timeMs || 0;
+          aVal = a.rta?.time_ms || 0;
+          bVal = b.rta?.time_ms || 0;
           break;
       }
 
@@ -527,18 +527,18 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                   </td>
                   <td
                     className={ `px-1.5 py-1 border-b border-slate-800 text-center italic font-bold align-middle ${bgColour} ${
-                      entry && row.rta && ((entry.timeMs - row.rta.timeMs > 0 && !isStunt) || (entry.timeMs - row.rta.timeMs < 0 && isStunt))
+                      entry && row.rta && ((entry.timeMs - row.rta.time_ms > 0 && !isStunt) || (entry.timeMs - row.rta.time_ms < 0 && isStunt))
                         ? "text-red-300"
                         : "text-slate-100"
                     }`}
                   >
                     {entry && row.rta
-                      ? formatTime(entry.timeMs - row.rta.timeMs, isStunt, isTM2, true)
+                      ? formatTime(entry.timeMs - row.rta.time_ms, isStunt, isTM2, true)
                       : "-"}
                   </td>
                   <td className={ `px-1.5 py-1 text-slate-100 border-b border-slate-800 text-center align-middle ${bgColour}` }>
                     {entry && row.rta
-                      ? formatPercentSaved(entry.timeMs, row.rta.timeMs, isStunt)
+                      ? formatPercentSaved(entry.timeMs, row.rta.time_ms, isStunt)
                       : "-"}
                   </td>
                   <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 break-words min-w-[320px] whitespace-normal text-center align-middle ${bgColour}` }>
@@ -562,7 +562,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                       <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${rtaColour} ${
                             i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
                           }`}>
-                        {row.rta ? formatTime(row.rta.timeMs, isStunt, isTM2) : "-"}
+                        {row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}
                       </td>
                       <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${rtaColour}` }>
                         {row.rta?.player ?? "-"}

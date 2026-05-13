@@ -50,8 +50,8 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
           };
         }
         
-        acc[category].tasMs += row.tas ? row.tas.timeMs : row.rta.timeMs;
-        acc[category].rtaMs += row.rta.timeMs;
+        acc[category].tasMs += row.tas ? row.tas.timeMs : row.rta.time_ms;
+        acc[category].rtaMs += row.rta.time_ms;
 
         return acc;
       }, {} as Record<string, CategoryTotals>)

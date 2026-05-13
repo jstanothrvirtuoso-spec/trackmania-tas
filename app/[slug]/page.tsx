@@ -1,10 +1,10 @@
 "use client";
 
-import { use, useState, useMemo } from "react";
+import { use, useState, useMemo, useEffect } from "react";
 import { useVisibleTables } from "@/lib/VisibleTablesContext";
-import { Category, Environment, categories, categoryFilters, gameSlugMap } from "../../lib/TrackLists";
+import { Category, Environment, categoryFilters, gameSlugMap } from "../../lib/TrackLists";
 import { TasRecords } from "../../lib/TasRecords";
-import { RtaRecords, buildBestRtaByTrack } from "../../lib/RtaRecords";
+import { useRtaRecords, buildBestRtaByTrack } from "../../lib/RtaRecords";
 import { trackList, TasEntry, RtaEntry } from "../../lib/TrackLists";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
@@ -24,10 +24,12 @@ export default function GamePage({
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
-
-  const rtaRecords = useMemo(() => {
-    return buildBestRtaByTrack()
-  }, [RtaRecords])
+  
+  const rtaRecords = useRtaRecords();
+  const bestRtaByTrack = useMemo(() => {
+    if (!rtaRecords.length) return new Map();
+    return buildBestRtaByTrack(rtaRecords)
+  }, [rtaRecords])
 
   const currentRecords = useMemo(() => {
     const bestTasByTrack = new Map<string, TasEntry>();
@@ -58,9 +60,9 @@ export default function GamePage({
         track,
         trackInfo,
         tas: bestTasByTrack.get(track) ?? null,
-        rta: rtaRecords.get(track) ?? null,
+        rta: bestRtaByTrack.get(track) ?? null,
       }));
-  }, [game, selectedCategory]);
+  }, [game, selectedCategory, rtaRecords]);
 
   if (!game) {
     throw new Error("Game not found");

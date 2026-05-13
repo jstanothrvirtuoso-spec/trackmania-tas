@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { TasRecords } from "@/lib/TasRecords";
-import { buildBestRtaByTrack, RtaRecords } from "@/lib/RtaRecords";
+import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
 import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackLists";
 
 type RecordRow = {
@@ -255,19 +255,28 @@ export default function AuthorsPage() {
   const [selectedAuthor, setSelectedAuthor] = useState(initialAuthor);
   const [hideBeaten, setHideBeaten] = useState(false);
 
+  const rtaRecords = useRtaRecords();
+  const bestRtaByTrack = useMemo(() => {
+    if (!rtaRecords.length) return new Map();
+    return buildBestRtaByTrack(rtaRecords);
+  }, [rtaRecords]);
+
   const authorOptions = useMemo(() => {
-    const set = new Set<string>();
+    const authorCount: Record<string, number> = {};
 
     TasRecords.forEach((tas) => {
-      tas.authors.forEach((author) => set.add(author));
+      tas.authors.forEach((author) => {
+        authorCount[author] = (authorCount[author] ?? 0) + 1;
+      });
     });
 
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
+     return Object.entries(authorCount)
+      .sort((a, b) => b[1] - a[1])
+      .map(([author, count]) => ({
+        author,
+        count,
+      }));
   }, []);
-
-  const rtaRecords = useMemo(() => {
-    return buildBestRtaByTrack()
-  }, [RtaRecords])
 
   const rows = useMemo<RecordRow[]>(() => {
     if (!selectedAuthor) return [];
@@ -283,7 +292,6 @@ export default function AuthorsPage() {
           }
 
           const key = `${entry.track}|${displayCategory}`;
-
           const existing = bestTasByTrackCategory.get(key);
 
           if (
@@ -308,16 +316,14 @@ export default function AuthorsPage() {
 
     return selectedAuthorTasRecords
       .map((tas) => {
-        const noCutTrack = `${tas.track.slice(0, 3)} - No Cut`
-        const currentTrack = tas.category === "No Cut"  && trackList[noCutTrack] ? noCutTrack : tas.track
-        const key = `${currentTrack}|${tas.category}`;
+        const key = `${tas.track}|${tas.category}`;
         const currentBest = bestTasByTrackCategory.get(key);
 
         return {
-          track: currentTrack,
-          trackInfo: trackList[currentTrack],
+          track: tas.track,
+          trackInfo: trackList[tas.track],
           tas,
-          rta: rtaRecords.get(currentTrack) ?? null,
+          rta: bestRtaByTrack.get(tas.track) ?? null,
           isCurrentBestTas: currentBest === tas,
         };
       })
@@ -326,9 +332,7 @@ export default function AuthorsPage() {
       );
   }, [selectedAuthor]);
 
-  const visibleRows = hideBeaten
-    ? rows.filter((r) => r.isCurrentBestTas)
-    : rows;
+  const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
   return (
     <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
@@ -344,9 +348,9 @@ export default function AuthorsPage() {
         >
           <option value="">Select author</option>
 
-          {authorOptions.map((author) => (
+          {authorOptions.map(({ author, count }) => (
             <option key={author} value={author}>
-              {author}
+              {author} ({count})
             </option>
           ))}
         </select>
@@ -440,11 +444,11 @@ export default function AuthorsPage() {
                       </td>
 
                       <td className="px-3 py-2">
-                        { row.rta ? formatTime(row.rta.timeMs, isStunt, false) : "-" }
+                        { row.rta ? formatTime(row.rta.time_ms, isStunt, false) : "-" }
                       </td>
 
                       <td className="px-3 py-2 italic">
-                        { row.rta && row.tas ? formatTime(row.tas.timeMs - row.rta.timeMs, isStunt, false, true) : "-" }
+                        { row.rta && row.tas ? formatTime(row.tas.timeMs - row.rta.time_ms, isStunt, false, true) : "-" }
                       </td>
                     </tr>
                   );
