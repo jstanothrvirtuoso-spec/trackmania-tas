@@ -46,8 +46,8 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <VisitorCounter />
         </Providers>
-        <VisitorCounter />
       </body>
     </html>
   );

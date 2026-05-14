@@ -13,10 +13,11 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { 
-    showRta, showTimeSaved, showRecent, showLeaderboard, showRtaLeaderboard, 
-    setShowRta, setShowTimeSaved, setShowRecent, setShowLeaderboard, setShowRtaLeaderboard 
+    showRta, showTimeSaved, showRecent, showLeaderboard, showRtaLeaderboard, showVisitorCounter, 
+    setShowRta, setShowTimeSaved, setShowRecent, setShowLeaderboard, setShowRtaLeaderboard, setShowVisitorCounter
   } = useVisibleTables();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const optionsDropdownRef = useRef<HTMLDivElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const currentPage = pathname.split("/").filter(Boolean)[0];
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -41,14 +42,28 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        optionsDropdownRef.current &&
+        !optionsDropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
+      }
+
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsUserDropdownOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
     };
   }, []);
 
@@ -69,9 +84,9 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="text-xl font-bold text-white font-okta">
-            
-  TrackMania TAS
-</Link>
+              TrackMania TAS
+            </Link>
+
             <nav className="hidden md:flex items-center gap-6">
               {gameLinks.map((game) => {
                 const isActive = currentPage === game.slug;
@@ -121,7 +136,7 @@ export default function Header() {
               </Link>
             </div>
 
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" ref={optionsDropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none flex items-center gap-2 transition hover:bg-slate-700 hover:text-white"
@@ -179,6 +194,15 @@ export default function Header() {
                       />
                       Highlight Recent
                     </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
+                      <input
+                        type="checkbox"
+                        checked={showVisitorCounter}
+                        onChange={(e) => setShowVisitorCounter(e.target.checked)}
+                        className="rounded"
+                      />
+                      Visitor Counter
+                    </label>
                   </div>
                 </div>
               )}
@@ -193,7 +217,7 @@ export default function Header() {
               </Link>
             </div>
 
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative" ref={userDropdownRef}>
               {user ? (
                 <>
                   <button

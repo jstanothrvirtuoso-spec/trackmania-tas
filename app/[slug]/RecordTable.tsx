@@ -441,7 +441,6 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                 <tr
                   key={row.track}
                   className="h-[30px] transition-colors hover:bg-emerald-400/20"
-                  // style={ recent ? { boxShadow: "inset 0 0 0 1px rgba(56, 189, 248, 0.24)" } : undefined }
                 >
                   <td
                     className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle ${bgColour} ${
