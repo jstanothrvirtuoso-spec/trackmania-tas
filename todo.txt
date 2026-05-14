@@ -1,0 +1,41 @@
+
+//////////////////////////////////////////////////////////////////////////
+// Virtuoso
+//////////////////////////////////////////////////////////////////////////
+
+Need to remember user settings (options/categories)
+Expand home page:
+ - Medal table
+ - Game completion table
+ - Header for introduction
+ - Time saved leaderboards (non-noseboost/uber)
+ - Current projects? (like TMUF perfection project)
+Continue working on submit page
+ - Read track, inputs, and record/time from replay file
+ - Add registered author list for auto complete
+ - Submit button, where do requests go?
+Game tables:
+ - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
+ - Add separation between certain categories
+Admin panel:
+ - Inserting into database tables
+ - Deleting from database tables
+ - Updating database tables
+Profile database table?
+User registration
+Use usernames in header rather than email
+
+
+
+//////////////////////////////////////////////////////////////////////////
+// Kimura
+//////////////////////////////////////////////////////////////////////////
+
+Overall:
+ 
+Showing the cursor from other peoples when their are in the website (different cursor look, just a detail but could be fun and good) (an option to toggle on/off could be added)
+Reworking the design/placement/looking in the Main page (as well for others pages maybe) (mostly when the final main page will be done by Virtuoso)
+Adding a glowing and slighty bouncy text "New" when a new TAS has been added
+An option to move slighty the wallpaper background of the site when moving the cursor around (parallax effect, could be turned on/off)
+Premade wallpaper (user could choose his wallpaper in the website that has been defined by me, i.g 3 differents wallpapers)
+And others cool features/project ;>
