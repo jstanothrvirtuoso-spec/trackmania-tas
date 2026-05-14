@@ -3,68 +3,10 @@
 import { useState, useMemo } from "react";
 import { Game, gameSets, Environment, RecordRow } from "../../lib/TrackLists";
 import { useVisibleTables } from "../../lib/VisibleTablesContext";
+import { formatTime, formatPercentSaved, formatDate } from "../../utils/formatting"
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
-
-function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean, showSign: boolean = false): string {
-
-  if (isStunt) {
-    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
-    return `${sign}${timeMs / 1000}`
-  }
-
-  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
-  const abs = Math.abs(timeMs);
-  const minutes = Math.floor(abs / 60000);
-  const seconds = Math.floor((abs % 60000) / 1000);
-  const decimals = isTM2 ? 3 : 2
-  const split = isTM2 ? Math.round(abs) % 1000 : Math.round(abs / 10) % 100;
-
-  if (minutes > 0) {
-    return `${sign}${minutes}:${seconds
-      .toString()
-      .padStart(2, "0")}.${split
-      .toString()
-      .padStart(decimals, "0")}`;
-  }
-
-  return `${sign}${seconds}.${split
-    .toString()
-    .padStart(decimals, "0")}`;
-}
-
-function formatPercentSaved(timeMs: number, rtaMs: number, isStunt: boolean) {
-
-  const percent = ((timeMs - rtaMs) / rtaMs) * (isStunt ? -100 : 100);
-  let str = Number(percent).toPrecision(3);
-
-  const isNegative = str.startsWith("-");
-  if (isNegative) str = str.slice(1);
-
-  if (str.length > 4) {
-    str = str.slice(0, 4);
-
-    if (str.endsWith(".")) {
-      str = str.slice(0, -1);
-    }
-  }
-
-  if (isStunt) {
-    return `${percent <= 0 ? "" : "-"}${str}`;
-  } else {
-    return `${percent <= 0 ? "" : "+"}${str}`;
-  }
-  
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  }).replace(/ /g, '-')       
-}
 
 function getTrackDifficultyTint(category: string, i: number) {
   switch (category) {
@@ -270,18 +212,18 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
         }
         case "time":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
-          aVal = a.tas ? a.tas.timeMs : 0;
-          bVal = b.tas ? b.tas.timeMs : 0;
+          aVal = a.tas ? a.tas.time_ms : 0;
+          bVal = b.tas ? b.tas.time_ms : 0;
           break;
         case "diff":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
-          aVal = a.tas && a.rta ? a.tas.timeMs - a.rta.time_ms : 0;
-          bVal = b.tas && b.rta ? b.tas.timeMs - b.rta.time_ms : 0;
+          aVal = a.tas && a.rta ? a.tas.time_ms - a.rta.time_ms : 0;
+          bVal = b.tas && b.rta ? b.tas.time_ms - b.rta.time_ms : 0;
           break;
         case "percentSaved":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
-          aVal = a.tas && a.rta ? (a.tas.timeMs - a.rta.time_ms) / a.rta.time_ms : 0;
-          bVal = b.tas && b.rta ? (b.tas.timeMs - b.rta.time_ms) / b.rta.time_ms : 0;
+          aVal = a.tas && a.rta ? (a.tas.time_ms - a.rta.time_ms) / a.rta.time_ms : 0;
+          bVal = b.tas && b.rta ? (b.tas.time_ms - b.rta.time_ms) / b.rta.time_ms : 0;
           break;
         case "authors":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
@@ -523,22 +465,22 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                     )}
                   </td>
                   <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${bgColour}` }>
-                    {entry ? formatTime(entry.timeMs, isStunt, isTM2) : "-"}
+                    {entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}
                   </td>
                   <td
                     className={ `px-1.5 py-1 border-b border-slate-800 text-center italic font-bold align-middle ${bgColour} ${
-                      entry && row.rta && ((entry.timeMs - row.rta.time_ms > 0 && !isStunt) || (entry.timeMs - row.rta.time_ms < 0 && isStunt))
+                      entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt))
                         ? "text-red-300"
                         : "text-slate-100"
                     }`}
                   >
                     {entry && row.rta
-                      ? formatTime(entry.timeMs - row.rta.time_ms, isStunt, isTM2, true)
+                      ? formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)
                       : "-"}
                   </td>
                   <td className={ `px-1.5 py-1 text-slate-100 border-b border-slate-800 text-center align-middle ${bgColour}` }>
                     {entry && row.rta
-                      ? formatPercentSaved(entry.timeMs, row.rta.time_ms, isStunt)
+                      ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt)
                       : "-"}
                   </td>
                   <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 break-words min-w-[320px] whitespace-normal text-center align-middle ${bgColour}` }>

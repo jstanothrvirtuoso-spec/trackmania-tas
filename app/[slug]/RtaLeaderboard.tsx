@@ -17,11 +17,8 @@ export default function RtaTable({
 }: {
   currentRecords: RecordRow[];
 }) {
-  const [sortField, setSortField] =
-    useState<SortField>("wrs");
-
-  const [sortOrder, setSortOrder] =
-    useState<SortOrder>("desc");
+  const [sortField, setSortField] = useState<SortField>("wrs");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const leaderboardRows = useMemo<RtaLeaderboardRow[]>(() => {
     return Object.values(

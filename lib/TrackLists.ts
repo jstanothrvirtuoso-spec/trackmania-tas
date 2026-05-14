@@ -60,7 +60,7 @@ export type TasEntry = {
   track: string;
   category: Category;
   record: string;
-  timeMs: number;
+  time_ms: number;
   authors: string[];
   date: string;
   video: string;

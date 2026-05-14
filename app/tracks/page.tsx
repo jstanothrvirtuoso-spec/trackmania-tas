@@ -2,47 +2,23 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { gameLinks, trackList, RtaEntry, categoryFilters, Category } from "@/lib/TrackLists";
-import { TasRecords } from "@/lib/TasRecords";
+import { gameLinks, trackList, categoryFilters, Category } from "@/lib/TrackLists";
+import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { formatDate, formatTime } from "@/utils/formatting"
 
 type GraphCategory = "Open" | "NOseboost" | "No Uber" | "WR Route" | "No Cut" | "RTA"
+
+const categoryColours: Record<string, [string, string, string]> = {
+  "Open": ["#c271f8", "bg-[#c271f8]/20", "bg-[#c271f8]/25"],
+  "NOseboost": ["#60a5fa", "bg-[#60a5fa]/20", "bg-[#60a5fa]/25"],
+  "No Uber": ["#34d399", "bg-[#34d399]/10", "bg-[#34d399]/15"],
+  "WR Route": ["#ffc637", "bg-[#ffc637]/10", "bg-[#ffc637]/15"],
+  "No Cut": ["#4d59ff", "bg-[#4d59ff]/10", "bg-[#4d59ff]/15"],
+  "RTA": ["#fa5252", "bg-[#fa5252]/10", "bg-[#fa5252]/15"],
+} as const;
+
 const round = (n: number) => Math.round(n * 1000) / 1000;
-
-function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean, showSign: boolean = false): string {
-
-  if (isStunt) {
-    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
-    return `${sign}${timeMs / 1000}`
-  }
-
-  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
-  const abs = Math.abs(timeMs);
-  const minutes = Math.floor(abs / 60000);
-  const seconds = Math.floor((abs % 60000) / 1000);
-  const decimals = isTM2 ? 3 : 2
-  const split = isTM2 ? Math.round(abs) % 1000 : Math.round(abs / 10) % 100;
-
-  if (minutes > 0) {
-    return `${sign}${minutes}:${seconds
-      .toString()
-      .padStart(2, "0")}.${split
-      .toString()
-      .padStart(decimals, "0")}`;
-  }
-
-  return `${sign}${seconds}.${split
-    .toString()
-    .padStart(decimals, "0")}`;
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  }).replace(/ /g, '-')       
-}
 
 function generateYAxisTicks(min: number, max: number) {
   const range = max - min;
@@ -94,8 +70,8 @@ function RecordProgressionGraph({
 
   if (allPoints.length === 0) return null;
 
-  const width = 450;
-  const height = 220;
+  const width = 600;
+  const height = 320;
   const xPadding = 35;
   const yPadding = 20;
 
@@ -111,14 +87,6 @@ function RecordProgressionGraph({
   const datePadding = Math.max((nowDate - firstDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
   const minDate = firstDate - datePadding;
   const maxDate = nowDate;
-  const categoryColours = {
-    "Open": "#c271f8",
-    "NOseboost": "#60a5fa",
-    "No Uber": "#34d399",
-    "WR Route": "#ffc637",
-    "No Cut": "#4d59ff",
-    "RTA": "#fa5252",
-  };
 
   const rawMinTime = Math.min(...visiblePoints.map((p) => p.time));
   const rawMaxTime = Math.max(...visiblePoints.map((p) => p.time));
@@ -244,7 +212,7 @@ function RecordProgressionGraph({
               key={category}
               d={path}
               fill="none"
-              stroke={categoryColours[category as keyof typeof categoryColours]}
+              stroke={categoryColours[category as keyof typeof categoryColours][0]}
               strokeWidth="2"
             />
           );
@@ -264,11 +232,7 @@ function RecordProgressionGraph({
                 cx={x}
                 cy={y}
                 r={3}
-                fill={
-                  categoryColours[
-                    category as keyof typeof categoryColours
-                  ]
-                }
+                fill={categoryColours[category as keyof typeof categoryColours][0]}
               />
             );
           });
@@ -290,7 +254,7 @@ function RecordProgressionGraph({
             >
               <div
                 className="h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: colour }}
+                style={{ backgroundColor: colour[0] }}
               />
 
               <span
@@ -313,7 +277,8 @@ export default function TracksPage() {
   const searchParams = useSearchParams();
   const gameOptions = gameLinks.map((g) => g.name);
 
-  const rtaRecords = useRtaRecords();
+  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: tasRecords = [] } = useTasRecords();
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
     return buildBestRtaByTrack(rtaRecords)
@@ -359,15 +324,16 @@ export default function TracksPage() {
   };
 
   const rta = bestRtaByTrack.get(track)
-
+  const isStunt = track ? trackList[track].category === "Stunt" : false
+  const isTM2 = track ? trackList[track].game === "TM2" : false
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
 
   const tasRows = useMemo(() => {
     if (!track) return [];
 
-    return TasRecords
+    return tasRecords
       .filter((t) => t.track === track)
-      .sort((a, b) => a.timeMs - b.timeMs);
+      .sort((a, b) => a.time_ms - b.time_ms);
   }, [track]);
 
   const progression = useMemo(() => {
@@ -389,14 +355,14 @@ export default function TracksPage() {
       sorted
         .filter((tas) => allowedCategories.has(tas.category))
         .forEach((tas) => {
-          if (tas.timeMs < best) {
-            best = tas.timeMs;
+          if (tas.time_ms < best) {
+            best = tas.time_ms;
 
             points.push({
               date: tas.date,
               time: useMinutes
-                ? tas.timeMs / 60000
-                : tas.timeMs / 1000,
+                ? tas.time_ms / 60000
+                : tas.time_ms / 1000,
             });
           }
         });
@@ -415,9 +381,7 @@ export default function TracksPage() {
   }, [tasRows, useMinutes]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 text-slate-100">
-      <h1 className="text-xl font-bold mb-6">Track Stats</h1>
-
+    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
       <div className="flex flex-row items-start gap-4">
         <select
           value={game}
@@ -455,9 +419,9 @@ export default function TracksPage() {
         <div className="relative" ref={graphDropdownRef}>
           <button
             onClick={() => setIsGraphDropdownOpen(!isGraphDropdownOpen)}
-            className="rounded-md bg-slate-800 px-3 py-[5px] transition hover:bg-slate-700"
+            className="rounded-md bg-slate-800 px-2 py-[5px] transition hover:bg-slate-700"
           >
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-5">
               Graph Categories
               <svg
                 className="h-4 w-4"
@@ -511,18 +475,18 @@ export default function TracksPage() {
         </h1>
 
         <div className="mt-1 text-slate-400">
-          {rta && `RTA: ${formatTime(rta.time_ms, false, false)} by ${rta.player} (${formatDate(rta.date)})`}
+          {rta && `RTA: ${formatTime(rta.time_ms, false)} by ${rta.player} (${formatDate(rta.date)})`}
         </div>
       </div>
 
       {track && (
 
-        <div className="flex items-start gap-8">
+        <div className="flex items-start gap-5">
 
-          <div className="mt-4 overflow-x-auto">
-            <table className="border-collapse text-sm">
+          <div className="overflow-x-auto">
+            <table className="border-collapsed text-sm rounded-lg">
               <thead>
-                <tr className="border-b border-slate-700 text-slate-300">
+                <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/90 ">
                   <th className="px-3 py-2 text-center whitespace-nowrap">Record</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Time Saved</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Authors</th>
@@ -532,32 +496,33 @@ export default function TracksPage() {
               </thead>
 
               <tbody>
-                {tasRows.map((tas) => {
-                  const isStunt = false  // TODO
-                  const isTM2 = false  // TODO
-
+                {tasRows.map((tas, i) => {
+                  
+                  const colourIndex = i % 2 == 0 ? 2 : 1
+                  const rowColour = categoryColours[tas.category]?.[colourIndex] ?? "bg-slate-500/10"
+                  
                   return (
                     <tr
-                      key={`${tas.timeMs}-${tas.date}`}
-                      className="border-b border-slate-800 transition-colors hover:bg-emerald-400/20"
+                      key={`${tas.time_ms}-${tas.date}`}
+                      className={`border-x border-slate-800 transition-colors hover:bg-emerald-400/20 ${rowColour}`}
                     >
                       <td className="px-3 py-1.5 text-center font-medium text-slate-200">
-                        { formatTime(tas.timeMs, isStunt, isTM2) }
+                        { formatTime(tas.time_ms, isStunt, isTM2) }
                       </td>
 
                       <td className="px-3 py-1.5 text-center italic font-bold text-slate-200">
-                        { rta ? formatTime(tas.timeMs - rta.time_ms, isStunt, isTM2, true) : "-" }
+                        { rta ? formatTime(tas.time_ms - rta.time_ms, isStunt, isTM2, true) : "-" }
                       </td>
 
-                      <td className="px-3 py-1.5 text-center text-slate-200">
+                      <td className="px-3 py-1.5 text-center text-slate-200 max-w-[420px]">
                         {tas.authors.join(", ")}
                       </td>
 
-                      <td className="px-3 py-1.5 text-center text-slate-400 whitespace-nowrap">
+                      <td className="px-3 py-1.5 text-center text-slate-300 whitespace-nowrap">
                         { formatDate(tas.date) }
                       </td>
                       
-                      <td className="px-3 py-1.5 text-center text-slate-400">
+                      <td className="px-3 py-1.5 text-center text-slate-300 whitespace-nowrap">
                         {tas.category}
                       </td>
                     </tr>

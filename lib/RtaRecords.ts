@@ -1,31 +1,41 @@
 
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { RtaEntry } from "./TrackLists";
 
-export async function getRtaRecords(): Promise<RtaEntry[]> {
+async function getRtaRecords(): Promise<RtaEntry[]> {
   const supabase = createClient();
 
-  const { data, error } = await supabase
-    .from("rta_records")
-    .select("*");
+  const pageSize = 1000;
+  let from = 0;
+  let allRows: RtaEntry[] = [];
 
-  if (error) {
-    console.error(error);
-    return [];
+  while (true) {
+    const { data, error } = await supabase
+      .from("rta_records")
+      .select("*")
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+
+    if (!data?.length) break;
+
+    allRows.push(...(data as RtaEntry[]));
+
+    if (data.length < pageSize) break;
+
+    from += pageSize;
   }
 
-  return data as RtaEntry[];
+  return allRows;
 }
 
 export function useRtaRecords() {
-  const [records, setRecords] = useState<RtaEntry[]>([]);
-
-  useEffect(() => {
-    getRtaRecords().then(setRecords);
-  }, []);
-
-  return records;
+  return useQuery({
+    queryKey: ["rtaRecords"],
+    queryFn: getRtaRecords,
+    staleTime: 1000 * 60 * 60, // 60 mins
+  });
 }
 
 export function buildBestRtaByTrack(records: RtaEntry[]) {

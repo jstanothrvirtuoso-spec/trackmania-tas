@@ -2,8 +2,6 @@
 // Website for TrackMania Tool-Assisted Speedruns on Nadeo Tracks
 //////////////////////////////////////////////////////////////////////////
 
-// Add page for individual track with all tas runs
-// Add page for individual authors
 // Need to remember user settings (options/categories)
 // Expand home page:
 //  - Medal table
@@ -18,19 +16,22 @@
 // Game tables:
 //  - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
 //  - Add separation between certain categories
-//  - Separate RTA table visually from TAS table
-//  - Recent TAS highlighting should be separate from recent RTA highlighting
-//  - Fix stunt tracks
-// Continue adding RTA records (TMS/TMO/Demo/TM2)
-// Continue adding tracks (TM2, new tracks in Demo/Beta, and StuntRace everywhere)
 // Add database connection (table for TAS and RTA records)
+// Admin panel:
+//  - Inserting into database tables
+//  - Deleting from database tables
+//  - Updating database tables
+// Profile database table?
+// User registration
+// Use usernames in header rather than email
 
 "use client";
 
-import { TasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
-import { TasEntry } from "@/lib/TrackLists";
 import { useMemo, useState } from "react";
+import { useTasRecords } from "@/lib/TasRecords";
+import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { TasEntry, trackList } from "@/lib/TrackLists";
+import { formatTime } from "@/utils/formatting";
 
 type AuthorStat = {
   author: string;
@@ -42,40 +43,30 @@ type AuthorStat = {
 type SortField = "author" | "tases" | "contributions" | "totalSaved";
 type SortOrder = "asc" | "desc";
 
-function formatSeconds(seconds: number): string {
-  const absSeconds = Math.abs(seconds);
-  if (absSeconds < 60) {
-    return absSeconds.toFixed(2);
-  }
-
-  const minutes = Math.floor(absSeconds / 60);
-  const remainder = (absSeconds % 60).toFixed(2).padStart(5, "0");
-  return `${minutes}:${remainder}`;
-}
-
 export default function Home() {
   const [sortField, setSortField] = useState<SortField>("tases");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  const rtaRecords = useRtaRecords();
+  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: tasRecords = [] } = useTasRecords();
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords])
+    return buildBestRtaByTrack(rtaRecords);
+  }, [rtaRecords]);
 
   const authorStats = useMemo(() => {
   const authorMap = new Map<string, AuthorStat>();
 
   const bestTasByTrack = new Map<string, TasEntry>();
 
-  Object.values(TasRecords).forEach((entry) => {
+  Object.values(tasRecords).forEach((entry) => {
     const existing = bestTasByTrack.get(entry.track);
 
     if (
       !existing ||
-      entry.timeMs < existing.timeMs ||
+      entry.time_ms < existing.time_ms ||
       (
-        entry.timeMs === existing.timeMs &&
+        entry.time_ms === existing.time_ms &&
         new Date(entry.date).getTime() <
           new Date(existing.date).getTime()
       )
@@ -86,16 +77,9 @@ export default function Home() {
 
   bestTasByTrack.forEach((entry) => {
     const rta = bestRtaByTrack.get(entry.track)
-
-    const savedMs = rta
-      ? Math.max(0, rta.time_ms - entry.timeMs)
-      : 0;
-
-    const contributionPerAuthor =
-      1 / entry.authors.length;
-
-    const savedPerAuthor =
-      savedMs / entry.authors.length;
+    const savedMs = trackList[entry.track].overrideTimeSaved ?? rta ? Math.max(0, rta.time_ms - entry.time_ms) : 0;
+    const contributionPerAuthor = 1 / entry.authors.length;
+    const savedPerAuthor = savedMs / entry.authors.length;
 
     entry.authors.forEach((author) => {
       const current = authorMap.get(author);
@@ -224,7 +208,7 @@ export default function Home() {
                 <td className="px-2 py-2 text-slate-100">{author.author}</td>
                 <td className="px-2 py-2 text-slate-100">{author.tases}</td>
                 <td className="px-2 py-2 text-slate-100">{author.contributions.toFixed(2)}</td>
-                <td className="px-2 py-2 text-slate-300">{formatSeconds(author.totalSaved / 1000)}</td>
+                <td className="px-2 py-2 text-slate-300">{formatTime(author.totalSaved, false, false, false)}</td>
               </tr>
             ))}
           </tbody>

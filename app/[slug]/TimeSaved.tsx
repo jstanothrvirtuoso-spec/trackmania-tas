@@ -1,38 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import { Game, RecordRow } from "../../lib/TrackLists";
+import { RecordRow } from "../../lib/TrackLists";
+import { formatTime, formatPercentSaved } from "@/utils/formatting";
 
 type CategoryTotals = {
   category: string;
   tasMs: number;
   rtaMs: number;
 };
-
-function formatTime(timeMs: number, isStunt: boolean, showSign: boolean = false): string {
-
-  if (isStunt) {
-    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
-    return `${sign}${timeMs / 1000}`
-  }
-
-  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
-  const abs = Math.round(Math.abs(timeMs) / 10);
-  const minutes = Math.floor(abs / 6000);
-  const seconds = Math.floor((abs % 6000) / 100);
-  const split = Math.round(abs) % 100;
-
-  return `${sign}${minutes}:${seconds
-    .toString()
-    .padStart(2, "0")}.${split
-    .toString()
-    .padStart(2, "0")}`;
-}
-
-function formatPercentSaved(diffMs: number, rtaMs: number) {
-  if (rtaMs <= 0) return "-";
-  return `${((diffMs / rtaMs) * 100).toFixed(2)}`;
-}
 
 export default function TimeSaved({ currentRecords }: { currentRecords: RecordRow[] }) {
 
@@ -50,7 +26,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
           };
         }
         
-        acc[category].tasMs += row.tas ? row.tas.timeMs : row.rta.time_ms;
+        acc[category].tasMs += row.tas ? row.tas.time_ms : row.rta.time_ms;
         acc[category].rtaMs += row.rta.time_ms;
 
         return acc;
@@ -59,19 +35,19 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
   }, [currentRecords]);
   
   const total = categoryTotals
-  .filter(category => category.category !== "Stunt")
-  .reduce<CategoryTotals>(
-    (acc, curr) => ({
-      category: "Total",
-      tasMs: acc.tasMs + curr.tasMs,
-      rtaMs: acc.rtaMs + curr.rtaMs,
-    }),
-    {
-      category: "Total",
-      tasMs: 0,
-      rtaMs: 0,
-    }
-  );
+    .filter(category => category.category !== "Stunt")
+    .reduce<CategoryTotals>(
+      (acc, curr) => ({
+        category: "Total",
+        tasMs: acc.tasMs + curr.tasMs,
+        rtaMs: acc.rtaMs + curr.rtaMs,
+      }),
+      {
+        category: "Total",
+        tasMs: 0,
+        rtaMs: 0,
+      }
+    );
 
   return (
     <aside className="pl-5 pb-4">
@@ -124,7 +100,6 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
           <tbody className="font-sans divide-y divide-slate-800">
             {categoryTotals.map((category) => {
               const hasRta = category.rtaMs > 0;
-              const diffMs = category.rtaMs - category.tasMs;
               const isStunt = category.category === "Stunt";
 
               return (
@@ -148,12 +123,12 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   </td>
 
                   <td className="px-3 py-[4px] border-l border-slate-800 italic">
-                    {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, true) : "-"}
+                    {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, false, true) : "-"}
                   </td>
 
                   <td className="px-3 py-[4px] font-bold">
                     {hasRta
-                      ? formatPercentSaved(diffMs, category.rtaMs)
+                      ? formatPercentSaved(category.tasMs, category.rtaMs, 4, isStunt)
                       : "-"}
                   </td>
                 </tr>
@@ -178,16 +153,13 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
               <td className="px-2 py-[4px] border-l border-slate-800 italic">
                 {total.rtaMs > 0
-                  ? formatTime(total.tasMs - total.rtaMs, false, true)
+                  ? formatTime(total.tasMs - total.rtaMs, false, false, true)
                   : "-"}
               </td>
 
               <td className="px-2 py-[4px]">
                 {total.rtaMs > 0
-                  ? formatPercentSaved(
-                      total.rtaMs - total.tasMs,
-                      total.rtaMs
-                    )
+                  ? formatPercentSaved(total.tasMs, total.rtaMs, 4)
                   : "-"}
               </td>
             </tr>

@@ -1,11 +1,11 @@
 "use client";
 
-import { use, useState, useMemo, useEffect } from "react";
+import { use, useState, useMemo } from "react";
 import { useVisibleTables } from "@/lib/VisibleTablesContext";
 import { Category, Environment, categoryFilters, gameSlugMap } from "../../lib/TrackLists";
-import { TasRecords } from "../../lib/TasRecords";
+import { useTasRecords } from "../../lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "../../lib/RtaRecords";
-import { trackList, TasEntry, RtaEntry } from "../../lib/TrackLists";
+import { trackList, TasEntry } from "../../lib/TrackLists";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
 import TimeSaved from "./TimeSaved";
@@ -25,7 +25,8 @@ export default function GamePage({
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
   
-  const rtaRecords = useRtaRecords();
+  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: tasRecords = [] } = useTasRecords();
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
     return buildBestRtaByTrack(rtaRecords)
@@ -35,7 +36,7 @@ export default function GamePage({
     const bestTasByTrack = new Map<string, TasEntry>();
     const allowedCategories = categoryFilters[selectedCategory]
 
-    Object.values(TasRecords)
+    Object.values(tasRecords)
       .filter((e) => e.game === game)
       .filter((e) => allowedCategories.has(e.category))
       .forEach((entry) => {
@@ -43,9 +44,9 @@ export default function GamePage({
 
         if (
           !existing ||
-          entry.timeMs < existing.timeMs ||
+          entry.time_ms < existing.time_ms ||
           (
-            entry.timeMs === existing.timeMs &&
+            entry.time_ms === existing.time_ms &&
             new Date(entry.date).getTime() <
               new Date(existing.date).getTime()
           )

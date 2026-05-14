@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { TasRecords } from "@/lib/TasRecords";
+import { useTasRecords } from "@/lib/TasRecords";
 import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
 import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackLists";
+import { formatDate, formatTime } from "@/utils/formatting"
 
 type RecordRow = {
   track: string;
@@ -13,41 +14,6 @@ type RecordRow = {
   rta: RtaEntry | null;
   isCurrentBestTas?: boolean
 };
-
-function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean, showSign: boolean = false): string {
-
-  if (isStunt) {
-    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
-    return `${sign}${timeMs / 1000}`
-  }
-
-  const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
-  const abs = Math.abs(timeMs);
-  const minutes = Math.floor(abs / 60000);
-  const seconds = Math.floor((abs % 60000) / 1000);
-  const decimals = isTM2 ? 3 : 2
-  const split = isTM2 ? Math.round(abs) % 1000 : Math.round(abs / 10) % 100;
-
-  if (minutes > 0) {
-    return `${sign}${minutes}:${seconds
-      .toString()
-      .padStart(2, "0")}.${split
-      .toString()
-      .padStart(decimals, "0")}`;
-  }
-
-  return `${sign}${seconds}.${split
-    .toString()
-    .padStart(decimals, "0")}`;
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  }).replace(/ /g, '-')       
-}
 
 function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
 
@@ -251,20 +217,20 @@ function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
 export default function AuthorsPage() {
 
   const searchParams = useSearchParams();
-  const initialAuthor = searchParams.get("author") ?? "";
-  const [selectedAuthor, setSelectedAuthor] = useState(initialAuthor);
+  const [selectedAuthor, setSelectedAuthor] = useState("");
   const [hideBeaten, setHideBeaten] = useState(false);
 
-  const rtaRecords = useRtaRecords();
+  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: tasRecords = [] } = useTasRecords();
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords);
-  }, [rtaRecords]);
+    return buildBestRtaByTrack(rtaRecords)
+  }, [rtaRecords])
 
   const authorOptions = useMemo(() => {
     const authorCount: Record<string, number> = {};
 
-    TasRecords.forEach((tas) => {
+    tasRecords.forEach((tas) => {
       tas.authors.forEach((author) => {
         authorCount[author] = (authorCount[author] ?? 0) + 1;
       });
@@ -278,12 +244,30 @@ export default function AuthorsPage() {
       }));
   }, []);
 
+  useEffect(() => {
+    const authorFromUrl = searchParams.get("author");
+
+    if (authorFromUrl) {
+      setSelectedAuthor(authorFromUrl);
+      return;
+    }
+
+    if (authorOptions.length) {
+      const random =
+        authorOptions[
+          Math.floor(Math.random() * authorOptions.length)
+        ];
+
+      setSelectedAuthor(random.author);
+    }
+  }, [searchParams, authorOptions]);
+
   const rows = useMemo<RecordRow[]>(() => {
     if (!selectedAuthor) return [];
 
     const bestTasByTrackCategory = new Map<string, TasEntry>();
 
-    TasRecords.forEach((entry) => {
+    tasRecords.forEach((entry) => {
       Object.entries(categoryFilters).forEach(
         ([displayCategory, allowedCategories]) => {
           // Skip if this TAS cannot represent this category
@@ -296,9 +280,9 @@ export default function AuthorsPage() {
 
           if (
             !existing ||
-            entry.timeMs < existing.timeMs ||
+            entry.time_ms < existing.time_ms ||
             (
-              entry.timeMs === existing.timeMs &&
+              entry.time_ms === existing.time_ms &&
               new Date(entry.date).getTime() <
                 new Date(existing.date).getTime()
             )
@@ -310,7 +294,7 @@ export default function AuthorsPage() {
     });
 
     // ALL TASes by selected author
-    const selectedAuthorTasRecords = TasRecords.filter((tas) =>
+    const selectedAuthorTasRecords = tasRecords.filter((tas) =>
       tas.authors.includes(selectedAuthor)
     );
 
@@ -336,10 +320,7 @@ export default function AuthorsPage() {
 
   return (
     <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
-      <h1 className="text-2xl font-bold mb-6">
-        Author Stats
-      </h1>
-
+      
       <div className="mb-6 flex flex-row gap-3 px-4">
         <select
           value={selectedAuthor}
@@ -440,15 +421,15 @@ export default function AuthorsPage() {
                       </td>
 
                       <td className="px-3 py-2">
-                        { row.tas ? formatTime(row.tas.timeMs, isStunt, false) : "-"}
+                        { row.tas ? formatTime(row.tas.time_ms, isStunt) : "-"}
                       </td>
 
                       <td className="px-3 py-2">
-                        { row.rta ? formatTime(row.rta.time_ms, isStunt, false) : "-" }
+                        { row.rta ? formatTime(row.rta.time_ms, isStunt) : "-" }
                       </td>
 
                       <td className="px-3 py-2 italic">
-                        { row.rta && row.tas ? formatTime(row.tas.timeMs - row.rta.time_ms, isStunt, false, true) : "-" }
+                        { row.rta && row.tas ? formatTime(row.tas.time_ms - row.rta.time_ms, isStunt, false, true) : "-" }
                       </td>
                     </tr>
                   );

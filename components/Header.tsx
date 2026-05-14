@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { gameLinks } from "../lib/TrackLists";
 import { useVisibleTables } from "../lib/VisibleTablesContext";
+
+const supabase = createClient();
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,6 +19,25 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const currentPage = pathname.split("/").filter(Boolean)[0];
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -29,6 +51,17 @@ export default function Header() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  async function signOut() {
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) return;
+
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur-md">
@@ -157,6 +190,103 @@ export default function Header() {
               >
                 Submit TAS
               </Link>
+            </div>
+
+            <div className="relative" ref={dropdownRef}>
+              {user ? (
+                <>
+                  <button
+                    onClick={() =>
+                      setIsUserDropdownOpen(!isUserDropdownOpen)
+                    }
+                    className="
+                      flex items-center gap-2 rounded-full
+                      border border-slate-700 bg-slate-800
+                      px-3 py-2 text-sm text-slate-200
+                      transition hover:bg-slate-700
+                    "
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-slate-950">
+                      {user.email[0].toUpperCase()}
+                    </div>
+
+                    <span className="hidden lg:block">
+                      {user.email}
+                    </span>
+
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {isUserDropdownOpen && (
+                    <div
+                      className="
+                        absolute right-0 top-full mt-2 w-48
+                        rounded-md border border-slate-700
+                        bg-slate-800 shadow-lg
+                      "
+                    >
+                      <div className="p-2">
+                        <Link
+                          href="/preferences"
+                          className="
+                            block rounded px-3 py-2 text-sm
+                            text-slate-200 transition
+                            hover:bg-slate-700
+                          "
+                        >
+                          Preferences
+                        </Link>
+
+                        <Link
+                          href="/admin"
+                          className="
+                            block rounded px-3 py-2 text-sm
+                            text-slate-200 transition
+                            hover:bg-slate-700
+                          "
+                        >
+                          Admin
+                        </Link>
+
+                        <button
+                          onClick={signOut}
+                          className="
+                            w-full rounded px-3 py-2 text-left
+                            text-sm text-red-400 transition
+                            hover:bg-slate-700
+                          "
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  href={`/login?next=${encodeURIComponent(pathname)}`}
+                  className="
+                    rounded-full border border-slate-700
+                    bg-slate-800 px-4 py-2
+                    text-sm font-medium text-slate-100
+                    transition hover:bg-slate-700 hover:text-white
+                  "
+                >
+                  Login
+                </Link>
+              )}
             </div>
 
             <button

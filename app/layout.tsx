@@ -1,10 +1,12 @@
+
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
+
 import "./globals.css";
+
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { VisibleTablesProvider } from "../lib/VisibleTablesContext";
-import { Inter } from "next/font/google"
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,11 +21,12 @@ const geistMono = Geist_Mono({
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-})
+});
 
 export const metadata: Metadata = {
   title: "TrackMania TAS Leaderboards",
-  description: "Clean TrackMania TAS leaderboards by game, track, authors, and links.",
+  description:
+    "Clean TrackMania TAS leaderboards by game, track, authors, and links.",
 };
 
 export default function RootLayout({
@@ -37,11 +40,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
-        <VisibleTablesProvider>
+        <Providers>
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="flex-1">
+            {children}
+          </main>
           <Footer />
-        </VisibleTablesProvider>
+        </Providers>
       </body>
     </html>
   );
