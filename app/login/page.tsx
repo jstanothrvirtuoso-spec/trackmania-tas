@@ -1,30 +1,3 @@
-//////////////////////////////////////////////////////////////////////////
-// Website for TrackMania Tool-Assisted Speedruns on Nadeo Tracks
-//////////////////////////////////////////////////////////////////////////
-
-// Need to remember user settings (options/categories)
-// Expand home page:
-//  - Medal table
-//  - Game completion table
-//  - Header for introduction
-//  - Time saved leaderboards (open and non-noseboost/uber)
-//  - Current projects? (like TMUF perfection project)
-// Continue working on submit page
-//  - Read track, inputs, and record/time from replay file
-//  - Add registered author list for auto complete
-//  - Submit button, where do requests go?
-// Game tables:
-//  - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
-//  - Add separation between certain categories
-// Add database connection (table for TAS and RTA records)
-// Admin panel:
-//  - Inserting into database tables
-//  - Deleting from database tables
-//  - Updating database tables
-// Profile database table?
-// User registration
-// Use usernames in header rather than email
-
 "use client";
 
 import { useState } from "react";
