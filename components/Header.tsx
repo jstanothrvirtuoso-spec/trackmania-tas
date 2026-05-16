@@ -10,79 +10,73 @@ import { useVisibleTables } from "../lib/VisibleTablesContext";
 const supabase = createClient();
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [isMainMenuOpen, setIsMainMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const menuTimeout = useRef<NodeJS.Timeout | null>(null);
-
-const openMenu = () => {
-  if (menuTimeout.current) clearTimeout(menuTimeout.current);
-  setIsMainMenuOpen(true);
-};
-
-const closeMenu = () => {
-  menuTimeout.current = setTimeout(() => {
-    setIsMainMenuOpen(false);
-  }, 40);
-};
-
-  const [showHeader, setShowHeader] = useState(true);
-  const lastScrollY = useRef(0);
-
-  const {
-    showRta,
-    showTimeSaved,
-    showRecent,
-    showLeaderboard,
-    showRtaLeaderboard,
-    showVisitorCounter,
-    setShowRta,
-    setShowTimeSaved,
-    setShowRecent,
-    setShowLeaderboard,
-    setShowRtaLeaderboard,
-    setShowVisitorCounter,
-  } = useVisibleTables();
-
-  const optionsDropdownRef = useRef<HTMLDivElement>(null);
-  const userDropdownRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   const pathname = usePathname();
   const currentPage = pathname.split("/").filter(Boolean)[0];
-  const router = useRouter();
+  const { 
+    showRta, showTimeSaved, showRecent, showLeaderboard, showRtaLeaderboard, showVisitorCounter, 
+    setShowRta, setShowTimeSaved, setShowRecent, setShowLeaderboard, setShowRtaLeaderboard, setShowVisitorCounter
+  } = useVisibleTables();
+
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [isUserOpen, setIsUserOpen] = useState(false);
+  const optionsRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
+    const init = async () => {
+      const { data } = await supabase.auth.getUser();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
+      const user = data.user;
+      setUser(user);
 
-    return () => {
-      listener.subscription.unsubscribe();
+      if (!user) return;
+      
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      setProfile(profileData);
+      setShowRta(profileData.show_rta?? true)
+      setShowTimeSaved(profileData.show_time_saved?? true)
+      setShowRecent(profileData.show_recent?? true)
+      setShowLeaderboard(profileData.show_leaderboard?? true)
+      setShowRtaLeaderboard(profileData.show_rta_leaderboard?? true)
+      setShowVisitorCounter(profileData.show_visitor_counter?? true)
     };
+
+    init();
+
+    const { data: listener } =
+      supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          setUser(session?.user ?? null);
+          init();
+        }
+      );
+
+    return () =>
+      listener.subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        optionsDropdownRef.current &&
-        !optionsDropdownRef.current.contains(event.target as Node)
+        optionsRef.current &&
+        !optionsRef.current.contains(event.target as Node)
       ) {
-        setIsDropdownOpen(false);
+        setIsOptionsOpen(false);
       }
 
       if (
-        userDropdownRef.current &&
-        !userDropdownRef.current.contains(event.target as Node)
+        userRef.current &&
+        !userRef.current.contains(event.target as Node)
       ) {
-        setIsUserDropdownOpen(false);
+        setIsUserOpen(false);
       }
     };
 
@@ -90,65 +84,25 @@ const closeMenu = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      const lastY = lastScrollY.current;
-
-      if (currentY <= 10) {
-        setShowHeader(true);
-      } else if (currentY > lastY) {
-        setShowHeader(false);
-      } else if (currentY < lastY && currentY <= 100) {
-        setShowHeader(true);
-      }
-
-      lastScrollY.current = currentY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) return;
-
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsUserOpen(false);
     router.push("/");
     router.refresh();
   }
 
   return (
-    <header
-      className={`
-        sticky top-0 z-50
-        border-b border-slate-800
-        bg-slate-950/95 backdrop-blur-md
-        transition-all duration-500 ease-out
-        ${
-          showHeader
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-6 opacity-0 pointer-events-none"
-        }
-      `}
-    >
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4">
+    <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur-md">
+      <div className="mx-auto px-4 py-4">
+        <div className="flex items-center justify-between gap-10">
 
-          {/* LEFT */}
-          <div>
-            <Link
-              href="/"
-              className="text-xl font-bold text-white font-okta whitespace-nowrap"
-            >
-              LeaderBoard
+          <div className="flex items-center gap-8">
+            <Link href="/" className="text-xl font-bold text-white font-okta whitespace-nowrap">
+              TrackMania TAS
             </Link>
-          </div>
 
-          {/* CENTER NAV */}
-          <div className="hidden md:flex items-center justify-center gap-8">
-
-            <nav className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-4">
               {gameLinks.map((game) => {
                 const isActive = currentPage === game.slug;
 
@@ -156,7 +110,7 @@ const closeMenu = () => {
                   <Link
                     key={game.slug}
                     href={`/${game.slug}`}
-                    className={`text-sm font-medium transition whitespace-nowrap ${
+                    className={`text-sm font-medium whitespace-nowrap transition ${
                       isActive
                         ? "text-white border-b border-white"
                         : "text-slate-300 hover:text-white"
@@ -167,169 +121,166 @@ const closeMenu = () => {
                 );
               })}
             </nav>
+          </div>
 
-            <Link
-              href="/authors"
-              className={`text-sm font-medium transition whitespace-nowrap ${
-                currentPage === "authors"
-                  ? "text-white border-b border-white"
-                  : "text-slate-300 hover:text-white"
-              }`}
-            >
-              Authors
-            </Link>
+          <div className="flex items-center gap-4">
+            
+            <div className="flex items-center gap-8">
+              <Link
+                href="/authors"
+                className={`text-sm font-medium transition ${
+                  currentPage === "authors"
+                    ? "text-white border-b border-white"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                Authors
+              </Link>
+            </div>
+            
+            <div className="flex items-center gap-8">
+              <Link
+                href="/tracks"
+                className={`text-sm font-medium transition ${
+                  currentPage === "tracks"
+                    ? "text-white border-b border-white"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                Tracks
+              </Link>
+            </div>
 
-            <Link
-              href="/tracks"
-              className={`text-sm font-medium transition whitespace-nowrap ${
-                currentPage === "tracks"
-                  ? "text-white border-b border-white"
-                  : "text-slate-300 hover:text-white"
-              }`}
-            >
-              Tracks
-            </Link>
-
-            {/* OPTIONS */}
-            <div className="relative" ref={optionsDropdownRef}>
+            <div className="relative" ref={optionsRef}>
               <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 flex items-center gap-2 transition hover:bg-slate-700 hover:text-white"
+                onClick={() => setIsOptionsOpen(!isOptionsOpen)}
+                className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none flex items-center gap-2 transition hover:bg-slate-700 hover:text-white"
               >
                 Options
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </button>
 
-              {isDropdownOpen && (
-                <div className="absolute top-full mt-1 z-50 text-nowrap rounded-md border border-slate-700 bg-slate-800 shadow-lg">
+              {isOptionsOpen && (
+                <div className="absolute top-full mt-1 text-nowrap bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50">
                   <div className="p-2">
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
-                      <input type="checkbox" checked={showRta} onChange={(e) => setShowRta(e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        checked={showRta}
+                        onChange={(e) => setShowRta(e.target.checked)}
+                        className="rounded"
+                      />
                       RTA
                     </label>
-
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
-                      <input type="checkbox" checked={showTimeSaved} onChange={(e) => setShowTimeSaved(e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        checked={showTimeSaved}
+                        onChange={(e) => setShowTimeSaved(e.target.checked)}
+                        className="rounded"
+                      />
                       Time Saved
                     </label>
-
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
-                      <input type="checkbox" checked={showLeaderboard} onChange={(e) => setShowLeaderboard(e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        checked={showLeaderboard}
+                        onChange={(e) => setShowLeaderboard(e.target.checked)}
+                        className="rounded"
+                      />
                       Leaderboard
                     </label>
-
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
-                      <input type="checkbox" checked={showRtaLeaderboard} onChange={(e) => setShowRtaLeaderboard(e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        checked={showRtaLeaderboard}
+                        onChange={(e) => setShowRtaLeaderboard(e.target.checked)}
+                        className="rounded"
+                      />
                       RTA Leaderboard
                     </label>
-
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
-                      <input type="checkbox" checked={showRecent} onChange={(e) => setShowRecent(e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        checked={showRecent}
+                        onChange={(e) => setShowRecent(e.target.checked)}
+                        className="rounded"
+                      />
                       Highlight Recent
                     </label>
-
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
-                      <input type="checkbox" checked={showVisitorCounter} onChange={(e) => setShowVisitorCounter(e.target.checked)} />
+                      <input
+                        type="checkbox"
+                        checked={showVisitorCounter}
+                        onChange={(e) => setShowVisitorCounter(e.target.checked)}
+                        className="rounded"
+                      />
                       Visitor Counter
                     </label>
                   </div>
                 </div>
               )}
             </div>
+            
+            <div className="flex items-center gap-8">
+              <Link
+                href="/submit"
+                className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-100 ring-1 ring-slate-700 transition hover:bg-slate-700 hover:text-white whitespace-nowrap"
+              >
+                Submit TAS
+              </Link>
+            </div>
 
-{/* MENU (NEW) */}
-<div className="relative inline-block">
-  <button
-    onMouseEnter={openMenu}
-    onMouseLeave={closeMenu}
-    className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 transition hover:bg-slate-700 hover:text-white"
-  >
-    Menu
-  </button>
+            {/* LOGIN / USER */}
+            <div ref={userRef} className="relative">
+              {user ? (
+                <>
+                  <button
+                    onClick={() => setIsUserOpen((v) => !v)}
+                    className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm"
+                  >
+                    <div className="h-6 w-6 rounded-full bg-emerald-500 text-xs font-bold text-black flex items-center justify-center">
+                      {(profile?.username ?? "")?.[0]?.toUpperCase()}
+                    </div>
 
-  <div
-    onMouseEnter={openMenu}
-    onMouseLeave={closeMenu}
-    className={`
-      absolute right-0 top-full w-48 pt-1
-      transition-all duration-200 origin-top
-      ${isMainMenuOpen
-        ? "opacity-100 translate-y-0 pointer-events-auto"
-        : "opacity-0 -translate-y-2 pointer-events-none"
-      }
-    `}
-  >
-    <div className="rounded-md border border-slate-700 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
+                    <span className="hidden lg:block">
+                      {profile?.username ?? ""}
+                    </span>
+                  </button>
 
-      {user ? (
-        <Link
-          href="/preferences"
-          className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
-        >
-          Profile
-        </Link>
-      ) : (
-        <Link
-          href={`/login?next=${encodeURIComponent(pathname)}`}
-          className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
-        >
-          Login
-        </Link>
-      )}
+                  {isUserOpen && (
+                    <div className="absolute right-0 mt-2 w-44 rounded-md border border-slate-700 bg-slate-800 p-2">
+                      <Link
+                        href="/preferences"
+                        className="block rounded px-2 py-1 hover:bg-slate-700"
+                      >
+                        Preferences
+                      </Link>
 
-      <Link
-        href="/submit"
-        className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
-      >
-        Submit TAS
-      </Link>
-
-    </div>
-  </div>
-</div>
-
-           {/* USER */}
-<div className="relative" ref={userDropdownRef}>
-  {user ? (
-    <>
-      <button
-        onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-        className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700"
-      >
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-slate-950">
-          {user.email[0].toUpperCase()}
-        </div>
-        <span className="hidden lg:block">{user.email}</span>
-      </button>
-
-      {isUserDropdownOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 rounded-md border border-slate-700 bg-slate-800 shadow-lg">
-          <div className="p-2">
-            <Link href="/preferences" className="block px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded">
-              Preferences
-            </Link>
-
-            <Link href="/admin" className="block px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded">
-              Admin
-            </Link>
-
-            <button
-              onClick={signOut}
-              className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-slate-700 rounded"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  ) : (
-    // ✅ IMPORTANT : plus de Login ici (sinon doublon)
-    <div />
-  )}
-</div>
+                      <button
+                        onClick={signOut}
+                        className="w-full text-left rounded px-2 py-1 text-red-400 hover:bg-slate-700"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  href={`/login?next=${encodeURIComponent(pathname)}`}
+                  className="rounded-full bg-slate-800 px-4 py-2 text-sm"
+                >
+                  Login
+                </Link>
+              )}
+            </div>
 
           </div>
         </div>
+
       </div>
     </header>
   );

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Game, gameSets, Environment, RecordRow } from "../../lib/TrackLists";
-import { useVisibleTables } from "../../lib/VisibleTablesContext";
-import { formatTime, formatPercentSaved, formatDate } from "../../utils/formatting"
+import { Game, gameSets, Environment, RecordRow } from "@/lib/TrackLists";
+import { useVisibleTables } from "@/lib/VisibleTablesContext";
+import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
@@ -446,12 +446,13 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                 >
                   <td className="px-1 text-center">
                     {recent ? (
-
- <span className="animate-test text-red-500">
-  NEW
-</span>
-
-) : null}
+                      <div className="w-8 flex items-center justify-center">
+                        <img
+                          src="new.png"
+                          alt="New!"
+                        />
+                      </div>
+                    ) : ""}
                   </td>
                   <td
                     className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle ${bgColour} ${

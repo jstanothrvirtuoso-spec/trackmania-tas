@@ -5,8 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import AdminPanel from "./AdminPanel";
 
 export default async function AdminPage() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient(await cookies());
 
   const {
     data: { user },
@@ -16,11 +15,15 @@ export default async function AdminPage() {
     redirect("/login");
   }
 
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  const { data: admin, error } = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
 
-  if (user.email !== adminEmail) {
+  if (error || !admin) {
     redirect("/");
   }
-
+  
   return <AdminPanel />;
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { RecordRow } from "@/lib/TrackLists";
 import { useMemo, useState } from "react";
-import { trackList } from "../../lib/TrackLists"
+import { trackList } from "@/lib/TrackLists"
 
 type SortField = "author" | "tases" | "contributions" | "timeSaved";
 type SortOrder = "asc" | "desc";
