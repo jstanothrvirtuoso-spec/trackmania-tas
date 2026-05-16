@@ -2,10 +2,9 @@
 
 import { use, useState, useMemo } from "react";
 import { useVisibleTables } from "@/lib/VisibleTablesContext";
-import { Category, Environment, categoryFilters, gameSlugMap } from "../../lib/TrackLists";
-import { useTasRecords } from "../../lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "../../lib/RtaRecords";
-import { trackList, TasEntry } from "../../lib/TrackLists";
+import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMap } from "@/lib/TrackLists";
+import { useTasRecords } from "@/lib/TasRecords";
+import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
 import TimeSaved from "./TimeSaved";
@@ -63,7 +62,7 @@ export default function GamePage({
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get(track) ?? null,
       }));
-  }, [game, selectedCategory, rtaRecords]);
+  }, [game, selectedCategory, rtaRecords, tasRecords]);
 
   if (!game) {
     throw new Error("Game not found");

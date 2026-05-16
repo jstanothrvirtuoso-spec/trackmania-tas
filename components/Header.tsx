@@ -10,80 +10,95 @@ import { useVisibleTables } from "../lib/VisibleTablesContext";
 const supabase = createClient();
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const currentPage = pathname.split("/").filter(Boolean)[0];
   const { 
     showRta, showTimeSaved, showRecent, showLeaderboard, showRtaLeaderboard, showVisitorCounter, 
     setShowRta, setShowTimeSaved, setShowRecent, setShowLeaderboard, setShowRtaLeaderboard, setShowVisitorCounter
   } = useVisibleTables();
-  const optionsDropdownRef = useRef<HTMLDivElement>(null);
-  const userDropdownRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
-  const currentPage = pathname.split("/").filter(Boolean)[0];
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+
   const [user, setUser] = useState<any>(null);
-  const router = useRouter();
+  const [profile, setProfile] = useState<any>(null);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [isUserOpen, setIsUserOpen] = useState(false);
+  const optionsRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
+    const init = async () => {
+      const { data } = await supabase.auth.getUser();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-      }
-    );
+      const user = data.user;
+      setUser(user);
 
-    return () => {
-      listener.subscription.unsubscribe();
+      if (!user) return;
+      
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      setProfile(profileData);
+      setShowRta(profileData.show_rta?? true)
+      setShowTimeSaved(profileData.show_time_saved?? true)
+      setShowRecent(profileData.show_recent?? true)
+      setShowLeaderboard(profileData.show_leaderboard?? true)
+      setShowRtaLeaderboard(profileData.show_rta_leaderboard?? true)
+      setShowVisitorCounter(profileData.show_visitor_counter?? true)
     };
+
+    init();
+
+    const { data: listener } =
+      supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          setUser(session?.user ?? null);
+          init();
+        }
+      );
+
+    return () =>
+      listener.subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        optionsDropdownRef.current &&
-        !optionsDropdownRef.current.contains(event.target as Node)
+        optionsRef.current &&
+        !optionsRef.current.contains(event.target as Node)
       ) {
-        setIsDropdownOpen(false);
+        setIsOptionsOpen(false);
       }
 
       if (
-        userDropdownRef.current &&
-        !userDropdownRef.current.contains(event.target as Node)
+        userRef.current &&
+        !userRef.current.contains(event.target as Node)
       ) {
-        setIsUserDropdownOpen(false);
+        setIsUserOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   async function signOut() {
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) return;
-
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsUserOpen(false);
     router.push("/");
     router.refresh();
   }
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur-md">
-      <div className="mx-auto max-w-àxl px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mx-auto px-4 py-4">
+        <div className="flex items-center justify-between gap-10">
+
           <div className="flex items-center gap-8">
-            <Link href="/" className="text-xl font-bold text-white font-okta">
+            <Link href="/" className="text-xl font-bold text-white font-okta whitespace-nowrap">
               TrackMania TAS
             </Link>
 
@@ -95,7 +110,7 @@ export default function Header() {
                   <Link
                     key={game.slug}
                     href={`/${game.slug}`}
-                    className={`text-sm font-medium transition ${
+                    className={`text-sm font-medium whitespace-nowrap transition ${
                       isActive
                         ? "text-white border-b border-white"
                         : "text-slate-300 hover:text-white"
@@ -136,9 +151,9 @@ export default function Header() {
               </Link>
             </div>
 
-            <div className="relative" ref={optionsDropdownRef}>
+            <div className="relative" ref={optionsRef}>
               <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClick={() => setIsOptionsOpen(!isOptionsOpen)}
                 className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none flex items-center gap-2 transition hover:bg-slate-700 hover:text-white"
               >
                 Options
@@ -146,7 +161,8 @@ export default function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {isDropdownOpen && (
+
+              {isOptionsOpen && (
                 <div className="absolute top-full mt-1 text-nowrap bg-slate-800 border border-slate-700 rounded-md shadow-lg z-50">
                   <div className="p-2">
                     <label className="flex items-center gap-2 text-sm text-slate-100 cursor-pointer hover:bg-slate-700 px-2 py-1 rounded">
@@ -211,142 +227,60 @@ export default function Header() {
             <div className="flex items-center gap-8">
               <Link
                 href="/submit"
-                className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-100 ring-1 ring-slate-700 transition hover:bg-slate-700 hover:text-white"
+                className="rounded-full bg-slate-800 px-4 py-2 text-sm font-medium text-slate-100 ring-1 ring-slate-700 transition hover:bg-slate-700 hover:text-white whitespace-nowrap"
               >
                 Submit TAS
               </Link>
             </div>
 
-            <div className="relative" ref={userDropdownRef}>
+            {/* LOGIN / USER */}
+            <div ref={userRef} className="relative">
               {user ? (
                 <>
                   <button
-                    onClick={() =>
-                      setIsUserDropdownOpen(!isUserDropdownOpen)
-                    }
-                    className="
-                      flex items-center gap-2 rounded-full
-                      border border-slate-700 bg-slate-800
-                      px-3 py-2 text-sm text-slate-200
-                      transition hover:bg-slate-700
-                    "
+                    onClick={() => setIsUserOpen((v) => !v)}
+                    className="flex items-center gap-2 rounded-full bg-slate-800 px-3 py-2 text-sm"
                   >
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-xs font-bold text-slate-950">
-                      {user.email[0].toUpperCase()}
+                    <div className="h-6 w-6 rounded-full bg-emerald-500 text-xs font-bold text-black flex items-center justify-center">
+                      {(profile?.username ?? "")?.[0]?.toUpperCase()}
                     </div>
 
                     <span className="hidden lg:block">
-                      {user.email}
+                      {profile?.username ?? ""}
                     </span>
-
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
                   </button>
 
-                  {isUserDropdownOpen && (
-                    <div
-                      className="
-                        absolute right-0 top-full mt-2 w-48
-                        rounded-md border border-slate-700
-                        bg-slate-800 shadow-lg
-                      "
-                    >
-                      <div className="p-2">
-                        <Link
-                          href="/preferences"
-                          className="
-                            block rounded px-3 py-2 text-sm
-                            text-slate-200 transition
-                            hover:bg-slate-700
-                          "
-                        >
-                          Preferences
-                        </Link>
+                  {isUserOpen && (
+                    <div className="absolute right-0 mt-2 w-44 rounded-md border border-slate-700 bg-slate-800 p-2">
+                      <Link
+                        href="/preferences"
+                        className="block rounded px-2 py-1 hover:bg-slate-700"
+                      >
+                        Preferences
+                      </Link>
 
-                        <Link
-                          href="/admin"
-                          className="
-                            block rounded px-3 py-2 text-sm
-                            text-slate-200 transition
-                            hover:bg-slate-700
-                          "
-                        >
-                          Admin
-                        </Link>
-
-                        <button
-                          onClick={signOut}
-                          className="
-                            w-full rounded px-3 py-2 text-left
-                            text-sm text-red-400 transition
-                            hover:bg-slate-700
-                          "
-                        >
-                          Logout
-                        </button>
-                      </div>
+                      <button
+                        onClick={signOut}
+                        className="w-full text-left rounded px-2 py-1 text-red-400 hover:bg-slate-700"
+                      >
+                        Logout
+                      </button>
                     </div>
                   )}
                 </>
               ) : (
                 <Link
                   href={`/login?next=${encodeURIComponent(pathname)}`}
-                  className="
-                    rounded-full border border-slate-700
-                    bg-slate-800 px-4 py-2
-                    text-sm font-medium text-slate-100
-                    transition hover:bg-slate-700 hover:text-white
-                  "
+                  className="rounded-full bg-slate-800 px-4 py-2 text-sm"
                 >
                   Login
                 </Link>
               )}
             </div>
 
-            <button
-              className="md:hidden rounded-md p-2 text-slate-400 hover:text-white"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
           </div>
         </div>
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 border-t border-slate-800 pt-4">
-            <nav className="flex flex-col gap-4">
-              {gameLinks.map((game) => {
-                const isActive = currentPage === game.slug;
 
-                return (
-                  <Link
-                    key={game.slug}
-                    href={`/${game.slug}`}
-                    className={`text-sm font-medium transition ${
-                      isActive
-                        ? "text-white border-b border-white"
-                        : "text-slate-300 hover:text-white"
-                    }`}
-                  >
-                    {game.name}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-        )}
       </div>
     </header>
   );

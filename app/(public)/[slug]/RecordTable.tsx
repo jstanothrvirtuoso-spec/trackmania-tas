@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Game, gameSets, Environment, RecordRow } from "../../lib/TrackLists";
-import { useVisibleTables } from "../../lib/VisibleTablesContext";
-import { formatTime, formatPercentSaved, formatDate } from "../../utils/formatting"
+import { Game, gameSets, Environment, RecordRow } from "@/lib/TrackLists";
+import { useVisibleTables } from "@/lib/VisibleTablesContext";
+import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
