@@ -446,13 +446,10 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                 >
                   <td className="px-1 text-center">
                     {recent ? (
-                      <div className="w-8 flex items-center justify-center">
-                        <img
-                          src="new.png"
-                          alt="New!"
-                        />
-                      </div>
-                    ) : ""}
+                      <span className="animate-test text-red-500">
+                        NEW
+                      </span>
+                      ) : null}
                   </td>
                   <td
                     className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle ${bgColour} ${

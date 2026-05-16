@@ -1,32 +1,29 @@
-module.exports = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
 
-  theme: {
-    extend: {
-      fontFamily: {
-        okta: ['OktaNeue-Black', 'sans-serif'],
-      },
+export const content = [
+  './pages/**/*.{js,ts,jsx,tsx,mdx}',
+  './components/**/*.{js,ts,jsx,tsx,mdx}',
+  './app/**/*.{js,ts,jsx,tsx,mdx}',
+];
+export const theme = {
+  extend: {
+    fontFamily: {
+      okta: ['OktaNeue-Black', 'sans-serif'],
+    },
 
-      keyframes: {
-        newZoom: {
-          '0%, 100%': {
-            transform: 'scale(1)',
-          },
-          '50%': {
-            transform: 'scale(1.12)',
-          },
+    keyframes: {
+      newZoom: {
+        '0%, 100%': {
+          transform: 'scale(1)',
+        },
+        '50%': {
+          transform: 'scale(1.12)',
         },
       },
+    },
 
-      animation: {
-  test: 'spin 1s linear infinite',
-},
+    animation: {
+      test: 'spin 1s linear infinite',
     },
   },
-
-  plugins: [],
 };
+export const plugins = [];
