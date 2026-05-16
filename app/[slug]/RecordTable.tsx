@@ -310,6 +310,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
         <table className="table-auto w-full text-center text-sm border-separate border-spacing-0">
           <thead className="text-slate-400">
             <tr>
+              <th className="pl-5"></th>
               <th
                 colSpan={2}
                 onClick={() => handleSort("track")}
@@ -409,6 +410,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               )}
             </tr>
             <tr>
+              <th className=""></th>
               <th className="border-b border-slate-400"></th>
               <th className="border-b border-slate-400"></th>
               <th className="border-b border-slate-400"></th>
@@ -442,6 +444,16 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                   key={row.track}
                   className="h-[30px] transition-colors hover:bg-emerald-400/20"
                 >
+                  <td className="px-1 text-center">
+                    {recent ? (
+                      <div className="w-8 flex items-center justify-center">
+                        <img
+                          src="new.png"
+                          alt="New!"
+                        />
+                      </div>
+                    ) : ""}
+                  </td>
                   <td
                     className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle ${bgColour} ${
                       i === filteredRows.length - 1 ? "rounded-bl-lg" : ""

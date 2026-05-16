@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
@@ -11,10 +12,32 @@ type AuthorStat = {
   tases: number;
   contributions: number;
   totalSaved: number;
+  badge: number;
 };
 
-type SortField = "author" | "tases" | "contributions" | "totalSaved";
+type SortField = "badge" | "author" | "tases" | "contributions" | "totalSaved";
 type SortOrder = "asc" | "desc";
+const badgeRanks = {
+  "TAS": [2, 5, 10, 20, 40, 60, 80, 100],
+  "Contributions": [1.5, 2.5, 5, 10, 20, 40, 70, 100],
+  "Saved": [5, 15, 30, 60, 90, 120, 240, 360],
+  "Badge": ["novice.png", "apprentice.png", "adept.png", "expert.png", "elite.png", "master.png", "legend.png", "mythic.png"],
+} as const;
+
+function getRankIndex(
+  value: number,
+  thresholds: readonly number[]
+) {
+  let index = 0;
+
+  for (let i = 0; i < thresholds.length; i++) {
+    if (value >= thresholds[i]) {
+      index = i;
+    }
+  }
+
+  return index;
+}
 
 export default function GlobalLeaderboard() {
   const [sortField, setSortField] = useState<SortField>("tases");
@@ -68,12 +91,38 @@ export default function GlobalLeaderboard() {
             tases: 1,
             contributions: contributionPerAuthor,
             totalSaved: savedPerAuthor,
+            badge: 0,
           });
         }
       });
     });
 
-    return Array.from(authorMap.values());
+    return Array.from(authorMap.values()).map((author) => {
+      const tasIndex = getRankIndex(
+        author.tases,
+        badgeRanks.TAS
+      );
+
+      const contributionIndex = getRankIndex(
+        author.contributions,
+        badgeRanks.Contributions
+      );
+
+      const savedIndex = getRankIndex(
+        author.totalSaved / 1000,
+        badgeRanks.Saved
+      );
+
+      const average =
+        (tasIndex +
+          contributionIndex +
+          savedIndex) / 3;
+
+      return {
+        ...author,
+        badge: Math.round(average),
+      };
+    });
   }, [tasRecords, bestRtaByTrack]);
 
   const sortedAuthorStats = useMemo(() => {
@@ -82,6 +131,10 @@ export default function GlobalLeaderboard() {
       let bVal: string | number = "";
 
       switch (sortField) {
+        case "badge":
+          aVal = `${a.badge}-${(a.tases).toString().padStart(2, "0")}`;
+          bVal = `${b.badge}-${(b.tases).toString().padStart(2, "0")}`;
+          break;
         case "author":
           aVal = a.author;
           bVal = b.author;
@@ -147,32 +200,63 @@ export default function GlobalLeaderboard() {
         <table className="min-w-full divide-y divide-slate-800 text-center text-sm">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
-              <th onClick={() => handleSort("author")} className="cursor-pointer px-2 py-2 uppercase whitespace-nowrap">
-                Author <SortIndicator field="author" />
+              <th onClick={() => handleSort("badge")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+                Badge
+                <SortIndicator field="badge" />
               </th>
-              <th onClick={() => handleSort("tases")} className="cursor-pointer px-2 py-2 uppercase whitespace-nowrap">
-                TASes <SortIndicator field="tases" />
+              <th onClick={() => handleSort("author")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+                Author
+                <SortIndicator field="author" />
               </th>
-              <th onClick={() => handleSort("contributions")} className="cursor-pointer px-2 py-2 uppercase whitespace-nowrap">
-                Contributions <SortIndicator field="contributions" />
+              <th onClick={() => handleSort("tases")} className="cursor-pointer px-2 py-1.5 whitespace-nowrap">
+                TASes
+                <SortIndicator field="tases" />
               </th>
-              <th onClick={() => handleSort("totalSaved")} className="cursor-pointer px-2 py-2 uppercase whitespace-nowrap">
-                Time Saved <SortIndicator field="totalSaved" />
+              <th onClick={() => handleSort("contributions")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+                Cont.
+                <SortIndicator field="contributions" />
+              </th>
+              <th onClick={() => handleSort("totalSaved")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+                Saved
+                <SortIndicator field="totalSaved" />
               </th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-slate-800">
-            {sortedAuthorStats.map((a) => (
-              <tr key={a.author} className="hover:bg-slate-900/50">
-                <td className="px-2 py-2 text-slate-100">{a.author}</td>
-                <td className="px-2 py-2 text-slate-100">{a.tases}</td>
-                <td className="px-2 py-2 text-slate-100">{a.contributions.toFixed(2)}</td>
-                <td className="px-2 py-2 text-slate-300">
-                  {formatTime(a.totalSaved, false, false, false)}
-                </td>
-              </tr>
-            ))}
+            {sortedAuthorStats.map((a, index) => {
+
+              const rowColour = index % 2 == 0 ? "bg-slate-500/20" : "bg-slate-500/10";
+              
+              return (
+                <tr key={a.author} className={`${rowColour} hover:bg-emerald-900/50`}>
+                  <td className="px-2 py-0 text-center">
+                    {a.badge > 0 ? (
+                      <div className="flex items-center justify-center">
+                        <img
+                          src={`medals/${badgeRanks.Badge[a.badge]}`}
+                          alt={`${a.badge}`}
+                          className="h-6 w-auto"
+                        />
+                      </div>
+                    ) : ""}
+                  </td>
+                  <td className="px-1 py-2 text-slate-100">
+                      <Link
+                        href={`/authors?author=${encodeURIComponent(a.author)}`}
+                        className="hover:text-white underline-offset-2 hover:underline"
+                      >
+                        {a.author}
+                      </Link>
+                    </td>
+                  <td className="px-2 py-2 text-slate-100">{a.tases}</td>
+                  <td className="px-2 py-2 text-slate-100">{a.contributions.toFixed(2)}</td>
+                  <td className="px-2 py-2 text-slate-300">
+                    {formatTime(a.totalSaved, false, false, false)}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
