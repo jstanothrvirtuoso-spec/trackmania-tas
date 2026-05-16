@@ -24,7 +24,6 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-// Add your custom OktaNeue font
 const oktaNeue = localFont({
   src: [
     {

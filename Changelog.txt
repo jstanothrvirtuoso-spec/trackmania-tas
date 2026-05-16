@@ -1,3 +1,0 @@
-- Added a new font for "Combined Leaderboard"
-- Sligh changes in the Combined Leaderboard box
-- Track	% Saved have now a separated line bar for each 10% difference (still not satisfyied), and text are now all centered

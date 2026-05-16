@@ -16,11 +16,11 @@ export default function Home() {
         <div className="flex flex-row items-start gap-3">
           
           <div className="relative z-10 w-full max-w-xl">
-            <PercentSavedLeaderboard />
+            <GlobalLeaderboard />
           </div>
 
           <div className="relative z-10 w-full max-w-xl">
-            <GlobalLeaderboard />
+            <PercentSavedLeaderboard />
           </div>
 
         </div>
