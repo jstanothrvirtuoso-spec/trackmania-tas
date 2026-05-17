@@ -158,6 +158,20 @@ export default function Header() {
                   </Link>
 
                   <Link
+                    href="/"
+                    className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                  >
+                    Highlight
+                  </Link>
+
+                  <Link
+                    href="/"
+                    className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                  >
+                    Inputs
+                  </Link>
+
+                  <Link
                     href="/authors"
                     className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
                   >
@@ -169,6 +183,13 @@ export default function Header() {
                     className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
                   >
                     Tracks
+                  </Link>
+
+                  <Link
+                    href="/tmnf-stats"
+                    className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                  >
+                    TMNF Stats
                   </Link>
 
                 </div>

@@ -3,7 +3,6 @@
 // Virtuoso
 //////////////////////////////////////////////////////////////////////////
 
-Need to remember user settings (options/categories)
 Expand home page:
  - Medal table
  - Game completion table
@@ -14,13 +13,17 @@ Continue working on submit page
  - Read track, inputs, and record/time from replay file
  - Add registered author list for auto complete
  - Submit button, where do requests go?
-Game tables:
- - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
- - Add separation between certain categories
 Admin panel:
  - Inserting into database tables
  - Deleting from database tables
  - Updating database tables
+Add TMNF Hist page:
+ - Top percent saved table
+ - Add links to category table
+ - Cumulative time saved per track set?
+ - Any other ideas??
+Add Inputs page (can be linked in footer??)
+Add Player/TAS highlight page (highlight on front page??)
 
 
 
@@ -36,3 +39,8 @@ Adding a glowing and slighty bouncy text "New" when a new TAS has been added
 An option to move slighty the wallpaper background of the site when moving the cursor around (parallax effect, could be turned on/off)
 Premade wallpaper (user could choose his wallpaper in the website that has been defined by me, i.g 3 differents wallpapers)
 And others cool features/project ;>
+
+Game tables:
+ - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
+ - Add separation between certain categories
+
