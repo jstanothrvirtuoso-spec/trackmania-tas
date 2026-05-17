@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Profile } from "@/lib/Profiles";
 import { Game, gameSets, Environment, RecordRow } from "@/lib/TrackLists";
-import { useVisibleTables } from "@/lib/VisibleTablesContext";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
@@ -179,15 +179,17 @@ const getTmxLink = (trackInfo: { id: number; game: Game }) => {
 
 interface RecordTableProps {
   game: Game;
+  showRta: boolean;
+  highlightRecent: boolean;
   currentRecords: RecordRow[];
   selectedAuthor: string;
   selectedEnvironment: Environment;
 }
 
-export default function RecordTable({ game, currentRecords, selectedAuthor, selectedEnvironment }: RecordTableProps) {
+export default function RecordTable({ game, showRta, highlightRecent, currentRecords, selectedAuthor, selectedEnvironment }: RecordTableProps) {
+
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const { showRta, showRecent } = useVisibleTables();
 
   const sortedRows = useMemo(() => {
     const sorted = [...currentRecords].sort((a, b) => {
@@ -430,8 +432,8 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
           <tbody className="font-sans divide-y divide-slate-800">
             {filteredRows.map((row, i) => {
               const entry = row.tas;
-              const recent = entry ? isRecentEntry(entry.date, showRecent) : false;
-              const rtaRecent = row.rta ? isRecentEntry(row.rta.date, showRecent) : false;
+              const recent = entry ? isRecentEntry(entry.date, highlightRecent) : false;
+              const rtaRecent = row.rta ? isRecentEntry(row.rta.date, highlightRecent) : false;
               const tmxLink = getTmxLink(row.trackInfo);
               const colour = getTrackDifficultyTint(row.trackInfo.category, i)
               const bgColour = `${recent ? "italic bg-sky-400/30 text-sky-100" : colour}`
@@ -442,7 +444,7 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
               return (
                 <tr
                   key={row.track}
-                  className="h-[30px] transition-colors hover:bg-emerald-400/20"
+                  className="group h-[30px] transition-colors"
                 >
                   <td className="px-1 text-center">
                     {recent ? (
@@ -452,13 +454,13 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                       ) : null}
                   </td>
                   <td
-                    className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle ${bgColour} ${
+                    className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
                       i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
                     }`}
                   >
                     {getEnvironmentSymbol(row.trackInfo.environment)}
                   </td>
-                  <td className={ `pr-2 py-1 text-slate-100 border-b border-slate-800 align-middle w-max whitespace-nowrap ${bgColour}` }>
+                  <td className={ `pr-2 py-1 text-slate-100 border-b border-slate-800 align-middle w-max whitespace-nowrap group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {tmxLink ? (
                       <a
                         href={tmxLink}
@@ -472,11 +474,11 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                       row.track
                     )}
                   </td>
-                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${bgColour}` }>
+                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}
                   </td>
                   <td
-                    className={ `px-1.5 py-1 border-b border-slate-800 text-center italic font-bold align-middle ${bgColour} ${
+                    className={ `px-1.5 py-1 border-b border-slate-800 text-center italic font-bold align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
                       entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt))
                         ? "text-red-300"
                         : "text-slate-100"
@@ -486,22 +488,22 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                       ? formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)
                       : "-"}
                   </td>
-                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-slate-800 text-center align-middle ${bgColour}` }>
+                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {entry && row.rta
                       ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt)
                       : "-"}
                   </td>
-                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 break-words min-w-[320px] whitespace-normal text-center align-middle ${bgColour}` }>
+                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 break-words min-w-[320px] whitespace-normal text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {entry ? entry.authors.join(", ") : "-"}
                   </td>
-                  <td className={ `px-3 py-1 text-slate-100 border-b border-l border-slate-800 whitespace-nowrap text-center align-middle ${bgColour}` }>
+                  <td className={ `px-3 py-1 text-slate-100 border-b border-l border-slate-800 whitespace-nowrap text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {entry ? formatDate(entry.date) : "-"}
                   </td>
-                  <td className={ `px-3 py-1 text-slate-100 border-b border-slate-800 whitespace-nowrap text-center align-middle ${bgColour}` }>
+                  <td className={ `px-3 py-1 text-slate-100 border-b border-slate-800 whitespace-nowrap text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {entry ? entry.category : "-"}
                   </td>
                   
-                  <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle ${bgColour} ${
+                  <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
                         i === filteredRows.length - 1 ? "rounded-br-lg" : ""
                       }`}>
                     {entry ? renderLinks({ video: entry.video, replay: entry.replay, inputs: entry.inputs }) : "-"}
@@ -509,18 +511,18 @@ export default function RecordTable({ game, currentRecords, selectedAuthor, sele
                   {showRta && (
                     <>
                       <td className="pl-5"></td>
-                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${rtaColour} ${
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour} ${
                             i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
                           }`}>
                         {row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}
                       </td>
-                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle ${rtaColour}` }>
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour}` }>
                         {row.rta?.player ?? "-"}
                       </td>
-                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle whitespace-nowrap ${rtaColour}` }>
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle whitespace-nowrap group-hover:bg-emerald-400/20 transition-colors ${rtaColour}` }>
                         {row.rta ? formatDate(row.rta.date) : "-"}
                       </td>
-                      <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle ${rtaColour} ${
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour} ${
                             i === filteredRows.length - 1 ? "rounded-br-lg" : ""
                           }`}>
                         {row.rta ? renderRtaLinks({ video: row.rta.video, replay: row.rta.replay }) : "-"}

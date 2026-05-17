@@ -1,7 +1,6 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { VisibleTablesProvider } from "../lib/VisibleTablesContext";
 import { useState } from "react";
 
 export default function Providers({
@@ -9,7 +8,6 @@ export default function Providers({
 }: {
   children: React.ReactNode;
 }) {
-  // useState prevents recreating QueryClient on rerenders
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -24,9 +22,7 @@ export default function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <VisibleTablesProvider>
-        {children}
-      </VisibleTablesProvider>
+      {children}
     </QueryClientProvider>
   );
 }

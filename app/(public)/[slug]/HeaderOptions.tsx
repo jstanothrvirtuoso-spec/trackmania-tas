@@ -63,7 +63,7 @@ export default function HeaderOptions({
         <select
           value={selectedCategory}
           onChange={(e) => onCategoryChange(e.target.value as Category)}
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
+          className="cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
         >
           {categories.map((cat) => (
             <option key={cat} value={cat}>
@@ -75,7 +75,7 @@ export default function HeaderOptions({
       <select
         value={selectedAuthor}
         onChange={(e) => onAuthorChange(e.target.value)}
-        className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
+        className="cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
       >
         <option value="">All Authors</option>
         {authorOptions.map(({ author, count }) => (
@@ -89,7 +89,7 @@ export default function HeaderOptions({
         <select
           value={selectedEnvironment}
           onChange={(e) => onEnvironmentChange(e.target.value as Environment)}
-          className="rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
+          className="cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
         >
           {environmentOptions.map((env) => (
             <option key={env} value={env}>

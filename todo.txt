@@ -21,9 +21,6 @@ Admin panel:
  - Inserting into database tables
  - Deleting from database tables
  - Updating database tables
-Profile database table?
-User registration
-Use usernames in header rather than email
 
 
 

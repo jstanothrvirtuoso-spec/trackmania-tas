@@ -70,11 +70,8 @@ export default function GlobalLeaderboard() {
 
     bestTasByTrack.forEach((entry) => {
       const rta = bestRtaByTrack.get(entry.track);
-      const savedMs =
-        trackList[entry.track].overrideTimeSaved ?? rta
-          ? Math.max(0, rta.time_ms - entry.time_ms)
-          : 0;
-
+      const override = trackList[entry.track].overrideTimeSaved
+      const savedMs = override ? override * 1000 : (rta ? Math.max(0, rta.time_ms - entry.time_ms) : 0);
       const contributionPerAuthor = 1 / entry.authors.length;
       const savedPerAuthor = savedMs / entry.authors.length;
 
@@ -184,11 +181,11 @@ export default function GlobalLeaderboard() {
     className="text-2xl font-semibold tracking-[0.01em] text-white sm:text-3xl"
     style={{ fontFamily: "var(--font-okta-neue)" }}
   >
-    Combined Leaderboard
+    Global Leaderboards
   </h1>
 
   <p className="mt-4 text-slate-400 sm:text-base">
-    Tracks all TAS contributions across every leaderboard.
+    Tracks all TAS contributions across every leaderboard
   </p>
 
   <div className="mt-4 text-sm text-slate-300">

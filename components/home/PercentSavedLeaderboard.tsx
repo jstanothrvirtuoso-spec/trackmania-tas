@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { TasEntry, RtaEntry, trackList } from "@/lib/TrackLists";
-import { useTasRecords } from "../../lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "../../lib/RtaRecords";
+import { useTasRecords } from "@/lib/TasRecords";
+import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 
 function buildPercentSavedLeaderboard(
   records: {

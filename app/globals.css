@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: 'OktaNeue';
-  src: url('/fonts/OktaNeue-Black.woff2') format('woff2');
+  src: url('/fonts/OktaNeue-Black.ttf') format('ttf');
   font-weight: 900;
   font-style: normal;
   font-display: swap;

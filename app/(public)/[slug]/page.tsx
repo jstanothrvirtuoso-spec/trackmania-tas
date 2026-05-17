@@ -1,10 +1,10 @@
 "use client";
 
 import { use, useState, useMemo } from "react";
-import { useVisibleTables } from "@/lib/VisibleTablesContext";
 import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMap } from "@/lib/TrackLists";
-import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { useTasRecords } from "@/lib/TasRecords";
+import { useProfile } from "@/lib/Profiles";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
 import TimeSaved from "./TimeSaved";
@@ -16,20 +16,30 @@ export default function GamePage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+
   const { slug } = use(params);
   const game = gameSlugMap[slug];
-  const { showTimeSaved, showLeaderboard, showRtaLeaderboard } = useVisibleTables();
 
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
   
+  const { data: profile, isLoading } = useProfile();
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords])
+
+  const prefs = {
+    show_rta: profile?.show_rta ?? true,
+    show_time_saved: profile?.show_time_saved ?? true,
+    show_leaderboard: profile?.show_leaderboard ?? true,
+    show_rta_leaderboard: profile?.show_rta_leaderboard ?? true,
+    highlight_recent: profile?.highlight_recent ?? true,
+    show_visitor_counter: profile?.show_visitor_counter ?? true,
+  };
 
   const currentRecords = useMemo(() => {
     const bestTasByTrack = new Map<string, TasEntry>();
@@ -67,9 +77,13 @@ export default function GamePage({
   if (!game) {
     throw new Error("Game not found");
   }
+  
+  if (isLoading) {
+    return <div className="text-white p-10">Loading...</div>;
+  }
 
   return (
-    <div>
+    <div className="bg-slate-950">
       <div className="flex justify-center py-3">
         <HeaderOptions
           game={game}
@@ -86,17 +100,19 @@ export default function GamePage({
       <div className="lg:flex lg:items-start lg:gap-0 justify-center">
         <RecordTable 
           game={game}
+          showRta={prefs.show_rta}
+          highlightRecent={prefs.highlight_recent}
           currentRecords={currentRecords}
           selectedAuthor={selectedAuthor}
           selectedEnvironment={selectedEnvironment}
         />
 
         <div className="flex flex-col items-start gap-1">
-          {showTimeSaved && (<TimeSaved currentRecords={currentRecords} />)}
+          {prefs.show_time_saved && (<TimeSaved currentRecords={currentRecords} />)}
 
           <div className="flex flex-row items-start gap-1">
-            {showLeaderboard && (<Leaderboard currentRecords={currentRecords} />)}
-            {showRtaLeaderboard && (<RtaTable currentRecords={currentRecords} />)}
+            {prefs.show_leaderboard && (<Leaderboard currentRecords={currentRecords} />)}
+            {prefs.show_rta_leaderboard && (<RtaTable currentRecords={currentRecords} />)}
           </div>
         </div>
       </div>

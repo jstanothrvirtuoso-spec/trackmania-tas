@@ -5,8 +5,8 @@ import localFont from "next/font/local";
 
 import "./globals.css";
 
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import Providers from "./providers";
 import VisitorCounter from "@/components/VisitorCounter";
 
@@ -29,11 +29,6 @@ const oktaNeue = localFont({
   src: [
     {
       path: "../fonts/OktaNeue-Black.ttf",
-      weight: "900",
-      style: "normal",
-    },
-    {
-      path: "../fonts/OktaNeue-Black.woff2",
       weight: "900",
       style: "normal",
     },

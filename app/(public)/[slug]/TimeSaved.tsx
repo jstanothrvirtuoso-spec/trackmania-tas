@@ -51,7 +51,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
   return (
     <aside className="pl-5 pb-4">
-      <div className="rounded-lg border border-slate-800 bg-slate-950/90 text-sm">
+      <div className="rounded-lg border border-slate-800 text-sm">
         <table className="table-fixed text-center divide-y text-sm">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
@@ -97,7 +97,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
             </tr>
           </thead>
 
-          <tbody className="font-sans divide-y divide-slate-800">
+          <tbody className="font-sans divide-y divide-slate-800 bg-green-800/20">
             {categoryTotals.map((category) => {
               const hasRta = category.rtaMs > 0;
               const isStunt = category.category === "Stunt";

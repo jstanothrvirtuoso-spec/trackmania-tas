@@ -270,7 +270,7 @@ export default function AuthorsPage() {
     tasRecords.forEach((entry) => {
       Object.entries(categoryFilters).forEach(
         ([displayCategory, allowedCategories]) => {
-          // Skip if this TAS cannot represent this category
+          
           if (!allowedCategories.has(entry.category as never)) {
             return;
           }
@@ -327,10 +327,16 @@ export default function AuthorsPage() {
           onChange={(e) => setSelectedAuthor(e.target.value)}
           className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none"
         >
-          <option value="">Select author</option>
-
           {authorOptions.map(({ author, count }) => (
-            <option key={author} value={author}>
+            <option
+              key={author}
+              value={author}
+              className={
+                author === selectedAuthor
+                  ? "italic text-red-400"
+                  : ""
+              }
+            >
               {author} ({count})
             </option>
           ))}

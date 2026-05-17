@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LoginPage() {
+
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
   const next = searchParams.get("next") || "/";
 
@@ -29,9 +32,9 @@ export default function LoginPage() {
       password,
     });
 
-    setLoading(false);
-
     if (error) {
+      setLoading(false);
+
       if (error.message.toLowerCase().includes("email not confirmed")) {
         await supabase.auth.resend({
           type: "signup",
@@ -45,7 +48,13 @@ export default function LoginPage() {
       setErrorMessage(error.message);
       return;
     }
-    
+
+    await queryClient.invalidateQueries({
+      queryKey: ["profile"],
+    });
+
+    setLoading(false);
+
     router.push(next);
     router.refresh();
   }
@@ -65,8 +74,6 @@ export default function LoginPage() {
       password,
     });
 
-    setLoading(false);
-
     if (error) {
       setErrorMessage(error.message);
       setLoading(false);
@@ -74,13 +81,19 @@ export default function LoginPage() {
     }
 
     if (data.session) {
+      await queryClient.invalidateQueries({
+        queryKey: ["profile"],
+      });
+
       router.push("/");
       router.refresh();
     } else {
       setErrorMessage(
-        "Sign up failed. Possibly email already exists."
+        "Check your email to confirm your account."
       );
     }
+
+    setLoading(false);
   }
 
   return (
