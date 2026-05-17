@@ -1,12 +1,9 @@
-
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
-import localFont from "next/font/local";
 
 import "./globals.css";
 
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import Providers from "./providers";
 import VisitorCounter from "@/components/VisitorCounter";
 
@@ -25,40 +22,20 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const oktaNeue = localFont({
-  src: [
-    {
-      path: "../fonts/OktaNeue-Black.ttf",
-      weight: "900",
-      style: "normal",
-    },
-  ],
-  variable: "--font-okta-neue",
-});
-
-export const metadata: Metadata = {
-  title: "TrackMania TAS Leaderboards",
-  description:
-    "Clean TrackMania TAS leaderboards by game, track, authors, and links.",
-};
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${oktaNeue.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
         <Providers>
           <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-           <Footer />
+          <main className="flex-1">{children}</main>
           <VisitorCounter />
         </Providers>
       </body>
