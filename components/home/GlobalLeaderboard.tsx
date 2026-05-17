@@ -177,24 +177,24 @@ export default function GlobalLeaderboard() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6 lg:px-8">
       <header className="mb-3 rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-xl shadow-slate-950/30 backdrop-blur-md text-center">
-  <h1
-    className="text-2xl font-semibold tracking-[0.01em] text-white sm:text-3xl"
-    style={{ fontFamily: "var(--font-okta-neue)" }}
-  >
-    Global Leaderboards
-  </h1>
+        <h1
+          className="text-2xl font-semibold tracking-[0.01em] text-white sm:text-3xl"
+          style={{ fontFamily: "var(--font-okta-neue)" }}
+        >
+          Global Leaderboards
+        </h1>
 
-  <p className="mt-4 text-slate-400 sm:text-base">
-    Tracks all TAS contributions across every leaderboard
-  </p>
+        <p className="mt-4 text-slate-400 sm:text-base">
+          Tracks all TAS contributions across every leaderboard
+        </p>
 
-  <div className="mt-4 text-sm text-slate-300">
-    {authorStats.length} authors
-  </div>
-</header>
+        <div className="mt-4 text-sm text-slate-300">
+          {authorStats.length} authors
+        </div>
+      </header>
 
-      <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90">
-        <table className="min-w-full divide-y divide-slate-800 text-center text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
+        <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th onClick={() => handleSort("badge")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">

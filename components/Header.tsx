@@ -68,7 +68,8 @@ export default function Header() {
       className={`
         sticky top-0 z-50
         border-b border-slate-800
-        bg-slate-950/95 backdrop-blur-md
+        bg-slate-950/50 backdrop-blur-md
+        bg-gradient-to-br from-violet-700/30 to-blue-800/70
         transition-all duration-500 ease-out
         ${
           showHeader
@@ -77,7 +78,7 @@ export default function Header() {
         }
       `}
     >
-      <div className="mx-auto px-4 py-4 bg-gradient-to-br from-violet-800/10 to-blue-900">
+      <div className="mx-auto px-4 py-4 ">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4">
 
           {/* LEFT */}
