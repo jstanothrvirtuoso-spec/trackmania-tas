@@ -1,7 +1,8 @@
 "use client";
 
-import GlobalLeaderboard from "@/components/home/GlobalLeaderboard";
 import VideoBackground from "@/components/home/VideoBackground";
+import CompletionTable from "@/components/home/CompletionTable";
+import GlobalLeaderboard from "@/components/home/GlobalLeaderboard";
 import PercentSavedLeaderboard from "@/components/home/PercentSavedLeaderboard";
 
 export default function Home() {
@@ -20,8 +21,14 @@ export default function Home() {
             <GlobalLeaderboard />
           </div>
 
-          <div className="w-fit">
-            <PercentSavedLeaderboard />
+          <div className="w-fit flex flex-col gap-4">
+            <div className="">
+              <CompletionTable />
+            </div>
+
+            <div className="w-fit">
+              <PercentSavedLeaderboard />
+            </div>
           </div>
 
         </div>

@@ -144,7 +144,7 @@ export default function Header() {
             </div>
 
             {/* HOME */}
-            <div>
+            <div className="pt-1">
               <Link
                 href="/"
                 style={{ fontFamily: "DOSVGA" }}
