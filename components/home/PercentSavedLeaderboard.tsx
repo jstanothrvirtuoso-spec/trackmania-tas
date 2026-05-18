@@ -84,7 +84,7 @@ export default function PercentSavedLeaderboard() {
   if (data.length === 0) return null;
 
   return (
-    <div className="mt-3 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
+    <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
       <table className="text-center backdrop-blur-md rounded-2xl">
         <thead className="text-slate-400">
           <tr>

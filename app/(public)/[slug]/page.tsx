@@ -83,7 +83,7 @@ export default function GamePage({
   }
 
   return (
-    <div className="bg-slate-950">
+    <div className="bg-slate-950 pt-16 min-h-screen min-w-screen">
       <div className="flex justify-center py-3">
         <HeaderOptions
           game={game}

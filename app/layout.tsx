@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
 
 import "./globals.css";
-
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import Header from "@/components/Header";
 import Providers from "./providers";
 import VisitorCounter from "@/components/VisitorCounter";
@@ -32,10 +30,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">
+      <body className="min-h-screen justify-center">
         <Providers>
           <Header />
-          <main className="flex-1">{children}</main>
+          <main className="sticky inset-0">{children}</main>
           <VisitorCounter />
         </Providers>
       </body>

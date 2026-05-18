@@ -8,23 +8,25 @@ export default function Home() {
   return (
     <>
       {/* Video Background */}
-      <div className="fixed inset-0 -z-10 h-full w-full">
+      <div className="-z-10 h-full w-full">
         <VideoBackground />
       </div>
 
-      <div className="flex justify-center">
-        <div className="flex flex-row items-start gap-3">
-          
-          <div className="relative z-10 w-full max-w-xl">
+      {/* Leaderboards */}
+      <div className="pt-20 pb-6 flex justify-center w-full">
+        <div className="w-full max-w-5xl px-4 flex flex-row gap-4 items-start">
+
+          <div className="w-fit">
             <GlobalLeaderboard />
           </div>
 
-          <div className="relative z-10 w-full max-w-xl">
+          <div className="w-fit">
             <PercentSavedLeaderboard />
           </div>
 
         </div>
       </div>
+
     </>
   );
 }

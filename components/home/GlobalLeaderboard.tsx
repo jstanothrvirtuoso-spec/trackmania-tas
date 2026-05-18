@@ -40,6 +40,7 @@ function getRankIndex(
 }
 
 export default function GlobalLeaderboard() {
+
   const [sortField, setSortField] = useState<SortField>("tases");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
@@ -175,14 +176,14 @@ export default function GlobalLeaderboard() {
   };
 
   return (
-  <div className="mx-auto max-w-5xl px-4 py-3 sm:px-6 lg:px-8">
-    <header className="mb-3 rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-xl shadow-slate-950/30 backdrop-blur-md text-center">
-      <h1
-  className="text-2xl font-semibold tracking-[0.01em] text-white sm:text-3xl"
-  style={{ fontFamily: "OktaNeue" }}
->
-  Global Leaderboards
-</h1>
+    <div className="mx-auto w-full max-w-5xl flex flex-col gap-3">
+      <header className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-xl shadow-slate-950/30 backdrop-blur-md text-center">
+        <h1
+          className="text-2xl font-semibold tracking-[0.01em] text-white sm:text-3xl"
+          style={{ fontFamily: "OktaNeue" }}
+        >
+          Global Leaderboards
+        </h1>
 
         <p className="mt-4 text-slate-400 sm:text-base">
           Tracks all TAS contributions across every leaderboard
@@ -197,7 +198,7 @@ export default function GlobalLeaderboard() {
         <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
-              <th onClick={() => handleSort("badge")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+              <th onClick={() => handleSort("badge")} className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap">
                 Badge
                 <SortIndicator field="badge" />
               </th>
@@ -205,15 +206,15 @@ export default function GlobalLeaderboard() {
                 Author
                 <SortIndicator field="author" />
               </th>
-              <th onClick={() => handleSort("tases")} className="cursor-pointer px-2 py-1.5 whitespace-nowrap">
+              <th onClick={() => handleSort("tases")} className="cursor-pointer px-3 py-1.5 whitespace-nowrap">
                 TASes
                 <SortIndicator field="tases" />
               </th>
-              <th onClick={() => handleSort("contributions")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+              <th onClick={() => handleSort("contributions")} className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap">
                 Cont.
                 <SortIndicator field="contributions" />
               </th>
-              <th onClick={() => handleSort("totalSaved")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+              <th onClick={() => handleSort("totalSaved")} className="cursor-pointer px-4 py-1.5 uppercase whitespace-nowrap">
                 Saved
                 <SortIndicator field="totalSaved" />
               </th>

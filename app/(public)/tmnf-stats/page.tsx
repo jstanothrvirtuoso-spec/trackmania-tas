@@ -303,9 +303,9 @@ export default function TmnfHistory() {
   }, [bestByTrackAndCategory, bestRtaByTrack]);
 
   return (
-    <div className="flex gap-4 justify-center">
+    <div className="flex gap-4 justify-center pt-16">
 
-      <div className="my-10 mx-3 overflow-auto rounded-xl border border-slate-800 bg-slate-900/20 text-center">
+      <div className="my-5 mx-3 overflow-auto rounded-xl border border-slate-800 bg-slate-900/20 text-center">
         <table className="w-full text-xs">
           <thead className="text-slate-200 px-3 py-2 bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] text-sm cursor-pointer hover:text-slate-300 transition whitespace-nowrap">
             <tr className="">
@@ -374,7 +374,7 @@ export default function TmnfHistory() {
         </table>
       </div>
 
-      <div className="flex justify-center mt-10">
+      <div className="flex justify-center my-5">
         <div className="w-auto">
             <TmnfHistoryGraph points={points} />
         </div>

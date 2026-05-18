@@ -72,7 +72,7 @@ export default function PreferencesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-800/10 to-slate-800 text-white px-6 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-violet-800/10 to-slate-800 text-white px-6 pt-20">
       <div className="max-w-4xl mx-auto space-y-8">
 
         {/* HEADER */}
