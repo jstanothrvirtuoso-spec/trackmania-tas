@@ -78,14 +78,14 @@ export default function Header() {
         transition-all duration-500 ease-out backdrop-blur-md
         ${
           showHeader
-            ? "translate-y-0 opacity-100"
+            ? "-translate-y-0.5 opacity-100"
             : "-translate-y-6 opacity-0 pointer-events-none"
         }
       `}
     >
       <div className="flex justify-center px-4">
         <div
-          className="w-full max-w-7xl border border-slate-800 bg-slate-950/50
+          className="w-full max-w-7xl border border-slate-700 bg-slate-950/50 shadow-xl
             bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3
           "
         >
@@ -97,7 +97,7 @@ export default function Header() {
               <button
                 onMouseEnter={openMenu}
                 onMouseLeave={closeMenu}
-                className="flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-md border border-slate-700 bg-slate-700 transition hover:bg-slate-700"
+                className="flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-slate-500 bg-slate-700 transition hover:bg-slate-700 shadow-lg"
               >
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
@@ -116,7 +116,7 @@ export default function Header() {
                   }
                 `}
               >
-                <div className="rounded-lg border border-slate-700 bg-gradient-to-bl from-green-900/95 to-blue-900/90 shadow-lg p-2 flex flex-col gap-1 whitespace-nowrap">
+                <div className="rounded-lg border border-slate-500 bg-gradient-to-bl from-green-900/95 to-blue-900/90 shadow-lg p-2 flex flex-col gap-1 whitespace-nowrap">
 
                   {!profile?.username && (
                     <Link
@@ -148,7 +148,7 @@ export default function Header() {
               <Link
                 href="/"
                 style={{ fontFamily: "DOSVGA" }}
-                className="text-2xl text-white whitespace-nowrap font-dosvga"
+                className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
               >
                 Leaderboard
               </Link>
@@ -164,7 +164,7 @@ export default function Header() {
                   <Link
                     key={game.slug}
                     href={`/${game.slug}`}
-                    className={`text-md font-medium whitespace-nowrap transition ${
+                    className={`font-medium whitespace-nowrap transition [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] ${
                       isActive
                         ? "text-white border-b border-white"
                         : "text-slate-300 hover:text-white"
@@ -188,13 +188,13 @@ export default function Header() {
                   <button
                     onMouseEnter={openUser}
                     onMouseLeave={closeUser}
-                    className="flex items-center gap-2 rounded-full border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700"
+                    className="flex items-center gap-2 rounded-full border border-slate-600 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700"
                   >
-                    <div className="h-5 w-5 rounded-full bg-emerald-500 text-xs font-bold text-black flex items-center justify-center">
-                      {profile.username?.[0]?.toUpperCase()}
+                    <div className="h-5 w-5 rounded-full bg-emerald-500 text-sm font-semibold text-black flex items-center justify-center">
+                      {profile.username[0].toUpperCase()}
                     </div>
 
-                    <span className="hidden lg:block">
+                    <span className="hidden text-[17px] lg:block">
                       {profile.username}
                     </span>
                   </button>

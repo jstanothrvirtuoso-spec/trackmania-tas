@@ -130,16 +130,16 @@ export default function GlobalLeaderboard() {
 
       switch (sortField) {
         case "badge":
-          aVal = `${a.badge}-${(a.tases).toString().padStart(2, "0")}`;
-          bVal = `${b.badge}-${(b.tases).toString().padStart(2, "0")}`;
+          aVal = `${a.badge}-${(a.tases).toString().padStart(3, "0")}`;
+          bVal = `${b.badge}-${(b.tases).toString().padStart(3, "0")}`;
           break;
         case "author":
           aVal = a.author;
           bVal = b.author;
           break;
         case "tases":
-          aVal = a.tases;
-          bVal = b.tases;
+          aVal = `${(a.tases).toString().padStart(3, "0")}-${Math.round(a.contributions * 100).toString().padStart(4, "0")}`;
+          bVal = `${(b.tases).toString().padStart(3, "0")}-${Math.round(b.contributions * 100).toString().padStart(4, "0")}`;
           break;
         case "contributions":
           aVal = a.contributions;
@@ -196,7 +196,7 @@ export default function GlobalLeaderboard() {
 
       <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
         <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">
-          <thead className="bg-slate-900/90 text-slate-400">
+          <thead className="bg-slate-900/90 text-slate-300">
             <tr>
               <th onClick={() => handleSort("badge")} className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap">
                 Badge

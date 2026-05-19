@@ -1637,13 +1637,10 @@ export const gameSlugMap = Object.values(trackList).reduce((acc, t) => {
   return acc;
 }, {} as Record<string, Game>);
 
-export function getGameTracks(game: Game) {
+export function getGameTracks(game: Game): string[] {
   return Object.entries(trackList)
     .filter(([, info]) => info.game === game)
-    .map(([name, info]) => ({
-      name,
-      ...info,
-    }));
+    .map(([name]) => name);
 }
 
 export function getTrack(track: string) {

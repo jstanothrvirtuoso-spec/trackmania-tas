@@ -33,8 +33,8 @@ function buildPercentSavedLeaderboard(
 }
 
 const tierColours = [
-  ["bg-emerald-500/30", "bg-emerald-500/40"],
-  ["bg-orange-500/35", "bg-orange-500/40"],
+  ["bg-emerald-700/30", "bg-emerald-700/40"],
+  ["bg-orange-400/25", "bg-orange-400/30"],
   ["bg-purple-950/20", "bg-purple-950/35"],
 ] as const;
 
@@ -86,7 +86,7 @@ export default function PercentSavedLeaderboard() {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
       <table className="text-center backdrop-blur-md rounded-2xl">
-        <thead className="text-slate-400">
+        <thead className="text-slate-300 bg-slate-950/50">
           <tr>
             <th className="px-3 py-1.5 uppercase whitespace-nowrap">
               Track
@@ -116,7 +116,7 @@ export default function PercentSavedLeaderboard() {
                 <td className="px-3 py-1 text-slate-100 whitespace-nowrap">
                   {row.track}
                 </td>
-                <td className="px-3 py-1 text-emerald-400">
+                <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
                   {row.pcSaved.toFixed(1)}
                 </td>
                 <td className="px-3 py-1 text-slate-200">

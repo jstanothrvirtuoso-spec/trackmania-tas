@@ -97,7 +97,7 @@ export default function GamePage({
         />
       </div>
 
-      <div className="lg:flex lg:items-start lg:gap-0 justify-center">
+      <div className="lg:flex justify-center">
         <RecordTable 
           game={game}
           showRta={prefs.show_rta}
