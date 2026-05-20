@@ -2,9 +2,13 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
-import AdminPanel from "./AdminPanel";
 
-export default async function AdminPage() {
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+
   const supabase = createClient(await cookies());
 
   const {
@@ -25,5 +29,5 @@ export default async function AdminPage() {
     redirect("/");
   }
   
-  return <AdminPanel />;
+  return children;
 }

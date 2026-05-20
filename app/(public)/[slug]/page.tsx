@@ -1,10 +1,12 @@
 "use client";
 
+import { notFound } from "next/navigation";
 import { use, useState, useMemo } from "react";
 import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMap } from "@/lib/TrackList";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfile } from "@/lib/Profiles";
+import { Author } from "@/lib/AuthorList";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
 import TimeSaved from "./TimeSaved";
@@ -20,7 +22,7 @@ export default function GamePage({
   const { slug } = use(params);
   const game = gameSlugMap[slug];
 
-  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
+  const [selectedAuthor, setSelectedAuthor] = useState<Author>("All Authors");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
   
@@ -75,7 +77,7 @@ export default function GamePage({
   }, [game, selectedCategory, rtaRecords, tasRecords]);
 
   if (!game) {
-    throw new Error("Game not found");
+    notFound();
   }
   
   if (isLoading) {

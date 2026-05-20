@@ -122,7 +122,7 @@ export default function Header() {
                     <Link
                       href={`/login?next=${encodeURIComponent(pathname)}`}
                       style={{ fontFamily: "DOSVGA" }}
-                      className="px-3 py-2 text-md text-slate-200 hover:bg-yellow-700/30 rounded font-dosvga"
+                      className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvga"
                     >
                       Login
                     </Link>

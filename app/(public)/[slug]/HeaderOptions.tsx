@@ -1,15 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
+import { Author } from "@/lib/AuthorList";
 import { categories, Category, environment, Environment, RecordRow, Game } from "@/lib/TrackList";
 
 interface HeaderOptionsProps {
   game: Game,
   currentRecords: RecordRow[],
-  selectedAuthor: string;
+  selectedAuthor: Author;
   selectedCategory: Category;
   selectedEnvironment: Environment;
-  onAuthorChange: (author: string) => void;
+  onAuthorChange: (author: Author) => void;
   onCategoryChange: (category: Category) => void;
   onEnvironmentChange: (environment: Environment) => void;
 }
@@ -74,7 +75,7 @@ export default function HeaderOptions({
       )}
       <select
         value={selectedAuthor}
-        onChange={(e) => onAuthorChange(e.target.value)}
+        onChange={(e) => onAuthorChange(e.target.value as Author)}
         className="cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
       >
         <option value="">All Authors</option>

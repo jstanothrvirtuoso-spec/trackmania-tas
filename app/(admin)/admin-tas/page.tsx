@@ -26,15 +26,6 @@ type TimeState = {
   thousandth: number;
 };
 
-function isValidUrl(url: string) {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export default function AdminPanel() {
 
   const supabase = createClient();
@@ -381,7 +372,6 @@ export default function AdminPanel() {
               ["Inputs", "inputs", "https://pastebin.com/<id>"],
             ].map(([label, key, placeholder]) => {
               const value = (form as any)[key] as string;
-              const isValid = value ? isValidUrl(value) : false;
 
               return (
                 <div key={key}>
@@ -390,7 +380,6 @@ export default function AdminPanel() {
 
                     <button
                       type="button"
-                      disabled={!isValid}
                       onClick={() => window.open(value, "_blank")}
                       className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 disabled:opacity-40"
                     >
