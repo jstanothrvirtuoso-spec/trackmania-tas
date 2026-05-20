@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
-import { TasEntry } from "./TrackLists";
+import { TasEntry } from "./TrackList";
 
 async function getTasRecords(): Promise<TasEntry[]> {
   const supabase = createClient();

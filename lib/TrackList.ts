@@ -1,3 +1,4 @@
+import { Author } from "./AuthorList";
 
 export const gameList = ["TMNF", "TMNF No Cut", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "TM2"] as const;
 export type Game = (typeof gameList)[number];
@@ -61,7 +62,7 @@ export type TasEntry = {
   category: Category;
   record: string;
   time_ms: number;
-  authors: string[];
+  authors: Author[];
   date: string;
   video: string;
   replay: string;

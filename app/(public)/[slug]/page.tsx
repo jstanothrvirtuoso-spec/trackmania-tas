@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useState, useMemo } from "react";
-import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMap } from "@/lib/TrackLists";
+import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMap } from "@/lib/TrackList";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfile } from "@/lib/Profiles";

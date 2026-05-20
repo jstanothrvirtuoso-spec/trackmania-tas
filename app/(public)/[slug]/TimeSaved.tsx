@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { RecordRow } from "@/lib/TrackLists";
+import { RecordRow } from "@/lib/TrackList";
 import { formatTime, formatPercentSaved } from "@/utils/formatting";
 
 type CategoryTotals = {

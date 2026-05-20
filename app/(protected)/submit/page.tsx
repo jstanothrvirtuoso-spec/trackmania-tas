@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { gameLinks, trackList } from "@/lib/TrackLists";
+import { gameLinks, trackList } from "@/lib/TrackList";
 
 export default function SubmitPage() {
   const [game, setGame] = useState("");

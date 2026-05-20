@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
-import { RtaEntry } from "./TrackLists";
+import { RtaEntry } from "./TrackList";
 
 async function getRtaRecords(): Promise<RtaEntry[]> {
   const supabase = createClient();

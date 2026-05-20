@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Profile } from "@/lib/Profiles";
-import { Game, gameSets, Environment, RecordRow } from "@/lib/TrackLists";
+import { Game, gameSets, Environment, RecordRow } from "@/lib/TrackList";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
+import { Author } from "@/lib/AuthorList";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
@@ -182,7 +182,7 @@ interface RecordTableProps {
   showRta: boolean;
   highlightRecent: boolean;
   currentRecords: RecordRow[];
-  selectedAuthor: string;
+  selectedAuthor: Author;
   selectedEnvironment: Environment;
 }
 
@@ -267,14 +267,8 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
 
   const filteredRows = useMemo(() => {
     return sortedRows.filter((row) => {
-      const matchesAuthor =
-        !selectedAuthor ||
-        row.tas?.authors.includes(selectedAuthor)
-
-      const matchesEnvironment =
-        selectedEnvironment === "All" ||
-        row.trackInfo.environment === selectedEnvironment
-
+      const matchesAuthor = !selectedAuthor || row.tas?.authors.includes(selectedAuthor as Author)
+      const matchesEnvironment = selectedEnvironment === "All" || row.trackInfo.environment === selectedEnvironment
       return matchesEnvironment && matchesAuthor;
     })
   }, [sortedRows, selectedAuthor, selectedEnvironment]);

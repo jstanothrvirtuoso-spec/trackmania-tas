@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react";
-import { TasEntry, categoryFilters, trackList } from "@/lib/TrackLists";
+import { TasEntry, categoryFilters, trackList } from "@/lib/TrackList";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { formatTime } from "@/utils/formatting";

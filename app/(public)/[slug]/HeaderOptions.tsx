@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { categories, Category, environment, Environment, RecordRow, Game } from "@/lib/TrackLists";
+import { categories, Category, environment, Environment, RecordRow, Game } from "@/lib/TrackList";
 
 interface HeaderOptionsProps {
   game: Game,

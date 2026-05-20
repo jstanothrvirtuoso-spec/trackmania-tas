@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
-import { TasEntry, trackList } from "@/lib/TrackLists";
+import { TasEntry, trackList } from "@/lib/TrackList";
 import { formatTime } from "@/utils/formatting";
 
 type AuthorStat = {

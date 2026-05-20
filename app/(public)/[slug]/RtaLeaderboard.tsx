@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RecordRow } from "@/lib/TrackLists";
+import { RecordRow } from "@/lib/TrackList";
 import { useMemo, useState } from "react";
 
 type SortField = "player" | "wrs";

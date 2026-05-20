@@ -3,8 +3,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTasRecords } from "@/lib/TasRecords";
+import { Author } from "@/lib/AuthorList";
 import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
-import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackLists";
+import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackList";
 import { formatDate, formatTime } from "@/utils/formatting"
 
 type RecordRow = {
@@ -217,7 +218,7 @@ function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
 export default function AuthorsPage() {
 
   const searchParams = useSearchParams();
-  const [selectedAuthor, setSelectedAuthor] = useState("");
+  const [selectedAuthor, setSelectedAuthor] = useState<Author>("All Authors");
   const [hideBeaten, setHideBeaten] = useState(false);
 
   const { data: rtaRecords = [] } = useRtaRecords();
@@ -228,7 +229,7 @@ export default function AuthorsPage() {
   }, [rtaRecords])
 
   const authorOptions = useMemo(() => {
-    const authorCount: Record<string, number> = {};
+    const authorCount: Partial<Record<Author, number>> = {};
 
     tasRecords.forEach((tas) => {
       tas.authors.forEach((author) => {
@@ -248,7 +249,7 @@ export default function AuthorsPage() {
     const authorFromUrl = searchParams.get("author");
 
     if (authorFromUrl) {
-      setSelectedAuthor(authorFromUrl);
+      setSelectedAuthor(authorFromUrl as Author);
       return;
     }
 
@@ -258,7 +259,7 @@ export default function AuthorsPage() {
           Math.floor(Math.random() * authorOptions.length)
         ];
 
-      setSelectedAuthor(random.author);
+      setSelectedAuthor(random.author as Author);
     }
   }, [searchParams, authorOptions]);
 
@@ -319,12 +320,12 @@ export default function AuthorsPage() {
   const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
   return (
-    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
+    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-18 pb-8 text-slate-100">
       
       <div className="mb-6 flex flex-row gap-3 px-4">
         <select
           value={selectedAuthor}
-          onChange={(e) => setSelectedAuthor(e.target.value)}
+          onChange={(e) => setSelectedAuthor(e.target.value as Author)}
           className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none"
         >
           {authorOptions.map(({ author, count }) => (

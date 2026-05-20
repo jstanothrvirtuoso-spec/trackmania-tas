@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { gameLinks } from "@/lib/TrackLists";
+import { gameLinks } from "@/lib/TrackList";
 import { useProfile } from "@/lib/Profiles";
 
 const supabase = createClient();

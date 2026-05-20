@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { gameLinks, trackList, categoryFilters, Category } from "@/lib/TrackLists";
+import { gameLinks, trackList, categoryFilters, Category } from "@/lib/TrackList";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { formatDate, formatTime } from "@/utils/formatting"
@@ -469,7 +469,7 @@ export default function TracksPage() {
         </div>
       </div>
 
-      <div className="mb-4 mt-6">
+      <div className="mb-4 mt-6 text-center">
         <h1 className="text-2xl font-bold text-white">
           {track}
         </h1>
