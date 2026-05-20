@@ -267,7 +267,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
 
   const filteredRows = useMemo(() => {
     return sortedRows.filter((row) => {
-      const matchesAuthor = !selectedAuthor || row.tas?.authors.includes(selectedAuthor as Author)
+      const matchesAuthor = !selectedAuthor || selectedAuthor === "All Authors" || row.tas?.authors.includes(selectedAuthor as Author)
       const matchesEnvironment = selectedEnvironment === "All" || row.trackInfo.environment === selectedEnvironment
       return matchesEnvironment && matchesAuthor;
     })

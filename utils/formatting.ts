@@ -28,7 +28,10 @@ export function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean = fa
 
 export function formatPercentSaved(timeMs: number, rtaMs: number, numSig: number, isStunt: boolean = false) {
 
-  const percent = ((timeMs - rtaMs) / rtaMs) * (isStunt ? -100 : 100);
+  const percent = ((rtaMs - timeMs) / rtaMs) * (isStunt ? 100 : -100);
+  if (percent >= 1000) {
+    return "+++"
+  }
   let str = Number(percent).toPrecision(numSig);
 
   const isNegative = str.startsWith("-");
