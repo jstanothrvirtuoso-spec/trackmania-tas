@@ -15,13 +15,29 @@ type AuthorStat = {
   badge: number;
 };
 
-type SortField = "badge" | "author" | "tases" | "contributions" | "totalSaved";
+type SortField =
+  | "badge"
+  | "author"
+  | "tases"
+  | "contributions"
+  | "totalSaved";
+
 type SortOrder = "asc" | "desc";
+
 const badgeRanks = {
-  "TAS": [2, 5, 10, 20, 40, 60, 80, 100],
-  "Contributions": [1.5, 2.5, 5, 10, 20, 40, 70, 100],
-  "Saved": [5, 15, 30, 60, 90, 120, 240, 360],
-  "Badge": ["novice.png", "apprentice.png", "adept.png", "expert.png", "elite.png", "master.png", "legend.png", "mythic.png"],
+  TAS: [2, 5, 10, 20, 40, 60, 80, 100],
+  Contributions: [1.5, 2.5, 5, 10, 20, 40, 70, 100],
+  Saved: [5, 15, 30, 60, 90, 120, 240, 360],
+  Badge: [
+    "novice.png",
+    "apprentice.png",
+    "adept.png",
+    "expert.png",
+    "elite.png",
+    "master.png",
+    "legend.png",
+    "mythic.png",
+  ],
 } as const;
 
 function getRankIndex(
@@ -40,15 +56,18 @@ function getRankIndex(
 }
 
 export default function GlobalLeaderboard() {
+  const [sortField, setSortField] =
+    useState<SortField>("tases");
 
-  const [sortField, setSortField] = useState<SortField>("tases");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [sortOrder, setSortOrder] =
+    useState<SortOrder>("desc");
 
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
 
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
+
     return buildBestRtaByTrack(rtaRecords);
   }, [rtaRecords]);
 
@@ -63,7 +82,8 @@ export default function GlobalLeaderboard() {
         !existing ||
         entry.time_ms < existing.time_ms ||
         (entry.time_ms === existing.time_ms &&
-          new Date(entry.date).getTime() < new Date(existing.date).getTime())
+          new Date(entry.date).getTime() <
+            new Date(existing.date).getTime())
       ) {
         bestTasByTrack.set(entry.track, entry);
       }
@@ -71,17 +91,29 @@ export default function GlobalLeaderboard() {
 
     bestTasByTrack.forEach((entry) => {
       const rta = bestRtaByTrack.get(entry.track);
-      const override = trackList[entry.track].overrideTimeSaved
-      const savedMs = override ? override * 1000 : (rta ? Math.max(0, rta.time_ms - entry.time_ms) : 0);
-      const contributionPerAuthor = 1 / entry.authors.length;
-      const savedPerAuthor = savedMs / entry.authors.length;
+
+      const override =
+        trackList[entry.track].overrideTimeSaved;
+
+      const savedMs = override
+        ? override * 1000
+        : rta
+        ? Math.max(0, rta.time_ms - entry.time_ms)
+        : 0;
+
+      const contributionPerAuthor =
+        1 / entry.authors.length;
+
+      const savedPerAuthor =
+        savedMs / entry.authors.length;
 
       entry.authors.forEach((author) => {
         const current = authorMap.get(author);
 
         if (current) {
           current.tases += 1;
-          current.contributions += contributionPerAuthor;
+          current.contributions +=
+            contributionPerAuthor;
           current.totalSaved += savedPerAuthor;
         } else {
           authorMap.set(author, {
@@ -95,32 +127,35 @@ export default function GlobalLeaderboard() {
       });
     });
 
-    return Array.from(authorMap.values()).map((author) => {
-      const tasIndex = getRankIndex(
-        author.tases,
-        badgeRanks.TAS
-      );
+    return Array.from(authorMap.values()).map(
+      (author) => {
+        const tasIndex = getRankIndex(
+          author.tases,
+          badgeRanks.TAS
+        );
 
-      const contributionIndex = getRankIndex(
-        author.contributions,
-        badgeRanks.Contributions
-      );
+        const contributionIndex = getRankIndex(
+          author.contributions,
+          badgeRanks.Contributions
+        );
 
-      const savedIndex = getRankIndex(
-        author.totalSaved / 1000,
-        badgeRanks.Saved
-      );
+        const savedIndex = getRankIndex(
+          author.totalSaved / 1000,
+          badgeRanks.Saved
+        );
 
-      const average =
-        (tasIndex +
-          contributionIndex +
-          savedIndex) / 3;
+        const average =
+          (tasIndex +
+            contributionIndex +
+            savedIndex) /
+          3;
 
-      return {
-        ...author,
-        badge: Math.round(average),
-      };
-    });
+        return {
+          ...author,
+          badge: Math.round(average),
+        };
+      }
+    );
   }, [tasRecords, bestRtaByTrack]);
 
   const sortedAuthorStats = useMemo(() => {
@@ -130,29 +165,58 @@ export default function GlobalLeaderboard() {
 
       switch (sortField) {
         case "badge":
-          aVal = `${a.badge}-${(a.tases).toString().padStart(3, "0")}`;
-          bVal = `${b.badge}-${(b.tases).toString().padStart(3, "0")}`;
+          aVal = `${a.badge}-${a.tases
+            .toString()
+            .padStart(3, "0")}`;
+
+          bVal = `${b.badge}-${b.tases
+            .toString()
+            .padStart(3, "0")}`;
+
           break;
+
         case "author":
           aVal = a.author;
           bVal = b.author;
           break;
+
         case "tases":
-          aVal = `${(a.tases).toString().padStart(3, "0")}-${Math.round(a.contributions * 100).toString().padStart(4, "0")}`;
-          bVal = `${(b.tases).toString().padStart(3, "0")}-${Math.round(b.contributions * 100).toString().padStart(4, "0")}`;
+          aVal = `${a.tases
+            .toString()
+            .padStart(3, "0")}-${Math.round(
+            a.contributions * 100
+          )
+            .toString()
+            .padStart(4, "0")}`;
+
+          bVal = `${b.tases
+            .toString()
+            .padStart(3, "0")}-${Math.round(
+            b.contributions * 100
+          )
+            .toString()
+            .padStart(4, "0")}`;
+
           break;
+
         case "contributions":
           aVal = a.contributions;
           bVal = b.contributions;
           break;
+
         case "totalSaved":
           aVal = a.totalSaved;
           bVal = b.totalSaved;
           break;
       }
 
-      if (typeof aVal === "number" && typeof bVal === "number") {
-        return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+      if (
+        typeof aVal === "number" &&
+        typeof bVal === "number"
+      ) {
+        return sortOrder === "asc"
+          ? aVal - bVal
+          : bVal - aVal;
       }
 
       return sortOrder === "asc"
@@ -163,58 +227,89 @@ export default function GlobalLeaderboard() {
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder(
+        sortOrder === "asc" ? "desc" : "asc"
+      );
     } else {
       setSortField(field);
-      setSortOrder(field === "author" ? "asc" : "desc");
+      setSortOrder(
+        field === "author" ? "asc" : "desc"
+      );
     }
   };
 
-  const SortIndicator = ({ field }: { field: SortField }) => {
+  const SortIndicator = ({
+    field,
+  }: {
+    field: SortField;
+  }) => {
     if (sortField !== field) return null;
+
     return sortOrder === "asc" ? " ↑" : " ↓";
   };
 
   return (
-    <div className="mx-auto w-full max-w-5xl flex flex-col gap-3">
-      <header className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-xl shadow-slate-950/30 backdrop-blur-md text-center">
+    <div className="relative mx-auto w-full max-w-5xl flex flex-col gap-3">
+
+      {/* TEXTS IN YELLOW SQUARE */}
+      <div className="absolute left-[-550px] top-2 w-[450px] text-center">
         <h1
-          className="text-2xl font-semibold tracking-[0.01em] text-white sm:text-3xl"
+          className="text-3xl font-semibold text-white"
           style={{ fontFamily: "OktaNeue" }}
         >
           Global Leaderboards
         </h1>
 
-        <p className="mt-4 text-slate-400 sm:text-base">
+        <p className="mt-3 text-sm text-slate-300">
           Tracks all TAS contributions across every leaderboard
         </p>
 
-        <div className="mt-4 text-sm text-slate-300">
+        <div className="mt-3 text-sm text-slate-200">
           {authorStats.length} authors
         </div>
-      </header>
+      </div>
 
+      {/* TABLE */}
       <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
         <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">
           <thead className="bg-slate-900/90 text-slate-300">
             <tr>
-              <th onClick={() => handleSort("badge")} className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap">
+              <th
+                onClick={() => handleSort("badge")}
+                className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
+              >
                 Badge
                 <SortIndicator field="badge" />
               </th>
-              <th onClick={() => handleSort("author")} className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap">
+
+              <th
+                onClick={() => handleSort("author")}
+                className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap"
+              >
                 Author
                 <SortIndicator field="author" />
               </th>
-              <th onClick={() => handleSort("tases")} className="cursor-pointer px-3 py-1.5 whitespace-nowrap">
+
+              <th
+                onClick={() => handleSort("tases")}
+                className="cursor-pointer px-3 py-1.5 whitespace-nowrap"
+              >
                 TASes
                 <SortIndicator field="tases" />
               </th>
-              <th onClick={() => handleSort("contributions")} className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap">
+
+              <th
+                onClick={() => handleSort("contributions")}
+                className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
+              >
                 Cont.
                 <SortIndicator field="contributions" />
               </th>
-              <th onClick={() => handleSort("totalSaved")} className="cursor-pointer px-4 py-1.5 uppercase whitespace-nowrap">
+
+              <th
+                onClick={() => handleSort("totalSaved")}
+                className="cursor-pointer px-4 py-1.5 uppercase whitespace-nowrap"
+              >
                 Saved
                 <SortIndicator field="totalSaved" />
               </th>
@@ -223,11 +318,16 @@ export default function GlobalLeaderboard() {
 
           <tbody className="divide-y divide-slate-800">
             {sortedAuthorStats.map((a, index) => {
+              const rowColour =
+                index % 2 === 0
+                  ? "bg-slate-500/20"
+                  : "bg-slate-500/10";
 
-              const rowColour = index % 2 == 0 ? "bg-slate-500/20" : "bg-slate-500/10";
-              
               return (
-                <tr key={a.author} className={`${rowColour} hover:bg-emerald-900/50`}>
+                <tr
+                  key={a.author}
+                  className={`${rowColour} hover:bg-emerald-900/50`}
+                >
                   <td className="px-2 py-0 text-center">
                     {a.badge > 0 ? (
                       <div className="flex items-center justify-center">
@@ -237,20 +337,37 @@ export default function GlobalLeaderboard() {
                           className="h-6 w-auto"
                         />
                       </div>
-                    ) : ""}
+                    ) : (
+                      ""
+                    )}
                   </td>
+
                   <td className="px-1 py-2 text-slate-100">
-                      <Link
-                        href={`/authors?author=${encodeURIComponent(a.author)}`}
-                        className="hover:text-white underline-offset-2 hover:underline"
-                      >
-                        {a.author}
-                      </Link>
-                    </td>
-                  <td className="px-2 py-2 text-slate-100">{a.tases}</td>
-                  <td className="px-2 py-2 text-slate-100">{a.contributions.toFixed(2)}</td>
+                    <Link
+                      href={`/authors?author=${encodeURIComponent(
+                        a.author
+                      )}`}
+                      className="hover:text-white underline-offset-2 hover:underline"
+                    >
+                      {a.author}
+                    </Link>
+                  </td>
+
+                  <td className="px-2 py-2 text-slate-100">
+                    {a.tases}
+                  </td>
+
+                  <td className="px-2 py-2 text-slate-100">
+                    {a.contributions.toFixed(2)}
+                  </td>
+
                   <td className="px-2 py-2 text-slate-300">
-                    {formatTime(a.totalSaved, false, false, false)}
+                    {formatTime(
+                      a.totalSaved,
+                      false,
+                      false,
+                      false
+                    )}
                   </td>
                 </tr>
               );
