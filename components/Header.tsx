@@ -11,8 +11,8 @@ import { useProfile } from "@/lib/Profiles";
 const supabase = createClient();
 const menuLinks = [
   { href: "/", label: "Global Leaderboard" },
-  { href: "/", label: "Highlight" },
-  { href: "/", label: "Inputs" },
+  { href: "highlight", label: "Highlight" },
+  { href: "inputs", label: "Inputs" },
   { href: "/authors", label: "Authors" },
   { href: "/tracks", label: "Tracks" },
   { href: "/tmnf-stats", label: "TMNF Stats" },
