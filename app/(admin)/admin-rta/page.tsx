@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime, formatDate } from "@/utils/formatting";
 import { useRtaRecords } from "@/lib/RtaRecords";
-import { Game, gameList, getGameTracks, Category, categories } from "@/lib/TrackList";
+import { Game, gameList, getGameTracks, RtaEntry, trackList } from "@/lib/TrackList";
 
 type FormState = {
   game: Game;
@@ -28,6 +28,7 @@ export default function AdminPanel() {
   const supabase = createClient();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isStunt, setStunt] = useState(false);
   const today = new Date().toISOString().split("T")[0];
   const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-slate-500";
   const labelClass = "text-sm text-slate-300 mb-1";
@@ -56,8 +57,8 @@ export default function AdminPanel() {
 
   function resetForm() {
     setForm({
-      game: "TMNF",
-      track: "",
+      game: form.game,
+      track: form.track,
       time_ms: 0,
       player: "Fwo.Link",
       date: today,
@@ -75,6 +76,31 @@ export default function AdminPanel() {
     setWarning("");
   }
 
+  function copyRtaToForm(t: RtaEntry) {
+
+    const minutes = Math.floor(t.time_ms / 60_000);
+    const seconds = Math.floor((t.time_ms % 60_000) / 1000);
+    const hundredths = Math.floor((t.time_ms % 1000) / 10);
+    const thousandth = t.time_ms % 10;
+
+    setForm({
+      game: t.game,
+      track: t.track,
+      time_ms: t.time_ms,
+      player: t.player,
+      date: t.date.slice(0, 10),
+      video: t.video ?? "",
+      replay: t.replay ?? "",
+    });
+
+    setTime({
+      minutes,
+      seconds,
+      hundredths,
+      thousandth,
+    });
+  }
+
   const trackOptions = useMemo(() => {
     return getGameTracks(form.game);
   }, [form.game]);
@@ -87,6 +113,7 @@ export default function AdminPanel() {
 
   const trackRecords = useMemo(() => {
     if (!form.track) return [];
+    setStunt(trackList[form.track].category === "Stunt")
     return rtaRecords
       .filter((t) => t.track === form.track)
       .sort((a, b) => a.time_ms - b.time_ms);
@@ -130,6 +157,30 @@ export default function AdminPanel() {
     }
     setLoading(false);
   }
+  
+  async function deleteRta(t: RtaEntry) {
+
+    const confirmed = window.confirm(`
+      Delete ${t.track} for ${t.player}?
+        Time (ms): ${t.time_ms}
+        Formatted Time: ${formatTime(t.time_ms, t.game === "TM2")}\n
+      This cannot be undone!`
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from("rta_records")
+      .delete()
+      .eq("track", t.track)
+      .eq("time_ms", t.time_ms);
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Record successfully deleted!")
+    }
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-6 pt-20 pb-10 text-white">
@@ -140,11 +191,11 @@ export default function AdminPanel() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-2xl font-semibold">
-                  TAS Submission
+                  RTA Submission
                 </h1>
 
                 <div className="mt-1 text-sm text-slate-400">
-                  Submit or update TAS records
+                  Submit or update RTA records
                 </div>
               </div>
 
@@ -244,7 +295,7 @@ export default function AdminPanel() {
               </div>
 
               <div className="mt-2 text-sm text-slate-400">
-                Formatted time: {formatTime(timeMs, false, time.thousandth > 0)}
+                {`Formatted time: ${formatTime(timeMs, isStunt, time.thousandth > 0)} ${isStunt ? "(Stunt points)" : ""}`}
               </div>
               <div className="text-sm text-slate-400">
                 Database time: {timeMs} ms
@@ -331,17 +382,21 @@ export default function AdminPanel() {
             <table className="w-full text-left text-sm">
               <thead className="text-slate-400">
                 <tr className="border-b border-slate-700">
-                  <th className="py-2 px-2">Time</th>
+                  <th className="py-2 px-2">
+                    {`${isStunt ? "Points" : "Time"}`}
+                  </th>
                   <th className="py-2 px-2">Player</th>
                   <th className="py-2 px-2">Date</th>
                   <th className="py-2 px-2 text-center">Video</th>
+                  <th className="py-2 px-2 text-center">Copy</th>
+                  <th className="py-2 px-2 text-center">Delete</th>
                 </tr>
               </thead>
 
               <tbody>
                 {trackRecords.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-6 text-center text-slate-500">
+                    <td colSpan={7} className="py-6 text-center text-slate-500">
                       Select track
                     </td>
                   </tr>
@@ -353,14 +408,14 @@ export default function AdminPanel() {
                         className="border-b border-slate-800"
                       >
                         <td className="py-2 px-2">
-                          {formatTime(t.time_ms, false)}
+                          {formatTime(t.time_ms, isStunt, t.game === "TM2")}
                         </td>
 
-                        <td className="py-2 px-2">
+                        <td className="py-1 px-2">
                           {t.player}
                         </td>
 
-                        <td className="py-2 px-2">
+                        <td className="py-2 px-2 whitespace-nowrap">
                           {formatDate(t.date)}
                         </td>
                         
@@ -384,6 +439,27 @@ export default function AdminPanel() {
                             )}
                           </div>
                         </td>
+                        
+                        <td className="px-2 py-1 text-center">
+                          <button
+                            onClick={() => copyRtaToForm(t)}
+                            title="Copy to form"
+                            className="rounded bg-slate-800 px-2 py-0.5 hover:bg-slate-700"
+                          >
+                            Copy
+                          </button>
+                        </td>
+
+                        <td className="px-2 py-1 text-center">
+                          <button
+                            onClick={() => deleteRta(t)}
+                            title="Delete record"
+                            className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700"
+                          >
+                            Delete
+                          </button>
+                        </td>
+
                       </tr>
                     );
                   })

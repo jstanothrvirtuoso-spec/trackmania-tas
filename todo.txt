@@ -5,7 +5,6 @@
 
 Expand home page:
  - Medal table
- - Game completion table
  - Header for introduction
  - Time saved leaderboards (non-noseboost/uber)
  - Current projects? (like TMUF perfection project)
@@ -14,9 +13,10 @@ Continue working on submit page
  - Add registered author list for auto complete
  - Submit button, where do requests go?
 Admin panel:
- - Inserting into database tables
- - Deleting from database tables
- - Updating database tables
+ - Getting queue from submitted replays
+ - Downloading replay to check
+ - Moving replay queue to approved/rejected
+ - Deleting of old replay items
 Add TMNF Hist page:
  - Top percent saved table
  - Add links to category table
