@@ -340,7 +340,7 @@ export default function AdminPanel() {
                       onClick={() => window.open(value, "_blank")}
                       className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 disabled:opacity-40"
                     >
-                      Test
+                      Check URL
                     </button>
                   </div>
 

@@ -410,7 +410,7 @@ export const trackList: Record<string, TrackInfo> = {
   "TMN Pro Race A-8": { game: "TMN Remakes", id: 1623497, category: "Pro", environment: "Stadium" },
   "TMN Pro Race A-9": { game: "TMN Remakes", id: 1623500, category: "Pro", environment: "Stadium" },
   "TMN Bonus A-0": { game: "TMN Remakes", id: 1626019, category: "Bonus", environment: "Stadium" },
-  "TMN Bonus A-1": { game: "TMN Remakes", id: 1626024, category: "Bonus", environment: "Stadium" },
+  "TMN Bonus A-1": { game: "TMN Remakes", id: 6482689, category: "Bonus", environment: "Stadium" }, // TMX uploaded wrong track by mistake, so this is the proper version
   "TMN Bonus A-2": { game: "TMN Remakes", id: 1626031, category: "Bonus", environment: "Stadium" },
   "TMN Bonus A-3": { game: "TMN Remakes", id: 1626036, category: "Bonus", environment: "Stadium" },
   "TMN Bonus A-4": { game: "TMN Remakes", id: 1626039, category: "Bonus", environment: "Stadium" },
