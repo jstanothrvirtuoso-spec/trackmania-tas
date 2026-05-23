@@ -15,6 +15,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import './globals.css'
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],

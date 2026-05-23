@@ -16,6 +16,12 @@
   font-display: swap;
 }
 
+html,
+body,
+* {
+  cursor: url("/cursor.png") 0 0, auto !important;
+}
+
 /* BASE COLORS */
 :root {
   --background: #ffffff;

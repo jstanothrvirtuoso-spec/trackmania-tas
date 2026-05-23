@@ -1,0 +1,8 @@
+0.00-0.05 press up
+0.04-0.06 press down
+0.06-2.23 press up
+2.21-2.22 press down
+2.23-2.24 press down
+2.24 press up
+2.20 steer -3281
+2.21 steer 0
