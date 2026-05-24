@@ -5,13 +5,8 @@
 
 Expand home page:
  - Medal table
- - Header for introduction
- - Time saved leaderboards (non-noseboost/uber)
+ - Add dropdown to change % saved leaderboard based on TAS categories
  - Current projects? (like TMUF perfection project)
-Continue working on submit page
- - Read track, inputs, and record/time from replay file
- - Add registered author list for auto complete
- - Submit button, where do requests go?
 Admin panel:
  - Getting queue from submitted replays
  - Downloading replay to check
@@ -22,10 +17,10 @@ Add TMNF Hist page:
  - Add links to category table
  - Cumulative time saved per track set?
  - Any other ideas??
-Add Inputs page (can be linked in footer??)
 Add Player/TAS highlight page (highlight on front page??)
-Finish adding all uids for new tracks and StuntRace
-
+TM2:
+  - Add all uids
+  - Add all tmx id numbers
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -146,14 +146,7 @@ export default function RtaTable({
                 "
               >
                 <td className="px-2 py-[4px] font-medium text-slate-200 whitespace-nowrap">
-                  <Link
-                    href={`/players?player=${encodeURIComponent(
-                      row.player
-                    )}`}
-                    className="hover:text-white underline-offset-2 hover:underline"
-                  >
-                    {row.player}
-                  </Link>
+                  {row.player}
                 </td>
 
                 <td className="px-3 py-[4px] border-l border-slate-800">

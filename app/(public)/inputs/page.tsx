@@ -2,6 +2,14 @@
 
 import { useState, useEffect } from "react";
 
+const envs = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
+type Env = (typeof envs)[number];
+type Trick = {
+  env: Env;
+  type: string;
+  src: string;
+};
+
 /* =========================
    CLICK SOUND (SAFE GLOBAL)
 ========================= */
@@ -25,14 +33,14 @@ const playClick = () => {
 /* =========================
    UNIVERSAL COPY SYSTEM
 ========================= */
-const copyInputs = async (env, index) => {
+const copyInputs = async (env: Env, index: number) => {
   const fileMap = {
     STADIUM: {
       left: "/inputs/Stadium-Left.txt",
       right: "/inputs/Stadium-Right.txt",
     },
-    COAST: (i) => `/inputs/coasttrick${i}.txt`,
-    ISLAND: (i) => `/inputs/islandtrick${i}.txt`,
+    COAST: (i: number) => `/inputs/coasttrick${i}.txt`,
+    ISLAND: (i: number) => `/inputs/islandtrick${i}.txt`,
     SNOW: () => `/inputs/snowtrick.txt`,
     BAY: () => `/inputs/baytrick.txt`,
   };
@@ -62,7 +70,7 @@ const copyInputs = async (env, index) => {
 /* =========================
    DATA
 ========================= */
-const tricks = [
+const tricks: Trick[] = [
   { env: "STADIUM", type: "video", src: "/inputs/stadiumvideo.mp4" },
 
   { env: "ISLAND", type: "video", src: "/inputs/island1.mp4" },
@@ -79,10 +87,24 @@ const tricks = [
   { env: "BAY", type: "video", src: "/inputs/bayvideo.mp4" },
 ];
 
+const grouped = tricks.reduce<Record<Env, Trick[]>>(
+  (acc, t) => {
+    acc[t.env].push(t);
+    return acc;
+  },
+  {
+    STADIUM: [],
+    ISLAND: [],
+    COAST: [],
+    SNOW: [],
+    BAY: [],
+  }
+);
+
 /* =========================
    UI
 ========================= */
-function EnvBar({ label }) {
+function EnvBar({ label }: { label: Env }) {
   return (
     <div className="flex items-center gap-4 py-6">
       <div className="h-[2px] flex-1 bg-cyan-400/20" />
@@ -98,15 +120,7 @@ function EnvBar({ label }) {
    MAIN
 ========================= */
 export default function InputsPage() {
-  const [activeEnv, setActiveEnv] = useState("STADIUM");
-
-  const grouped = tricks.reduce((acc, t) => {
-    if (!acc[t.env]) acc[t.env] = [];
-    acc[t.env].push(t);
-    return acc;
-  }, {});
-
-  const envs = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"];
+  const [activeEnv, setActiveEnv] = useState<Env>("STADIUM");
 
   useEffect(() => {
     tricks.forEach((t) => {
@@ -117,7 +131,7 @@ export default function InputsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen pt-16 relative overflow-hidden">
 
       {/* WALLPAPER */}
       <div
@@ -133,7 +147,7 @@ export default function InputsPage() {
         {envs.map((env) => (
           <button
             key={env}
-            onClick={() => setActiveEnv(env)}
+            onClick={() => setActiveEnv(env as Env)}
             className={`p-2 rounded-xl border transition-all duration-200
               ${
                 activeEnv === env

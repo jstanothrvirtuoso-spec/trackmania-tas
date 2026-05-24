@@ -33,8 +33,8 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [isStunt, setStunt] = useState(false);
   const today = new Date().toISOString().split("T")[0];
-  const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-slate-500";
-  const labelClass = "text-sm text-slate-300 mb-1";
+  const inputClass = "w-full rounded-md bg-slate-800 px-3 py-1.5 text-white outline-none focus:ring-2 focus:ring-slate-500";
+  const labelClass = "text-sm text-slate-300 mb-0.5";
   const { data: tasRecords = [] } = useTasRecords();
   
   const [form, setForm] = useState<FormState>({
@@ -228,7 +228,7 @@ export default function AdminPanel() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 pt-20 pb-10 text-white">
-      <div className="grid gap-6 lg:grid-cols-[460px_1fr] items-start">
+      <div className="grid gap-4 lg:grid-cols-[460px_1fr] items-start">
 
         <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-xl">
           <div className="mb-3 border-b border-slate-700 pb-4">
@@ -429,13 +429,13 @@ export default function AdminPanel() {
 
               return (
                 <div key={key}>
-                  <div className="mb-1 flex items-center justify-between">
+                  <div className="mb-0.5 flex items-center justify-between">
                     <div className={labelClass}>{label}</div>
 
                     <button
                       type="button"
                       onClick={() => window.open(value, "_blank")}
-                      className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 disabled:opacity-40"
+                      className="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:bg-slate-700 disabled:opacity-40"
                     >
                       Check URL
                     </button>
@@ -472,7 +472,7 @@ export default function AdminPanel() {
 
         <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
           <h2 className="mb-4 text-xl font-semibold">
-            Existing Records
+            {form.track ? `Existing Records for ${form.track}` : "Choose a track"}
           </h2>
 
           <div className="overflow-auto">

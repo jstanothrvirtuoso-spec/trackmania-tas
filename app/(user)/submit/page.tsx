@@ -146,7 +146,7 @@ export default function SubmitPage() {
 
     const buffer = await file.arrayBuffer();
     const text = new TextDecoder("utf-8", { fatal: false }).decode(buffer);
-    const uid = text.match(/<challenge uid="([^"]+)"/)?.[1] ?? null;
+    const uid = text.match(/<challenge uid="([^"]+)"/)?.[1] ?? text.match(/<map uid="([^"]+)"/)?.[1] ?? null;
     const bestTimeRaw = text.match(/<times best="(\d+)"/)?.[1];
     const version = text.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
     const stuntScoreRaw = text.match(/stuntscore="(\d+)"/)?.[1];
@@ -207,8 +207,26 @@ export default function SubmitPage() {
     if (loading) return;
     setLoading(true);
     setWarning("");
+    document.body.classList.add("loading");
 
     try {
+
+      if (!replayFile) {
+        setWarning("Please upload a replay file");
+        return;
+      }
+
+      const videoUrl = form.video.trim();
+      if (!isValidUrl(videoUrl)) {
+        setWarning("Invalid video URL");
+        return;
+      }
+
+      const cleanAuthors = form.authors.filter((a): a is Author => a.trim() !== "");
+      if (cleanAuthors.length === 0) {
+        setWarning("Please choose at least one author");
+        return;
+      }
 
       const user = (await supabase.auth.getUser()).data.user;
 
@@ -228,23 +246,6 @@ export default function SubmitPage() {
 
       if ((count ?? 0) >= 20) {
         setWarning("You have reached the daily maximum of 20 submissions. Please try again tomorrow.");
-        return;
-      }
-
-      if (!replayFile) {
-        setWarning("Please upload a replay file");
-        return;
-      }
-
-      const videoUrl = form.video.trim();
-      if (!isValidUrl(videoUrl)) {
-        setWarning("Invalid video URL");
-        return;
-      }
-
-      const cleanAuthors = form.authors.filter((a): a is Author => a.trim() !== "");
-      if (cleanAuthors.length === 0) {
-        setWarning("Please choose at least one author");
         return;
       }
 
@@ -292,6 +293,7 @@ export default function SubmitPage() {
       resetForm();
     } finally {
       setLoading(false);
+      document.body.classList.remove("loading");
     }
   }
 
@@ -314,7 +316,7 @@ export default function SubmitPage() {
             Reset
           </button>
         </div>
-        <div className="my-4 border-b border-slate-700" />
+        <div className="my-3 border-b border-slate-700" />
 
         {/* REPLAY */}
         <div>
@@ -334,7 +336,7 @@ export default function SubmitPage() {
               onFileSelect(file);
             }}
             className={`
-              flex h-32 cursor-pointer flex-col items-center justify-center
+              flex h-26 cursor-pointer flex-col items-center justify-center
               rounded-xl border-2 border-dashed transition
               ${
                 dragging
@@ -513,7 +515,7 @@ export default function SubmitPage() {
         <div>
           <div className={labelClass}>Notes (optional)</div>
           <textarea
-            rows={4}
+            rows={2}
             value={form.notes}
             onChange={(e) => {
               const val = e.target.value;
@@ -555,7 +557,7 @@ export default function SubmitPage() {
 
           <button
             onClick={submit}
-            disabled={loading}
+            disabled={loading || !replayFile || form.authors.filter((a): a is Author => a.trim() !== "").length === 0}
             className="w-full cursor-pointer rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50"
           >
             {loading ? "Submitting..." : "Submit"}

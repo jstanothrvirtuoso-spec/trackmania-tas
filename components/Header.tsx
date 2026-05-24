@@ -74,8 +74,8 @@ export default function Header() {
   return (
     <header
       className={`
-        sticky top-0 z-50 w-full 
-        transition-all duration-500 ease-out backdrop-blur-md
+        fixed top-0 left-0 right-0 z-50 backdrop-blur-md
+        transition-all duration-500 ease-out
         ${
           showHeader
             ? "-translate-y-0.5 opacity-100"

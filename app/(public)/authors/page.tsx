@@ -243,7 +243,7 @@ export default function AuthorsPage() {
         author,
         count,
       }));
-  }, []);
+  }, [tasRecords]);
 
   useEffect(() => {
     const authorFromUrl = searchParams.get("author");
@@ -320,9 +320,9 @@ export default function AuthorsPage() {
   const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
   return (
-    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-18 pb-8 text-slate-100">
+    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-20 pb-8 text-slate-100">
       
-      <div className="mb-6 flex flex-row gap-3 px-4">
+      <div className="mb-3 flex flex-row gap-2 px-4">
         <select
           value={selectedAuthor}
           onChange={(e) => setSelectedAuthor(e.target.value as Author)}
@@ -361,7 +361,7 @@ export default function AuthorsPage() {
       </div>
 
       {selectedAuthor && (
-        <div className="flex items-start gap-8">
+        <div className="flex items-start gap-4">
           <div className="overflow-x-auto">
             <table className="border-separate border border-slate-800 rounded-lg overflow-hidden text-center text-sm">
               <thead>

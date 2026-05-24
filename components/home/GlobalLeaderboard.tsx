@@ -251,29 +251,6 @@ export default function GlobalLeaderboard() {
   return (
     <div className="relative mx-auto w-full max-w-5xl flex flex-col gap-3">
 
-      {/* TEXTS IN YELLOW SQUARE */}
-      <div
-  className="absolute left-[-400px] w-[350px] text-center"
-  style={{
-    top: "0px", // change this value to move up/down
-  }}
->
-  <h1
-    className="text-3xl font-semibold text-white"
-    style={{ fontFamily: "OktaNeue" }}
-  >
-    Global Leaderboards
-  </h1>
-
-        <p className="mt-3 text-sm text-slate-300">
-          Tracks all TAS contributions across every leaderboard
-        </p>
-
-        <div className="mt-3 text-sm text-slate-200">
-          {authorStats.length} authors
-        </div>
-      </div>
-
       {/* TABLE */}
       <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
         <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">

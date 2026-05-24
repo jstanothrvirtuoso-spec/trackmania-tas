@@ -32,7 +32,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-screen justify-center">
+      <body className="min-h-screen justify-center cursor-[url('/cursor.png')_0_0,_auto]">
         <Providers>
           <Header />
           <main className="sticky inset-0">{children}</main>

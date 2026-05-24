@@ -23,6 +23,22 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  function validatePassword(password: string) {
+    const minLength = password.length >= 8;
+    const hasLower = /[a-z]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSymbol = /[^a-zA-Z0-9]/.test(password);
+
+    if (!minLength) return "Password must be at least 8 characters";
+    if (!hasLower) return "Password must include a lowercase letter";
+    if (!hasUpper) return "Password must include an uppercase letter";
+    if (!hasNumber) return "Password must include a number";
+    if (!hasSymbol) return "Password must include a symbol";
+
+    return null;
+  }
+
   async function signIn() {
     setLoading(true);
     setErrorMessage("");
@@ -63,13 +79,20 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMessage("");
 
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setErrorMessage(passwordError);
+      setLoading(false);
+      return;
+    }
+
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -80,19 +103,11 @@ export default function LoginPage() {
       return;
     }
 
-    if (data.session) {
-      await queryClient.invalidateQueries({
-        queryKey: ["profile"],
-      });
-
-      router.push("/");
-      router.refresh();
-    } else {
-      setErrorMessage(
-        "Check your email to confirm your account."
-      );
-    }
-
+    setErrorMessage(
+      "Account created. Check your email to validate your account before logging in."
+    );
+    setPassword("");
+    setConfirmPassword("");
     setLoading(false);
   }
 
