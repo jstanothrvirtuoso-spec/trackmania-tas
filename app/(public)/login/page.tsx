@@ -6,7 +6,6 @@ import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function LoginPage() {
-
   const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -112,7 +111,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4">
+    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <div className="w-full max-w-sm rounded-3xl border border-slate-800 bg-slate-900/80 p-7 shadow-2xl backdrop-blur">
         <h1 className="mb-2 text-center text-2xl font-semibold text-slate-100">
           {mode === "login" ? "Login" : "Create account"}
@@ -158,7 +157,7 @@ export default function LoginPage() {
           <button
             disabled={loading}
             onClick={mode === "login" ? signIn : signUp}
-            className="w-full rounded-xl cursor-pointer bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50"
+            className="w-full cursor-pointer rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50"
           >
             {loading
               ? "Please wait..."
@@ -180,6 +179,6 @@ export default function LoginPage() {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

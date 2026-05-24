@@ -28,8 +28,7 @@ TM2:
 //////////////////////////////////////////////////////////////////////////
 
 Overall:
- 
-Showing the cursor from other peoples when their are in the website (different cursor look, just a detail but could be fun and good) (an option to toggle on/off could be added)
+ - Fix issues when upload a pfp in profile (chatGPT says : You do this in the Supabase Dashboard, not in your code.)
 Reworking the design/placement/looking in the Main page (as well for others pages maybe) (mostly when the final main page will be done by Virtuoso)
 Adding a glowing and slighty bouncy text "New" when a new TAS has been added
 Premade wallpaper (user could choose his wallpaper in the website that has been defined by me, i.g 3 differents wallpapers)
