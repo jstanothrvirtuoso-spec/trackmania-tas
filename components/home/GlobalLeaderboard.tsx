@@ -310,7 +310,7 @@ export default function GlobalLeaderboard() {
                   key={a.author}
                   className={`${rowColour} hover:bg-emerald-900/50`}
                 >
-                  <td className="px-2 py-0 text-center">
+                  <td className="px-2 text-center">
                     {a.badge > 0 ? (
                       <div className="flex items-center justify-center">
                         <img
@@ -324,7 +324,7 @@ export default function GlobalLeaderboard() {
                     )}
                   </td>
 
-                  <td className="px-1 py-2 text-slate-100">
+                  <td className="px-1 py-1.5 text-slate-100">
                     <Link
                       href={`/authors?author=${encodeURIComponent(
                         a.author
@@ -335,15 +335,15 @@ export default function GlobalLeaderboard() {
                     </Link>
                   </td>
 
-                  <td className="px-2 py-2 text-slate-100">
+                  <td className="px-2 py-1.5 text-slate-100">
                     {a.tases}
                   </td>
 
-                  <td className="px-2 py-2 text-slate-100">
+                  <td className="px-2 py-1.5 text-slate-100">
                     {a.contributions.toFixed(2)}
                   </td>
 
-                  <td className="px-2 py-2 text-slate-300">
+                  <td className="px-2 py-1.5 text-slate-300">
                     {formatTime(
                       a.totalSaved,
                       false,

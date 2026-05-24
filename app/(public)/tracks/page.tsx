@@ -334,7 +334,7 @@ export default function TracksPage() {
     return tasRecords
       .filter((t) => t.track === track)
       .sort((a, b) => a.time_ms - b.time_ms);
-  }, [track]);
+  }, [track, tasRecords]);
 
   const progression = useMemo(() => {
     const sorted = [...tasRows].sort(
@@ -381,7 +381,7 @@ export default function TracksPage() {
   }, [tasRows, useMinutes]);
 
   return (
-    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
+    <div className="mx-auto flex w-full pt-20 flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
       <div className="flex flex-row items-start gap-4">
         <select
           value={game}
