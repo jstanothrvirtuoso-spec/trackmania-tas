@@ -103,7 +103,7 @@ export const authorList = [
     "Nersons",
     "LPNoNameGame",
     "Akantor",
-    "Vldaer",
+    "Vlader",
     "Rohodez",
     "Speed",
     "Prow",

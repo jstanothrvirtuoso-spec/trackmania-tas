@@ -8,19 +8,18 @@ Expand home page:
  - Add dropdown to change % saved leaderboard based on TAS categories
  - Current projects? (like TMUF perfection project)
 Admin panel:
- - Getting queue from submitted replays
- - Downloading replay to check
- - Moving replay queue to approved/rejected
  - Deleting of old replay items
 Add TMNF Hist page:
  - Top percent saved table
  - Add links to category table
  - Cumulative time saved per track set?
  - Any other ideas??
-Add Player/TAS highlight page (highlight on front page??)
-TM2:
-  - Add all uids
-  - Add all tmx id numbers
+Add profile pictures:
+ - Add new bucket called avatars
+ - Set max picture size, only allow pictures (png, jpg)
+ - Set max changes per day
+ - Change avatar from number to URL to link with new bucket
+ - Fix frontend
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,3 +37,4 @@ Game tables:
  - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
  - Add separation between certain categories
 
+Make the highlight page beautiful

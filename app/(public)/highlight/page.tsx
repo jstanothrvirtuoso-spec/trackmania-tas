@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { Author } from "@/lib/AuthorList";
 import { useTasRecords } from "@/lib/TasRecords";
 import { trackList, TasEntry, Category, categories } from "@/lib/TrackList";
 
@@ -8,9 +9,10 @@ export default function HighlightPage() {
 
   const { data: tasRecords = [] } = useTasRecords();
 
-  const { undoneTracks, topTasList } = useMemo(() => {
+  const { undoneTracks, topTasList, topAuthors } = useMemo(() => {
 
     const bestByTrackAndCategory = new Map<string, Map<Category, TasEntry>>();
+    const authorCounts = new Map<Author, number>();
     const undoneTracks: string[] = [];
     const topTasList: TasEntry[] = [];
 
@@ -47,12 +49,36 @@ export default function HighlightPage() {
         if (tas.time_ms < bestTimeSoFar) {
           topTasList.push(tas);
           bestTimeSoFar = tas.time_ms;
+
+          for (const author of tas.authors) {
+            authorCounts.set(author, (authorCounts.get(author) ?? 0) + 1
+          );
+          }
         }
       }
     }
 
-    return { undoneTracks, topTasList };
+    const topAuthors = Array.from(authorCounts.entries())
+      .filter(([_, count]) => count >= 5)
+      .map(([author]) => author);
+
+    return { undoneTracks, topTasList, topAuthors };
   }, [tasRecords]);
+
+  const { tasOfTheDay, undoneTasOfTheDay, authorOfTheDay } = useMemo(() => {
+    function dailyIndex(length: number) {
+      if (length === 0) return -1;
+      const today = new Date();
+      const seed = (today.getUTCMonth() + 1) * 100 + today.getUTCDate()
+      return (Math.round(Math.abs(Math.sin(seed) * 125114136345))) % length + 1;
+    }
+
+    return {
+      tasOfTheDay: topTasList[dailyIndex(topTasList.length)] ?? null,
+      undoneTasOfTheDay: undoneTracks[dailyIndex(undoneTracks.length)] ?? null,
+      authorOfTheDay: topAuthors[dailyIndex(topAuthors.length)] ?? null,
+    };
+  }, [topTasList, undoneTracks]);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 pt-20">
@@ -74,21 +100,31 @@ export default function HighlightPage() {
           
           <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
             <h2 className="text-xl text-white">
-              test page
+              TAS of the Day
             </h2>
 
             <p className="mt-2 text-slate-400">
-              test page
+              {tasOfTheDay.track} by {tasOfTheDay.authors.join(', ')}
             </p>
           </div>
 
           <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
             <h2 className="text-xl text-white">
-              test box
+              Undone TAS of the Day
             </h2>
 
             <p className="mt-2 text-slate-400">
-              test box
+              {undoneTasOfTheDay}
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
+            <h2 className="text-xl text-white">
+              TASer of the Day
+            </h2>
+
+            <p className="mt-2 text-slate-400">
+              {authorOfTheDay}
             </p>
           </div>
 
