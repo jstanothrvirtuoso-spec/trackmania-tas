@@ -12,7 +12,7 @@ type FormState = {
   authors: Author[];
   category: Category | "Unsure";
   video: string;
-  notes: string;
+  user_notes: string;
   date: string;
 };
 
@@ -52,7 +52,7 @@ export default function SubmitPage() {
     authors: ["" as Author],
     category: "Open",
     video: "",
-    notes: "",
+    user_notes: "",
     date: today,
   });
 
@@ -135,7 +135,7 @@ export default function SubmitPage() {
       authors: ["" as Author],
       category: "Open",
       video: "",
-      notes: "",
+      user_notes: "",
       date: today,
     });
     setWarning("");
@@ -270,8 +270,9 @@ export default function SubmitPage() {
         authors: cleanAuthors,
         date: new Date(form.date).toISOString(),
         video: videoUrl || null,
-        notes: form.notes.trim() || null,
+        user_notes: form.user_notes.trim() || null,
         replay_path: filePath,
+        file_name: replayFile.name,
         submitted_by: user.id,
         submitted_by_name: profile?.username ?? null,
         status: "pending",
@@ -311,7 +312,7 @@ export default function SubmitPage() {
             type="button"
             onClick={resetForm}
             disabled={loading}
-            className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700"
+            className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 cursor-[url('/cursor.png')_0_0,_auto]"
           >
             Reset
           </button>
@@ -483,9 +484,8 @@ export default function SubmitPage() {
             type="date"
             value={form.date}
             onChange={(e) => update("date", e.target.value)}
-            className={`
+            className={`cursor-[url('/cursor.png')_0_0,_auto]
               ${inputClass}
-              [&::-webkit-calendar-picker-indicator]:cursor-pointer
               [&::-webkit-calendar-picker-indicator]:opacity-70
               hover:[&::-webkit-calendar-picker-indicator]:opacity-100
             `}
@@ -516,20 +516,20 @@ export default function SubmitPage() {
           <div className={labelClass}>Notes (optional)</div>
           <textarea
             rows={2}
-            value={form.notes}
+            value={form.user_notes}
             onChange={(e) => {
               const val = e.target.value;
 
               if (val.length <= MAX_NOTES) {
-                update("notes", val);
+                update("user_notes", val);
               }
             }}
             onPaste={(e) => {
               const text = e.clipboardData.getData("text");
-              const current = form.notes;
+              const current = form.user_notes;
               const next = (current + text).slice(0, MAX_NOTES);
               e.preventDefault();
-              update("notes", next);
+              update("user_notes", next);
             }}
             placeholder="Comments..."
             className={`${inputClass} placeholder:text-slate-500 resize-none`}
@@ -537,12 +537,12 @@ export default function SubmitPage() {
           <div className="mt-1 flex justify-end text-xs">
             <span
               className={
-                form.notes.length > MAX_NOTES * 0.9
+                form.user_notes.length > MAX_NOTES * 0.9
                   ? "text-amber-400"
                   : "text-slate-400"
               }
             >
-              {MAX_NOTES - form.notes.length} characters remaining
+              {MAX_NOTES - form.user_notes.length} characters remaining
             </span>
           </div>
         </div>

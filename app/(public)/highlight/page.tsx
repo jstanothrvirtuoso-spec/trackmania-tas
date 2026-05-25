@@ -80,6 +80,9 @@ export default function HighlightPage() {
     };
   }, [topTasList, undoneTracks]);
 
+  const getYouTubeId = (url: string) => url?.match(/[?&]v=([^&]+)/)?.[1];
+  const videoId = getYouTubeId(tasOfTheDay?.video);
+
   return (
     <div className="mx-auto w-full max-w-5xl px-4 pt-20">
       <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
@@ -104,8 +107,20 @@ export default function HighlightPage() {
             </h2>
 
             <p className="mt-2 text-slate-400">
-              {tasOfTheDay.track} by {tasOfTheDay.authors.join(', ')}
+              {tasOfTheDay?.track} by {tasOfTheDay?.authors.join(', ')}
             </p>
+
+            {tasOfTheDay?.video && (
+              <div className="mt-4 aspect-video w-full overflow-hidden rounded-lg border border-slate-700">
+                <iframe
+                  className="h-full w-full"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title="TAS of the Day"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
           </div>
 
           <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
@@ -114,7 +129,7 @@ export default function HighlightPage() {
             </h2>
 
             <p className="mt-2 text-slate-400">
-              {undoneTasOfTheDay}
+              {undoneTasOfTheDay ?? ""}
             </p>
           </div>
 
@@ -124,7 +139,7 @@ export default function HighlightPage() {
             </h2>
 
             <p className="mt-2 text-slate-400">
-              {authorOfTheDay}
+              {authorOfTheDay ?? ""}
             </p>
           </div>
 

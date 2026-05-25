@@ -8,6 +8,7 @@ type Trick = {
   env: Env;
   type: string;
   src: string;
+  button: string;
 };
 
 /* =========================
@@ -25,7 +26,7 @@ const playClick = () => {
 
   try {
     clickAudio.currentTime = 0;
-    clickAudio.volume = 0.6;
+    clickAudio.volume = 0.4;
     clickAudio.play().catch(() => {});
   } catch (e) {}
 };
@@ -71,20 +72,20 @@ const copyInputs = async (env: Env, index: number) => {
    DATA
 ========================= */
 const tricks: Trick[] = [
-  { env: "STADIUM", type: "video", src: "/inputs/stadiumvideo.mp4" },
+  { env: "STADIUM", type: "video", src: "/inputs/stadiumvideo.m4v", button: "" },
 
-  { env: "ISLAND", type: "video", src: "/inputs/island1.mp4" },
-  { env: "ISLAND", type: "video", src: "/inputs/island2.mp4" },
-  { env: "ISLAND", type: "video", src: "/inputs/island3.mp4" },
-  { env: "ISLAND", type: "video", src: "/inputs/island4.mp4" },
+  { env: "ISLAND", type: "video", src: "/inputs/island1.m4v", button: "Inputs 1" },
+  { env: "ISLAND", type: "video", src: "/inputs/island2.m4v", button: "Inputs 2" },
+  { env: "ISLAND", type: "video", src: "/inputs/island3.m4v", button: "Inputs 3" },
+  { env: "ISLAND", type: "video", src: "/inputs/island4.m4v", button: "Inputs 4" },
 
-  { env: "COAST", type: "video", src: "/inputs/coast1.mp4" },
-  { env: "COAST", type: "video", src: "/inputs/coast2.mp4" },
-  { env: "COAST", type: "video", src: "/inputs/coast3.mp4" },
+  { env: "COAST", type: "video", src: "/inputs/coast1.m4v", button: "Inputs 1" },
+  { env: "COAST", type: "video", src: "/inputs/coast2.m4v", button: "Inputs 2" },
+  { env: "COAST", type: "video", src: "/inputs/coast3.m4v", button: "Inputs 3" },
 
-  { env: "SNOW", type: "video", src: "/inputs/snowvideo.mp4" },
+  { env: "SNOW", type: "video", src: "/inputs/snowvideo.m4v", button: "Inputs" },
 
-  { env: "BAY", type: "video", src: "/inputs/bayvideo.mp4" },
+  { env: "BAY", type: "video", src: "/inputs/bayvideo.m4v", button: "Inputs" },
 ];
 
 const grouped = tricks.reduce<Record<Env, Trick[]>>(
@@ -120,7 +121,16 @@ function EnvBar({ label }: { label: Env }) {
    MAIN
 ========================= */
 export default function InputsPage() {
+  
+  const btnClass = "px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition cursor-pointer";
   const [activeEnv, setActiveEnv] = useState<Env>("STADIUM");
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const handleCopy = (env: Env, i: number) => {
+    copyInputs(env, i);
+    setCopied(`${env}-${i}`);
+    setTimeout(() => setCopied(null), 700);
+  };
 
   useEffect(() => {
     tricks.forEach((t) => {
@@ -148,7 +158,7 @@ export default function InputsPage() {
           <button
             key={env}
             onClick={() => setActiveEnv(env as Env)}
-            className={`p-2 rounded-xl border transition-all duration-200
+            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer
               ${
                 activeEnv === env
                   ? "border-cyan-300 bg-cyan-400/20 scale-110"
@@ -167,6 +177,7 @@ export default function InputsPage() {
       {/* MAIN CONTENT */}
       <div className="relative z-10 mx-auto max-w-7xl p-6 space-y-10">
 
+        {/* HEADER */}
         <div className="relative overflow-hidden rounded-[32px] border border-cyan-400/20 bg-gradient-to-br from-[#10142c] to-[#1b1040] p-10 shadow-[0_0_50px_rgba(0,255,255,0.08)]">
           <div className="text-center">
             <h1 className="text-6xl font-black uppercase tracking-widest text-white">
@@ -187,30 +198,21 @@ export default function InputsPage() {
               key={trick.src}
               className="relative overflow-hidden rounded-[32px] border border-cyan-400/20 bg-gradient-to-br from-[#11152d] to-[#190f3d] shadow-[0_0_40px_rgba(0,0,0,0.6)]"
             >
-
               {/* BACKGROUND */}
               <div className="absolute inset-0 opacity-80">
-                {activeEnv === "ISLAND" || activeEnv === "COAST" ? (
-                  <img
-                    src="/inputs/staticwallaper.png"
-                    className="h-full w-full object-cover brightness-110 contrast-110"
-                    alt=""
-                  />
-                ) : (
-                  <video
-                    className="h-full w-full object-cover brightness-125 contrast-110"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                  >
-                    <source src="/inputs/background.mp4" type="video/mp4" />
-                  </video>
-                )}
+                <video
+                  className="h-full w-full object-cover brightness-125 contrast-110"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                >
+                  <source src="/inputs/background.m4v" type="video/mp4"/>
+                </video>
               </div>
 
-              <div className="absolute inset-0 bg-gradient-to-r from-[#070816] via-[#070816dd] to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#070816] via-[#070816dd] to-transparent"/>
 
               <div className="relative z-10 grid gap-6 p-8 md:grid-cols-[420px_1fr] items-center">
 
@@ -226,65 +228,53 @@ export default function InputsPage() {
                       playsInline
                       preload="metadata"
                     >
-                      <source src={trick.src} type="video/mp4" />
+                      <source src={trick.src} type="video/mp4"/>
                     </video>
                   </div>
 
-                  {/* BUTTONS (UNIVERSAL SYSTEM) */}
-                  {activeEnv === "STADIUM" && index === 0 && (
-                    <div className="flex justify-center gap-6">
-                      <button
-                        onClick={() => copyInputs("STADIUM", 0)}
-                        className="px-3 py-1 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition"
-                      >
-                        Left
-                      </button>
-
-                      <button
-                        onClick={() => copyInputs("STADIUM", 1)}
-                        className="px-3 py-1 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition"
-                      >
-                        Right
-                      </button>
+                  {/* INPUTS */}
+                  {activeEnv === "STADIUM" && index === 0 ? (
+                    <div className="w-full flex gap-2 items-stretch transition-all">
+                      {["Left", "Right"].map((label, i) => (
+                        <button
+                          key={label}
+                          onClick={() => handleCopy("STADIUM", i)}
+                          className={`${btnClass} flex-1 py-1 text-center relative overflow-hidden`}
+                        >
+                          <span
+                            className={`absolute inset-0 flex items-center justify-center transition-all duration-300
+                              ${copied === `STADIUM-${i}` ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+                          >
+                            {label}
+                          </span>
+                          <span
+                            className={`flex items-center justify-center transition-all duration-300
+                              ${copied === `STADIUM-${i}` ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
+                          >
+                            Copied
+                          </span>
+                        </button>
+                      ))}
                     </div>
-                  )}
-
-                  {activeEnv === "ISLAND" && (
+                  ) : (
                     <button
-                      onClick={() => copyInputs("ISLAND", index)}
-                      className="w-full px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition"
+                      onClick={() => handleCopy(activeEnv, index)}
+                      className={`${btnClass} w-full relative overflow-hidden`}
                     >
-                      Inputs {index + 1}
+                      <span
+                        className={`absolute inset-0 flex items-center justify-center transition-all duration-300
+                          ${copied === `${activeEnv}-${index}` ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+                      >
+                        {trick.button}
+                      </span>
+                      <span
+                        className={`flex items-center justify-center transition-all duration-300
+                          ${copied === `${activeEnv}-${index}` ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
+                      >
+                        Copied
+                      </span>
                     </button>
                   )}
-
-                  {activeEnv === "COAST" && (
-                    <button
-                      onClick={() => copyInputs("COAST", index)}
-                      className="w-full px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition"
-                    >
-                      Inputs {index + 1}
-                    </button>
-                  )}
-
-                  {activeEnv === "SNOW" && index === 0 && (
-                    <button
-                      onClick={() => copyInputs("SNOW", index)}
-                      className="w-full px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition"
-                    >
-                      Inputs
-                    </button>
-                  )}
-
-                  {activeEnv === "BAY" && index === 0 && (
-                    <button
-                      onClick={() => copyInputs("BAY", index)}
-                      className="w-full px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition"
-                    >
-                      Inputs
-                    </button>
-                  )}
-
                 </div>
 
                 {/* STADIUM IMAGE */}

@@ -38,6 +38,7 @@ type SubmissionState = {
   date: string;
   video: string | null;
   replay_path: string;
+  file_name: string;
   submitted_by: string | null;
   submitted_by_name: string | null;
   status: "pending" | "approved" | "rejected";
@@ -108,8 +109,7 @@ export default function AdminPanel() {
 
     if (days > 0) return `${days}d`;
     if (hours > 0) return `${hours}h`;
-    if (minutes > 0) return `${minutes}m`;
-    return "just now";
+    return `${minutes}m`;
   }
 
   function resetForm() {
@@ -200,24 +200,39 @@ export default function AdminPanel() {
     update("authors", unique as Author[]);
   }
 
-  function renderLinks({
-    video,
-    replayPath,
-  }: {
-    video: string;
-    replayPath: string;
-  }) {
+  function renderLinks({video, replayPath, fileName}: { video: string; replayPath: string; fileName: string }) {
     const downloadReplay = async () => {
       if (!replayPath) return;
 
-      const { data, error } = await supabase
-        .storage
-        .from("replays")
-        .createSignedUrl(replayPath, 60 * 5); // 5 min
+      setLoading(true);
+      document.body.classList.add("loading");
 
-      if (error || !data?.signedUrl) return;
+      try {
 
-      window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+        const { data, error } = await supabase
+          .storage
+          .from("replays")
+          .createSignedUrl(replayPath, 60 * 5);
+
+        if (error || !data?.signedUrl) return;
+
+        const res = await fetch(data.signedUrl);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        a.href = url;
+        a.download = fileName || "replay.gbx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        URL.revokeObjectURL(url);
+      
+      } finally {
+        setLoading(false);
+        document.body.classList.remove("loading");
+      }
     };
 
     return (
@@ -236,7 +251,7 @@ export default function AdminPanel() {
               type="button"
               onClick={downloadReplay}
               className="hover:opacity-80 transition cursor-pointer"
-              title="Download replay"
+              title={`Download: ${fileName}`}
             >
               <img src="/links/replay.webp" className="w-3.5 h-3.5" />
             </button>
@@ -278,51 +293,57 @@ export default function AdminPanel() {
 
   async function submit() {
 
-    setLoading(true);
     setWarning("");
+    setLoading(true);
+    document.body.classList.add("loading");
 
-    if (!form.track) {
-      setWarning("Please select a track.");
+    try {
+
+      if (!form.track) {
+        setWarning("Please select a track.");
+        return;
+      }
+
+      if (form.time_ms <= 0) {
+        setWarning("Please set the time");
+        return;
+      }
+
+      const payload = {
+        game: form.game,
+        track: form.track,
+        category: form.category,
+        time_ms: Number(form.time_ms),
+        authors: form.authors,
+        date: new Date(form.date).toISOString(),
+        video: form.video || null,
+        replay: form.replay || null,
+        inputs: form.inputs || null,
+      };
+
+      const { error } = await supabase
+        .from("tas_records")
+        .upsert(payload, { onConflict: "track,category,time_ms" });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["tasRecords"],
+      });
+
+      if (error) {
+        setWarning(error.message);
+      } else {
+        alert("Success!");
+      }
+    } finally {
       setLoading(false);
-      return;
+      document.body.classList.remove("loading");
     }
-
-    if (form.time_ms <= 0) {
-      setWarning("Please set the time");
-      setLoading(false);
-      return;
-    }
-
-    const payload = {
-      game: form.game,
-      track: form.track,
-      category: form.category,
-      time_ms: Number(form.time_ms),
-      authors: form.authors,
-      date: new Date(form.date).toISOString(),
-      video: form.video || null,
-      replay: form.replay || null,
-      inputs: form.inputs || null,
-    };
-
-    const { error } = await supabase
-      .from("tas_records")
-      .upsert(payload, { onConflict: "track,category,time_ms" });
-
-    await queryClient.invalidateQueries({
-      queryKey: ["tasRecords"],
-    });
-
-    if (error) {
-      setWarning(error.message);
-    } else {
-      alert("Success!");
-    }
-    setLoading(false);
   }
   
   async function deleteTas(t: TasEntry) {
 
+    setLoading(true);
+    document.body.classList.add("loading");
     const confirmed = window.confirm(`
       Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
         Time (ms): ${t.time_ms}
@@ -343,6 +364,8 @@ export default function AdminPanel() {
       queryKey: ["tasRecords"],
     });
 
+    setLoading(false);
+    document.body.classList.remove("loading");
     if (error) {
       alert(error.message);
     } else {
@@ -354,6 +377,7 @@ export default function AdminPanel() {
 
     if (!selectedSubmission) return;
     setLoading(true);
+    document.body.classList.add("loading");
 
     try {
 
@@ -404,6 +428,7 @@ export default function AdminPanel() {
       resetForm()
     } finally {
       setLoading(false);
+      document.body.classList.remove("loading");
     }
   }
 
@@ -411,6 +436,7 @@ export default function AdminPanel() {
 
     if (!selectedSubmission) return;
     setLoading(true);
+    document.body.classList.add("loading");
 
     try {
 
@@ -461,6 +487,7 @@ export default function AdminPanel() {
       resetForm()
     } finally {
       setLoading(false);
+      document.body.classList.remove("loading");
     }
   }
 
@@ -485,7 +512,7 @@ export default function AdminPanel() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700"
+                className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 cursor-pointer"
               >
                 Reset
               </button>
@@ -782,7 +809,7 @@ export default function AdminPanel() {
                         <td className="px-2 py-2">
                           <button
                             onClick={() => copySubmissionToForm(s)}
-                            className="rounded bg-slate-800 px-2 py-1 text-xs hover:bg-slate-700"
+                            className="rounded bg-slate-800 px-2 py-1 text-xs hover:bg-slate-700 cursor-pointer"
                           >
                             Copy
                           </button>
@@ -812,7 +839,7 @@ export default function AdminPanel() {
                         <td className="px-2 py-2">{formatDate(s.date)}</td>
 
                         <td className="px-2 py-2 text-center">
-                          { renderLinks({ video: s.video, replayPath: s.replay_path }) }
+                          { renderLinks({ video: s.video, replayPath: s.replay_path, fileName: s.file_name }) }
                         </td>
 
                         <td className="px-2 py-2 max-w-150 break-all whitespace-normal">
@@ -907,7 +934,7 @@ export default function AdminPanel() {
                             <button
                               onClick={() => copyTasToForm(t)}
                               title="Copy to form"
-                              className="rounded bg-slate-800 px-2 py-0.5 hover:bg-slate-700"
+                              className="rounded bg-slate-800 px-2 py-0.5 hover:bg-slate-700 cursor-pointer"
                             >
                               Copy
                             </button>
@@ -917,7 +944,7 @@ export default function AdminPanel() {
                             <button
                               onClick={() => deleteTas(t)}
                               title="Delete record"
-                              className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700"
+                              className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700 cursor-pointer"
                             >
                               Delete
                             </button>

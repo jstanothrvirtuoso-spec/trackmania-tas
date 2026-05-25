@@ -74,7 +74,7 @@ export default function Header() {
   return (
     <header
       className={`
-        fixed top-0 left-0 right-0 z-50 backdrop-blur-md
+        fixed top-0 left-0 right-0 z-50
         transition-all duration-500 ease-out
         ${
           showHeader
@@ -85,7 +85,7 @@ export default function Header() {
     >
       <div className="flex justify-center px-4">
         <div
-          className="w-full max-w-7xl border border-slate-700 bg-slate-950/50 shadow-xl
+          className="w-full max-w-7xl border border-slate-700 bg-slate-950/50 shadow-xl backdrop-blur-md
             bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3
           "
         >
@@ -97,7 +97,7 @@ export default function Header() {
               <button
                 onMouseEnter={openMenu}
                 onMouseLeave={closeMenu}
-                className="flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-slate-500 bg-slate-700 transition hover:bg-slate-700 shadow-lg"
+                className="flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-slate-500 bg-slate-700 transition hover:bg-slate-700 shadow-lg cursor-[url('/cursor.png')_0_0,_auto]"
               >
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
@@ -188,7 +188,7 @@ export default function Header() {
                   <button
                     onMouseEnter={openUser}
                     onMouseLeave={closeUser}
-                    className="flex items-center gap-2 rounded-full border border-slate-600 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700"
+                    className="flex items-center gap-2 rounded-full border border-slate-600 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 cursor-[url('/cursor.png')_0_0,_auto]"
                   >
                     <div className="h-5 w-5 rounded-full bg-emerald-500 text-sm font-semibold text-black flex items-center justify-center">
                       {profile.username[0].toUpperCase()}
