@@ -207,7 +207,6 @@ export default function SubmitPage() {
     if (loading) return;
     setLoading(true);
     setWarning("");
-    document.body.classList.add("loading");
 
     try {
 
@@ -294,7 +293,6 @@ export default function SubmitPage() {
       resetForm();
     } finally {
       setLoading(false);
-      document.body.classList.remove("loading");
     }
   }
 
@@ -565,6 +563,10 @@ export default function SubmitPage() {
         </div>
 
       </div>
+      
+      {loading && (
+        <div className="fixed inset-0 z-[9999] cursor-wait" />
+      )}
     </div>
   );
 }

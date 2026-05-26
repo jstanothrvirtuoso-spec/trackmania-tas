@@ -19,13 +19,13 @@ export default async function ProtectedLayout({
     redirect("/login");
   }
 
-  const { data: admin, error } = await supabase
-    .from("admins")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (error || !admin) {
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  
+  if (error || profile?.role !== "admin") {
     redirect("/");
   }
   

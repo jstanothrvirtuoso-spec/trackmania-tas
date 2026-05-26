@@ -3,13 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+type ProfileUpdate = Partial<Profile>;
+export type Role = "user" | "moderator" | "admin"
+
 export type Profile = {
   id: string;
   username: string;
   bio: string | null;
+  user_number: number;
+  role: Role;
 
   avatar: number;
   banner: number;
+  colour: number;
 
   show_rta: boolean;
   show_time_saved: boolean;
@@ -18,8 +24,6 @@ export type Profile = {
   highlight_recent: boolean;
   show_visitor_counter: boolean;
 };
-
-type ProfileUpdate = Partial<Profile>;
 
 export const BANNERS: Record<number, string> = {
   0: "/banners/bay.webp",
@@ -46,6 +50,20 @@ export const AVATARS: Record<number, string> = {
   8: "/avatars/stadium.webp",
   9: "/avatars/valley.webp",
 };
+
+export const PROFILE_COLOURS: Record<number, string> = {
+  0: "#64748b",
+  1: "#ffffff",
+  2: "#ef4444",
+  3: "#f97316",
+  4: "#eab308",
+  5: "#22c55e",
+  6: "#06b6d4",
+  7: "#3b82f6",
+  8: "#8b5cf6",
+  9: "#ec4899",
+};
+
 
 const supabase = createClient();
 

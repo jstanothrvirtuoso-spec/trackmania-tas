@@ -205,7 +205,6 @@ export default function AdminPanel() {
       if (!replayPath) return;
 
       setLoading(true);
-      document.body.classList.add("loading");
 
       try {
 
@@ -231,7 +230,6 @@ export default function AdminPanel() {
       
       } finally {
         setLoading(false);
-        document.body.classList.remove("loading");
       }
     };
 
@@ -295,7 +293,6 @@ export default function AdminPanel() {
 
     setWarning("");
     setLoading(true);
-    document.body.classList.add("loading");
 
     try {
 
@@ -336,14 +333,12 @@ export default function AdminPanel() {
       }
     } finally {
       setLoading(false);
-      document.body.classList.remove("loading");
     }
   }
   
   async function deleteTas(t: TasEntry) {
 
     setLoading(true);
-    document.body.classList.add("loading");
     const confirmed = window.confirm(`
       Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
         Time (ms): ${t.time_ms}
@@ -365,7 +360,6 @@ export default function AdminPanel() {
     });
 
     setLoading(false);
-    document.body.classList.remove("loading");
     if (error) {
       alert(error.message);
     } else {
@@ -377,7 +371,6 @@ export default function AdminPanel() {
 
     if (!selectedSubmission) return;
     setLoading(true);
-    document.body.classList.add("loading");
 
     try {
 
@@ -428,7 +421,6 @@ export default function AdminPanel() {
       resetForm()
     } finally {
       setLoading(false);
-      document.body.classList.remove("loading");
     }
   }
 
@@ -436,7 +428,6 @@ export default function AdminPanel() {
 
     if (!selectedSubmission) return;
     setLoading(true);
-    document.body.classList.add("loading");
 
     try {
 
@@ -487,7 +478,6 @@ export default function AdminPanel() {
       resetForm()
     } finally {
       setLoading(false);
-      document.body.classList.remove("loading");
     }
   }
 
@@ -963,6 +953,10 @@ export default function AdminPanel() {
 
       </div>
 
+      {loading && (
+        <div className="fixed inset-0 z-[9999] cursor-wait" />
+      )}
     </div>
+    
   );
 }

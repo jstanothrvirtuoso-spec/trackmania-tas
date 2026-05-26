@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Profile, useProfile, useUpdateProfile, AVATARS, BANNERS } from "@/lib/Profiles";
+import { Profile, useProfile, useUpdateProfile, AVATARS, BANNERS, PROFILE_COLOURS } from "@/lib/Profiles";
 
 const SETTINGS = [
   { key: "show_rta", label: "RTA Records", desc: "Show RTA record table" },
@@ -209,7 +209,7 @@ export default function ProfilePage() {
                       rectRef.current =
                         cardRef.current?.getBoundingClientRect() || null;
                     }}
-                    className="w-full h-full object-cover opacity-30"
+                    className="w-full h-full object-cover opacity-40"
                   />
                 ) : (
                   <div className="w-full h-full bg-slate-900" />
@@ -224,7 +224,10 @@ export default function ProfilePage() {
             <div className="relative flex flex-col items-center text-center p-6 pt-15">
 
               {/* AVATAR */}
-              <div className="w-[280px] h-[280px] rounded-full overflow-hidden bg-slate-800 border border-black shadow-xl">
+              <div 
+                className="w-[280px] h-[280px] rounded-full overflow-hidden bg-slate-800 border border-black shadow-xl p-4"
+                style={{ backgroundColor: PROFILE_COLOURS[profile?.colour ?? 0]}}
+              >
                 {profile && (
                   <img
                     src={AVATARS[profile.avatar]}
@@ -309,6 +312,7 @@ export default function ProfilePage() {
                     type="button"
                     onClick={() => { setAvatarOpen(true); setBannerOpen(false) }}
                     className="w-[120px] h-[120px] rounded-full overflow-hidden hover:bg-slate-800 cursor-pointer"
+                    style={{ backgroundColor: PROFILE_COLOURS[draftProfile?.colour ?? 0]}}
                   >
                     <img
                       src={AVATARS[draftProfile?.avatar ?? 0]}
@@ -316,33 +320,56 @@ export default function ProfilePage() {
                     />
                   </button>
                 ) : (
-                  <div className="grid grid-cols-5 gap-2 w-[380px]">
-                    {Object.entries(AVATARS).map(([key, src]) => {
-                      const id = Number(key);
+                  <>
+                    <div className="grid grid-cols-5 gap-2 w-[380px]">
+                      {Object.entries(AVATARS).map(([key, src]) => {
+                        const id = Number(key);
 
-                      return (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => {
-                            updateDraftProfile("avatar", id);
-                            setAvatarOpen(false);
-                          }}
-                          className={`h-16 rounded overflow-hidden border ${
-                            draftProfile?.avatar === id
-                              ? "border-emerald-500"
-                              : "border-transparent"
-                          }`}
-                        >
-                          <img
-                            src={src}
-                            className={`w-full h-full object-cover hover:opacity-100 transition ${
-                              draftProfile?.avatar === id ? "opacity-100" : "opacity-50"}`}
-                          />
-                        </button>
-                      );
-                    })}
-                  </div>
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => {
+                              updateDraftProfile("avatar", id);
+                              setAvatarOpen(false);
+                            }}
+                            className={`h-16 rounded overflow-hidden border ${
+                              draftProfile?.avatar === id
+                                ? "border-emerald-500"
+                                : "border-transparent"
+                            }`}
+                          >
+                            <img
+                              src={src}
+                              className={`w-full h-full object-cover hover:opacity-100 transition ${
+                                draftProfile?.avatar === id ? "opacity-100" : "opacity-50"}`}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="grid grid-cols-5 gap-2 w-[380px]">
+                      {Object.entries(PROFILE_COLOURS).map(([key, colour]) => {
+                        const id = Number(key);
+
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => {
+                              updateDraftProfile("colour", id);
+                              setAvatarOpen(false);
+                            }}
+                            className={`h-7 rounded overflow-hidden border hover:opacity-100 ${
+                              draftProfile?.colour === id ? "border-emerald-500" : "border-transparent opacity-50"}`}
+                            style={{ backgroundColor: colour }}
+                          >
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
                 )}
 
                 {/* USERNAME */}
@@ -414,7 +441,7 @@ export default function ProfilePage() {
               <button
                 disabled={!draftProfile || !draftProfile.username || isSaving}
                 onClick={handleSaveProfile}
-                className="px-5 py-3 bg-emerald-600 rounded-xl disabled:opacity-50 hover:bg-emerald-500 flex items-center justify-center"
+                className="px-5 py-3 bg-emerald-600 rounded-xl disabled:opacity-50 hover:bg-emerald-500 flex items-center justify-center cursor-pointer"
               >
                 {isSaving ? "Saving..." : "Save Profile"}
               </button>

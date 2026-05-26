@@ -100,28 +100,33 @@ body.loading {
     inset -2px -2px 0 rgba(0, 0, 0, 0.6);
 }
 
-/* ✨ optional glossy reflection stays on top */
 .banner-gloss {
   position: absolute;
-  inset: 0;
+  inset: -20%;
   pointer-events: none;
 
   background: linear-gradient(
     120deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.14) 25%,
-    rgba(255, 255, 255, 0.05) 40%,
-    transparent 60%
+    transparent 30%,
+    rgba(255,255,255,0.02) 40%,
+    rgba(255,255,255,0.12) 50%,
+    rgba(255,255,255,0.02) 60%,
+    transparent 70%,
+    transparent 100%
   );
 
-  transform: translateX(-60%);
+  transform: translateX(-120%);
   animation: glossMove 6s infinite ease-in-out;
   mix-blend-mode: screen;
+
+  filter: blur(18px);
 }
 
 @keyframes glossMove {
-  0%   { transform: translateX(-80%); opacity: 0; }
-  30%  { opacity: 1; }
-  60%  { opacity: 0.5; }
-  100% { transform: translateX(80%); opacity: 0; }
+  0% { transform: translateX(-120%); opacity: 0 }
+  20% { opacity: 0 }
+  50% { opacity: 1 }
+  80% { opacity: 0 }
+  100% { transform: translateX(120%); opacity: 0 }
 }

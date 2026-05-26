@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { gameLinks } from "@/lib/TrackList";
-import { useProfile, AVATARS } from "@/lib/Profiles";
+import { useProfile, AVATARS, PROFILE_COLOURS } from "@/lib/Profiles";
 
 const supabase = createClient();
 const menuLinks = [
@@ -141,8 +141,8 @@ export default function Header() {
 
                 </div>
               </div>
-            </div>
-
+            </div> 
+            
             {/* HOME */}
             <div className="pt-1">
               <Link
@@ -190,7 +190,10 @@ export default function Header() {
                     onMouseLeave={closeUser}
                     className="flex items-center gap-2 rounded-full border border-slate-500 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 cursor-[url('/cursor.png')_0_0,_auto]"
                   >
-                    <div className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30">
+                    <div 
+                      className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30"
+                      style={{ backgroundColor: PROFILE_COLOURS[profile?.colour ?? 0]}}
+                    >
                       <img
                         src={AVATARS[profile.avatar]}
                         className="w-full h-full object-cover"
