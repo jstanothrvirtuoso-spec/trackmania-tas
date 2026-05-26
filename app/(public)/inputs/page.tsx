@@ -234,7 +234,7 @@ export default function InputsPage() {
 
                   {/* INPUTS */}
                   {activeEnv === "STADIUM" && index === 0 ? (
-                    <div className="w-full flex gap-2 items-stretch transition-all">
+                    <div className="w-full flex gap-2">
                       {["Left", "Right"].map((label, i) => (
                         <button
                           key={label}
@@ -243,7 +243,7 @@ export default function InputsPage() {
                         >
                           <span
                             className={`absolute inset-0 flex items-center justify-center transition-all duration-300
-                              ${copied === `STADIUM-${i}` ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+                              ${copied === `STADIUM-${i}` ? "opacity-0 scale-95" : "opacity-100 scale-100"} ${i === 0 ? "translate-x-[3px]" : ""}`}
                           >
                             {label}
                           </span>

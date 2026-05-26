@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { gameLinks } from "@/lib/TrackList";
-import { useProfile } from "@/lib/Profiles";
+import { useProfile, AVATARS } from "@/lib/Profiles";
 
 const supabase = createClient();
 const menuLinks = [
@@ -188,10 +188,13 @@ export default function Header() {
                   <button
                     onMouseEnter={openUser}
                     onMouseLeave={closeUser}
-                    className="flex items-center gap-2 rounded-full border border-slate-600 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 cursor-[url('/cursor.png')_0_0,_auto]"
+                    className="flex items-center gap-2 rounded-full border border-slate-500 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 cursor-[url('/cursor.png')_0_0,_auto]"
                   >
-                    <div className="h-5 w-5 rounded-full bg-emerald-500 text-sm font-semibold text-black flex items-center justify-center">
-                      {profile.username[0].toUpperCase()}
+                    <div className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30">
+                      <img
+                        src={AVATARS[profile.avatar]}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
 
                     <span className="hidden text-[17px] lg:block">
@@ -216,8 +219,8 @@ export default function Header() {
                         Submit TAS
                       </Link>
 
-                      <Link href="/preferences" className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded">
-                        Preferences
+                      <Link href="/profile" className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded">
+                        Profile
                       </Link>
 
                       <button

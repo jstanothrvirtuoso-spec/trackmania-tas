@@ -8,8 +8,9 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/admin/:path*",
-    "/preferences/:path*",
+    "/admin-tas/:path*",
+    "/admin-rta/:path*",
+    "/profile/:path*",
     "/submit/:path*",
   ],
 };

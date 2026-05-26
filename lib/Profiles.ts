@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -5,8 +6,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 export type Profile = {
   id: string;
   username: string;
+  bio: string | null;
 
-  avatar_url?: string | null;
+  avatar: number;
+  banner: number;
 
   show_rta: boolean;
   show_time_saved: boolean;
@@ -16,7 +19,33 @@ export type Profile = {
   show_visitor_counter: boolean;
 };
 
-type ProfilePatch = Partial<Omit<Profile, "id">>;
+type ProfileUpdate = Partial<Profile>;
+
+export const BANNERS: Record<number, string> = {
+  0: "/banners/bay.webp",
+  1: "/banners/canyon.webp",
+  2: "/banners/coast.webp",
+  3: "/banners/desert.webp",
+  4: "/banners/island.webp",
+  5: "/banners/lagoon.webp",
+  6: "/banners/rally.webp",
+  7: "/banners/snow.webp",
+  8: "/banners/stadium.webp",
+  9: "/banners/valley.webp",
+};
+
+export const AVATARS: Record<number, string> = {
+  0: "/avatars/bay.webp",
+  1: "/avatars/canyon.webp",
+  2: "/avatars/coast.webp",
+  3: "/avatars/desert.webp",
+  4: "/avatars/island.webp",
+  5: "/avatars/lagoon.webp",
+  6: "/avatars/rally.webp",
+  7: "/avatars/snow.webp",
+  8: "/avatars/stadium.webp",
+  9: "/avatars/valley.webp",
+};
 
 const supabase = createClient();
 
@@ -54,11 +83,11 @@ export function useProfile() {
    UPDATE USERNAME
 ========================================================= */
 
-export function useUpdateProfile1() {
+export function useUpdateProfile() {
   const queryClient = useQueryClient();
 
-  return useMutation<Profile, Error, ProfilePatch>({
-    mutationFn: async (patch: ProfilePatch) => {
+  return useMutation<Profile, Error, ProfileUpdate>({
+    mutationFn: async (profileUpdate) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -67,7 +96,7 @@ export function useUpdateProfile1() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .update(patch)
+        .update(profileUpdate)
         .eq("id", user.id)
         .select()
         .single();
@@ -78,142 +107,7 @@ export function useUpdateProfile1() {
     },
 
     onSuccess: (updatedProfile) => {
-      queryClient.setQueryData<Profile>(["profile"], (old) => {
-        if (!old) return updatedProfile;
-
-        return {
-          ...old,
-          ...updatedProfile,
-        };
-      });
-    },
-  });
-}
-
-/* =========================================================
-   UPDATE PREFERENCES
-========================================================= */
-
-export function useUpdateProfile2() {
-  const queryClient = useQueryClient();
-
-  return useMutation<Profile, Error, ProfilePatch>({
-    mutationFn: async (patch: ProfilePatch) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) throw new Error("No user");
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .update(patch)
-        .eq("id", user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    },
-
-    onSuccess: (updatedProfile) => {
-      queryClient.setQueryData<Profile>(["profile"], (old) => {
-        if (!old) return updatedProfile;
-
-        return {
-          ...old,
-          ...updatedProfile,
-        };
-      });
-    },
-  });
-}
-
-/* =========================================================
-   AVATAR UPLOAD
-========================================================= */
-
-export function useUpdateProfileAvatar() {
-  const queryClient = useQueryClient();
-
-  return useMutation<Profile, Error, File>({
-    mutationFn: async (file) => {
-      // ✅ prevent undefined / invalid object
-      if (!(file instanceof File)) {
-        console.error("Invalid file:", file);
-        throw new Error("Invalid file selected");
-      }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        throw new Error("No user");
-      }
-
-      // ✅ safer extension extraction
-      const parts = file.name.split(".");
-      const fileExt = parts.length > 1 ? parts.pop() : "png";
-
-      const filePath = `${user.id}/avatar.${fileExt}`;
-
-      /* ================================
-         1. Upload to Supabase Storage
-      ================================= */
-
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, {
-          upsert: true,
-        });
-
-      if (uploadError) {
-        console.error(uploadError);
-        throw uploadError;
-      }
-
-      /* ================================
-         2. Get public URL
-      ================================= */
-
-      const { data } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
-      const avatar_url = data.publicUrl;
-
-      /* ================================
-         3. Save into profile table
-      ================================= */
-
-      const { data: updated, error } = await supabase
-        .from("profiles")
-        .update({
-          avatar_url,
-        })
-        .eq("id", user.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error(error);
-        throw error;
-      }
-
-      return updated;
-    },
-
-    onSuccess: (updatedProfile) => {
-      queryClient.setQueryData<Profile>(["profile"], (old) => {
-        if (!old) return updatedProfile;
-
-        return {
-          ...old,
-          ...updatedProfile,
-        };
-      });
+      queryClient.setQueryData<Profile>(["profile"], updatedProfile);
     },
   });
 }

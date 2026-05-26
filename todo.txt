@@ -14,12 +14,15 @@ Add TMNF Hist page:
  - Add links to category table
  - Cumulative time saved per track set?
  - Any other ideas??
-Add profile pictures:
- - Add new bucket called avatars
- - Set max picture size, only allow pictures (png, jpg)
- - Set max changes per day
- - Change avatar from number to URL to link with new bucket
- - Fix frontend
+Profile:
+ - Allow spaces in username
+ - Enforce max char for bio and username
+ - Add user stats
+ - Add background colour selection for icon
+ - Fix gloss edges
+Check server-side enforcement of all input text lengths (replay file names!)
+
+
 
 
 //////////////////////////////////////////////////////////////////////////
