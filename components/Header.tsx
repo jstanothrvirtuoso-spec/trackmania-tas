@@ -16,6 +16,7 @@ const menuLinks = [
   { href: "/authors", label: "Authors" },
   { href: "/tracks", label: "Tracks" },
   { href: "/tmnf-stats", label: "TMNF Stats" },
+  { href: "/about", label: "About" },
 ];
 
 export default function Header() {
