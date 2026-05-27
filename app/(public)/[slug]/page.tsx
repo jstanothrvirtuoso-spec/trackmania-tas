@@ -32,7 +32,7 @@ export default function GamePage({
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
     return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords])
+  }, [rtaRecords]);
 
   const prefs = {
     show_rta: profile?.show_rta ?? true,

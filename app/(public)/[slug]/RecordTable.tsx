@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Game, gameSets, Environment, RecordRow } from "@/lib/TrackList";
+import { Game, gameSets, Environment, RecordRow, categoryOrder, Category } from "@/lib/TrackList";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
 import { Author } from "@/lib/AuthorList";
 
-type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "rtaTime" | "rtaPlayer" | "rtaDate";
+type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";
 
 function getTrackDifficultyTint(category: string, i: number) {
@@ -237,6 +237,11 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
           aVal = a.tas?.date ?? "";
           bVal = b.tas?.date ?? "";
           break;
+        case "category":
+          if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
+          aVal = categoryOrder[a.tas?.category as Category] ?? "";
+          bVal = categoryOrder[b.tas?.category as Category] ?? "";
+          break;
         case "rtaDate":
           if (aHasRta !== bHasRta) return aHasRta ? -1 : 1;
           aVal = a.rta?.date || "";
@@ -362,8 +367,14 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                   <SortIndicator field="date" />
                 </div>
               </th>
-              <th className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em]">
-                Cat.
+              <th
+                onClick={() => handleSort("category")}
+                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+              >
+                <div className="flex items-center justify-center gap-1">
+                  <span>Cat.</span>
+                  <SortIndicator field="category" />
+                </div>
               </th>
               <th className="px-2 py-1 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tr-lg tracking-[0.18em]">
                 Links

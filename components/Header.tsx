@@ -68,9 +68,9 @@ export default function Header() {
     router.refresh();
   }
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <header
@@ -125,7 +125,7 @@ export default function Header() {
                       style={{ fontFamily: "DOSVGA" }}
                       className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvga"
                     >
-                      Login
+                      Login/Register
                     </Link>
                   )}
 
@@ -184,7 +184,7 @@ export default function Header() {
             
             {/* USER */}
             <div ref={userRef} className="relative">
-              {profile?.username ? (
+              {!isLoading && profile?.username ? (
                 <>
                   <button
                     onMouseEnter={openUser}
@@ -237,7 +237,7 @@ export default function Header() {
                   </div>
                 </>
               ) : (
-                <div className="h-10 w-28" />
+                <div className="h-10.5 w-30" />
               )}
             </div>
 

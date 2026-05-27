@@ -163,7 +163,7 @@ export default function AdminPanel() {
     const confirmed = window.confirm(`
       Delete ${t.track} for ${t.player}?
         Time (ms): ${t.time_ms}
-        Formatted Time: ${formatTime(t.time_ms, t.game === "TM2")}\n
+        Formatted Time: ${formatTime(t.time_ms, trackList[t.track].category === "Stunt", t.game === "TM2")}\n
       This cannot be undone!`
     );
 

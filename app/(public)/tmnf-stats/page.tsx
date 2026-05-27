@@ -350,7 +350,7 @@ export default function TmnfHistory() {
                   >
                     {c.entry ? (
                       <span className="text-slate-300">
-                        { formatTime(c.entry.time_ms, false) }
+                        { formatTime(c.entry.time_ms) }
                       </span>
                     ) : (
                       <span className="text-slate-600">-</span>
@@ -362,7 +362,7 @@ export default function TmnfHistory() {
                 <td className="px-3 py-1.5 tabular-nums">
                   {row.rta ? (
                     <span className="text-slate-300">
-                      { formatTime(row.rta, false) }
+                      { formatTime(row.rta) }
                     </span>
                   ) : (
                     <span className="text-slate-600">-</span>

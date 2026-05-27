@@ -8,6 +8,9 @@ export type Environment = (typeof environment)[number];
 
 export const categories = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "Low Input"] as const;
 export type Category = (typeof categories)[number];
+export const categoryOrder = Object.fromEntries(categories.map((c, i) => [c, i]));
+export const graphCategories = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "RTA"] as const;
+export type GraphCategory = (typeof graphCategories)[number];
 
 export const gameSets = {
   "TMNF": ["White", "Green", "Blue", "Red", "Black"],
@@ -35,7 +38,8 @@ export const categoryFilters = {
   "No Uber": new Set(["No Uber", "WR Route", "No Cut"]),
   "WR Route": new Set(["WR Route", "No Cut"]),
   "No Cut": new Set(["No Cut"]),
-  "Low Input" : new Set(["Low Input"])
+  "Low Input": new Set(["Low Input"]),
+  "RTA": new Set(["RTA"])
 } as const;
 
 export type RecordRow = {

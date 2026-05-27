@@ -1,5 +1,5 @@
 
-export function formatTime(timeMs: number, isStunt: boolean, isTM2: boolean = false, showSign: boolean = false): string {
+export function formatTime(timeMs: number, isStunt: boolean = false, isTM2: boolean = false, showSign: boolean = false): string {
 
   if (isStunt) {
     const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";

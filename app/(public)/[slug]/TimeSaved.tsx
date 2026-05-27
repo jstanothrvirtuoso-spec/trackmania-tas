@@ -142,25 +142,19 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
               <td className="px-2 py-[4px]">Total</td>
 
               <td className="px-2 py-[4px] border-l border-slate-800 text-slate-300">
-                {formatTime(total.tasMs, false)}
+                {formatTime(total.tasMs)}
               </td>
 
               <td className="px-2 py-[4px] text-slate-300">
-                {total.rtaMs > 0
-                  ? formatTime(total.rtaMs, false)
-                  : "-"}
+                {total.rtaMs > 0 ? formatTime(total.rtaMs) : "-"}
               </td>
 
               <td className="px-2 py-[4px] border-l border-slate-800 italic">
-                {total.rtaMs > 0
-                  ? formatTime(total.tasMs - total.rtaMs, false, false, true)
-                  : "-"}
+                {total.rtaMs > 0 ? formatTime(total.tasMs - total.rtaMs, false, false, true) : "-"}
               </td>
 
               <td className="px-2 py-[4px]">
-                {total.rtaMs > 0
-                  ? formatPercentSaved(total.tasMs, total.rtaMs, 4)
-                  : "-"}
+                {total.rtaMs > 0 ? formatPercentSaved(total.tasMs, total.rtaMs, 4) : "-"}
               </td>
             </tr>
           </tbody>

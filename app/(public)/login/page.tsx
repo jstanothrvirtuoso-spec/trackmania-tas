@@ -103,8 +103,9 @@ export default function LoginPage() {
     }
 
     setErrorMessage(
-      "Account created. Check your email to validate your account before logging in."
+      "Account opened. Please check your email now to validate your account before logging in."
     );
+    alert("Account opened. Please check your email now to validate your account before logging in. Make sure to check your junk mail.")
     setPassword("");
     setConfirmPassword("");
     setLoading(false);
@@ -151,7 +152,7 @@ export default function LoginPage() {
           )}
 
           {errorMessage && (
-            <div className="text-sm text-red-400">{errorMessage}</div>
+            <div className={`text-sm ${errorMessage.startsWith("Account opened") ? "text-green-400" : "text-red-400" }`}>{errorMessage}</div>
           )}
 
           <button

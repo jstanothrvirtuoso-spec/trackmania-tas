@@ -18,7 +18,11 @@ Profile:
  - Allow spaces in username
  - Enforce max char for bio and username
  - Add user stats
-Check server-side enforcement of all input text lengths (replay file names!)
+ - Add table to connect players with authors
+ - Add TASes for verified profiles
+Loading symbols for tables while waiting for supabase (noseboosting car??)
+Check using correct mouse loading for all major button presses (login?!)
+
 
 
 

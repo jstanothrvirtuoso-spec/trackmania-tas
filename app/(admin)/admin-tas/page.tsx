@@ -342,7 +342,7 @@ export default function AdminPanel() {
     const confirmed = window.confirm(`
       Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
         Time (ms): ${t.time_ms}
-        Formatted Time: ${formatTime(t.time_ms, t.game === "TM2")}\n
+        Formatted Time: ${formatTime(t.time_ms, trackList[t.track].category === "Stunt", t.game === "TM2")}\n
       This cannot be undone!`
     );
 
@@ -821,7 +821,7 @@ export default function AdminPanel() {
                         </td>
 
                         <td className="px-2 py-2">
-                          {s.time_ms ? formatTime(s.time_ms, s.game === "TM2") : "-"}
+                          {s.time_ms ? formatTime(s.time_ms, trackList[s.track].category === "Stunt", s.game === "TM2") : "-"}
                         </td>
                         <td className="px-2 py-2">
                           {Array.isArray(s.authors) ? s.authors.join(", ") : ""}
