@@ -68,10 +68,6 @@ export default function Header() {
     router.refresh();
   }
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
-
   return (
     <header
       className={`
@@ -229,7 +225,7 @@ export default function Header() {
 
                       <button
                         onClick={signOut}
-                        className="px-3 py-2 text-sm text-red-400 hover:bg-slate-700 rounded text-left"
+                        className="px-3 py-2 text-sm text-red-400 hover:bg-slate-700 rounded text-left cursor-pointer"
                       >
                         Logout
                       </button>

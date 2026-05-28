@@ -4,17 +4,17 @@ import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime, formatDate } from "@/utils/formatting";
-import { Author, authorList } from "@/lib/AuthorList";
+import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { usePendingSubmissions } from "@/lib/TasSubmissions";
-import { Game, gameList, getGameTracks, Category, categories, TasEntry, trackList } from "@/lib/TrackList";
+import { Game, gameList, getGameTracks, Category, categories, TasEntry, trackList, AuthorInfo } from "@/lib/TrackList";
 
 type FormState = {
   game: Game;
   track: string;
   category: Category;
   time_ms: number;
-  authors: Author[];
+  authors: string[];
   date: string;
   video: string;
   replay: string;
@@ -34,7 +34,7 @@ type SubmissionState = {
   track: string | null;
   category: Category | "Unsure";
   time_ms: number | null;
-  authors: Author[];
+  authors: string[];
   date: string;
   video: string | null;
   replay_path: string;
@@ -59,6 +59,7 @@ export default function AdminPanel() {
   const today = new Date().toISOString().split("T")[0];
   const inputClass = "w-full rounded-md bg-slate-800 px-3 py-1.5 text-white outline-none focus:ring-2 focus:ring-slate-500";
   const labelClass = "text-sm text-slate-300 mb-0.5";
+  const { data: authorData = [] } = useAuthors();
   const { data: tasRecords = [] } = useTasRecords();
   const { data: pendingSubmissions = [] } = usePendingSubmissions();
   
@@ -193,11 +194,11 @@ export default function AdminPanel() {
     });
   }
 
-  function updateAuthor(index: number, value: Author) {
+  function updateAuthor(index: number, value: string) {
     const next = [...form.authors];
     next[index] = value;
     const unique = [...new Set(next)];
-    update("authors", unique as Author[]);
+    update("authors", unique);
   }
 
   function renderLinks({video, replayPath, fileName}: { video: string; replayPath: string; fileName: string }) {
@@ -260,16 +261,21 @@ export default function AdminPanel() {
   }
 
   const authorOptions = useMemo(() => {
-    const [,, ...rest] = authorList;
+    const unknown = authorData.find((a) => a.author === "Unknown");
+    const rest = authorData.filter((a) => a.author !== "Unknown");
+
     const priority = rest.slice(0, 25);
     const remaining = rest.slice(25);
+
+    const sorted = (arr: AuthorInfo[]) => arr.sort((a, b) => a.author.localeCompare(b.author));
+
     return [
-      "Unknown",
-      ...priority.sort((a, b) => a.localeCompare(b)),
-      "",
-      ...remaining.sort((a, b) => a.localeCompare(b)),
+      ...(unknown ? [{ id: unknown.id, author: unknown.author }] : []),
+      ...sorted(priority),
+      { id: "", author: "" },
+      ...sorted(remaining),
     ];
-  }, []);
+  }, [authorData]);
 
   const trackOptions = useMemo(() => {
     return getGameTracks(form.game);
@@ -293,9 +299,7 @@ export default function AdminPanel() {
 
     setWarning("");
     setLoading(true);
-
     try {
-
       if (!form.track) {
         setWarning("Please select a track.");
         return;
@@ -306,31 +310,59 @@ export default function AdminPanel() {
         return;
       }
 
+      // 1. Upsert TAS record
       const payload = {
         game: form.game,
         track: form.track,
         category: form.category,
         time_ms: Number(form.time_ms),
-        authors: form.authors,
         date: new Date(form.date).toISOString(),
         video: form.video || null,
         replay: form.replay || null,
         inputs: form.inputs || null,
       };
 
-      const { error } = await supabase
+      const { data: tasRecord, error: tasError } = await supabase
         .from("tas_records")
-        .upsert(payload, { onConflict: "track,category,time_ms" });
+        .upsert(payload, { onConflict: "track,category,time_ms" })
+        .select()
+        .single();
+
+      if (tasError) {
+        setWarning(tasError.message);
+        return;
+      }
+
+      // 2. Convert author names -> junction rows
+      const authorRows = form.authors.map((name) => {
+        const author = authorData.find((a) => a.author === name);
+        return {
+          tas_record_id: tasRecord.id,
+          author_id: author?.id,
+        };
+      }).filter((x) => x.author_id);
+
+      // Clear existing author links first
+      await supabase
+        .from("tas_record_authors")
+        .delete()
+        .eq("tas_record_id", tasRecord.id);
+
+      // Insert new links
+      const { error: authorsError } = await supabase
+        .from("tas_record_authors")
+        .insert(authorRows);
+
+      if (authorsError) {
+        setWarning(authorsError.message);
+        return;
+      }
 
       await queryClient.invalidateQueries({
         queryKey: ["tasRecords"],
       });
 
-      if (error) {
-        setWarning(error.message);
-      } else {
-        alert("Success!");
-      }
+      alert("Success!");
     } finally {
       setLoading(false);
     }
@@ -363,7 +395,7 @@ export default function AdminPanel() {
     if (error) {
       alert(error.message);
     } else {
-      alert("Record successfully deleted!")
+      alert("Record successfully rejected!")
     }
   }
 
@@ -631,12 +663,12 @@ export default function AdminPanel() {
                   <div key={index} className="flex gap-2 items-stretch">
                     <select
                       value={author}
-                      onChange={(e) => updateAuthor(index, e.target.value as Author)}
+                      onChange={(e) => updateAuthor(index, e.target.value)}
                       className={`h-8 cursor-pointer ${inputClass} flex-1`}
                     >
-                      {authorOptions.map((author, i) => (
-                        <option key={author} value={author} className={`${i <= 25 ? "" : "italic"}`}>
-                          {author}
+                      {authorOptions.map((a, i) => (
+                        <option key={a.author} value={a.author} className={`${i <= 25 ? "" : "italic"}`}>
+                          {a.author}
                         </option>
                       ))}
                     </select>

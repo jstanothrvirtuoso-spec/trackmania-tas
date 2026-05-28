@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { gameLinks, trackList, categoryFilters, GraphCategory } from "@/lib/TrackList";
+import { gameLinks, trackList, categoryFilters, GraphCategory, TasEntry } from "@/lib/TrackList";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { formatDate, formatTime } from "@/utils/formatting"
@@ -23,6 +23,7 @@ export default function TracksPage() {
 
   const [game, setGame] = useState("TMNF");
   const [track, setTrack] = useState("A01-Race");
+  const [currentTas, setCurrentTas] = useState<TasEntry | null>(null);
 
   const trackOptions = useMemo(() => {
     return Object.entries(trackList)
@@ -201,6 +202,8 @@ export default function TracksPage() {
                   return (
                     <tr
                       key={`${tas.time_ms}-${tas.date}`}
+                      onMouseEnter={() => setCurrentTas(tas)}
+                      onMouseLeave={() => setCurrentTas(null)}
                       className={`border-x border-slate-800 transition-colors hover:bg-emerald-400/20 ${rowColour}`}
                     >
                       <td className="px-3 py-1.5 text-center font-medium text-slate-200">
@@ -233,6 +236,7 @@ export default function TracksPage() {
             progression={progression}
             useMinutes={useMinutes}
             isStunt={isStunt}
+            currentTas={currentTas}
           />
 
         </div>

@@ -23,6 +23,7 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   function validatePassword(password: string) {
+    
     const minLength = password.length >= 8;
     const hasLower = /[a-z]/.test(password);
     const hasUpper = /[A-Z]/.test(password);
@@ -78,37 +79,37 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMessage("");
 
-    const passwordError = validatePassword(password);
-    if (passwordError) {
-      setErrorMessage(passwordError);
+    try {
+      const passwordError = validatePassword(password);
+      if (passwordError) {
+        setErrorMessage(passwordError);
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setErrorMessage("Passwords do not match");
+        return;
+      }
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      setErrorMessage(
+        "Account opened. Please check your email now to validate your account before logging in."
+      );
+      alert("Account opened. Please check your email now to validate your account before logging in. Make sure to check your junk mail.")
+      setPassword("");
+      setConfirmPassword("");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
-      return;
-    }
-
-    setErrorMessage(
-      "Account opened. Please check your email now to validate your account before logging in."
-    );
-    alert("Account opened. Please check your email now to validate your account before logging in. Make sure to check your junk mail.")
-    setPassword("");
-    setConfirmPassword("");
-    setLoading(false);
   }
 
   return (
@@ -119,9 +120,7 @@ export default function LoginPage() {
         </h1>
 
         <p className="mb-6 text-center text-sm text-slate-400">
-          {mode === "login"
-            ? "Please enter your email and password"
-            : "Create your TrackMania TAS account"}
+          {mode === "login" ? "Please enter your email and password" : "Create your TrackMania TAS account"}
         </p>
 
         <div className="space-y-4">
@@ -160,11 +159,7 @@ export default function LoginPage() {
             onClick={mode === "login" ? signIn : signUp}
             className="w-full cursor-pointer rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-50"
           >
-            {loading
-              ? "Please wait..."
-              : mode === "login"
-              ? "Login"
-              : "Create account"}
+            {loading ? "Please wait..." : mode === "login" ? "Login" : "Create account"}
           </button>
 
           <button
@@ -174,12 +169,14 @@ export default function LoginPage() {
             }}
             className="w-full cursor-pointer text-sm text-slate-400 hover:text-white"
           >
-            {mode === "login"
-              ? "Create new account"
-              : "Already have an account?"}
+            {mode === "login" ? "Create new account" : "Already have an account?"}
           </button>
         </div>
       </div>
+      
+      {loading && (
+        <div className="fixed inset-0 z-[9999] cursor-wait" />
+      )}
     </main>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Author } from "@/lib/AuthorList";
+import { Author } from "@/lib/Authors";
 import { categories, Category, environment, Environment, RecordRow, Game } from "@/lib/TrackList";
 
 interface HeaderOptionsProps {

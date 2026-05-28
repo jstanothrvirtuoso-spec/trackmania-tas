@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { GraphCategory, graphCategories } from "@/lib/TrackList";
+import { GraphCategory, TasEntry, graphCategories } from "@/lib/TrackList";
 
 const round = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -42,10 +42,11 @@ function generateYAxisTicks(min: number, max: number) {
   return ticks.map((t) => Math.round(t * 1e6) / 1e6);
 }
 
-export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
+export function RecordProgressionGraph({ progression, useMinutes, isStunt, currentTas }: {
   progression: Record<GraphCategory, { date: string; time: number }[]>;
   useMinutes: boolean;
   isStunt: boolean;
+  currentTas: TasEntry | null;
 }) {
 
   const [visibleCategories, setVisibleCategories] = useState<Record<GraphCategory, boolean>>(
@@ -92,6 +93,13 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
     return round(height - yPadding - ((time - yTicks[0]) / (yTicks[yTicks.length - 1] - yTicks[0] || 1)) * (height - yPadding * 2));
   };
 
+  const hovered = currentTas ? (() => {
+    const category = currentTas.category as GraphCategory;
+    const points = progression[category] ?? [];
+    const index = points.findIndex((p) => p.date === currentTas.date && Math.abs(p.time - currentTas.time_ms / 1000) < 1e-6);
+    return index !== -1 ? { category, index, points } : null;
+  })() : null;
+
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
       <h2 className="mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
@@ -117,10 +125,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
         />
 
         {/* Year labels */}
-        {Array.from(
-          { length: endYear - startYear + 1 },
-          (_, i) => startYear + i
-        ).map((year) => {
+        {Array.from( { length: endYear - startYear + 1 }, (_, i) => startYear + i).map((year) => {
           const x = xScale(`${year}-01-01`);
 
           // Skip labels outside plotting region
@@ -134,7 +139,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
               x={x}
               y={height - yPadding + 16}
               textAnchor="middle"
-              className="fill-slate-500 text-[10px]"
+              className="fill-slate-400 text-[10px]"
             >
               {year}
             </text>
@@ -159,7 +164,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
                 x={xPadding - 8}
                 y={y + 4}
                 textAnchor="end"
-                className="fill-slate-500 text-[10px]"
+                className="fill-slate-400 text-[10px]"
               >
                 {tick.toFixed(yTickDecimals)}
               </text>
@@ -171,9 +176,8 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
         {graphCategories.map((category) => {
           const points = progression[category];
           if (points.length === 0 || !visibleCategories[category]) return null;
-
+          
           let path = "";
-
           points.forEach((point, i) => {
             const x = xScale(point.date);
             const y = yScale(point.time);
@@ -181,23 +185,18 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
             if (i === 0) {
               path += `M ${x} ${y}`;
             } else {
-              path += ` H ${x}`;
-              path += ` V ${y}`;
+              path += ` H ${x} V ${y}`;
             }
           });
 
           const lastPoint = points[points.length - 1];
-
-          if (lastPoint) {
-            path += ` H ${xScale(new Date().toISOString())}`;
-          }
-
+          if (lastPoint) { path += ` H ${xScale(new Date().toISOString())}` }
+          
           return (
             <path
-              key={category}
               d={path}
               fill="none"
-              stroke={categoryColours[category as keyof typeof categoryColours][0]}
+              stroke={categoryColours[category][0]}
               strokeWidth="2"
             />
           );
@@ -217,11 +216,46 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt }: {
                 cx={x}
                 cy={y}
                 r={3}
-                fill={categoryColours[category as keyof typeof categoryColours][0]}
+                fill={categoryColours[category][0]}
               />
             );
           });
         })}
+
+        {/* Hover highlight overlay */}
+        {hovered && (() => {
+          const { index, points } = hovered;
+          const p1 = points[index];
+          const p2 = points[index + 1];
+          const x1 = xScale(p1.date);
+          const x2 = index < points.length - 1 ? xScale(p2.date) : xScale(new Date().toISOString());
+          const y = yScale(p1.time);
+
+          return (
+            <g key={`hover-${hovered.category}-${index}`}>
+              <line
+                x1={x1}
+                y1={y}
+                x2={x2}
+                y2={y}
+                stroke="#f16717"
+                strokeWidth={3}
+              />
+              <circle
+                cx={x1}
+                cy={y}
+                r={5}
+                fill="#f16717"
+              />
+              <circle
+                cx={x2}
+                cy={y}
+                r={5}
+                fill="#f16717"
+              />
+            </g>
+          );
+        })()}
 
       </svg>
 

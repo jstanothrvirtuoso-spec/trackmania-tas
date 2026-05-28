@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { authorList, Author } from "@/lib/AuthorList";
-import { categories, Category, trackList } from "@/lib/TrackList";
+import { useAuthors } from "@/lib/Authors";
+import { categories, Category, trackList, AuthorInfo } from "@/lib/TrackList";
 import { trackIds } from "@/lib/TrackId"
 import { useProfile } from "@/lib/Profiles";
 
 type FormState = {
   track: string;
-  authors: Author[];
+  authors: string[];
   category: Category | "Unsure";
   video: string;
   user_notes: string;
@@ -46,10 +46,11 @@ export default function SubmitPage() {
   const [warning, setWarning] = useState("");
   const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-slate-100";
   const labelClass = "text-sm text-slate-300 py-0.5";
+  const { data: authorData = [] } = useAuthors();
 
   const [form, setForm] = useState<FormState>({
     track: "",
-    authors: ["" as Author],
+    authors: [""],
     category: "Open",
     video: "",
     user_notes: "",
@@ -65,21 +66,22 @@ export default function SubmitPage() {
   });
 
   const authorOptions = useMemo(() => {
-    const [,, ...rest] = authorList;
+    const rest = authorData.filter((a) => a.author !== "Unknown");
     const priority = rest.slice(0, 25);
     const remaining = rest.slice(25);
+    const sorted = (arr: AuthorInfo[]) => arr.sort((a, b) => a.author.localeCompare(b.author));
     return [
-      ...priority.sort((a, b) => a.localeCompare(b)),
-      "",
-      ...remaining.sort((a, b) => a.localeCompare(b)),
+      ...sorted(priority),
+      { id: "", author: "" },
+      ...sorted(remaining),
     ];
-  }, []);
+  }, [authorData]);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function updateAuthor(index: number, value: Author) {
+  function updateAuthor(index: number, value: string) {
     setForm((prev) => {
       const next = [...prev.authors];
       next[index] = value;
@@ -90,7 +92,7 @@ export default function SubmitPage() {
   function addAuthor() {
     setForm((prev) => ({
       ...prev,
-      authors: [...prev.authors, "" as Author],
+      authors: [...prev.authors, ""],
     }));
   }
 
@@ -132,7 +134,7 @@ export default function SubmitPage() {
   function resetForm() {
     setForm({
       track: "",
-      authors: ["" as Author],
+      authors: [""],
       category: "Open",
       video: "",
       user_notes: "",
@@ -221,7 +223,7 @@ export default function SubmitPage() {
         return;
       }
 
-      const cleanAuthors = form.authors.filter((a): a is Author => a.trim() !== "");
+      const cleanAuthors = form.authors.filter((a) => a.trim() !== "");
       if (cleanAuthors.length === 0) {
         setWarning("Please choose at least one author");
         return;
@@ -418,7 +420,7 @@ export default function SubmitPage() {
               <div key={index} className="flex gap-2">
                 <select
                   value={author}
-                  onChange={(e) => updateAuthor(index, e.target.value as Author)}
+                  onChange={(e) => updateAuthor(index, e.target.value)}
                   className={`${inputClass} ${!author ? "text-slate-500" : "text-slate-100"} flex-1 cursor-pointer`}
                 >
                   {!author && (
@@ -427,15 +429,15 @@ export default function SubmitPage() {
                     </option>
                   )}
                   {authorOptions.map((a) => {
-                    const alreadyUsed = form.authors.includes(a as Author) && a !== author;
+                    const alreadyUsed = form.authors.includes(a.author) && a.author !== author;
                     return (
                       <option
-                        key={a}
-                        value={a}
+                        key={a.author}
+                        value={a.author}
                         disabled={alreadyUsed}
                         className={alreadyUsed ? "text-emerald-500" : "text-slate-100"}
                       >
-                        {a}
+                        {a.author}
                       </option>
                     );
                   })}
@@ -504,7 +506,7 @@ export default function SubmitPage() {
               </option>
             ))}
             <option>
-              Not sure
+              Unsure
             </option>
           </select>
         </div>
@@ -555,8 +557,10 @@ export default function SubmitPage() {
 
           <button
             onClick={submit}
-            disabled={loading || !replayFile || form.authors.filter((a): a is Author => a.trim() !== "").length === 0}
-            className="w-full cursor-pointer rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50"
+            disabled={loading || !replayFile || form.authors.filter((a) => a.trim() !== "").length === 0}
+            className={`w-full rounded-md bg-emerald-600 px-4 py-2 font-medium disabled:opacity-50 ${
+              loading || !replayFile || form.authors.filter((a) => a.trim() !== "").length === 0 ? "cursor-not-allowed" : "hover:bg-emerald-500 cursor-pointer"
+            }`}
           >
             {loading ? "Submitting..." : "Submit"}
           </button>

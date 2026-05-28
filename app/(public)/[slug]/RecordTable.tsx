@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Game, gameSets, Environment, RecordRow, categoryOrder, Category } from "@/lib/TrackList";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
-import { Author } from "@/lib/AuthorList";
+import { Author } from "@/lib/Authors";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate";
 type SortOrder = "asc" | "desc";

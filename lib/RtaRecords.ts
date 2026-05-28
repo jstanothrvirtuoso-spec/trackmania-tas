@@ -6,7 +6,7 @@ import { RtaEntry } from "./TrackList";
 async function getRtaRecords(): Promise<RtaEntry[]> {
   const supabase = createClient();
 
-  const pageSize = 1000;
+  const pageSize = 2000;
   let from = 0;
   let allRows: RtaEntry[] = [];
 

@@ -6,24 +6,20 @@ import { TasEntry } from "./TrackList";
 async function getTasRecords(): Promise<TasEntry[]> {
   const supabase = createClient();
 
-  const pageSize = 1000;
+  const pageSize = 2000;
   let from = 0;
   let allRows: TasEntry[] = [];
 
   while (true) {
     const { data, error } = await supabase
-      .from("tas_records")
+      .from("tas_with_authors")
       .select("*")
       .range(from, from + pageSize - 1);
 
     if (error) throw error;
-
     if (!data?.length) break;
-
     allRows.push(...(data as TasEntry[]));
-
     if (data.length < pageSize) break;
-
     from += pageSize;
   }
 

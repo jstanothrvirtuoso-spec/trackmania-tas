@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTasRecords } from "@/lib/TasRecords";
-import { Author } from "@/lib/AuthorList";
+import { Author } from "@/lib/Authors";
 import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
 import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackList";
 import { formatDate, formatTime } from "@/utils/formatting"
@@ -326,17 +326,13 @@ export default function AuthorsPage() {
         <select
           value={selectedAuthor}
           onChange={(e) => setSelectedAuthor(e.target.value as Author)}
-          className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none"
+          className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none cursor-pointer"
         >
           {authorOptions.map(({ author, count }) => (
             <option
               key={author}
               value={author}
-              className={
-                author === selectedAuthor
-                  ? "italic text-red-400"
-                  : ""
-              }
+              className={author === selectedAuthor ? "italic text-red-400" : ""}
             >
               {author} ({count})
             </option>
@@ -346,15 +342,9 @@ export default function AuthorsPage() {
         <button
           onClick={() => setHideBeaten((v) => !v)}
           className={`
-            rounded-md px-4 py-1.5 text-sm font-semibold
-            transition-all duration-150
-            border
-            ${
-              hideBeaten
-                ? "border-slate-600 bg-emerald-300/15 text-emerald-300 hover:bg-emerald-500/25"
-                : "border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700"
-            }
-          `}
+            rounded-md px-4 py-1.5 text-sm font-semibold transition-all duration-150 border cursor-pointer
+            ${hideBeaten ? "border-slate-600 bg-emerald-300/15 text-emerald-300 hover:bg-emerald-500/25"
+                : "border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700"}`}
         >
           {hideBeaten ? "WRs only" : "All TASes"}
         </button>

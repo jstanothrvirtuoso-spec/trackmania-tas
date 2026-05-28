@@ -6,7 +6,7 @@ import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMa
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfile } from "@/lib/Profiles";
-import { Author } from "@/lib/AuthorList";
+import { Author } from "@/lib/Authors";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
 import TimeSaved from "./TimeSaved";

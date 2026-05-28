@@ -1,10 +1,42 @@
 "use client";
 
 import { useMemo } from "react";
-import { Author } from "@/lib/AuthorList";
+import { Author } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { trackList, TasEntry, Category, categories } from "@/lib/TrackList";
+
+function getYouTubeId(input?: string | null): string | null {
+  if (!input) return null;
+
+  try {
+    const url = new URL(input);
+
+    // youtu.be/<id>
+    if (url.hostname === "youtu.be") {
+      return url.pathname.slice(1).split("/")[0] || null;
+    }
+
+    // youtube.com/watch?v=<id>
+    const v = url.searchParams.get("v");
+    if (v) return v;
+
+    // youtube.com/embed/<id>
+    // youtube.com/shorts/<id>
+    // youtube.com/live/<id>
+    const match = url.pathname.match(
+      /^\/(embed|shorts|live)\/([^/?]+)/,
+    );
+
+    if (match) {
+      return match[2];
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export default function HighlightPage() {
 
@@ -87,7 +119,6 @@ export default function HighlightPage() {
     };
   }, [topTasList, undoneTracks]);
 
-  const getYouTubeId = (url: string) => url?.match(/[?&]v=([^&]+)/)?.[1];
   const videoId1 = getYouTubeId(tasOfTheDay?.video);
   const videoId2 = getYouTubeId(bestRtaByTrack.get(undoneTasOfTheDay)?.video)
 
@@ -124,7 +155,6 @@ export default function HighlightPage() {
                   className="h-full w-full"
                   src={`https://www.youtube.com/embed/${videoId1}`}
                   title="TAS of the Day"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
               </div>
@@ -146,7 +176,6 @@ export default function HighlightPage() {
                   className="h-full w-full"
                   src={`https://www.youtube.com/embed/${videoId2}`}
                   title="Undone TAS of the Day"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
               </div>
