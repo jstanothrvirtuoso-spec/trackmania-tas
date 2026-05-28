@@ -251,6 +251,9 @@ export default function Page() {
           100% { opacity: 1; }
         }
       `}</style>
+      {/* CRT FRAME ANIMATION OVERLAY */}
+<div className="crt-overlay" />
     </main>
+    
   );
 }

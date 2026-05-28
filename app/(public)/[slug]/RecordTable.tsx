@@ -483,12 +483,27 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                     {entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}
                   </td>
                   <td
-                    className={ `px-1.5 py-1 border-b border-slate-800 text-center italic font-bold align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
-                      entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt))
-                        ? "text-red-300"
-                        : "text-slate-100"
-                    }`}
-                  >
+  className={`px-1.5 py-1 border-b border-slate-800 text-center italic align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
+    entry &&
+    row.rta &&
+    ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) ||
+      (entry.time_ms - row.rta.time_ms < 0 && isStunt))
+      ? "text-red-300"
+      : "text-slate-100"
+  }`}
+  style={{
+    fontFamily: "DOSVGA, monospace",
+    letterSpacing: "0.05em",
+
+    // 💡 glow stack (like your vga-text)
+    textShadow: `
+      0 0 4px #000000,
+      0 0 10px #000000,
+      0 0 18px hsla(0, 0%, 100%, 0.59),
+      1px 1px 0 hsl(0, 0%, 100%)
+    `,
+  }}
+>
                     {entry && row.rta
                       ? formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)
                       : "-"}

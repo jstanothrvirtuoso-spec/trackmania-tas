@@ -299,8 +299,8 @@ export default function SubmitPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10 pt-20 pb-10 text-slate-100">
-      <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl space-y-4">
+    <div className="min-h-screen flex items-center justify-center px-6 py-10 text-slate-100">
+      <div className="w-full max-w-3xl rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl space-y-4">
 
         {/* HEADER */}
         <div className="flex items-start justify-between">

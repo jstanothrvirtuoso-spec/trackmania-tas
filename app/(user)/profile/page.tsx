@@ -162,9 +162,10 @@ export default function ProfilePage() {
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-gradient-to-br from-violet-800/10 to-slate-700/80 text-white px-6 pt-20 pb-16">
-        <div className="max-w-2xl mx-auto space-y-5 flex flex-col justify-center">
+  <>
+    <div className="min-h-screen bg-gradient-to-br from-violet-800/10 to-slate-700/80 text-white px-6 flex items-center justify-center">
+      
+      <div className="w-full max-w-2xl space-y-5 flex flex-col items-center">
 
           {/* HEADER */}
           <div className="text-center flex flex-row justify-center gap-4">

@@ -10,12 +10,16 @@ type CategoryTotals = {
   rtaMs: number;
 };
 
-export default function TimeSaved({ currentRecords }: { currentRecords: RecordRow[] }) {
-
+export default function TimeSaved({
+  currentRecords,
+}: {
+  currentRecords: RecordRow[];
+}) {
   const categoryTotals = useMemo<CategoryTotals[]>(() => {
     return Object.values(
       currentRecords.reduce((acc, row) => {
         if (!row.rta) return acc;
+
         const category = row.trackInfo.category;
 
         if (!acc[category]) {
@@ -25,17 +29,20 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
             rtaMs: 0,
           };
         }
-        
-        acc[category].tasMs += row.tas ? row.tas.time_ms : row.rta.time_ms;
+
+        acc[category].tasMs += row.tas
+          ? row.tas.time_ms
+          : row.rta.time_ms;
+
         acc[category].rtaMs += row.rta.time_ms;
 
         return acc;
       }, {} as Record<string, CategoryTotals>)
     );
   }, [currentRecords]);
-  
+
   const total = categoryTotals
-    .filter(category => category.category !== "Stunt")
+    .filter((category) => category.category !== "Stunt")
     .reduce<CategoryTotals>(
       (acc, curr) => ({
         category: "Total",
@@ -59,8 +66,8 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                 rowSpan={2}
                 className="px-4 py-1 align-middle font-normal uppercase tracking-[0.18em] text-center"
               >
-                  <div>Nadeo</div>
-                  <div>Set</div>
+                <div>Nadeo</div>
+                <div>Set</div>
               </th>
 
               <th
@@ -119,26 +126,50 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   </td>
 
                   <td className="px-3 py-[4px] text-slate-300">
-                    {hasRta ? formatTime(category.rtaMs, isStunt) : "-"}
+                    {hasRta
+                      ? formatTime(category.rtaMs, isStunt)
+                      : "-"}
                   </td>
 
-                  <td className="px-3 py-[4px] border-l border-slate-800 italic">
-                    {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, false, true) : "-"}
+                  {/* ✅ FORCED DOSVGA FONT */}
+                  <td
+                    className="px-2 py-[4px] border-l border-slate-800 italic text-cyan-300"
+                    style={{
+                      fontFamily: "DOSVGA, monospace",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {hasRta
+                      ? formatTime(
+                          category.tasMs - category.rtaMs,
+                          isStunt,
+                          false,
+                          true
+                        )
+                      : "-"}
                   </td>
 
                   <td className="px-3 py-[4px] font-bold">
                     {hasRta
-                      ? formatPercentSaved(category.tasMs, category.rtaMs, 4, isStunt)
+                      ? formatPercentSaved(
+                          category.tasMs,
+                          category.rtaMs,
+                          4,
+                          isStunt
+                        )
                       : "-"}
                   </td>
                 </tr>
               );
             })}
 
-            <tr className="
-              border-t-2 border-slate-600 font-semibold text-slate-100
-              hover:bg-blue-900/20 transition-colors
-            ">
+            <tr
+              className="
+                border-t-2 border-slate-600
+                font-semibold text-slate-100
+                hover:bg-blue-900/20 transition-colors
+              "
+            >
               <td className="px-2 py-[4px]">Total</td>
 
               <td className="px-2 py-[4px] border-l border-slate-800 text-slate-300">
@@ -146,15 +177,37 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
               </td>
 
               <td className="px-2 py-[4px] text-slate-300">
-                {total.rtaMs > 0 ? formatTime(total.rtaMs) : "-"}
+                {total.rtaMs > 0
+                  ? formatTime(total.rtaMs)
+                  : "-"}
               </td>
 
-              <td className="px-2 py-[4px] border-l border-slate-800 italic">
-                {total.rtaMs > 0 ? formatTime(total.tasMs - total.rtaMs, false, false, true) : "-"}
+              {/* ✅ TOTAL DIFF */}
+              <td
+                className="px-2 py-[4px] border-l border-slate-800 italic text-cyan-300"
+                style={{
+                  fontFamily: "DOSVGA, monospace",
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {total.rtaMs > 0
+                  ? formatTime(
+                      total.tasMs - total.rtaMs,
+                      false,
+                      false,
+                      true
+                    )
+                  : "-"}
               </td>
 
               <td className="px-2 py-[4px]">
-                {total.rtaMs > 0 ? formatPercentSaved(total.tasMs, total.rtaMs, 4) : "-"}
+                {total.rtaMs > 0
+                  ? formatPercentSaved(
+                      total.tasMs,
+                      total.rtaMs,
+                      4
+                    )
+                  : "-"}
               </td>
             </tr>
           </tbody>
