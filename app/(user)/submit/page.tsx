@@ -2,10 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { useAuthors } from "@/lib/Authors";
-import { categories, Category, trackList, AuthorInfo } from "@/lib/TrackList";
+import { TimeState } from "@/utils/typing";
+import { timeMsToState, timeStateToMs } from "@/utils/common";
+import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR } from "@/utils/constants";
 import { trackIds } from "@/lib/TrackId"
+import { useAuthors } from "@/lib/Authors";
 import { useProfile } from "@/lib/Profiles";
+import { categories, Category, trackList, AuthorInfo } from "@/lib/TrackList";
 
 type FormState = {
   track: string;
@@ -16,14 +19,6 @@ type FormState = {
   date: string;
 };
 
-type TimeState = {
-  minutes: number;
-  seconds: number;
-  hundredths: number;
-  thousandth: number;
-  time_ms: number;
-};
-
 type GBXData = {
   uid: string | null;
   bestTime: number | null;
@@ -32,8 +27,34 @@ type GBXData = {
   validable: boolean | null;
 };
 
-const MAX_NOTES = 300;
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+async function parseGBX(file: File): Promise<GBXData> {
+
+  const buffer = await file.arrayBuffer();
+  const text = new TextDecoder("utf-8", { fatal: false }).decode(buffer);
+  const uid = text.match(/<challenge uid="([^"]+)"/)?.[1] ?? text.match(/<map uid="([^"]+)"/)?.[1] ?? null;
+  const bestTimeRaw = text.match(/<times best="(\d+)"/)?.[1];
+  const version = text.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
+  const stuntScoreRaw = text.match(/stuntscore="(\d+)"/)?.[1];
+  const validableRaw = text.match(/validable="(\d+)"/)?.[1];
+
+  if (!text.startsWith("GBX")) {
+    return {
+      uid: null,
+      bestTime: null,
+      version: null,
+      stuntScore: null,
+      validable: null,
+    };
+  }
+
+  return {
+    uid,
+    bestTime: bestTimeRaw ? Number(bestTimeRaw) : null,
+    version,
+    stuntScore: stuntScoreRaw ? Number(stuntScoreRaw) : null,
+    validable: validableRaw ? validableRaw === "1" : null,
+  };
+}
 
 export default function SubmitPage() {
 
@@ -62,14 +83,15 @@ export default function SubmitPage() {
     seconds: 0,
     hundredths: 0,
     thousandth: 0,
-    time_ms: 0,
   });
+
+  const timeMs = timeStateToMs(time);
 
   const authorOptions = useMemo(() => {
     const rest = authorData.filter((a) => a.author !== "Unknown");
     const priority = rest.slice(0, 25);
     const remaining = rest.slice(25);
-    const sorted = (arr: AuthorInfo[]) => arr.sort((a, b) => a.author.localeCompare(b.author));
+    const sorted = (arr: AuthorInfo[]) => [...arr].sort((a, b) => a.author.localeCompare(b.author));
     return [
       ...sorted(priority),
       { id: "", author: "" },
@@ -103,22 +125,6 @@ export default function SubmitPage() {
     }));
   }
 
-  function setTimeFromMs(ms: number) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const hundredths = Math.floor((ms % 1000) / 10);
-    const thousandth = Math.floor((ms % 10));
-
-    setTime({
-      minutes,
-      seconds,
-      hundredths,
-      thousandth,
-      time_ms: ms,
-    });
-  }
-
   function isValidUrl(url: string) {
     if (!url) return true;
 
@@ -132,6 +138,7 @@ export default function SubmitPage() {
   }
   
   function resetForm() {
+    setTime(timeMsToState(0))
     setForm({
       track: "",
       authors: [""],
@@ -144,39 +151,10 @@ export default function SubmitPage() {
     setReplayFile(null);
   }
 
-  async function parseGBX(file: File): Promise<GBXData> {
-
-    const buffer = await file.arrayBuffer();
-    const text = new TextDecoder("utf-8", { fatal: false }).decode(buffer);
-    const uid = text.match(/<challenge uid="([^"]+)"/)?.[1] ?? text.match(/<map uid="([^"]+)"/)?.[1] ?? null;
-    const bestTimeRaw = text.match(/<times best="(\d+)"/)?.[1];
-    const version = text.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
-    const stuntScoreRaw = text.match(/stuntscore="(\d+)"/)?.[1];
-    const validableRaw = text.match(/validable="(\d+)"/)?.[1];
-
-    if (!text.startsWith("GBX")) {
-      return {
-        uid: null,
-        bestTime: null,
-        version: null,
-        stuntScore: null,
-        validable: null,
-      };
-    }
-
-    return {
-      uid,
-      bestTime: bestTimeRaw ? Number(bestTimeRaw) : null,
-      version,
-      stuntScore: stuntScoreRaw ? Number(stuntScoreRaw) : null,
-      validable: validableRaw ? validableRaw === "1" : null,
-    };
-  }
-
   async function onFileSelect(file?: File) {
 
     setReplayFile(null);
-    setTimeFromMs(0);
+    setTime(timeMsToState(0));
     update("track", "");
 
     if (!file) return;
@@ -185,7 +163,7 @@ export default function SubmitPage() {
       return;
     }
 
-    if (file.size > MAX_FILE_SIZE) {
+    if (file.size > MAX_REPLAY_SIZE) {
       alert("Replay exceeds 10 MB limit");
       return;
     }
@@ -200,7 +178,7 @@ export default function SubmitPage() {
     const track = trackIds[parsed.uid] ?? trackIds[`${parsed.uid}-${parsed.version}`] ?? "";
     update("track", track)
     if (parsed.bestTime && parsed.validable) {
-      setTimeFromMs(parsed.bestTime);
+      setTime(timeMsToState(parsed.bestTime));
     }
   }
 
@@ -251,7 +229,6 @@ export default function SubmitPage() {
       }
 
       const game = trackList[form.track]?.game;
-      const time_ms = form.track ? time.minutes * 60_000 + time.seconds * 1_000 + time.hundredths * 10 + time.thousandth : null;
       const filePath = `pending/${user.id}/${crypto.randomUUID()}.gbx`;
 
       const { error: uploadError } = await supabase.storage
@@ -267,7 +244,7 @@ export default function SubmitPage() {
         game,
         track: form.track,
         category: form.category,
-        time_ms,
+        time_ms: timeMs ?? null,
         authors: cleanAuthors,
         date: new Date(form.date).toISOString(),
         video: videoUrl || null,
@@ -312,7 +289,7 @@ export default function SubmitPage() {
             type="button"
             onClick={resetForm}
             disabled={loading}
-            className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 cursor-[url('/cursor.png')_0_0,_auto]"
+            className={`rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 ${CURSOR}`}
           >
             Reset
           </button>
@@ -383,7 +360,7 @@ export default function SubmitPage() {
                   </span>
                 </div>
               
-                {time.time_ms > 0 ? (
+                {timeMs > 0 ? (
                   <>
                     <div className="mt-1">
                       Time:
@@ -484,8 +461,7 @@ export default function SubmitPage() {
             type="date"
             value={form.date}
             onChange={(e) => update("date", e.target.value)}
-            className={`cursor-[url('/cursor.png')_0_0,_auto]
-              ${inputClass}
+            className={`${CURSOR} ${inputClass}
               [&::-webkit-calendar-picker-indicator]:opacity-70
               hover:[&::-webkit-calendar-picker-indicator]:opacity-100
             `}

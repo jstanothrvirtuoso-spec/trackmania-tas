@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
+import { STALE_TIME } from "@/utils/constants";
 
 const supabase = createClient();
 
@@ -19,6 +20,6 @@ export function usePendingSubmissions() {
   return useQuery({
     queryKey: ["tas_submissions", "pending"],
     queryFn: fetchPendingSubmissions,
-    staleTime: 30_000,
+    staleTime: STALE_TIME,
   });
 }

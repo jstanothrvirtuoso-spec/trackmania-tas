@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
+import { STALE_TIME } from "@/utils/constants";
 import { TasEntry } from "./TrackList";
 
 async function getTasRecords(): Promise<TasEntry[]> {
@@ -30,6 +31,6 @@ export function useTasRecords() {
   return useQuery({
     queryKey: ["tasRecords"],
     queryFn: getTasRecords,
-    staleTime: 1000 * 60 * 60, // 60 mins
+    staleTime: STALE_TIME,
   });
 }

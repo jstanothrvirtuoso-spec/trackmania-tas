@@ -194,6 +194,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
           
           return (
             <path
+              key={category}
               d={path}
               fill="none"
               stroke={categoryColours[category][0]}

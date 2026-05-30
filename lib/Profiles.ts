@@ -2,9 +2,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Role } from "@/utils/typing";
+import { STALE_TIME } from "@/utils/constants";
 
 type ProfileUpdate = Partial<Profile>;
-export type Role = "user" | "moderator" | "admin"
 
 export type Profile = {
   id: string;
@@ -25,51 +26,11 @@ export type Profile = {
   show_visitor_counter: boolean;
 };
 
-export const BANNERS: Record<number, string> = {
-  0: "/banners/bay.webp",
-  1: "/banners/canyon.webp",
-  2: "/banners/coast.webp",
-  3: "/banners/desert.webp",
-  4: "/banners/island.webp",
-  5: "/banners/lagoon.webp",
-  6: "/banners/rally.webp",
-  7: "/banners/snow.webp",
-  8: "/banners/stadium.webp",
-  9: "/banners/valley.webp",
-};
-
-export const AVATARS: Record<number, string> = {
-  0: "/avatars/bay.webp",
-  1: "/avatars/canyon.webp",
-  2: "/avatars/coast.webp",
-  3: "/avatars/desert.webp",
-  4: "/avatars/island.webp",
-  5: "/avatars/lagoon.webp",
-  6: "/avatars/rally.webp",
-  7: "/avatars/snow.webp",
-  8: "/avatars/stadium.webp",
-  9: "/avatars/valley.webp",
-};
-
-export const PROFILE_COLOURS: Record<number, string> = {
-  0: "#64748b",
-  1: "#ffffff",
-  2: "#ef4444",
-  3: "#f97316",
-  4: "#eab308",
-  5: "#22c55e",
-  6: "#06b6d4",
-  7: "#3b82f6",
-  8: "#8b5cf6",
-  9: "#ec4899",
-};
-
-
-const supabase = createClient();
-
 /* =========================================================
    FETCH PROFILE
 ========================================================= */
+
+const supabase = createClient();
 
 async function fetchProfile() {
   const {
@@ -93,7 +54,7 @@ export function useProfile() {
   return useQuery<Profile | null>({
     queryKey: ["profile"],
     queryFn: fetchProfile,
-    staleTime: 1000 * 60 * 60,
+    staleTime: STALE_TIME,
   });
 }
 

@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { RecordRow } from "@/lib/TrackList";
 import { useMemo, useState } from "react";
-import { trackList } from "@/lib/TrackList"
+import { SortOrder } from "@/utils/typing";
+import SortIndicator from "@/components/SortIndicator"
+import { trackList, RecordRow } from "@/lib/TrackList"
 
 type SortField = "author" | "tases" | "contributions" | "timeSaved";
-type SortOrder = "asc" | "desc";
 type LeaderboardRows = {
   author: string;
   tasCount: number;
@@ -21,7 +21,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
   const leaderboardRows = useMemo<LeaderboardRows[]>(() => {
     return Object.values(
-        currentRecords.reduce((acc, row) => {
+      currentRecords.reduce((acc, row) => {
         if (!row.tas) return acc;
 
         const authors = row.tas.authors;
@@ -38,24 +38,24 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
         const splitTimeSaved = timeSaved * contribution;
 
         authors.forEach((author) => {
-            if (!acc[author]) {
+          if (!acc[author]) {
             acc[author] = {
-                author,
-                tasCount: 0,
-                contributions: 0,
-                timeSavedMs: 0,
+              author,
+              tasCount: 0,
+              contributions: 0,
+              timeSavedMs: 0,
             };
-            }
+          }
 
-            acc[author].tasCount += 1;
-            acc[author].contributions += contribution;
-            acc[author].timeSavedMs += splitTimeSaved;
+          acc[author].tasCount += 1;
+          acc[author].contributions += contribution;
+          acc[author].timeSavedMs += splitTimeSaved;
         });
 
         return acc;
-        }, {} as Record<string, LeaderboardRows>)
+      }, {} as Record<string, LeaderboardRows>)
     );
-    }, [currentRecords]);
+  }, [currentRecords]);
   
   const sortedRows = useMemo(() => {
     const sorted = [...leaderboardRows].sort((a, b) => {
@@ -111,24 +111,6 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
     }
   };
 
-  const SortIndicator = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return null;
-
-    return (
-      <span className="inline-flex items-center justify-center w-4 h-4 -ml-1.5">
-        {sortOrder === "asc" ? (
-          <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
-            <path d="M10 6l-5 5h10l-5-5z" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
-            <path d="M10 14l5-5H5l5 5z" />
-          </svg>
-        )}
-      </span>
-    );
-  };
-
   return (
     <aside className="pl-5 pb-4">
       <div className="rounded-lg border border-slate-800 text-sm">
@@ -142,7 +124,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Author</span>
-                  <SortIndicator field="author" />
+                  <SortIndicator active={sortField === "author"} order={sortOrder} />
                 </div>
               </th>
 
@@ -152,7 +134,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
               >
                 <div className="flex items-center uppercase justify-center gap-1">
                   <span>TAS</span>
-                  <SortIndicator field="tases" />
+                  <SortIndicator active={sortField === "tases"} order={sortOrder} />
                 </div>
               </th>
 
@@ -162,7 +144,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Cont.</span>
-                  <SortIndicator field="contributions" />
+                  <SortIndicator active={sortField === "contributions"} order={sortOrder} />
                 </div>
               </th>
 
@@ -172,7 +154,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Saved</span>
-                  <SortIndicator field="timeSaved" />
+                  <SortIndicator active={sortField === "timeSaved"} order={sortOrder} />
                 </div>
               </th>
             </tr>
@@ -182,7 +164,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
             {sortedRows.map((row) => {
               return (
                 <tr
-                  key={row.author}
+                  key={`${row.author}-${row.timeSavedMs}`}
                   className="
                     border-b border-slate-800 last:border-b-0
                     hover:bg-blue-900/20 transition-colors
@@ -218,6 +200,4 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
       </div>
     </aside>
   );
-    
 }
-

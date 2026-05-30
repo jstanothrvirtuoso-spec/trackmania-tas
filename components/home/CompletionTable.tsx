@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { trackList } from "@/lib/TrackList";
 import { useTasRecords } from "@/lib/TasRecords";
 
-export default function GlobalLeaderboard() {
+export default function CompletionTable() {
 
   const { data: tasRecords = [] } = useTasRecords();
 

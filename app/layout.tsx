@@ -1,5 +1,6 @@
 
 import "./globals.css";
+import { CURSOR } from "@/utils/constants";
 import Header from "@/components/Header";
 import Providers from "./providers";
 import VisitorCounter from "@/components/VisitorCounter";
@@ -14,7 +15,7 @@ export default function RootLayout({
       lang="en"
       className={`h-full antialiased`}
     >
-      <body className="min-h-screen justify-center cursor-[url('/cursor.png')_0_0,_auto]">
+      <body className={`min-h-screen justify-center ${CURSOR}`}>
         <Providers>
           <Header />
           <main className="sticky inset-0">{children}</main>

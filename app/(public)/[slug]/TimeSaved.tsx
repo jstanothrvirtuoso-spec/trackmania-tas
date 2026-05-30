@@ -10,51 +10,43 @@ type CategoryTotals = {
   rtaMs: number;
 };
 
-export default function TimeSaved({
-  currentRecords,
-}: {
-  currentRecords: RecordRow[];
-}) {
-  const categoryTotals = useMemo<CategoryTotals[]>(() => {
-    return Object.values(
-      currentRecords.reduce((acc, row) => {
-        if (!row.rta) return acc;
+export default function TimeSaved({ currentRecords } : { currentRecords: RecordRow[] }) {
 
-        const category = row.trackInfo.category;
+  const { rows, total } = useMemo(() => {
+    const acc: Record<string, CategoryTotals> = {};
+    let totalTas = 0;
+    let totalRta = 0;
 
-        if (!acc[category]) {
-          acc[category] = {
-            category,
-            tasMs: 0,
-            rtaMs: 0,
-          };
-        }
+    for (const row of currentRecords) {
+      if (!row.rta) continue;
 
-        acc[category].tasMs += row.tas
-          ? row.tas.time_ms
-          : row.rta.time_ms;
+      const category = row.trackInfo.category;
 
-        acc[category].rtaMs += row.rta.time_ms;
+      const tas = row.tas ? row.tas.time_ms : row.rta.time_ms;
+      const rta = row.rta.time_ms;
 
-        return acc;
-      }, {} as Record<string, CategoryTotals>)
-    );
-  }, [currentRecords]);
-
-  const total = categoryTotals
-    .filter((category) => category.category !== "Stunt")
-    .reduce<CategoryTotals>(
-      (acc, curr) => ({
-        category: "Total",
-        tasMs: acc.tasMs + curr.tasMs,
-        rtaMs: acc.rtaMs + curr.rtaMs,
-      }),
-      {
-        category: "Total",
-        tasMs: 0,
-        rtaMs: 0,
+      if (!acc[category]) {
+        acc[category] = { category, tasMs: 0, rtaMs: 0 };
       }
-    );
+
+      acc[category].tasMs += tas;
+      acc[category].rtaMs += rta;
+
+      if (category !== "Stunt") {
+        totalTas += tas;
+        totalRta += rta;
+      }
+    }
+
+    return {
+      rows: Object.values(acc),
+      total: {
+        category: "Total",
+        tasMs: totalTas,
+        rtaMs: totalRta,
+      },
+    };
+  }, [currentRecords]);
 
   return (
     <aside className="pl-5 pb-4">
@@ -105,7 +97,7 @@ export default function TimeSaved({
           </thead>
 
           <tbody className="font-sans divide-y divide-slate-800 bg-green-800/20">
-            {categoryTotals.map((category) => {
+            {rows.map((category) => {
               const hasRta = category.rtaMs > 0;
               const isStunt = category.category === "Stunt";
 
@@ -126,38 +118,19 @@ export default function TimeSaved({
                   </td>
 
                   <td className="px-3 py-[4px] text-slate-300">
-                    {hasRta
-                      ? formatTime(category.rtaMs, isStunt)
-                      : "-"}
+                    {hasRta ? formatTime(category.rtaMs, isStunt) : "-"}
                   </td>
 
                   {/* ✅ FORCED DOSVGA FONT */}
                   <td
                     className="px-2 py-[4px] border-l border-slate-800 italic text-cyan-300"
-                    style={{
-                      fontFamily: "DOSVGA, monospace",
-                      letterSpacing: "0.04em",
-                    }}
+                    style={{ fontFamily: "DOSVGA, monospace", letterSpacing: "0.04em" }}
                   >
-                    {hasRta
-                      ? formatTime(
-                          category.tasMs - category.rtaMs,
-                          isStunt,
-                          false,
-                          true
-                        )
-                      : "-"}
+                    {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, false, true) : "-"}
                   </td>
 
                   <td className="px-3 py-[4px] font-bold">
-                    {hasRta
-                      ? formatPercentSaved(
-                          category.tasMs,
-                          category.rtaMs,
-                          4,
-                          isStunt
-                        )
-                      : "-"}
+                    {hasRta ? formatPercentSaved(category.tasMs, category.rtaMs, 4, isStunt) : "-"}
                   </td>
                 </tr>
               );
@@ -177,37 +150,19 @@ export default function TimeSaved({
               </td>
 
               <td className="px-2 py-[4px] text-slate-300">
-                {total.rtaMs > 0
-                  ? formatTime(total.rtaMs)
-                  : "-"}
+                {total.rtaMs > 0 ? formatTime(total.rtaMs) : "-"}
               </td>
 
               {/* ✅ TOTAL DIFF */}
               <td
                 className="px-2 py-[4px] border-l border-slate-800 italic text-cyan-300"
-                style={{
-                  fontFamily: "DOSVGA, monospace",
-                  letterSpacing: "0.04em",
-                }}
+                style={{ fontFamily: "DOSVGA, monospace", letterSpacing: "0.04em" }}
               >
-                {total.rtaMs > 0
-                  ? formatTime(
-                      total.tasMs - total.rtaMs,
-                      false,
-                      false,
-                      true
-                    )
-                  : "-"}
+                {total.rtaMs > 0 ? formatTime(total.tasMs - total.rtaMs, false, false, true) : "-"}
               </td>
 
               <td className="px-2 py-[4px]">
-                {total.rtaMs > 0
-                  ? formatPercentSaved(
-                      total.tasMs,
-                      total.rtaMs,
-                      4
-                    )
-                  : "-"}
+                {total.rtaMs > 0 ? formatPercentSaved(total.tasMs, total.rtaMs, 4) : "-"}
               </td>
             </tr>
           </tbody>

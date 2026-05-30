@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 
-const envs = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
-type Env = (typeof envs)[number];
+const ENVIROMENTS = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
+type Environment = (typeof ENVIROMENTS)[number];
 type Trick = {
-  env: Env;
+  env: Environment;
   type: string;
   src: string;
   button: string;
@@ -34,7 +34,7 @@ const playClick = () => {
 /* =========================
    UNIVERSAL COPY SYSTEM
 ========================= */
-const copyInputs = async (env: Env, index: number) => {
+const copyInputs = async (env: Environment, index: number) => {
   const fileMap = {
     STADIUM: {
       left: "/inputs/Stadium-Left.txt",
@@ -88,7 +88,7 @@ const tricks: Trick[] = [
   { env: "BAY", type: "video", src: "/inputs/bayvideo.m4v", button: "Inputs" },
 ];
 
-const grouped = tricks.reduce<Record<Env, Trick[]>>(
+const grouped = tricks.reduce<Record<Environment, Trick[]>>(
   (acc, t) => {
     acc[t.env].push(t);
     return acc;
@@ -105,7 +105,7 @@ const grouped = tricks.reduce<Record<Env, Trick[]>>(
 /* =========================
    UI
 ========================= */
-function EnvBar({ label }: { label: Env }) {
+function EnvBar({ label }: { label: Environment }) {
   return (
     <div className="flex items-center gap-4 py-6">
       <div className="h-[2px] flex-1 bg-cyan-400/20" />
@@ -123,10 +123,10 @@ function EnvBar({ label }: { label: Env }) {
 export default function InputsPage() {
   
   const btnClass = "px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition cursor-pointer";
-  const [activeEnv, setActiveEnv] = useState<Env>("STADIUM");
+  const [activeEnv, setActiveEnv] = useState<Environment>("STADIUM");
   const [copied, setCopied] = useState<string | null>(null);
 
-  const handleCopy = (env: Env, i: number) => {
+  const handleCopy = (env: Environment, i: number) => {
     copyInputs(env, i);
     setCopied(`${env}-${i}`);
     setTimeout(() => setCopied(null), 700);
@@ -154,10 +154,10 @@ export default function InputsPage() {
 
       {/* LEFT MENU */}
       <div className="fixed left-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
-        {envs.map((env) => (
+        {ENVIROMENTS.map((env) => (
           <button
             key={env}
-            onClick={() => setActiveEnv(env as Env)}
+            onClick={() => setActiveEnv(env as Environment)}
             className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer
               ${
                 activeEnv === env

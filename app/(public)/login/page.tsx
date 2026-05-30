@@ -5,20 +5,20 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
+const supabase = createClient();
+
 export default function LoginPage() {
-  const supabase = createClient();
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
-  const next = searchParams.get("next") || "/";
-
   const [mode, setMode] = useState<"login" | "signup">("login");
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const next = searchParams.get("next") || "/";
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -43,36 +43,34 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMessage("");
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+        
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setLoading(false);
-
-      if (error.message.toLowerCase().includes("email not confirmed")) {
-        await supabase.auth.resend({
-          type: "signup",
-          email,
-        });
-
-        setErrorMessage("Confirmation email resent. Check your inbox.");
+      if (error) {
+        if (error.message.toLowerCase().includes("email not confirmed")) {
+          await supabase.auth.resend({ type: "signup", email });
+          setErrorMessage("Confirmation email resent. Check your inbox.");
+        } else {
+          setErrorMessage(error.message);
+        }
         return;
       }
 
-      setErrorMessage(error.message);
-      return;
+      await queryClient.invalidateQueries({
+        queryKey: ["profile"],
+      });
+
+      router.push(next);
+      router.refresh();
+
+    } finally {
+      setLoading(false);
     }
 
-    await queryClient.invalidateQueries({
-      queryKey: ["profile"],
-    });
-
-    setLoading(false);
-
-    router.push(next);
-    router.refresh();
   }
 
   async function signUp() {
@@ -101,9 +99,7 @@ export default function LoginPage() {
         return;
       }
 
-      setErrorMessage(
-        "Account opened. Please check your email now to validate your account before logging in."
-      );
+      setErrorMessage("Account opened. Please check your email now to validate your account before logging in.");
       alert("Account opened. Please check your email now to validate your account before logging in. Make sure to check your junk mail.")
       setPassword("");
       setConfirmPassword("");

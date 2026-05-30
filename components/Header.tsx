@@ -6,10 +6,11 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { gameLinks } from "@/lib/TrackList";
-import { useProfile, AVATARS, PROFILE_COLOURS } from "@/lib/Profiles";
+import { useProfile } from "@/lib/Profiles";
+import { PROFILE_AVATARS, PROFILE_COLOURS, CURSOR } from "@/utils/constants"
+import { useHoverDropdown } from "@/utils/common";
 
-const supabase = createClient();
-const menuLinks = [
+const MENU_LINKS = [
   { href: "/", label: "Global Leaderboard" },
   { href: "highlight", label: "Highlight" },
   { href: "inputs", label: "Inputs" },
@@ -19,41 +20,46 @@ const menuLinks = [
   { href: "/about", label: "About" },
 ];
 
+const supabase = createClient();
+
 export default function Header() {
+
   const router = useRouter();
   const pathname = usePathname();
-  const currentPage = pathname.split("/").filter(Boolean)[0];
+  const currentPage = pathname === "/" ? "/" : `/${pathname.split("/")[1]}`;
 
   const { data: profile, isLoading } = useProfile();
   const queryClient = useQueryClient();
 
-  const [isMainMenuOpen, setIsMainMenuOpen] = useState(false);
-  const [isUserOpen, setIsUserOpen] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
-  const menuTimeout = useRef<NodeJS.Timeout | null>(null);
-  const userTimeout = useRef<NodeJS.Timeout | null>(null);
   const userRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
 
-  const openMenu = () => { if (menuTimeout.current) clearTimeout(menuTimeout.current); setIsMainMenuOpen(true) };
-  const closeMenu = () => { menuTimeout.current = setTimeout(() => { setIsMainMenuOpen(false) }, 100) };
-  const openUser = () => { if (userTimeout.current) clearTimeout(userTimeout.current); setIsUserOpen(true) };
-  const closeUser = () => { userTimeout.current = setTimeout(() => { setIsUserOpen(false) }, 100) };
+  const menu = useHoverDropdown();
+  const userMenu = useHoverDropdown();
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      const lastY = lastScrollY.current;
+      if (ticking) return;
+      ticking = true;
 
-      if (currentY <= 10) {
-        setShowHeader(true);
-      } else if (currentY > lastY) {
-        setShowHeader(false);
-      } else if (currentY < lastY && currentY <= 100) {
-        setShowHeader(true);
-      }
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const lastY = lastScrollY.current;
 
-      lastScrollY.current = currentY;
+        if (currentY <= 10) {
+          setShowHeader(true);
+        } else if (currentY > lastY) {
+          setShowHeader(false);
+        } else if (currentY < lastY && currentY <= 100) {
+          setShowHeader(true);
+        }
+
+        lastScrollY.current = currentY;
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -63,7 +69,7 @@ export default function Header() {
   async function signOut() {
     await supabase.auth.signOut();
     queryClient.removeQueries({ queryKey: ["profile"] });
-    setIsUserOpen(false);
+    userMenu.closeNow;
     router.push("/");
     router.refresh();
   }
@@ -92,9 +98,9 @@ export default function Header() {
             {/* MENU */}
             <div className="relative inline-block">
               <button
-                onMouseEnter={openMenu}
-                onMouseLeave={closeMenu}
-                className="flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-slate-500 bg-slate-700 transition hover:bg-slate-700 shadow-lg cursor-[url('/cursor.png')_0_0,_auto]"
+                onMouseEnter={menu.openNow}
+                onMouseLeave={menu.closeLater}
+                className={`flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-slate-500 bg-slate-700 transition hover:bg-slate-700 shadow-lg ${CURSOR}`}
               >
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
@@ -102,12 +108,12 @@ export default function Header() {
               </button>
 
               <div
-                onMouseEnter={openMenu}
-                onMouseLeave={closeMenu}
+                onMouseEnter={menu.openNow}
+                onMouseLeave={menu.closeLater}
                 className={`
                   absolute left-0 top-full pt-1
                   transition-all duration-200 origin-top
-                  ${isMainMenuOpen
+                  ${menu.open
                     ? "opacity-100 translate-y-0 pointer-events-auto"
                     : "opacity-0 -translate-y-2 pointer-events-none"
                   }
@@ -125,7 +131,7 @@ export default function Header() {
                     </Link>
                   )}
 
-                  {menuLinks.map((link) => (
+                  {MENU_LINKS.map((link) => (
                     <Link
                       key={link.label}
                       href={link.href}
@@ -183,16 +189,16 @@ export default function Header() {
               {!isLoading && profile?.username ? (
                 <>
                   <button
-                    onMouseEnter={openUser}
-                    onMouseLeave={closeUser}
-                    className="flex items-center gap-2 rounded-full border border-slate-500 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 cursor-[url('/cursor.png')_0_0,_auto]"
+                    onMouseEnter={userMenu.openNow}
+                    onMouseLeave={userMenu.closeLater}
+                    className={`flex items-center gap-2 rounded-full border border-slate-500 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 ${CURSOR}`}
                   >
                     <div 
                       className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30"
                       style={{ backgroundColor: PROFILE_COLOURS[profile?.colour ?? 0]}}
                     >
                       <img
-                        src={AVATARS[profile.avatar]}
+                        src={PROFILE_AVATARS[profile.avatar]}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -203,12 +209,12 @@ export default function Header() {
                   </button>
 
                   <div
-                    onMouseEnter={openUser}
-                    onMouseLeave={closeUser}
+                    onMouseEnter={userMenu.openNow}
+                    onMouseLeave={userMenu.closeLater}
                     className={`
                       absolute right-0 top-full w-38 pt-1
                       transition-all duration-200 origin-top
-                      ${isUserOpen
+                      ${userMenu.open
                         ? "opacity-100 translate-y-0 pointer-events-auto"
                         : "opacity-0 -translate-y-2 pointer-events-none"
                       }

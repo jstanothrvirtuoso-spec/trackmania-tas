@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 
 export default function VideoBackground() {
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

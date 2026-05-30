@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { SortOrder } from "@/utils/typing";
+import { formatTime } from "@/utils/formatting";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { TasEntry, trackList } from "@/lib/TrackList";
-import { formatTime } from "@/utils/formatting";
+import SortIndicator from "@/components/SortIndicator"
 
 type AuthorStat = {
   author: string;
@@ -16,7 +18,6 @@ type AuthorStat = {
 };
 
 type SortField = "badge" | "author" | "tases" | "contributions" | "totalSaved";
-type SortOrder = "asc" | "desc";
 
 const badgeRanks = {
   TAS: [2, 5, 10, 20, 40, 60, 80, 100],
@@ -181,16 +182,6 @@ export default function GlobalLeaderboard() {
     }
   };
 
-  const SortIndicator = ({
-    field,
-  }: {
-    field: SortField;
-  }) => {
-    if (sortField !== field) return null;
-
-    return sortOrder === "asc" ? " ↑" : " ↓";
-  };
-
   return (
     <div className="relative mx-auto w-full max-w-5xl flex flex-col gap-3">
 
@@ -203,40 +194,50 @@ export default function GlobalLeaderboard() {
                 onClick={() => handleSort("badge")}
                 className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
               >
-                Badge
-                <SortIndicator field="badge" />
+                <div className="flex items-center justify-center gap-1">
+                  Badge
+                  <SortIndicator active={sortField === "badge"} order={sortOrder} />
+                </div>
               </th>
 
               <th
                 onClick={() => handleSort("author")}
                 className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap"
               >
-                Author
-                <SortIndicator field="author" />
+                <div className="flex items-center justify-center gap-1">
+                  Author
+                  <SortIndicator active={sortField === "author"} order={sortOrder} />
+                </div>
               </th>
 
               <th
                 onClick={() => handleSort("tases")}
                 className="cursor-pointer px-3 py-1.5 whitespace-nowrap"
               >
-                TASes
-                <SortIndicator field="tases" />
+                <div className="flex items-center justify-center gap-1">
+                  TASes
+                  <SortIndicator active={sortField === "tases"} order={sortOrder} />
+                </div>
               </th>
 
               <th
                 onClick={() => handleSort("contributions")}
                 className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
               >
-                Cont.
-                <SortIndicator field="contributions" />
+                <div className="flex items-center justify-center gap-1">
+                  Cont.
+                  <SortIndicator active={sortField === "contributions"} order={sortOrder} />
+                </div>
               </th>
 
               <th
                 onClick={() => handleSort("totalSaved")}
                 className="cursor-pointer px-4 py-1.5 uppercase whitespace-nowrap"
               >
-                Saved
-                <SortIndicator field="totalSaved" />
+                <div className="flex items-center justify-center gap-1">
+                  Saved
+                  <SortIndicator active={sortField === "totalSaved"} order={sortOrder} />
+                </div>
               </th>
             </tr>
           </thead>

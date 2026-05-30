@@ -3,7 +3,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTasRecords } from "@/lib/TasRecords";
-import { Author } from "@/lib/Authors";
 import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
 import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackList";
 import { formatDate, formatTime } from "@/utils/formatting"
@@ -218,7 +217,7 @@ function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
 export default function AuthorsPage() {
 
   const searchParams = useSearchParams();
-  const [selectedAuthor, setSelectedAuthor] = useState<Author>("All Authors");
+  const [selectedAuthor, setSelectedAuthor] = useState<string>("All Authors");
   const [hideBeaten, setHideBeaten] = useState(false);
 
   const { data: rtaRecords = [] } = useRtaRecords();
@@ -229,7 +228,7 @@ export default function AuthorsPage() {
   }, [rtaRecords])
 
   const authorOptions = useMemo(() => {
-    const authorCount: Partial<Record<Author, number>> = {};
+    const authorCount: Record<string, number> = {};
 
     tasRecords.forEach((tas) => {
       tas.authors.forEach((author) => {
@@ -247,21 +246,17 @@ export default function AuthorsPage() {
 
   useEffect(() => {
     const authorFromUrl = searchParams.get("author");
-
     if (authorFromUrl) {
-      setSelectedAuthor(authorFromUrl as Author);
-      return;
+      setSelectedAuthor(authorFromUrl);
     }
+  }, [searchParams]);
 
-    if (authorOptions.length) {
-      const random =
-        authorOptions[
-          Math.floor(Math.random() * authorOptions.length)
-        ];
-
-      setSelectedAuthor(random.author as Author);
+  useEffect(() => {
+    if (!selectedAuthor && authorOptions.length) {
+      const random = authorOptions[Math.floor(Math.random() * authorOptions.length)];
+      setSelectedAuthor(random.author);
     }
-  }, [searchParams, authorOptions]);
+  }, [authorOptions]);
 
   const rows = useMemo<RecordRow[]>(() => {
     if (!selectedAuthor) return [];
@@ -279,14 +274,8 @@ export default function AuthorsPage() {
           const key = `${entry.track}|${displayCategory}`;
           const existing = bestTasByTrackCategory.get(key);
 
-          if (
-            !existing ||
-            entry.time_ms < existing.time_ms ||
-            (
-              entry.time_ms === existing.time_ms &&
-              new Date(entry.date).getTime() <
-                new Date(existing.date).getTime()
-            )
+          if (!existing || entry.time_ms < existing.time_ms ||
+            (entry.time_ms === existing.time_ms && entry.date < existing.date)
           ) {
             bestTasByTrackCategory.set(key, entry);
           }
@@ -315,7 +304,7 @@ export default function AuthorsPage() {
       .sort((a, b) =>
         String(b.tas!.date).localeCompare(String(a.tas!.date))
       );
-  }, [selectedAuthor]);
+  }, [selectedAuthor, tasRecords, bestRtaByTrack]);
 
   const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
@@ -325,7 +314,7 @@ export default function AuthorsPage() {
       <div className="mb-3 flex flex-row gap-2 px-4">
         <select
           value={selectedAuthor}
-          onChange={(e) => setSelectedAuthor(e.target.value as Author)}
+          onChange={(e) => setSelectedAuthor(e.target.value)}
           className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none cursor-pointer"
         >
           {authorOptions.map(({ author, count }) => (
@@ -388,8 +377,9 @@ export default function AuthorsPage() {
 
               <tbody>
                 {visibleRows.map((row, index) => {
+                  if (!row.tas) return null;
                   const isStunt = row.trackInfo.category === "Stunt"
-                  const tasGame = row.tas!.game === "TMNF" && row.tas!.category === "No Cut" ? "TMNF No Cut" : row.tas!.game
+                  const tasGame = row.tas.game === "TMNF" && row.tas.category === "No Cut" ? "TMNF No Cut" : row.tas.game
 
                   return (
                     <tr
@@ -402,7 +392,7 @@ export default function AuthorsPage() {
                       `}
                     >
                       <td className="px-3 py-2">
-                        { row.tas ? formatDate(row.tas.date) : "-" }
+                        { formatDate(row.tas.date) }
                       </td>
 
                       <td className="px-3 py-2">
@@ -414,11 +404,11 @@ export default function AuthorsPage() {
                       </td>
 
                       <td className="px-3 py-2">
-                        {row.tas!.category}
+                        { row.tas.category}
                       </td>
 
                       <td className="px-3 py-2">
-                        { row.tas ? formatTime(row.tas.time_ms, isStunt) : "-"}
+                        { formatTime(row.tas.time_ms, isStunt)}
                       </td>
 
                       <td className="px-3 py-2">
@@ -426,7 +416,7 @@ export default function AuthorsPage() {
                       </td>
 
                       <td className="px-3 py-2 italic">
-                        { row.rta && row.tas ? formatTime(row.tas.time_ms - row.rta.time_ms, isStunt, false, true) : "-" }
+                        { row.rta ? formatTime(row.tas.time_ms - row.rta.time_ms, isStunt, false, true) : "-" }
                       </td>
                     </tr>
                   );

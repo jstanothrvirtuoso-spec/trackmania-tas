@@ -1,43 +1,36 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime, formatDate } from "@/utils/formatting";
+import { timeMsToState, timeStateToMs } from "@/utils/common";
+import { TimeState } from "@/utils/typing";
 import { useRtaRecords } from "@/lib/RtaRecords";
 import { Game, gameList, getGameTracks, RtaEntry, trackList } from "@/lib/TrackList";
 
-type FormState = {
+export type RtaForm = {
   game: Game;
   track: string;
-  time_ms: number;
   player: string;
   date: string;
   video: string;
   replay: string;
 };
 
-type TimeState = {
-  minutes: number;
-  seconds: number;
-  hundredths: number;
-  thousandth: number;
-};
+const supabase = createClient();
+const today = new Date().toISOString().split("T")[0];
+const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-slate-500";
+const labelClass = "text-sm text-slate-300 mb-1";
 
 export default function AdminPanel() {
 
-  const supabase = createClient();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isStunt, setStunt] = useState(false);
-  const today = new Date().toISOString().split("T")[0];
-  const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-slate-500";
-  const labelClass = "text-sm text-slate-300 mb-1";
   const { data: rtaRecords = [] } = useRtaRecords();
   
-  const [form, setForm] = useState<FormState>({
+  const [form, setForm] = useState<RtaForm>({
     game: "TMNF",
     track: "",
-    time_ms: 0,
     player: "Fwo.Link",
     date: today,
     video: "",
@@ -51,20 +44,33 @@ export default function AdminPanel() {
     thousandth: 0,
   });
 
-  function update<K extends keyof FormState>(field: K, value: FormState[K]) {
+  const isStunt = form.track ? trackList[form.track]?.category === "Stunt" : false;
+  const timeMs = timeStateToMs(time);
+  
+  const trackOptions = useMemo(() => {
+    return getGameTracks(form.game);
+  }, [form.game]);
+
+  const trackRecords = useMemo(() => {
+    if (!form.track) return [];
+    return rtaRecords
+      .filter((t) => t.track === form.track)
+      .sort((a, b) => a.time_ms - b.time_ms);
+  }, [rtaRecords, form.track]);
+
+  function update<K extends keyof RtaForm>(field: K, value: RtaForm[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
   function resetForm() {
-    setForm({
-      game: form.game,
-      track: form.track,
-      time_ms: 0,
+    setForm((prev) => ({
+      game: prev.game,
+      track: prev.track,
       player: "Fwo.Link",
       date: today,
       video: "",
       replay: "",
-    });
+    }));
 
     setTime({
       minutes: 0,
@@ -77,47 +83,17 @@ export default function AdminPanel() {
   }
 
   function copyRtaToForm(t: RtaEntry) {
-
-    const minutes = Math.floor(t.time_ms / 60_000);
-    const seconds = Math.floor((t.time_ms % 60_000) / 1000);
-    const hundredths = Math.floor((t.time_ms % 1000) / 10);
-    const thousandth = t.time_ms % 10;
-
     setForm({
       game: t.game,
       track: t.track,
-      time_ms: t.time_ms,
       player: t.player,
       date: t.date.slice(0, 10),
       video: t.video ?? "",
       replay: t.replay ?? "",
     });
 
-    setTime({
-      minutes,
-      seconds,
-      hundredths,
-      thousandth,
-    });
+    setTime(timeMsToState(t.time_ms));
   }
-
-  const trackOptions = useMemo(() => {
-    return getGameTracks(form.game);
-  }, [form.game]);
-
-  const timeMs = useMemo(() => {
-    const time_ms = time.minutes * 60_000 + time.seconds * 1_000 + time.hundredths * 10 + time.thousandth
-    update("time_ms", time_ms)
-    return time_ms;
-  }, [time]);
-
-  const trackRecords = useMemo(() => {
-    if (!form.track) return [];
-    setStunt(trackList[form.track].category === "Stunt")
-    return rtaRecords
-      .filter((t) => t.track === form.track)
-      .sort((a, b) => a.time_ms - b.time_ms);
-  }, [rtaRecords, form.track]);
 
   async function submit() {
 
@@ -130,7 +106,7 @@ export default function AdminPanel() {
       return;
     }
 
-    if (form.time_ms <= 0) {
+    if (timeMs <= 0) {
       setWarning("Please set the time");
       setLoading(false);
       return;
@@ -139,7 +115,7 @@ export default function AdminPanel() {
     const payload = {
       game: form.game,
       track: form.track,
-      time_ms: Number(form.time_ms),
+      time_ms: timeMs,
       player: form.player,
       date: new Date(form.date).toISOString(),
       video: form.video || null,

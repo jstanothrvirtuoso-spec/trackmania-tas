@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Game, gameSets, Environment, RecordRow, categoryOrder, Category } from "@/lib/TrackList";
+import { SortOrder } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
-import { Author } from "@/lib/Authors";
+import SortIndicator from "@/components/SortIndicator"
+import { Game, gameSets, Environment, RecordRow, categoryOrder, Category } from "@/lib/TrackList";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate";
-type SortOrder = "asc" | "desc";
 
 function getTrackDifficultyTint(category: string, i: number) {
   switch (category) {
@@ -182,7 +182,7 @@ interface RecordTableProps {
   showRta: boolean;
   highlightRecent: boolean;
   currentRecords: RecordRow[];
-  selectedAuthor: Author;
+  selectedAuthor: string;
   selectedEnvironment: Environment;
 }
 
@@ -190,6 +190,12 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
 
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const isTM2 = game === "TM2"
+
+  const categoryIndexes = useMemo(
+    () => new Map(gameSets[game].map((c, i) => [c, i])),
+    [game]
+  );
 
   const sortedRows = useMemo(() => {
     const sorted = [...currentRecords].sort((a, b) => {
@@ -203,9 +209,8 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
 
       switch (sortField) {
         case "track": {
-          const gameSet = gameSets[game] as readonly string[];
-          const aCategoryIndex = gameSet.indexOf(a.trackInfo.category).toString().padStart(2, "0");
-          const bCategoryIndex = gameSet.indexOf(b.trackInfo.category).toString().padStart(2, "0");
+          const aCategoryIndex = categoryIndexes.get(a.trackInfo.category);
+          const bCategoryIndex = categoryIndexes.get(b.trackInfo.category);
           const aOrder = a.trackInfo.order ? a.trackInfo.order.toString().padStart(2, "0") : a.track;
           const bOrder = b.trackInfo.order ? b.trackInfo.order.toString().padStart(2, "0") : b.track;
           aVal = `${aCategoryIndex}-${aOrder}`;
@@ -272,7 +277,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
 
   const filteredRows = useMemo(() => {
     return sortedRows.filter((row) => {
-      const matchesAuthor = !selectedAuthor || selectedAuthor === "All Authors" || row.tas?.authors.includes(selectedAuthor as Author)
+      const matchesAuthor = !selectedAuthor || selectedAuthor === "All Authors" || row.tas?.authors.includes(selectedAuthor)
       const matchesEnvironment = selectedEnvironment === "All" || row.trackInfo.environment === selectedEnvironment
       return matchesEnvironment && matchesAuthor;
     })
@@ -285,24 +290,6 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
       setSortField(field);
       setSortOrder("asc");
     }
-  };
-
-  const SortIndicator = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return null;
-
-    return (
-      <span className="inline-flex items-center justify-center w-4 h-4 -ml-1.5">
-        {sortOrder === "asc" ? (
-          <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
-            <path d="M10 6l-5 5h10l-5-5z" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 20 20" className="w-4 h-4 fill-current">
-            <path d="M10 14l5-5H5l5 5z" />
-          </svg>
-        )}
-      </span>
-    );
   };
 
   return (
@@ -319,7 +306,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Track</span>
-                  <SortIndicator field="track" />
+                  <SortIndicator active={sortField === "track"} order={sortOrder} />
                 </div>
               </th>
               <th
@@ -328,7 +315,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Time</span>
-                  <SortIndicator field="time" />
+                  <SortIndicator active={sortField === "time"} order={sortOrder} />
                 </div>
               </th>
               <th
@@ -337,7 +324,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Diff</span>
-                  <SortIndicator field="diff" />
+                  <SortIndicator active={sortField === "diff"} order={sortOrder} />
                 </div>
               </th>
               <th
@@ -346,7 +333,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>%</span>
-                  <SortIndicator field="percentSaved" />
+                  <SortIndicator active={sortField === "percentSaved"} order={sortOrder} />
                 </div>
               </th>
               <th
@@ -355,7 +342,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Authors</span>
-                  <SortIndicator field="authors" />
+                  <SortIndicator active={sortField === "authors"} order={sortOrder} />
                 </div>
               </th>
               <th
@@ -364,7 +351,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Date</span>
-                  <SortIndicator field="date" />
+                  <SortIndicator active={sortField === "date"} order={sortOrder} />
                 </div>
               </th>
               <th
@@ -373,7 +360,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Cat.</span>
-                  <SortIndicator field="category" />
+                  <SortIndicator active={sortField === "category"} order={sortOrder} />
                 </div>
               </th>
               <th className="px-2 py-1 bg-slate-900/90 border border-slate-800 font-normal uppercase rounded-tr-lg tracking-[0.18em]">
@@ -389,7 +376,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>RTA</span>
-                      <SortIndicator field="rtaTime" />
+                      <SortIndicator active={sortField === "rtaTime"} order={sortOrder} />
                     </div>
                   </th>
                   <th 
@@ -398,7 +385,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>Player</span>
-                      <SortIndicator field="rtaPlayer" />
+                      <SortIndicator active={sortField === "rtaPlayer"} order={sortOrder} />
                     </div>
                   </th>
                   <th 
@@ -407,7 +394,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>Date</span>
-                      <SortIndicator field="rtaDate" />
+                      <SortIndicator active={sortField === "rtaDate"} order={sortOrder} />
                     </div>
                   </th>
                   <th className="px-2 py-1 bg-slate-900/90 border border-slate-800 w-[80px] font-normal uppercase rounded-tr-lg tracking-[0.18em]">
@@ -444,7 +431,6 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               const bgColour = `${recent ? "italic bg-sky-400/30 text-sky-100" : colour}`
               const rtaColour = `${rtaRecent ? "italic bg-sky-400/30 text-sky-100" : colour}`
               const isStunt = row.trackInfo.category === "Stunt"
-              const isTM2 = game === "TM2"
 
               return (
                 <tr

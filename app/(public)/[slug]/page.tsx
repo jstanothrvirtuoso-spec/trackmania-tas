@@ -6,7 +6,6 @@ import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMa
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfile } from "@/lib/Profiles";
-import { Author } from "@/lib/Authors";
 import HeaderOptions from "./HeaderOptions";
 import RecordTable from "./RecordTable";
 import TimeSaved from "./TimeSaved";
@@ -22,10 +21,15 @@ export default function GamePage({
   const { slug } = use(params);
   const game = gameSlugMap[slug];
 
-  const [selectedAuthor, setSelectedAuthor] = useState<Author>("All Authors");
+  if (!game) {
+    notFound();
+  }
+  
+  const [selectedAuthor, setSelectedAuthor] = useState<string>("All Authors");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
-  
+  const allowedCategories = categoryFilters[selectedCategory]
+
   const { data: profile, isLoading } = useProfile();
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
@@ -34,18 +38,16 @@ export default function GamePage({
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords]);
 
-  const prefs = {
-    show_rta: profile?.show_rta ?? true,
-    show_time_saved: profile?.show_time_saved ?? true,
-    show_leaderboard: profile?.show_leaderboard ?? true,
-    show_rta_leaderboard: profile?.show_rta_leaderboard ?? true,
-    highlight_recent: profile?.highlight_recent ?? true,
-    show_visitor_counter: profile?.show_visitor_counter ?? true,
-  };
+  const {
+    show_rta = true,
+    show_time_saved = true,
+    show_leaderboard = true,
+    show_rta_leaderboard = true,
+    highlight_recent = true,
+  } = profile ?? {};
 
   const currentRecords = useMemo(() => {
     const bestTasByTrack = new Map<string, TasEntry>();
-    const allowedCategories = categoryFilters[selectedCategory]
 
     Object.values(tasRecords)
       .filter((e) => e.game === game)
@@ -74,12 +76,8 @@ export default function GamePage({
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get(track) ?? null,
       }));
-  }, [game, selectedCategory, rtaRecords, tasRecords]);
+  }, [game, selectedCategory, bestRtaByTrack, tasRecords]);
 
-  if (!game) {
-    notFound();
-  }
-  
   if (isLoading) {
     return <div className="text-white p-10">Loading...</div>;
   }
@@ -102,19 +100,19 @@ export default function GamePage({
       <div className="lg:flex justify-center">
         <RecordTable 
           game={game}
-          showRta={prefs.show_rta}
-          highlightRecent={prefs.highlight_recent}
+          showRta={show_rta}
+          highlightRecent={highlight_recent}
           currentRecords={currentRecords}
           selectedAuthor={selectedAuthor}
           selectedEnvironment={selectedEnvironment}
         />
 
         <div className="flex flex-col items-start gap-1">
-          {prefs.show_time_saved && (<TimeSaved currentRecords={currentRecords} />)}
+          {show_time_saved && (<TimeSaved currentRecords={currentRecords} />)}
 
           <div className="flex flex-row items-start gap-1">
-            {prefs.show_leaderboard && (<Leaderboard currentRecords={currentRecords} />)}
-            {prefs.show_rta_leaderboard && (<RtaTable currentRecords={currentRecords} />)}
+            {show_leaderboard && (<Leaderboard currentRecords={currentRecords} />)}
+            {show_rta_leaderboard && (<RtaTable currentRecords={currentRecords} />)}
           </div>
         </div>
       </div>

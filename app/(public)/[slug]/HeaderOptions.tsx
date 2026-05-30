@@ -1,18 +1,18 @@
 "use client";
 
 import { useMemo } from "react";
-import { Author } from "@/lib/Authors";
 import { categories, Category, environment, Environment, RecordRow, Game } from "@/lib/TrackList";
 
+type EnvironmentFilter = Environment | "All";
 interface HeaderOptionsProps {
   game: Game,
   currentRecords: RecordRow[],
-  selectedAuthor: Author;
+  selectedAuthor: string;
   selectedCategory: Category;
-  selectedEnvironment: Environment;
-  onAuthorChange: (author: Author) => void;
+  selectedEnvironment: EnvironmentFilter;
+  onAuthorChange: (author: string) => void;
   onCategoryChange: (category: Category) => void;
-  onEnvironmentChange: (environment: Environment) => void;
+  onEnvironmentChange: (environment: EnvironmentFilter) => void;
 }
 
 export default function HeaderOptions({
@@ -34,19 +34,16 @@ export default function HeaderOptions({
       if (!authors) continue;
 
       for (const author of authors) {
-        authorCount.set(author, (authorCount.get(author) || 0) + 1);
+        authorCount.set(author, (authorCount.get(author) ?? 0) + 1);
       }
     }
 
-    return Array.from(authorCount.entries())
+    return [...authorCount.entries()]
       .sort((a, b) => b[1] - a[1])
-      .map(([author, count]) => ({
-        author,
-        count,
-      }));
-  }, [currentRecords]);
+      .map(([author, count]) => ({ author, count }));
+  }, [currentRecords.length, currentRecords]);
 
-  const environmentOptions = useMemo(() => {
+  const environmentOptions: EnvironmentFilter[] = useMemo(() => {
     const set = new Set<Environment>();
     currentRecords.forEach((row) => {
       if (row.trackInfo?.environment) {
@@ -55,7 +52,7 @@ export default function HeaderOptions({
     });
     const ordered = environment.filter((env) => set.has(env));
     return ordered.length > 1 ? ["All", ...ordered] : ordered;
-  }, [currentRecords]);
+  }, [currentRecords.length, currentRecords]);
 
   return (
     <div className="mb-0 flex items-center justify-end gap-3">
@@ -75,7 +72,7 @@ export default function HeaderOptions({
       )}
       <select
         value={selectedAuthor}
-        onChange={(e) => onAuthorChange(e.target.value as Author)}
+        onChange={(e) => onAuthorChange(e.target.value)}
         className="cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
       >
         <option value="">All Authors</option>
@@ -90,7 +87,7 @@ export default function HeaderOptions({
       {environmentOptions.length > 1 && (
         <select
           value={selectedEnvironment}
-          onChange={(e) => onEnvironmentChange(e.target.value as Environment)}
+          onChange={(e) => onEnvironmentChange(e.target.value as EnvironmentFilter)}
           className="cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
         >
           {environmentOptions.map((env) => (

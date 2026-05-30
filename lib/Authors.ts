@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
+import { STALE_TIME } from "@/utils/constants";
 import { AuthorInfo } from "@/lib/TrackList"
 
 async function getAuthors(): Promise<AuthorInfo[]> {
@@ -21,6 +22,6 @@ export function useAuthors() {
   return useQuery({
     queryKey: ["authors"],
     queryFn: getAuthors,
-    staleTime: 1000 * 60 * 60, // 60 mins
+    staleTime: STALE_TIME,
   });
 }

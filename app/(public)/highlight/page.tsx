@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { Author } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { trackList, TasEntry, Category, categories } from "@/lib/TrackList";
@@ -51,7 +50,7 @@ export default function HighlightPage() {
   const { undoneTracks, topTasList, topAuthors } = useMemo(() => {
 
     const bestByTrackAndCategory = new Map<string, Map<Category, TasEntry>>();
-    const authorCounts = new Map<Author, number>();
+    const authorCounts = new Map<string, number>();
     const undoneTracks: string[] = [];
     const topTasList: TasEntry[] = [];
 

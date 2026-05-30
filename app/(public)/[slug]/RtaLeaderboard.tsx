@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { RecordRow } from "@/lib/TrackList";
 import { useMemo, useState } from "react";
+import { SortOrder } from "@/utils/typing";
+import { RecordRow } from "@/lib/TrackList";
+import SortIndicator from "@/components/SortIndicator"
 
 type SortField = "player" | "wrs";
-type SortOrder = "asc" | "desc";
-
 type RtaLeaderboardRow = {
   player: string;
   wrCount: number;
@@ -27,14 +26,12 @@ export default function RtaTable({
 
         const player = row.rta.player;
 
-        if (!acc[player]) {
-          acc[player] = {
-            player,
-            wrCount: 0,
-          };
-        }
+        const rowData = acc[player] ??= {
+          player,
+          wrCount: 0,
+        };
 
-        acc[player].wrCount += 1;
+        rowData.wrCount++;
 
         return acc;
       }, {} as Record<string, RtaLeaderboardRow>)
@@ -52,12 +49,9 @@ export default function RtaTable({
 
         case "wrs":
           comparison = a.wrCount - b.wrCount;
-
-          // tie-break alphabetically
           if (comparison === 0) {
             comparison = b.player.localeCompare(a.player);
           }
-
           break;
       }
 
@@ -69,41 +63,13 @@ export default function RtaTable({
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortOrder(
-        sortOrder === "asc" ? "desc" : "asc"
+      setSortOrder(prev =>
+        prev === "asc" ? "desc" : "asc"
       );
     } else {
       setSortField(field);
       setSortOrder("desc");
     }
-  };
-
-  const SortIndicator = ({
-    field,
-  }: {
-    field: SortField;
-  }) => {
-    if (sortField !== field) return null;
-
-    return (
-      <span className="inline-flex items-center justify-center w-4 h-4 -ml-1.5">
-        {sortOrder === "asc" ? (
-          <svg
-            viewBox="0 0 20 20"
-            className="w-4 h-4 fill-current"
-          >
-            <path d="M10 6l-5 5h10l-5-5z" />
-          </svg>
-        ) : (
-          <svg
-            viewBox="0 0 20 20"
-            className="w-4 h-4 fill-current"
-          >
-            <path d="M10 14l5-5H5l5 5z" />
-          </svg>
-        )}
-      </span>
-    );
   };
 
   return (
@@ -118,7 +84,7 @@ export default function RtaTable({
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>Player</span>
-                  <SortIndicator field="player" />
+                  <SortIndicator active={sortField === "player"} order={sortOrder} />
                 </div>
               </th>
 
@@ -128,7 +94,7 @@ export default function RtaTable({
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>WRs</span>
-                  <SortIndicator field="wrs" />
+                  <SortIndicator active={sortField === "wrs"} order={sortOrder} />
                 </div>
               </th>
             </tr>
