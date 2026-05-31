@@ -118,7 +118,7 @@ export default function ProfilePage() {
                       alt="Banner"
                       fill
                       className="object-cover opacity-80"
-                      sizes="100vw"
+                      sizes="50vw"
                       priority
                     />
                   </div>
@@ -169,8 +169,7 @@ export default function ProfilePage() {
                         src={PROFILE_AVATARS[draftProfile?.avatar ?? 0]}
                         alt="Avatar"
                         width={100}
-                        height={0}
-                        sizes="100vw"
+                        height={100}
                         className="object-cover"
                       />
                     </div>

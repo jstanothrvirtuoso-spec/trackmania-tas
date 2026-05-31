@@ -94,10 +94,8 @@ export function BadgeTable() {
               " />
 
               {/* BADGE */}
-              <div className="flex justify-center h-6 relative">
-                <div className="
-                  drop-shadow-[0_0_8px_rgba(255,182,193,0.35)]
-                ">
+              <div className="flex items-center justify-center h-6 relative drop-shadow-[0_0_8px_rgba(255,182,193,0.35)]">
+                <div className="flex justify-center h-7 w-11 relative">
                   <BadgeIcon badge_src={img} />
                 </div>
               </div>

@@ -161,12 +161,12 @@ export default function Header() {
           <div className="hidden md:flex min-w-0 items-center justify-center px-6">
             <nav className="flex items-center gap-4 overflow-x-auto scrollbar-none">
               {gameLinks.map((game) => {
-                const isActive = currentPage === game.slug;
+                const isActive = currentPage === game.game;
 
                 return (
                   <Link
-                    key={game.slug}
-                    href={`/${game.slug}`}
+                    key={game.game}
+                    href={`/${game.game}`}
                     className={`font-medium whitespace-nowrap transition [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] ${
                       isActive
                         ? "text-white border-b border-white"

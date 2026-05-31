@@ -23,7 +23,6 @@ Loading symbols for tables while waiting for supabase (noseboosting car??)
 Add UX replacement for all alerts
 Proper indexing of tases for progression graph in /tracks
 Update URL for authors page
-Change badges to Image format
 
 
 

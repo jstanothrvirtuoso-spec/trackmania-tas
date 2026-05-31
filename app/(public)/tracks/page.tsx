@@ -45,16 +45,26 @@ export default function TracksPage() {
   const isTM2 = track ? trackList[track].game === "TM2" : false
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
 
-  function updateGame(g: Game) {
-    const newTrack = tracksByGame[g][0];
-    setGame(g);
-    setTrack(newTrack);
-    updateURL(g, newTrack);
+  function updateTrack(track: string) {
+    setTrack(track);
+    updateURL(game, track);
   }
 
-  function updateURL(g: string, t: string) {
-    router.replace(`/tracks?game=${encodeURIComponent(g)}&track=${encodeURIComponent(t)}`);
-  };
+  function updateGame(game: Game) {
+    const newTrack = tracksByGame[game][0];
+    setGame(game);
+    setTrack(newTrack);
+    updateURL(game, newTrack);
+  }
+
+  function updateURL(gameId: string, trackId: string) {
+    const params = new URLSearchParams({
+      game: gameId,
+      track: trackId,
+    });
+
+    router.replace(`/tracks?${params.toString()}`);
+  }
 
   const tasRows = useMemo(() => {
     if (!track) return [];
@@ -129,7 +139,7 @@ export default function TracksPage() {
         <select
           value={game}
           onChange={(e) => {
-            updateGame( e.target.value as Game)
+            updateGame(e.target.value as Game)
           }}
           className="w-40 rounded-md bg-slate-800 px-3 py-2"
         >
@@ -142,10 +152,8 @@ export default function TracksPage() {
 
         <select
           value={track}
-          onChange={(e) => {
-            const newTrack = e.target.value;
-            setTrack(newTrack);
-            updateURL(game, newTrack);
+          onChange={(e) => { 
+            updateTrack(e.target.value)
           }}
           className="min-w-60 rounded-md bg-slate-800 px-3 py-2"
         >

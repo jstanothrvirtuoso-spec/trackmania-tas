@@ -14,16 +14,12 @@ import TimeSaved from "./TimeSaved";
 import Leaderboard from "./Leaderboard";
 import RtaTable from "./RtaLeaderboard";
 
-export default function GamePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default function GamePage({ params }: { params: Promise<{ game: string }> }) {
 
-  const { slug } = use(params);
-  const game = gameSlugMap[slug];
+  const { game } = use(params);
+  const gameName = gameSlugMap[game];
 
-  if (!game) {
+  if (!gameName) {
     notFound();
   }
   
@@ -52,7 +48,7 @@ export default function GamePage({
     const bestTasByTrack = new Map<string, TasEntry>();
 
     Object.values(tasRecords)
-      .filter((e) => e.game === game)
+      .filter((e) => e.game === gameName)
       .filter((e) => allowedCategories.has(e.category))
       .forEach((entry) => {
         const existing = bestTasByTrack.get(entry.track);
@@ -71,14 +67,14 @@ export default function GamePage({
       });
 
     return Object.entries(trackList)
-      .filter(([, info]) => info.game === game)
+      .filter(([, info]) => info.game === gameName)
       .map(([track, trackInfo]) => ({
         track,
         trackInfo,
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get(track) ?? null,
       }));
-  }, [game, bestRtaByTrack, tasRecords, allowedCategories]);
+  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories]);
 
   if (isLoading) {
     return <div className="text-white p-10">Loading...</div>;
@@ -88,7 +84,7 @@ export default function GamePage({
     <div className="bg-slate-950 pt-16 min-h-screen min-w-screen">
       <div className="flex justify-center py-3">
         <HeaderOptions
-          game={game}
+          game={gameName}
           currentRecords={currentRecords}
           selectedAuthor={selectedAuthor}
           selectedCategory={selectedCategory}
@@ -101,7 +97,7 @@ export default function GamePage({
 
       <div className="lg:flex justify-center">
         <RecordTable 
-          game={game}
+          game={gameName}
           showRta={show_rta}
           highlightRecent={highlight_recent}
           currentRecords={currentRecords}

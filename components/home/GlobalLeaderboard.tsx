@@ -9,6 +9,7 @@ import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { trackList } from "@/lib/TrackList";
 import SortIndicator from "@/components/SortIndicator"
+import { BadgeIcon } from "../Icons";
 
 type AuthorStat = {
   author: string;
@@ -234,11 +235,9 @@ export default function GlobalLeaderboard() {
                   <td className="px-2 text-center">
                     {badge >= 0 ? (
                       <div className="flex items-center justify-center">
-                        <img
-                          src={`medals/${BADGE_IMAGES[badge]}`}
-                          alt={`${badge}`}
-                          className="h-6 w-auto"
-                        />
+                        <div className="flex justify-center h-6 w-10 relative">
+                          <BadgeIcon badge_src={BADGE_IMAGES[badge]} />
+                        </div>
                       </div>
                     ) : (
                       ""

@@ -126,10 +126,10 @@ export default function ProfileCard({ profile }: { profile: Profile }) {
             alt="Banner"
             fill
             className="object-cover opacity-40"
-            onLoadingComplete={() => {
+            onLoad={() => {
               rectRef.current = cardRef.current?.getBoundingClientRect() || null;
             }}
-            sizes="100vw"
+            sizes="50vw"
             priority
           />
 
@@ -150,6 +150,7 @@ export default function ProfileCard({ profile }: { profile: Profile }) {
               alt="Avatar"
               width={280}
               height={280}
+              priority
             />
           </div>
 

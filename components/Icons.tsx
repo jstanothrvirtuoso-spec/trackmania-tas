@@ -16,7 +16,12 @@ export function VideoIcon({ video_url }: { video_url: string }) {
         ? "/links/streamable.webp"
         : "/links/youtube.webp";
 
-  const size = type === "streamable" ? 18 : 16;
+  const size =
+    type === "discord"
+      ? "w-4.5 h-4.5"
+      : type === "streamable"
+        ? "w-5 h-3.5"
+        : "w-4 h-4.5";
 
   return (
     <a
@@ -24,13 +29,13 @@ export function VideoIcon({ video_url }: { video_url: string }) {
       target="_blank"
       rel="noreferrer"
       title="Watch video"
-      className="hover:opacity-80 transition"
+      className={`hover:opacity-80 transition relative ${size}`}
     >
       <Image
         src={src}
         alt="Video"
-        width={size}
-        height={size}
+        fill
+        sizes="20vw"
       />
     </a>
   );
@@ -40,7 +45,7 @@ export function ReplayIcon({ replay_url }: { replay_url: string }) {
 
   const type = replay_url.includes("discord.") ? "discord" : "replay";
   const src = type === "discord" ? "/links/discord.webp" : "/links/replay.webp";
-  const size = type === "replay" ? 14 : 16;
+  const size = type === "replay" ? "w-4 h-4" : "w-3.5 h-3.5";
 
   return (
     <a
@@ -48,13 +53,13 @@ export function ReplayIcon({ replay_url }: { replay_url: string }) {
       target="_blank"
       rel="noreferrer"
       title="Download replay"
-      className="hover:opacity-80 transition"
+      className={`hover:opacity-80 transition relative ${size}`}
     >
       <Image
         src={src}
         alt="Replay"
-        width={size}
-        height={size}
+        fill
+        sizes="20vw"
       />
     </a>
   );
@@ -68,14 +73,13 @@ export function InputsIcon({ inputs_url }: { inputs_url: string }) {
       target="_blank"
       rel="noreferrer"
       title="Show inputs"
-      className="hover:opacity-80 transition"
+      className="hover:opacity-80 transition relative w-4 h-4"
     >
       <Image
         src="/links/pastebin.webp"
         alt="Inputs"
-        width={14}
-        height={14}
-        style={{ width: "auto", height: "auto" }}
+        fill
+        sizes="20vw"
       />
     </a>
   );
@@ -109,14 +113,21 @@ export function BadgeIcon({ badge_src }: { badge_src: string }) {
   const alt = badge_src
     .replace(".png", "")
     .replace(/\b\w/g, c => c.toUpperCase())
-
+  
   return (
-    <div className="flex justify-center">
-      <img
-        src={`/medals/${badge_src}`}
+    <div className="relative group flex justify-center">
+      <Image
+        src={`/badges/${badge_src}`}
         alt={alt}
-        className="h-6 w-auto object-contain"
+        width={0}
+        height={0}
+        style={{height: 'auto', width: 'auto'}}
+        sizes="100vw"
       />
+    
+      <div className="absolute bottom-full mb-1 hidden group-hover:block whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white shadow">
+        {alt}
+      </div>
     </div>
   );
 };

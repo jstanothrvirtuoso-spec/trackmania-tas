@@ -16,9 +16,9 @@ function getTrackDifficultyTint(category: string, i: number) {
     case "Green":
       return i % 2 === 0 ? "bg-green-500/10" : "bg-green-500/15";
     case "Blue":
-      return  i % 2 === 0 ? "bg-blue-500/10" : "bg-blue-500/15";
+      return i % 2 === 0 ? "bg-blue-500/10" : "bg-blue-500/15";
     case "Red":
-      return  i % 2 === 0 ? "bg-red-500/10" : "bg-red-500/15";
+      return i % 2 === 0 ? "bg-red-500/10" : "bg-red-500/15";
     case "Black":
       return i % 2 === 0 ? "bg-black/20" : "bg-black/60";
     default:

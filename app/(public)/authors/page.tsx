@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { TasEntry, RtaEntry } from "@/utils/typing";
-import { GAME_LIST, ENVIRONMENT, CATEGORY_FILTERS } from "@/utils/constants";
+import { GAME_LIST, ENVIRONMENT, CATEGORY_FILTERS, KEY_AUTHORS } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
 import { trackList } from "@/lib/TrackList";
@@ -218,6 +218,7 @@ function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
 
 export default function AuthorsPage() {
 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [hideBeaten, setHideBeaten] = useState(false);
 
@@ -228,6 +229,10 @@ export default function AuthorsPage() {
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords])
 
+  const [selectedAuthor, setSelectedAuthor] = useState<string>(() => {
+    return searchParams.get("author") ?? KEY_AUTHORS[Math.floor(Math.random() * KEY_AUTHORS.length)]
+  });
+
   const authorOptions = useMemo(() => {
     const authorCount: Record<string, number> = {};
 
@@ -237,7 +242,7 @@ export default function AuthorsPage() {
       });
     });
 
-     return Object.entries(authorCount)
+    return Object.entries(authorCount)
       .sort((a, b) => b[1] - a[1])
       .map(([author, count]) => ({
         author,
@@ -245,13 +250,9 @@ export default function AuthorsPage() {
       }));
   }, [tasRecords]);
 
-  const [selectedAuthor, setSelectedAuthor] = useState<string>(() => {
-    return searchParams.get("author") ?? 
-      authorOptions[Math.floor(Math.random() * authorOptions.length)].author;
-  });
-
   const rows = useMemo<RecordRow[]>(() => {
     if (!selectedAuthor) return [];
+    if (!tasRecords) return [];
 
     const bestTasByTrackCategory = new Map<string, TasEntry>();
 
@@ -300,13 +301,18 @@ export default function AuthorsPage() {
 
   const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
+  function updateAuthor(author: string) {
+    setSelectedAuthor(author)
+    router.replace(`/authors?${new URLSearchParams({author: author})}`);
+  };
+
   return (
     <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-20 pb-8 text-slate-100">
       
       <div className="mb-3 flex flex-row gap-2 px-4">
         <select
           value={selectedAuthor}
-          onChange={(e) => setSelectedAuthor(e.target.value)}
+          onChange={(e) => updateAuthor(e.target.value)}
           className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none cursor-pointer"
         >
           {authorOptions.map(({ author, count }) => (
