@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { TasEntry, RtaEntry } from "@/utils/typing";
+import { GAME_LIST, ENVIRONMENT, CATEGORY_FILTERS } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
-import { trackList, TasEntry, RtaEntry, gameList, environment, categoryFilters } from "@/lib/TrackList";
+import { trackList } from "@/lib/TrackList";
 import { formatDate, formatTime } from "@/utils/formatting"
 
 type RecordRow = {
@@ -96,7 +98,7 @@ function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
       counts.set(game, (counts.get(game) || 0) + 1);
     });
 
-    return gameList
+    return GAME_LIST
       .map((game) => [
         game,
         counts.get(game) || 0,
@@ -161,7 +163,7 @@ function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
       counts.set(env, (counts.get(env) || 0) + 1);
     });
 
-    return environment
+    return ENVIRONMENT
       .filter((env) => env !== "All")
       .map((env) => [
         env,
@@ -217,7 +219,6 @@ function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
 export default function AuthorsPage() {
 
   const searchParams = useSearchParams();
-  const [selectedAuthor, setSelectedAuthor] = useState<string>("All Authors");
   const [hideBeaten, setHideBeaten] = useState(false);
 
   const { data: rtaRecords = [] } = useRtaRecords();
@@ -244,19 +245,10 @@ export default function AuthorsPage() {
       }));
   }, [tasRecords]);
 
-  useEffect(() => {
-    const authorFromUrl = searchParams.get("author");
-    if (authorFromUrl) {
-      setSelectedAuthor(authorFromUrl);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (!selectedAuthor && authorOptions.length) {
-      const random = authorOptions[Math.floor(Math.random() * authorOptions.length)];
-      setSelectedAuthor(random.author);
-    }
-  }, [authorOptions]);
+  const [selectedAuthor, setSelectedAuthor] = useState<string>(() => {
+    return searchParams.get("author") ?? 
+      authorOptions[Math.floor(Math.random() * authorOptions.length)].author;
+  });
 
   const rows = useMemo<RecordRow[]>(() => {
     if (!selectedAuthor) return [];
@@ -264,7 +256,7 @@ export default function AuthorsPage() {
     const bestTasByTrackCategory = new Map<string, TasEntry>();
 
     tasRecords.forEach((entry) => {
-      Object.entries(categoryFilters).forEach(
+      Object.entries(CATEGORY_FILTERS).forEach(
         ([displayCategory, allowedCategories]) => {
           
           if (!allowedCategories.has(entry.category as never)) {

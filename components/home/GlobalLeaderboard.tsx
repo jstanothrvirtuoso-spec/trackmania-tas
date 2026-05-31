@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { SortOrder } from "@/utils/typing";
+import { SortOrder, TasEntry } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
+import { BADGE_IMAGES, BADGE_RANKS } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
-import { TasEntry, trackList } from "@/lib/TrackList";
+import { trackList } from "@/lib/TrackList";
 import SortIndicator from "@/components/SortIndicator"
 
 type AuthorStat = {
@@ -18,22 +19,6 @@ type AuthorStat = {
 };
 
 type SortField = "badge" | "author" | "tases" | "contributions" | "totalSaved";
-
-const badgeRanks = {
-  TAS: [2, 5, 10, 20, 40, 60, 80, 100],
-  Contributions: [1.5, 2.5, 5, 10, 20, 40, 70, 100],
-  Saved: [5, 15, 30, 60, 90, 120, 240, 360],
-  Badge: [
-    "novice.png",
-    "apprentice.png",
-    "adept.png",
-    "expert.png",
-    "elite.png",
-    "master.png",
-    "legend.png",
-    "mythic.png",
-  ],
-} as const;
 
 function getRankIndex(value: number, thresholds: readonly number[]) {
   let index = -1;
@@ -71,38 +56,32 @@ export default function GlobalLeaderboard() {
         !existing ||
         entry.time_ms < existing.time_ms ||
         (entry.time_ms === existing.time_ms &&
-          new Date(entry.date).getTime() <
-            new Date(existing.date).getTime())
+          entry.date < existing.date)
       ) {
         bestTasByTrack.set(entry.track, entry);
       }
     });
 
     bestTasByTrack.forEach((entry) => {
+
+      let savedMs = 0;
       const rta = bestRtaByTrack.get(entry.track);
+      const override = trackList[entry.track].overrideTimeSaved;
+      if (override) {
+        savedMs = override * 1000;
+      } else if (rta) {
+        savedMs = Math.max(0, rta.time_ms - entry.time_ms);
+      }
 
-      const override =
-        trackList[entry.track].overrideTimeSaved;
-
-      const savedMs = override
-        ? override * 1000
-        : rta
-        ? Math.max(0, rta.time_ms - entry.time_ms)
-        : 0;
-
-      const contributionPerAuthor =
-        1 / entry.authors.length;
-
-      const savedPerAuthor =
-        savedMs / entry.authors.length;
+      const contributionPerAuthor = 1 / entry.authors.length;
+      const savedPerAuthor = savedMs / entry.authors.length;
 
       entry.authors.forEach((author) => {
         const current = authorMap.get(author);
 
         if (current) {
           current.tases += 1;
-          current.contributions +=
-            contributionPerAuthor;
+          current.contributions += contributionPerAuthor;
           current.totalSaved += savedPerAuthor;
         } else {
           authorMap.set(author, {
@@ -118,9 +97,9 @@ export default function GlobalLeaderboard() {
 
     return Array.from(authorMap.values()).map(
       (author) => {
-        const tasIndex = getRankIndex(author.tases, badgeRanks.TAS);
-        const contributionIndex = getRankIndex(author.contributions, badgeRanks.Contributions);
-        const savedIndex = getRankIndex(author.totalSaved / 1000, badgeRanks.Saved);
+        const tasIndex = getRankIndex(author.tases, BADGE_RANKS.TAS);
+        const contributionIndex = getRankIndex(author.contributions, BADGE_RANKS.Contributions);
+        const savedIndex = getRankIndex(author.totalSaved / 1000, BADGE_RANKS.Saved);
         const average = (tasIndex + contributionIndex + savedIndex) / 3;
 
         return {
@@ -245,6 +224,7 @@ export default function GlobalLeaderboard() {
           <tbody className="divide-y divide-slate-800">
             {sortedAuthorStats.map((a, index) => {
               const rowColour = index % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10";
+              const badge = Math.min(BADGE_RANKS.TAS.length - 1, a.badge)
 
               return (
                 <tr
@@ -252,11 +232,11 @@ export default function GlobalLeaderboard() {
                   className={`${rowColour} hover:bg-emerald-900/50`}
                 >
                   <td className="px-2 text-center">
-                    {a.badge >= 0 ? (
+                    {badge >= 0 ? (
                       <div className="flex items-center justify-center">
                         <img
-                          src={`medals/${badgeRanks.Badge[a.badge]}`}
-                          alt={`${a.badge}`}
+                          src={`medals/${BADGE_IMAGES[badge]}`}
+                          alt={`${badge}`}
                           className="h-6 w-auto"
                         />
                       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -32,7 +33,6 @@ export default function Header() {
   const queryClient = useQueryClient();
 
   const [showHeader, setShowHeader] = useState(true);
-  const userRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
 
   const menu = useHoverDropdown();
@@ -69,7 +69,7 @@ export default function Header() {
   async function signOut() {
     await supabase.auth.signOut();
     queryClient.removeQueries({ queryKey: ["profile"] });
-    userMenu.closeNow;
+    userMenu.closeNow();
     router.push("/");
     router.refresh();
   }
@@ -185,7 +185,7 @@ export default function Header() {
           <div className="flex items-center gap-4 whitespace-nowrap">
             
             {/* USER */}
-            <div ref={userRef} className="relative">
+            <div className="relative">
               {!isLoading && profile?.username ? (
                 <>
                   <button
@@ -195,11 +195,14 @@ export default function Header() {
                   >
                     <div 
                       className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30"
-                      style={{ backgroundColor: PROFILE_COLOURS[profile?.colour ?? 0]}}
+                      style={{ backgroundColor: PROFILE_COLOURS[profile.colour] ?? PROFILE_COLOURS[0]}}
                     >
-                      <img
-                        src={PROFILE_AVATARS[profile.avatar]}
-                        className="w-full h-full object-cover"
+                      <Image
+                        src={PROFILE_AVATARS[profile.avatar] ?? PROFILE_AVATARS[0]}
+                        alt="Avatar"
+                        width={24}
+                        height={24}
+                        className="object-cover"
                       />
                     </div>
 

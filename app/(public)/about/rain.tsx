@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Drop = {
   left: number;
@@ -10,33 +10,20 @@ type Drop = {
 };
 
 export default function Rain() {
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const startedRef = useRef(false);
 
-  // ✅ prevent SSR/client mismatch (important in Next.js)
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // ✅ Generate ONCE after mount (fully safe for hydration)
-  const drops = useMemo<Drop[]>(() => {
-    if (!mounted) return [];
-
-    return Array.from({ length: 60 }).map(() => ({
+  const [drops] = useState<Drop[]>(() =>
+    Array.from({ length: 60 }, () => ({
       left: Math.random() * 100,
       delay: Math.random() * 2,
       duration: 0.6 + Math.random() * 0.8,
       opacity: 0.15 + Math.random() * 0.3,
-    }));
-  }, [mounted]);
+    }))
+  );
 
-  // ---------------------------
-  // AUDIO (fixed autoplay + cleanup)
-  // ---------------------------
   useEffect(() => {
-    if (!mounted) return;
 
     const audio = new Audio("/sounds/rainLight1.mp3");
     audio.loop = true;
@@ -67,12 +54,7 @@ export default function Rain() {
       audio.src = "";
       audioRef.current = null;
     };
-  }, [mounted]);
-
-  // ---------------------------
-  // prevent hydration render mismatch
-  // ---------------------------
-  if (!mounted) return null;
+  }, []);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">

@@ -1,6 +1,8 @@
 
+import Image from "next/image";
 import { SubmitForm } from "@/utils/typing";
 import { formatTime, formatDate, timeAgo } from "@/utils/formatting";
+import { VideoIcon } from "@/components/Icons";
 
 type PendingRecordsProps = {
   submissions: SubmitForm[];
@@ -96,11 +98,7 @@ export default function PendingRecords({
                     
                     <div className="flex items-center justify-center gap-1">
                       <div className="w-5 h-5 flex items-center justify-center">
-                        {s.video && (
-                          <a href={s.video} target="_blank" rel="noreferrer">
-                            <img src="/links/youtube.webp" className="w-4 h-4 cursor-pointer" />
-                          </a>
-                        )}
+                        {s.video && (<VideoIcon video_url={s.video}/>)}
                       </div>
 
                       <div className="w-5 h-5 flex items-center justify-center">
@@ -111,7 +109,12 @@ export default function PendingRecords({
                             className="hover:opacity-80 transition cursor-pointer"
                             title={`Download: ${s.file_name}`}
                           >
-                            <img src="/links/replay.webp" className="w-3.5 h-3.5" />
+                            <Image
+                              src="/links/replay.webp"
+                              alt="Replay"
+                              width={16}
+                              height={16}
+                            />
                           </button>
                         )}
                       </div>

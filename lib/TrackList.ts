@@ -1,91 +1,6 @@
 
-export const gameList = ["TMNF", "TMNF No Cut", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "TM2"] as const;
-export type Game = (typeof gameList)[number];
-
-export const environment = ["All", "Stadium", "Island", "Desert", "Rally", "Bay", "Coast", "Snow", "Canyon", "Stadium²", "Valley", "Lagoon"] as const;
-export type Environment = (typeof environment)[number];
-
-export const categories = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "Low Input"] as const;
-export type Category = (typeof categories)[number];
-export const categoryOrder = Object.fromEntries(categories.map((c, i) => [c, i]));
-export const graphCategories = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "RTA"] as const;
-export type GraphCategory = (typeof graphCategories)[number];
-
-export const gameSets = {
-  "TMNF": ["White", "Green", "Blue", "Red", "Black"],
-  "TMNF No Cut": ["White", "Green", "Blue", "Red", "Black"],
-  "ESWC": ["Beginner", "Advanced", "Expert", "Pro", "Bonus"],
-  "TMN Remakes": ["Beginner", "Advanced", "Expert", "Pro", "Bonus"],
-  "TMUF": ["White", "Green", "Blue", "Red", "Black", "TMU", "Platform", "Puzzle", "Stunt", "StuntRace"],
-  "StarTrack": ["White", "Green", "Blue", "Red", "Black"],
-  "TMS": ["Race", "Extreme", "Crazy", "Bonus", "Platform", "Puzzle", "Stunt", "StuntRace", "Remix"],
-  "TMO": ["Race", "Survival", "Platform", "Puzzle", "Stunt", "StuntRace"],
-  "Demo/Beta": ["TM Demo 1", "TM Demo 2", "TMPU Demo", "TMO Demo", "TMS Beta", "TMSX Demo", "Stunt", "TMU Beta", "TMNF Prerelease", "ESWC Beta", "TMX 22nd Anniversary", "TMSX Demo Stunt"],
-  "TM2": ["Canyon", "Stadium", "Valley", "Lagoon", "Platform", "Beta"],
-} as const;
-export type SetTMNF = (typeof gameSets.TMNF)[number];
-export type SetESWC = (typeof gameSets.ESWC)[number];
-export type SetTMUF = (typeof gameSets.TMUF)[number];
-export type SetTMS = (typeof gameSets.TMS)[number];
-export type SetTMO = (typeof gameSets.TMO)[number];
-export type SetDemo = (typeof gameSets["Demo/Beta"])[number];
-export type SetTM2 = (typeof gameSets.TM2)[number];
-
-export const categoryFilters = {
-  "Open": new Set(["Open", "NOseboost", "No Uber", "WR Route", "No Cut"]),
-  "NOseboost": new Set(["NOseboost", "No Uber", "WR Route", "No Cut"]),
-  "No Uber": new Set(["No Uber", "WR Route", "No Cut"]),
-  "WR Route": new Set(["WR Route", "No Cut"]),
-  "No Cut": new Set(["No Cut"]),
-  "Low Input": new Set(["Low Input"]),
-  "RTA": new Set(["RTA"])
-} as const;
-
-export type RecordRow = {
-  track: string;
-  trackInfo: TrackInfo;
-  tas: TasEntry | null;
-  rta: RtaEntry | null;
-};
-
-export type AuthorInfo = {
-  id: string;
-  author: string;
-  profile_id: string | null;
-};
-
-export type RtaEntry = {
-  game: Game;
-  track: string;
-  record: string;
-  time_ms: number;
-  player: string;
-  date: string;
-  video: string;
-  replay: string;
-};
-
-export type TasEntry = {
-  game: Game;
-  track: string;
-  category: Category;
-  record: string;
-  time_ms: number;
-  authors: string[];
-  date: string;
-  video: string;
-  replay: string;
-  inputs: string;
-};
-
-export type TrackInfo = {
-  game: Game;
-  id: number;
-  category: SetTMNF | SetESWC | SetTMUF | SetTMS | SetTMO | SetDemo | SetTM2;
-  environment: Environment;
-  order?: number; // Sorting non-alphabetical tracks
-  overrideTimeSaved?: number;  // For multilap tracks with partial TASes
-};
+import { GAME_LIST } from "@/utils/constants";
+import { TrackInfo, Game } from "@/utils/typing";
 
 export const trackList: Record<string, TrackInfo> = {
 
@@ -157,42 +72,42 @@ export const trackList: Record<string, TrackInfo> = {
   "E05-Endurance": { game: "TMNF", id: 2455, category: "Black", environment: "Stadium", overrideTimeSaved: 108.2 },
 
   // TMNF No Cut
-  "A02-Race No Cut": { game: "TMNF No Cut", id: 9421268, category: "White", environment: "Stadium" },
-  "A05-Race No Cut": { game: "TMNF No Cut", id: 7712299, category: "White", environment: "Stadium" },
-  "A06-Obstacle No Flip": { game: "TMNF No Cut", id: 7712302, category: "White", environment: "Stadium" },
-  "A08-Endurance No Cut": { game: "TMNF No Cut", id: 7712307, category: "White", environment: "Stadium" },
-  "A09-Race No Cut": { game: "TMNF No Cut", id: 7712311, category: "White", environment: "Stadium" },
-  "A12-Speed No Cut": { game: "TMNF No Cut", id: 7712315, category: "White", environment: "Stadium" },
-  "A13-Race No Cut": { game: "TMNF No Cut", id: 7712321, category: "White", environment: "Stadium" },
-  "A14-Race No Cut": { game: "TMNF No Cut", id: 7712327, category: "White", environment: "Stadium" },
-  "A15-Speed No Cut": { game: "TMNF No Cut", id: 7712330, category: "White", environment: "Stadium" },
-  "B02-Race No Cut": { game: "TMNF No Cut", id: 7712333, category: "Green", environment: "Stadium" },
-  "B03-Race No Cut": { game: "TMNF No Cut", id: 8807356, category: "Green", environment: "Stadium" },
-  "B05-Race No Flip": { game: "TMNF No Cut", id: 7712336, category: "Green", environment: "Stadium" },
-  "B07-Race No Cut": { game: "TMNF No Cut", id: 7712339, category: "Green", environment: "Stadium" },
-  "B08-Endurance No Cut": { game: "TMNF No Cut", id: 7712342, category: "Green", environment: "Stadium" },
-  "B12-Race No Cut": { game: "TMNF No Cut", id: 7712347, category: "Green", environment: "Stadium" },
-  "C04-Race No Cut": { game: "TMNF No Cut", id: 7712353, category: "Blue", environment: "Stadium" },
-  "C07-Race No Cut": { game: "TMNF No Cut", id: 7712356, category: "Blue", environment: "Stadium" },
-  "C09-Race No Cut": { game: "TMNF No Cut", id: 7712361, category: "Blue", environment: "Stadium" },
-  "C10-Acrobatic No Cut": { game: "TMNF No Cut", id: 7712365, category: "Blue", environment: "Stadium" },
-  "C12-Obstacle No Cut": { game: "TMNF No Cut", id: 7712369, category: "Blue", environment: "Stadium" },
-  "C14-Endurance No Cut": { game: "TMNF No Cut", id: 7712372, category: "Blue", environment: "Stadium" },
-  "D02-Race No Cut": { game: "TMNF No Cut", id: 7712378, category: "Red", environment: "Stadium" },
-  "D03-Acrobatic No Cut": { game: "TMNF No Cut", id: 8807365, category: "Red", environment: "Stadium" },
-  "D04-Race No Cut": { game: "TMNF No Cut", id: 7712381, category: "Red", environment: "Stadium" },
-  "D05-Race No Cut": { game: "TMNF No Cut", id: 7712386, category: "Red", environment: "Stadium" },
-  "D06-Obstacle No Cut": { game: "TMNF No Cut", id: 8807369, category: "Red", environment: "Stadium" },
-  "D07-Race No Cut": { game: "TMNF No Cut", id: 7712390, category: "Red", environment: "Stadium" },
-  "D09-Obstacle No Cut": { game: "TMNF No Cut", id: 10908007, category: "Red", environment: "Stadium" },
-  "D10-Race No Cut": { game: "TMNF No Cut", id: 7712393, category: "Red", environment: "Stadium" },
-  "D11-Acrobatic No Cut": { game: "TMNF No Cut", id: 7712396, category: "Red", environment: "Stadium" },
-  "D12-Speed No Cut": { game: "TMNF No Cut", id: 7712399, category: "Red", environment: "Stadium" },
-  "D14-Endurance No Cut": { game: "TMNF No Cut", id: 7712402, category: "Red", environment: "Stadium" },
-  "D15-Endurance No Cut": { game: "TMNF No Cut", id: 7712405, category: "Red", environment: "Stadium" },
-  "E02-Endurance No Cut": { game: "TMNF No Cut", id: 7712408, category: "Black", environment: "Stadium" },
-  "E03-Endurance No Cut": { game: "TMNF No Cut", id: 7712411, category: "Black", environment: "Stadium" },
-  "E04-Obstacle No Cut": { game: "TMNF No Cut", id: 7712414, category: "Black", environment: "Stadium" },
+  "A02-Race No Cut": { game: "TMNF No Cut", id: 9421268, category: "White", environment: "Stadium", baseTrack: "A02-Race" },
+  "A05-Race No Cut": { game: "TMNF No Cut", id: 7712299, category: "White", environment: "Stadium", baseTrack: "A05-Race" },
+  "A06-Obstacle No Flip": { game: "TMNF No Cut", id: 7712302, category: "White", environment: "Stadium", baseTrack: "A06-Obstacle" },
+  "A08-Endurance No Cut": { game: "TMNF No Cut", id: 7712307, category: "White", environment: "Stadium", baseTrack: "A08-Endurance" },
+  "A09-Race No Cut": { game: "TMNF No Cut", id: 7712311, category: "White", environment: "Stadium", baseTrack: "A09-Race" },
+  "A12-Speed No Cut": { game: "TMNF No Cut", id: 7712315, category: "White", environment: "Stadium", baseTrack: "A12-Speed" },
+  "A13-Race No Cut": { game: "TMNF No Cut", id: 7712321, category: "White", environment: "Stadium", baseTrack: "A13-Race" },
+  "A14-Race No Cut": { game: "TMNF No Cut", id: 7712327, category: "White", environment: "Stadium", baseTrack: "A14-Race" },
+  "A15-Speed No Cut": { game: "TMNF No Cut", id: 7712330, category: "White", environment: "Stadium", baseTrack: "A15-Speed" },
+  "B02-Race No Cut": { game: "TMNF No Cut", id: 7712333, category: "Green", environment: "Stadium", baseTrack: "B02-Race" },
+  "B03-Race No Cut": { game: "TMNF No Cut", id: 8807356, category: "Green", environment: "Stadium", baseTrack: "B03-Race" },
+  "B05-Race No Flip": { game: "TMNF No Cut", id: 7712336, category: "Green", environment: "Stadium", baseTrack: "B05-Race" },
+  "B07-Race No Cut": { game: "TMNF No Cut", id: 7712339, category: "Green", environment: "Stadium", baseTrack: "B07-Race" },
+  "B08-Endurance No Cut": { game: "TMNF No Cut", id: 7712342, category: "Green", environment: "Stadium", baseTrack: "B08-Endurance" },
+  "B12-Race No Cut": { game: "TMNF No Cut", id: 7712347, category: "Green", environment: "Stadium", baseTrack: "B12-Race" },
+  "C04-Race No Cut": { game: "TMNF No Cut", id: 7712353, category: "Blue", environment: "Stadium", baseTrack: "C04-Race" },
+  "C07-Race No Cut": { game: "TMNF No Cut", id: 7712356, category: "Blue", environment: "Stadium", baseTrack: "C07-Race" },
+  "C09-Race No Cut": { game: "TMNF No Cut", id: 7712361, category: "Blue", environment: "Stadium", baseTrack: "C09-Race" },
+  "C10-Acrobatic No Cut": { game: "TMNF No Cut", id: 7712365, category: "Blue", environment: "Stadium", baseTrack: "C10-Acrobatic" },
+  "C12-Obstacle No Cut": { game: "TMNF No Cut", id: 7712369, category: "Blue", environment: "Stadium", baseTrack: "C12-Obstacle" },
+  "C14-Endurance No Cut": { game: "TMNF No Cut", id: 7712372, category: "Blue", environment: "Stadium", baseTrack: "C14-Endurance" },
+  "D02-Race No Cut": { game: "TMNF No Cut", id: 7712378, category: "Red", environment: "Stadium", baseTrack: "D02-Race" },
+  "D03-Acrobatic No Cut": { game: "TMNF No Cut", id: 8807365, category: "Red", environment: "Stadium", baseTrack: "D03-Acrobatic" },
+  "D04-Race No Cut": { game: "TMNF No Cut", id: 7712381, category: "Red", environment: "Stadium", baseTrack: "D04-Race" },
+  "D05-Race No Cut": { game: "TMNF No Cut", id: 7712386, category: "Red", environment: "Stadium", baseTrack: "D05-Race" },
+  "D06-Obstacle No Cut": { game: "TMNF No Cut", id: 8807369, category: "Red", environment: "Stadium", baseTrack: "D06-Obstacle" },
+  "D07-Race No Cut": { game: "TMNF No Cut", id: 7712390, category: "Red", environment: "Stadium", baseTrack: "D07-Race" },
+  "D09-Obstacle No Cut": { game: "TMNF No Cut", id: 10908007, category: "Red", environment: "Stadium", baseTrack: "D09-Obstacle" },
+  "D10-Race No Cut": { game: "TMNF No Cut", id: 7712393, category: "Red", environment: "Stadium", baseTrack: "D10-Race" },
+  "D11-Acrobatic No Cut": { game: "TMNF No Cut", id: 7712396, category: "Red", environment: "Stadium", baseTrack: "D11-Acrobatic" },
+  "D12-Speed No Cut": { game: "TMNF No Cut", id: 7712399, category: "Red", environment: "Stadium", baseTrack: "D12-Speed" },
+  "D14-Endurance No Cut": { game: "TMNF No Cut", id: 7712402, category: "Red", environment: "Stadium", baseTrack: "D14-Endurance" },
+  "D15-Endurance No Cut": { game: "TMNF No Cut", id: 7712405, category: "Red", environment: "Stadium", baseTrack: "D15-Endurance" },
+  "E02-Endurance No Cut": { game: "TMNF No Cut", id: 7712408, category: "Black", environment: "Stadium", baseTrack: "E02-Endurance" },
+  "E03-Endurance No Cut": { game: "TMNF No Cut", id: 7712411, category: "Black", environment: "Stadium", baseTrack: "E03-Endurance" },
+  "E04-Obstacle No Cut": { game: "TMNF No Cut", id: 7712414, category: "Black", environment: "Stadium", baseTrack: "E04-Obstacle" },
 
   // ESWC
   "A-0": { game: "ESWC", id: 741220, category: "Beginner", environment: "Stadium" },
@@ -1647,16 +1562,6 @@ export const gameSlugMap = Object.values(trackList).reduce((acc, t) => {
   return acc;
 }, {} as Record<string, Game>);
 
-export function getGameTracks(game: Game): string[] {
-  return Object.entries(trackList)
-    .filter(([, info]) => info.game === game)
-    .map(([name]) => name);
-}
-
-export function getTrack(track: string) {
-  return trackList[track] ?? null;
-}
-
 export const gameLinks = Array.from(
   new Map(
     Object.values(trackList).map((t) => [
@@ -1664,4 +1569,14 @@ export const gameLinks = Array.from(
       { name: t.game, slug: slugify(t.game) },
     ])
   ).values()
+);
+
+export const tracksByGame = Object.entries(trackList).reduce(
+  (acc, [trackName, info]) => {
+    acc[info.game].push(trackName);
+    return acc;
+  },
+  Object.fromEntries(
+    GAME_LIST.map((game) => [game, []])
+  ) as unknown as Record<Game, string[]>
 );

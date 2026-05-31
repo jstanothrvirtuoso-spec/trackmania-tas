@@ -2,14 +2,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { STALE_TIME } from "@/utils/constants";
-import { TasEntry } from "./TrackList";
+import { TasEntry } from "@/utils/typing";
 
 async function getTasRecords(): Promise<TasEntry[]> {
   const supabase = createClient();
 
   const pageSize = 2000;
+  const allRows: TasEntry[] = [];
   let from = 0;
-  let allRows: TasEntry[] = [];
 
   while (true) {
     const { data, error } = await supabase

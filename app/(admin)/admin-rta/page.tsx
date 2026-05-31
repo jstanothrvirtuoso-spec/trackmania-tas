@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime, formatDate } from "@/utils/formatting";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
-import { TimeState } from "@/utils/typing";
+import { TimeState, Game, RtaEntry } from "@/utils/typing";
+import { GAME_LIST } from "@/utils/constants";
 import { useRtaRecords } from "@/lib/RtaRecords";
-import { Game, gameList, getGameTracks, RtaEntry, trackList } from "@/lib/TrackList";
+import { trackList, tracksByGame } from "@/lib/TrackList";
+import { VideoIcon } from "@/components/Icons";
 
-export type RtaForm = {
+type RtaForm = {
   game: Game;
   track: string;
   player: string;
@@ -21,6 +23,10 @@ const supabase = createClient();
 const today = new Date().toISOString().split("T")[0];
 const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-slate-500";
 const labelClass = "text-sm text-slate-300 mb-1";
+const URL_FIELDS = [
+  ["Video", "video", "https://youtu.be/<id>"],
+  ["Replay", "replay", "https://drive.google.com/uc?export=download&id=<id>"],
+] as const;
 
 export default function AdminPanel() {
 
@@ -46,10 +52,7 @@ export default function AdminPanel() {
 
   const isStunt = form.track ? trackList[form.track]?.category === "Stunt" : false;
   const timeMs = timeStateToMs(time);
-  
-  const trackOptions = useMemo(() => {
-    return getGameTracks(form.game);
-  }, [form.game]);
+  const trackOptions = tracksByGame[form.game]
 
   const trackRecords = useMemo(() => {
     if (!form.track) return [];
@@ -195,7 +198,7 @@ export default function AdminPanel() {
                 onChange={(e) => update("game", e.target.value as Game)}
                 className={inputClass}
               >
-                {gameList.map((g) => (
+                {GAME_LIST.map((g) => (
                   <option key={g} value={g}>
                     {g}
                   </option>
@@ -300,11 +303,8 @@ export default function AdminPanel() {
             </div>
 
             {/* URL FIELDS */}
-            {[
-              ["Video", "video", "https://youtu.be/<id>"],
-              ["Replay", "replay", "https://drive.google.com/uc?export=download&id=<id>"],
-            ].map(([label, key, placeholder]) => {
-              const value = (form as any)[key] as string;
+            {URL_FIELDS.map(([label, key, placeholder]) => {
+              const value = form[key] as string;
 
               return (
                 <div key={key}>
@@ -323,7 +323,7 @@ export default function AdminPanel() {
                   <input
                     className={`placeholder:text-slate-500 ${inputClass}`}
                     value={value}
-                    onChange={(e) => update(key as any, e.target.value)}
+                    onChange={(e) => update(key, e.target.value)}
                     placeholder={placeholder}
                   />
                 </div>
@@ -397,22 +397,7 @@ export default function AdminPanel() {
                         
                         <td className="py-2 px-2 text-center align-middle">
                           <div className="flex justify-center">
-                            {t.video && (
-                              <a
-                                href={t.video}
-                                target="_blank"
-                                rel="noreferrer"
-                                title="Watch video"
-                                className="hover:opacity-80 transition"
-                              >
-                                { t.video.includes("discord.") 
-                                  ? <img src="/links/discord.webp" alt="Replay" className="w-4 h-4" />
-                                  : t.video.includes("streamable.com")
-                                    ? <img src="/links/streamable.webp" alt="Replay" className="w-4.5" />
-                                    : <img src="/links/youtube.webp" alt="Replay" className="w-4 h-4" />
-                                }
-                              </a>
-                            )}
+                            {t.video && (<VideoIcon video_url={t.video}/>)}
                           </div>
                         </td>
                         

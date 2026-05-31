@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { SortOrder } from "@/utils/typing";
+import { SortOrder, RecordRow } from "@/utils/typing";
 import SortIndicator from "@/components/SortIndicator"
-import { trackList, RecordRow } from "@/lib/TrackList"
+import { trackList } from "@/lib/TrackList"
 
 type SortField = "author" | "tases" | "contributions" | "timeSaved";
 type LeaderboardRows = {
@@ -100,7 +100,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
     });
 
     return sorted;
-  }, [currentRecords, sortField, sortOrder]);
+  }, [sortField, sortOrder, leaderboardRows]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

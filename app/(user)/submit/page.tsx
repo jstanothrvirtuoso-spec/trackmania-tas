@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { TimeState } from "@/utils/typing";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
-import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR } from "@/utils/constants";
+import { TimeState, AuthorInfo, Category } from "@/utils/typing";
+import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constants";
 import { trackIds } from "@/lib/TrackId"
 import { useAuthors } from "@/lib/Authors";
 import { useProfile } from "@/lib/Profiles";
-import { categories, Category, trackList, AuthorInfo } from "@/lib/TrackList";
+import { trackList } from "@/lib/TrackList";
 
 type FormState = {
   track: string;
@@ -27,17 +27,26 @@ type GBXData = {
   validable: boolean | null;
 };
 
+const today = new Date().toISOString().split("T")[0];
+
+function isValidUrl(url: string) {
+  if (!url) return true;
+
+  try {
+    const u = new URL(url);
+
+    return u.hostname.length > 0 && ["https:", "http:"].includes(u.protocol);
+  } catch {
+    return false;
+  }
+}
+
 async function parseGBX(file: File): Promise<GBXData> {
 
   const buffer = await file.arrayBuffer();
-  const text = new TextDecoder("utf-8", { fatal: false }).decode(buffer);
-  const uid = text.match(/<challenge uid="([^"]+)"/)?.[1] ?? text.match(/<map uid="([^"]+)"/)?.[1] ?? null;
-  const bestTimeRaw = text.match(/<times best="(\d+)"/)?.[1];
-  const version = text.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
-  const stuntScoreRaw = text.match(/stuntscore="(\d+)"/)?.[1];
-  const validableRaw = text.match(/validable="(\d+)"/)?.[1];
-
-  if (!text.startsWith("GBX")) {
+  const header = new TextDecoder("utf-8").decode(buffer.slice(0, 64));
+  
+  if (!header.startsWith("GBX")) {
     return {
       uid: null,
       bestTime: null,
@@ -46,6 +55,13 @@ async function parseGBX(file: File): Promise<GBXData> {
       validable: null,
     };
   }
+
+  const text = new TextDecoder("utf-8", { fatal: false }).decode(buffer);
+  const uid = text.match(/<challenge uid="([^"]+)"/)?.[1] ?? text.match(/<map uid="([^"]+)"/)?.[1] ?? null;
+  const bestTimeRaw = text.match(/<times best="(\d+)"/)?.[1];
+  const version = text.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
+  const stuntScoreRaw = text.match(/stuntscore="(\d+)"/)?.[1];
+  const validableRaw = text.match(/validable="(\d+)"/)?.[1];
 
   return {
     uid,
@@ -60,7 +76,6 @@ export default function SubmitPage() {
 
   const supabase = createClient();
   const { data: profile } = useProfile();
-  const today = new Date().toISOString().split("T")[0];
   const [replayFile, setReplayFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -99,6 +114,11 @@ export default function SubmitPage() {
     ];
   }, [authorData]);
 
+  const usedAuthors = useMemo(
+    () => new Set(form.authors),
+    [form.authors]
+  );
+
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -125,18 +145,6 @@ export default function SubmitPage() {
     }));
   }
 
-  function isValidUrl(url: string) {
-    if (!url) return true;
-
-    try {
-      const u = new URL(url);
-
-      return ["https:", "http:"].includes(u.protocol);
-    } catch {
-      return false;
-    }
-  }
-  
   function resetForm() {
     setTime(timeMsToState(0))
     setForm({
@@ -153,9 +161,9 @@ export default function SubmitPage() {
 
   async function onFileSelect(file?: File) {
 
+    update("track", "");
     setReplayFile(null);
     setTime(timeMsToState(0));
-    update("track", "");
 
     if (!file) return;
     if (!file.name.toLowerCase().endsWith(".gbx")) {
@@ -214,14 +222,14 @@ export default function SubmitPage() {
         return;
       }
 
-      const today = new Date();
-      today.setHours(0,0,0,0);
+      const todayStart = new Date();
+      todayStart.setHours(0,0,0,0);
 
       const { count } = await supabase
         .from("tas_submissions")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("submitted_by", user.id)
-        .gte("created_at", today.toISOString());
+        .gte("created_at", todayStart.toISOString());
 
       if ((count ?? 0) >= 20) {
         setWarning("You have reached the daily maximum of 20 submissions. Please try again tomorrow.");
@@ -229,7 +237,7 @@ export default function SubmitPage() {
       }
 
       const game = trackList[form.track]?.game;
-      const filePath = `pending/${user.id}/${crypto.randomUUID()}.gbx`;
+      const filePath = `pending/${user.id}/${crypto?.randomUUID?.() ?? Date.now()}.gbx`;
 
       const { error: uploadError } = await supabase.storage
         .from("replays")
@@ -406,7 +414,7 @@ export default function SubmitPage() {
                     </option>
                   )}
                   {authorOptions.map((a) => {
-                    const alreadyUsed = form.authors.includes(a.author) && a.author !== author;
+                    const alreadyUsed = usedAuthors.has(a.author) && a.author !== author;
                     return (
                       <option
                         key={a.author}
@@ -476,12 +484,12 @@ export default function SubmitPage() {
             onChange={(e) => update("category", e.target.value as Category)}
             className={`${inputClass} cursor-pointer`}
           >
-            {categories.map((c) => (
+            {CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>
             ))}
-            <option>
+            <option value="Unsure">
               Unsure
             </option>
           </select>

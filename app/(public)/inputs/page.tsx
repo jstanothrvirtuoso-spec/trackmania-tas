@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
-const ENVIROMENTS = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
-type Environment = (typeof ENVIROMENTS)[number];
+const ENVIRONMENTS = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
+type Environment = (typeof ENVIRONMENTS)[number];
 type Trick = {
   env: Environment;
   type: string;
@@ -12,23 +13,30 @@ type Trick = {
 };
 
 /* =========================
-   CLICK SOUND (SAFE GLOBAL)
+   CLICK SOUND
 ========================= */
-let clickAudio = null;
+const getClickAudio = (() => {
+  let audio: HTMLAudioElement | null = null;
 
-if (typeof window !== "undefined") {
-  clickAudio = new Audio("/inputs/click.mp3");
-  clickAudio.preload = "auto";
-}
+  return () => {
+    if (!audio && typeof window !== "undefined") {
+      audio = new Audio("/inputs/click.mp3");
+      audio.preload = "auto";
+    }
+
+    return audio;
+  };
+})();
 
 const playClick = () => {
-  if (!clickAudio) return;
+  const audio = getClickAudio();
+  if (!audio) return;
 
   try {
-    clickAudio.currentTime = 0;
-    clickAudio.volume = 0.4;
-    clickAudio.play().catch(() => {});
-  } catch (e) {}
+    audio.currentTime = 0;
+    audio.volume = 0.4;
+    audio.play().catch(() => {});
+  } catch {}
 };
 
 /* =========================
@@ -88,6 +96,7 @@ const tricks: Trick[] = [
   { env: "BAY", type: "video", src: "/inputs/bayvideo.m4v", button: "Inputs" },
 ];
 
+const btnClass = "px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition cursor-pointer";
 const grouped = tricks.reduce<Record<Environment, Trick[]>>(
   (acc, t) => {
     acc[t.env].push(t);
@@ -122,12 +131,11 @@ function EnvBar({ label }: { label: Environment }) {
 ========================= */
 export default function InputsPage() {
   
-  const btnClass = "px-3 py-2 text-xs tracking-[0.3em] uppercase text-cyan-200 border border-cyan-400/20 bg-black/40 hover:bg-cyan-400/10 transition cursor-pointer";
   const [activeEnv, setActiveEnv] = useState<Environment>("STADIUM");
   const [copied, setCopied] = useState<string | null>(null);
 
-  const handleCopy = (env: Environment, i: number) => {
-    copyInputs(env, i);
+  const handleCopy = async (env: Environment, i: number) => {
+    await copyInputs(env, i);
     setCopied(`${env}-${i}`);
     setTimeout(() => setCopied(null), 700);
   };
@@ -154,10 +162,10 @@ export default function InputsPage() {
 
       {/* LEFT MENU */}
       <div className="fixed left-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
-        {ENVIROMENTS.map((env) => (
+        {ENVIRONMENTS.map((env) => (
           <button
             key={env}
-            onClick={() => setActiveEnv(env as Environment)}
+            onClick={() => setActiveEnv(env)}
             className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer
               ${
                 activeEnv === env
@@ -165,10 +173,11 @@ export default function InputsPage() {
                   : "border-cyan-400/20 hover:bg-cyan-400/10"
               }`}
           >
-            <img
+            <Image
               src={`/environments/${env.toLowerCase()}.webp`}
               alt={env}
-              className="w-10 h-10 object-contain"
+              width={50}
+              height={50}
             />
           </button>
         ))}
@@ -238,7 +247,7 @@ export default function InputsPage() {
                       {["Left", "Right"].map((label, i) => (
                         <button
                           key={label}
-                          onClick={() => handleCopy("STADIUM", i)}
+                          onClick={() => void handleCopy("STADIUM", i)}
                           className={`${btnClass} flex-1 py-1 text-center relative overflow-hidden`}
                         >
                           <span
@@ -258,7 +267,7 @@ export default function InputsPage() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => handleCopy(activeEnv, index)}
+                      onClick={() => void handleCopy(activeEnv, index)}
                       className={`${btnClass} w-full relative overflow-hidden`}
                     >
                       <span
@@ -280,10 +289,11 @@ export default function InputsPage() {
                 {/* STADIUM IMAGE */}
                 {activeEnv === "STADIUM" && index === 0 && (
                   <div className="border border-cyan-400/20 overflow-hidden bg-[#0b1020]">
-                    <img
+                    <Image
                       src="/inputs/stadiumtrick.png"
-                      className="w-full h-auto object-contain"
-                      alt=""
+                      alt="Stadium trick instructions"
+                      width={750}
+                      height={0}
                     />
                   </div>
                 )}

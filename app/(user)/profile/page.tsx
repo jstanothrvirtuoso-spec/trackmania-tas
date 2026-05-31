@@ -1,34 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
 import ProfileCard from "@/components/ProfileCard";
 import { Profile, useProfile, useUpdateProfile } from "@/lib/Profiles";
 import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS, DISPLAY_SETTINGS } from "@/utils/constants";
+
+type EditMode = "avatar" | "banner" | null;
 
 export default function ProfilePage() {
 
   const { data: profile, isLoading } = useProfile();
   const updateProfile = useUpdateProfile();
 
-  const [draftProfile, setDraftProfile] = useState<Profile | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
-  const [avatarOpen, setAvatarOpen] = useState(false);
-  const [bannerOpen, setBannerOpen] = useState(false);
+  const [editMode, setEditMode] = useState<EditMode>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [draftProfile, setDraftProfile] = useState<Profile | null>(null);
 
-  useEffect(() => {
-    if (profile) setDraftProfile(profile);
-  }, [profile]);
+  function startEditing() {
+    if (!profile) return;
 
-  const updateDraftProfile = <K extends keyof Profile>(key: K, value: Profile[K]) => {
+    if (!draftProfile) {
+      setDraftProfile(profile)
+    };
+
+    setIsEditingProfile(true);
+  }
+
+  function updateDraftProfile<K extends keyof Profile>(key: K, value: Profile[K]) {
     setDraftProfile(prev => prev ? { ...prev, [key]: value } : prev);
   };
 
-  const toggleSetting = (key: keyof Profile) => {
+  function toggleSetting(key: keyof Profile) {
     setDraftProfile(prev => prev ? { ...prev, [key]: !prev[key] } : prev);
   };
 
-  const handleSaveProfile = () => {
+  function handleSaveProfile() {
     if (!draftProfile || !draftProfile.username) return;
 
     setIsSaving(true);
@@ -64,7 +72,7 @@ export default function ProfilePage() {
               Profile
             </h1>
             <button
-              onClick={setIsEditingProfile.bind(null, true)}
+              onClick={() => startEditing()}
               className="p-2.5 px-3 bg-slate-900 border border-slate-600 hover:bg-slate-700 rounded-xl flex items-center justify-center cursor-pointer"
             >
               <svg
@@ -98,16 +106,22 @@ export default function ProfilePage() {
             <div className="flex gap-6 items-start">
 
               {/* BANNER */}
-              {!bannerOpen ? (
+              {editMode !== "banner" ? (
                 <button
                   type="button"
-                  onClick={() => { setBannerOpen(true); setAvatarOpen(false) }}
-                  className="w-[180px] h-[330px] rounded-xl overflow-hidden hover:bg-slate-800 transition cursor-pointer"
+                  onClick={() => setEditMode("banner")}
+                  className="w-[190px] h-[320px] rounded-xl overflow-hidden hover:bg-slate-800 transition cursor-pointer"
                 >
-                  <img
-                    src={PROFILE_BANNERS[draftProfile?.banner ?? 0]}
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="relative w-full h-full banner-frame">
+                    <Image
+                      src={PROFILE_BANNERS[draftProfile?.banner ?? 0]}
+                      alt="Banner"
+                      fill
+                      className="object-cover opacity-80"
+                      sizes="100vw"
+                      priority
+                    />
+                  </div>
                 </button>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
@@ -120,14 +134,17 @@ export default function ProfilePage() {
                         type="button"
                         onClick={() => {
                           updateDraftProfile("banner", id);
-                          setBannerOpen(false);
+                          setEditMode(null);
                         }}
                         className={`h-16 rounded overflow-hidden border ${
                           draftProfile?.banner === id ? "border-emerald-500" : "border-transparent"}`}
                       >
-                        <img
+                        <Image
                           src={src}
-                          className={`w-full h-full object-cover hover:opacity-100 transition ${
+                          alt="Banner"
+                          width={50}
+                          height={50}
+                          className={`object-cover hover:opacity-100 transition ${
                             draftProfile?.banner === id ? "opacity-100" : "opacity-50"}`}
                         />
                       </button>
@@ -140,17 +157,23 @@ export default function ProfilePage() {
               <div className="flex-1 space-y-4">
 
                 {/* AVATAR */}
-                {!avatarOpen ? (
+                {editMode !== "avatar" ? (
                   <button
                     type="button"
-                    onClick={() => { setAvatarOpen(true); setBannerOpen(false) }}
+                    onClick={() => setEditMode("avatar")}
                     className="w-[120px] h-[120px] rounded-full overflow-hidden hover:bg-slate-800 cursor-pointer"
                     style={{ backgroundColor: PROFILE_COLOURS[draftProfile?.colour ?? 0]}}
                   >
-                    <img
-                      src={PROFILE_AVATARS[draftProfile?.avatar ?? 0]}
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="flex justify-center">
+                      <Image
+                        src={PROFILE_AVATARS[draftProfile?.avatar ?? 0]}
+                        alt="Avatar"
+                        width={100}
+                        height={0}
+                        sizes="100vw"
+                        className="object-cover"
+                      />
+                    </div>
                   </button>
                 ) : (
                   <>
@@ -164,7 +187,7 @@ export default function ProfilePage() {
                             type="button"
                             onClick={() => {
                               updateDraftProfile("avatar", id);
-                              setAvatarOpen(false);
+                              setEditMode(null);
                             }}
                             className={`h-16 rounded overflow-hidden border ${
                               draftProfile?.avatar === id
@@ -172,11 +195,17 @@ export default function ProfilePage() {
                                 : "border-transparent"
                             }`}
                           >
-                            <img
-                              src={src}
-                              className={`w-full h-full object-cover hover:opacity-100 transition ${
-                                draftProfile?.avatar === id ? "opacity-100" : "opacity-50"}`}
-                            />
+                            <div className="flex justify-center">
+                              <Image
+                                src={src}
+                                alt="Avatar"
+                                width={50}
+                                height={50}
+                                className={`object-cover hover:opacity-100 transition ${
+                                  draftProfile?.avatar === id ? "opacity-100" : "opacity-50"}`}
+                              />
+                            </div>
+
                           </button>
                         );
                       })}
@@ -192,7 +221,7 @@ export default function ProfilePage() {
                             type="button"
                             onClick={() => {
                               updateDraftProfile("colour", id);
-                              setAvatarOpen(false);
+                              setEditMode(null);
                             }}
                             className={`h-7 rounded overflow-hidden border hover:opacity-100 ${
                               draftProfile?.colour === id ? "border-emerald-500" : "border-transparent opacity-50"}`}
@@ -207,7 +236,7 @@ export default function ProfilePage() {
 
                 {/* USERNAME */}
                 <input
-                  value={draftProfile?.username}
+                  value={draftProfile?.username ?? ""}
                   maxLength={20}
                   onChange={(e) =>
                     updateDraftProfile("username", e.target.value)

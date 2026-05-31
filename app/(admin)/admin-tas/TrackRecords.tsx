@@ -1,6 +1,7 @@
 
+import { Category, TasEntry } from "@/utils/typing";
 import { formatTime, formatDate } from "@/utils/formatting";
-import { Category, TasEntry } from "@/lib/TrackList";
+import { VideoIcon } from "@/components/Icons";
 
 type TrackRecordsProps = {
   track: string;
@@ -80,22 +81,7 @@ export default function TrackRecords({
                     
                     <td className="py-2 px-2 text-center align-middle">
                       <div className="flex justify-center">
-                        {t.video && (
-                          <a
-                            href={t.video}
-                            target="_blank"
-                            rel="noreferrer"
-                            title="Watch video"
-                            className="hover:opacity-80 transition"
-                          >
-                            { t.video.includes("discord.") 
-                              ? <img src="/links/discord.webp" alt="Replay" className="w-4 h-4" />
-                              : t.video.includes("streamable.com")
-                                ? <img src="/links/streamable.webp" alt="Replay" className="w-4.5" />
-                                : <img src="/links/youtube.webp" alt="Replay" className="w-4 h-4" />
-                            }
-                          </a>
-                        )}
+                        {t.video && (<VideoIcon video_url={t.video}/>)}
                       </div>
                     </td>
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { categories, Category, environment, Environment, RecordRow, Game } from "@/lib/TrackList";
+import { CATEGORIES, ENVIRONMENT } from "@/utils/constants";
+import { Game, Environment, Category, RecordRow } from "@/utils/typing";
 
 type EnvironmentFilter = Environment | "All";
 interface HeaderOptionsProps {
@@ -41,7 +42,7 @@ export default function HeaderOptions({
     return [...authorCount.entries()]
       .sort((a, b) => b[1] - a[1])
       .map(([author, count]) => ({ author, count }));
-  }, [currentRecords.length, currentRecords]);
+  }, [currentRecords]);
 
   const environmentOptions: EnvironmentFilter[] = useMemo(() => {
     const set = new Set<Environment>();
@@ -50,9 +51,9 @@ export default function HeaderOptions({
         set.add(row.trackInfo.environment);
       }
     });
-    const ordered = environment.filter((env) => set.has(env));
+    const ordered = ENVIRONMENT.filter((env) => set.has(env));
     return ordered.length > 1 ? ["All", ...ordered] : ordered;
-  }, [currentRecords.length, currentRecords]);
+  }, [currentRecords]);
 
   return (
     <div className="mb-0 flex items-center justify-end gap-3">
@@ -63,7 +64,7 @@ export default function HeaderOptions({
           onChange={(e) => onCategoryChange(e.target.value as Category)}
           className="cursor-pointer rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none transition hover:bg-slate-700 hover:text-white"
         >
-          {categories.map((cat) => (
+          {CATEGORIES.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
             </option>

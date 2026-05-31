@@ -1,17 +1,21 @@
 
-import { useState } from "react";
-import { GraphCategory, TasEntry, graphCategories } from "@/lib/TrackList";
+import { useState, useMemo } from "react";
+import { TasEntry } from "@/utils/typing";
+import { CATEGORY_COLOURS, GRAPH_CATEGORIES } from "@/utils/constants";
+import { GraphCategory } from "./page";
 
-const round = (n: number) => Math.round(n * 1000) / 1000;
+const WIDTH = 600;
+const HEIGHT = 320;
+const PADDING_X = 35;
+const PADDING_Y = 20;
 
-export const categoryColours: Record<string, [string, string, string]> = {
-  "Open": ["#c271f8", "bg-[#c271f8]/20", "bg-[#c271f8]/25"],
-  "NOseboost": ["#60a5fa", "bg-[#60a5fa]/20", "bg-[#60a5fa]/25"],
-  "No Uber": ["#34d399", "bg-[#34d399]/10", "bg-[#34d399]/15"],
-  "WR Route": ["#ffc637", "bg-[#ffc637]/10", "bg-[#ffc637]/15"],
-  "No Cut": ["#4d59ff", "bg-[#4d59ff]/10", "bg-[#4d59ff]/15"],
-  "RTA": ["#fa5252", "bg-[#fa5252]/10", "bg-[#fa5252]/15"],
-} as const;
+const INITIAL_VISIBLE = Object.fromEntries(
+  GRAPH_CATEGORIES.map(c => [c, true])
+) as Record<GraphCategory, boolean>;
+
+function round(n: number) {
+  return Math.round(n * 1000) / 1000
+}
 
 function generateYAxisTicks(min: number, max: number) {
 
@@ -49,48 +53,52 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   currentTas: TasEntry | null;
 }) {
 
-  const [visibleCategories, setVisibleCategories] = useState<Record<GraphCategory, boolean>>(
-    Object.fromEntries(graphCategories.map(c => [c, true])) as Record<GraphCategory, boolean>
-  );
+  const [visibleCategories, setVisibleCategories] = useState(INITIAL_VISIBLE);
 
   const allPoints = Object.values(progression).flat();
+  const visiblePoints = GRAPH_CATEGORIES
+    .filter(category => visibleCategories[category])
+    .flatMap(category => progression[category] ?? []);
+
+  const { firstDate, rawMinTime, rawMaxTime } = useMemo(() => {
+    let firstDate = Infinity;
+    let rawMinTime = Infinity;
+    let rawMaxTime = -Infinity;
+
+    for (const p of visiblePoints) {
+      const date = new Date(p.date).getTime();
+      const time = p.time;
+
+      if (date < firstDate) firstDate = date;
+      if (time < rawMinTime) rawMinTime = time;
+      if (time > rawMaxTime) rawMaxTime = time;
+    }
+
+    return { firstDate, rawMinTime, rawMaxTime };
+  }, [visiblePoints]);
+  
+  const [nowDate] = useState<number>(() => Date.now());
 
   if (allPoints.length === 0) return null;
 
-  const width = 600;
-  const height = 320;
-  const xPadding = 35;
-  const yPadding = 20;
-
-  const visiblePoints = graphCategories
-    .filter(category => visibleCategories[category])
-    .flatMap(category => progression[category] ?? []);
-  const firstDate = Math.min(
-    ...visiblePoints.map((p) =>
-      new Date(p.date).getTime()
-    )
-  );
-  const nowDate = Date.now();
   const datePadding = Math.max((nowDate - firstDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
   const minDate = firstDate - datePadding;
   const maxDate = nowDate;
 
-  const rawMinTime = Math.min(...visiblePoints.map((p) => p.time));
-  const rawMaxTime = Math.max(...visiblePoints.map((p) => p.time));
   const startYear = new Date(minDate).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
   const paddingSeconds = Math.max((rawMaxTime - rawMinTime) * 0.08, Math.max(0.001 * rawMinTime, 0.025));
   const minTime = Math.max(0, rawMinTime - paddingSeconds);
   const maxTime = rawMaxTime + paddingSeconds;
   const yTicks = generateYAxisTicks(minTime, maxTime);
-  const yTickDecimals = maxTime - minTime <= 0.5 ? 2 : maxTime - minTime <= 0.5 ? 2 : maxTime - minTime <= 5 ? 1 : 0
+  const yTickDecimals = maxTime - minTime <= 0.5 ? 2 : maxTime - minTime <= 5 ? 1 : 0
 
   const xScale = (date: string) => {
     const t = new Date(date).getTime();
-    return round(xPadding + ((t - minDate) / (maxDate - minDate || 1)) * (width - xPadding * 1.5));
+    return round(PADDING_X + ((t - minDate) / (maxDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
   };
   const yScale = (time: number) => {
-    return round(height - yPadding - ((time - yTicks[0]) / (yTicks[yTicks.length - 1] - yTicks[0] || 1)) * (height - yPadding * 2));
+    return round(HEIGHT - PADDING_Y - ((time - yTicks[0]) / (yTicks[yTicks.length - 1] - yTicks[0] || 1)) * (HEIGHT - PADDING_Y * 2));
   };
 
   const hovered = currentTas ? (() => {
@@ -106,21 +114,21 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
         Record Progression ({isStunt ? "pts" : useMinutes ? "min" : "sec"})
       </h2>
 
-      <svg width={width} height={height}>
+      <svg width={WIDTH} height={HEIGHT}>
         {/* Axes */}
         <line
-          x1={xPadding}
-          y1={height - yPadding}
-          x2={width - xPadding / 2}
-          y2={height - yPadding}
+          x1={PADDING_X}
+          y1={HEIGHT - PADDING_Y}
+          x2={WIDTH - PADDING_X / 2}
+          y2={HEIGHT - PADDING_Y}
           className="stroke-slate-600"
         />
 
         <line
-          x1={xPadding}
-          y1={yPadding}
-          x2={xPadding}
-          y2={height - yPadding}
+          x1={PADDING_X}
+          y1={PADDING_Y}
+          x2={PADDING_X}
+          y2={HEIGHT - PADDING_Y}
           className="stroke-slate-600"
         />
 
@@ -129,7 +137,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
           const x = xScale(`${year}-01-01`);
 
           // Skip labels outside plotting region
-          if (x < xPadding || x > width - xPadding / 2) {
+          if (x < PADDING_X || x > WIDTH - PADDING_X / 2) {
             return null;
           }
 
@@ -137,7 +145,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
             <text
               key={year}
               x={x}
-              y={height - yPadding + 16}
+              y={HEIGHT - PADDING_Y + 16}
               textAnchor="middle"
               className="fill-slate-400 text-[10px]"
             >
@@ -153,15 +161,15 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
           return (
             <g key={tick}>
               <line
-                x1={xPadding}
+                x1={PADDING_X}
                 y1={y}
-                x2={width - xPadding / 2}
+                x2={WIDTH - PADDING_X / 2}
                 y2={y}
                 className="stroke-slate-800"
               />
 
               <text
-                x={xPadding - 8}
+                x={PADDING_X - 8}
                 y={y + 4}
                 textAnchor="end"
                 className="fill-slate-400 text-[10px]"
@@ -173,7 +181,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
         })}
 
         {/* Graph */}
-        {graphCategories.map((category) => {
+        {GRAPH_CATEGORIES.map((category) => {
           const points = progression[category];
           if (points.length === 0 || !visibleCategories[category]) return null;
           
@@ -197,14 +205,14 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
               key={category}
               d={path}
               fill="none"
-              stroke={categoryColours[category][0]}
+              stroke={CATEGORY_COLOURS[category][0]}
               strokeWidth="2"
             />
           );
         })}
 
         {/* Points */}
-        {graphCategories.flatMap((category) => {
+        {GRAPH_CATEGORIES.flatMap((category) => {
           if (!visibleCategories[category]) return [];
 
           return progression[category].map((p) => {
@@ -217,7 +225,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
                 cx={x}
                 cy={y}
                 r={3}
-                fill={categoryColours[category][0]}
+                fill={CATEGORY_COLOURS[category][0]}
               />
             );
           });
@@ -262,10 +270,10 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
 
       {/* legend */}
       <div className="mt-4 flex flex-wrap justify-center gap-4 text-[10px]">
-        {graphCategories.map((category) => {
+        {GRAPH_CATEGORIES.map((category) => {
           const points = progression[category];
           if (points.length === 0) return null;
-          const colour = categoryColours[category];
+          const colour = CATEGORY_COLOURS[category];
           const active = visibleCategories[category];
 
           return (

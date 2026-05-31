@@ -4,12 +4,13 @@ import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime } from "@/utils/formatting";
-import { SubmitForm, TimeState } from "@/utils/typing";
+import { CATEGORIES, GAME_LIST } from "@/utils/constants";
+import { SubmitForm, TimeState, Game, Category, TasEntry, AuthorInfo } from "@/utils/typing";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { usePendingSubmissions } from "@/lib/TasSubmissions";
-import { Game, gameList, getGameTracks, Category, categories, TasEntry, trackList, AuthorInfo } from "@/lib/TrackList";
+import { trackList, tracksByGame } from "@/lib/TrackList";
 import TrackRecords from "./TrackRecords";
 import PendingRecords from "./PendingRecords";
 
@@ -28,6 +29,12 @@ const supabase = createClient();
 const today = new Date().toISOString().split("T")[0];
 const inputClass = "w-full rounded-md bg-slate-800 px-3 py-1.5 text-white outline-none focus:ring-2 focus:ring-slate-500";
 const labelClass = "text-sm text-slate-300 mb-0.5";
+
+const URL_FIELDS = [
+  ["Video", "video", "https://youtu.be/<id>"],
+  ["Replay", "replay", "https://drive.google.com/uc?export=download&id=<id>"],
+  ["Inputs", "inputs", "https://pastebin.com/<id>"],
+] as const;
 
 export default function AdminPanel() {
 
@@ -60,6 +67,7 @@ export default function AdminPanel() {
 
   const isStunt = form.track ? trackList[form.track]?.category === "Stunt" : false;
   const timeMs = timeStateToMs(time);
+  const trackOptions = tracksByGame[form.game]
 
   const authorOptions = useMemo(() => {
 
@@ -77,10 +85,6 @@ export default function AdminPanel() {
       ...sorted(remaining),
     ];
   }, [authorData]);
-
-  const trackOptions = useMemo(() => {
-    return getGameTracks(form.game);
-  }, [form.game]);
 
   const trackTases = useMemo(() => {
     if (!form.track) return [];
@@ -406,7 +410,7 @@ export default function AdminPanel() {
                 onChange={(e) => update("game", e.target.value as Game)}
                 className={`cursor-pointer ${inputClass}`}
               >
-                {gameList.map((g) => (
+                {GAME_LIST.map((g) => (
                   <option key={g} value={g}>
                     {g}
                   </option>
@@ -441,7 +445,7 @@ export default function AdminPanel() {
                 }
                 className={`cursor-pointer ${inputClass}`}
               >
-                {categories.map((c) => (
+                {CATEGORIES.map((c) => (
                   <option key={c} value={c}>
                     {c}
                   </option>
@@ -566,12 +570,8 @@ export default function AdminPanel() {
             </div>
 
             {/* URL FIELDS */}
-            {[
-              ["Video", "video", "https://youtu.be/<id>"],
-              ["Replay", "replay", "https://drive.google.com/uc?export=download&id=<id>"],
-              ["Inputs", "inputs", "https://pastebin.com/<id>"],
-            ].map(([label, key, placeholder]) => {
-              const value = (form as any)[key] as string;
+            {URL_FIELDS.map(([label, key, placeholder]) => {
+              const value = form[key] as string;
 
               return (
                 <div key={key}>
@@ -580,6 +580,7 @@ export default function AdminPanel() {
 
                     <button
                       type="button"
+                      disabled={value.length === 0}
                       onClick={() => window.open(value, "_blank")}
                       className="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-300 hover:bg-slate-700 disabled:opacity-40"
                     >
@@ -590,7 +591,7 @@ export default function AdminPanel() {
                   <input
                     className={`placeholder:text-slate-500 ${inputClass}`}
                     value={value}
-                    onChange={(e) => update(key as any, e.target.value)}
+                    onChange={(e) => update(key, e.target.value)}
                     placeholder={placeholder}
                   />
                 </div>

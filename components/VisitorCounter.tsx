@@ -16,7 +16,7 @@ export default function VisitorCounter() {
 
     // Get or initialize visitor data from localStorage
     const storedData = localStorage.getItem("visitorData");
-    let visitorData = storedData
+    const visitorData = storedData
       ? JSON.parse(storedData)
       : {
           visits: 0,
@@ -27,19 +27,16 @@ export default function VisitorCounter() {
 
     // Generate or get visitor ID
     let visitorId = localStorage.getItem("visitorId");
-    let isNewVisitor = false;
     
     if (!visitorId) {
       visitorId = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       localStorage.setItem("visitorId", visitorId);
-      isNewVisitor = true;
     }
 
     // Only increment visits if this is a new visitor
     if (!visitorData.uniqueVisitors.includes(visitorId)) {
       visitorData.uniqueVisitors.push(visitorId);
       visitorData.visits += 1;
-      isNewVisitor = true;
     }
 
     // Generate session ID for this visit
@@ -54,7 +51,7 @@ export default function VisitorCounter() {
     localStorage.setItem("visitorData", JSON.stringify(visitorData));
 
     // Get active sessions (on-site count)
-    let activeSessions = JSON.parse(sessionStorage.getItem("activeSessions") || "[]");
+    const activeSessions = JSON.parse(sessionStorage.getItem("activeSessions") || "[]");
     if (!activeSessions.includes(sessionId)) {
       activeSessions.push(sessionId);
       sessionStorage.setItem("activeSessions", JSON.stringify(activeSessions));

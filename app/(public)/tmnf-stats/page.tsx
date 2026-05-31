@@ -1,192 +1,29 @@
 "use client"
 
 import { useMemo } from "react";
-import { TasEntry, categoryFilters, trackList } from "@/lib/TrackList";
-import { useTasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { formatTime } from "@/utils/formatting";
+import { Category, TasEntry } from "@/utils/typing";
+import { CATEGORY_FILTERS } from "@/utils/constants";
+import { useTasRecords } from "@/lib/TasRecords";
+import { TmnfHistoryGraph } from "./TmnfHistoryGraph"
+import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { trackList } from "@/lib/TrackList";
 
-type Point = {
-  date: string;
-  time_ms: number;
-};
-const categories = [
-  ["No Cut", "WR Route", "No Uber", "NOseboost", "Open"],
-  ["bg-white/10", "bg-green-500/10", "bg-blue-500/10", "bg-red-500/10", "bg-black/10"]
-] as const;
-
-function TmnfHistoryGraph({
-  points,
-}: {
-  points: Point[];
-}) {
-  if (!points.length) return null;
-
-  const width = 700;
-  const height = 420;
-  const xPadding = 35;
-  const yPadding = 20;
-
-  const sorted = [...points].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-
-  const firstDate = new Date(sorted[2].date).getTime();
-  const lastDate = new Date(sorted[sorted.length - 1].date).getTime();
-  const datePadding = Math.max((lastDate - firstDate) * 0.05, 1000 * 60 * 60 * 24 * 30);
-  const minDate = firstDate - datePadding;
-  const maxDate = Date.now();
-  const yTicks = [0, 600000, 1200000, 1800000, 2400000, 3000000, 3600000, 4200000];
-  const startYear = new Date(minDate).getFullYear();
-  const endYear = new Date(maxDate).getFullYear();
-
-  const years = Array.from(
-    { length: endYear - startYear + 1 },
-    (_, i) => startYear + i
-  );
-  
-  const xScale = (date: string) => {
-    const t = new Date(date).getTime();
-    return (
-      xPadding +
-      ((t - minDate) / (maxDate - minDate || 1)) * (width - xPadding * 1.5)
-    );
-  };
-
-  const yScale = (v: number) => {
-    const chartMin = yTicks[0];
-    const chartMax = yTicks[yTicks.length - 1];
-
-    return (
-      height -
-      yPadding -
-      ((v - chartMin) / (chartMax - chartMin || 1)) * (height - yPadding * 2)
-    );
-  };
-
-  let path = "";
-
-  sorted.forEach((p, i) => {
-    const x = xScale(p.date);
-    const y = yScale(p.time_ms);
-
-    if (i === 0) path += `M ${x} ${y}`;
-    else path += ` L ${x} ${y}`;
-  });
-
-  return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
-      <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-        Cumulative Time Saved (Mins)
-      </h2>
-
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[420px]">
-        {/* axes */}
-        <line
-          x1={xPadding}
-          y1={height - yPadding}
-          x2={width - xPadding / 2}
-          y2={height - yPadding}
-          className="stroke-slate-600"
-        />
-
-        <line
-          x1={xPadding}
-          y1={yPadding}
-          x2={xPadding}
-          y2={height - yPadding}
-          className="stroke-slate-600"
-        />
-
-        {/* y ticks */}
-        {yTicks.map((tick) => {
-          const y = yScale(tick);
-
-          return (
-            <g key={tick}>
-              <line
-                x1={xPadding}
-                y1={y}
-                x2={width - xPadding / 2}
-                y2={y}
-                className="stroke-slate-800"
-              />
-
-              <text
-                x={xPadding - 8}
-                y={y + 4}
-                textAnchor="end"
-                className="fill-slate-500 text-[10px]"
-              >
-                {Math.round(tick / 60000)}
-              </text>
-            </g>
-          );
-        })}
-        
-        {/* x ticks */}
-        {years.map((year) => {
-          const x = xScale(`${year}-01-01`);
-
-          if (x < xPadding || x > width - xPadding) return null;
-
-          return (
-            <g key={year}>
-              <line
-                x1={x}
-                y1={yPadding}
-                x2={x}
-                y2={height - yPadding}
-                className="stroke-slate-800"
-              />
-
-              <text
-                x={x}
-                y={height - yPadding + 16}
-                textAnchor="middle"
-                className="fill-slate-500 text-[10px]"
-              >
-                {year}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* line */}
-        <path
-          d={path}
-          fill="none"
-          stroke="#34d399"
-          strokeWidth="2"
-        />
-
-        {/* points */}
-        {sorted.map((p) => (
-          <circle
-            key={p.time_ms}
-            cx={xScale(p.date)}
-            cy={yScale(p.time_ms)}
-            r={3}
-            fill="#34d399"
-          />
-        ))}
-      </svg>
-    </div>
-  );
-}
+const CATEGORY_NAMES = ["No Cut", "WR Route", "No Uber", "NOseboost", "Open"] as const;
+const CATEGORY_COLOURS = ["bg-white/10", "bg-green-500/10", "bg-blue-500/10", "bg-red-500/10", "bg-black/10"] as const;
 
 function getVisibleBest(
   trackMap: Map<string, TasEntry> | undefined,
-  category: keyof typeof categoryFilters
+  category: keyof typeof CATEGORY_FILTERS
 ) {
   if (!trackMap) return null;
 
-  const allowed = categoryFilters[category];
+  const allowed = CATEGORY_FILTERS[category];
 
   let best: TasEntry | null = null;
 
   for (const [cat, entry] of trackMap.entries()) {
-    if (!allowed.has(cat)) continue;
+    if (!allowed.has(cat as Category)) continue;
 
     if (!best || entry.time_ms < best.time_ms) {
       best = entry;
@@ -207,7 +44,7 @@ export default function TmnfHistory() {
   }, [rtaRecords]);
 
   const points = useMemo(() => {
-    const tas = Object.values(tasRecords)
+    const tas = tasRecords
       .filter((e) => e.game === "TMNF" || e.game === "TMNF No Cut")
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -249,7 +86,7 @@ export default function TmnfHistory() {
     for (const entry of tasRecords as TasEntry[]) {
       if ((entry.game !== "TMNF" && entry.game !== "TMNF No Cut") || entry.category == "Low Input") continue;
 
-      const trackName = entry.game === "TMNF" ? entry.track : entry.track.split(" No")[0]
+      const trackName = trackList[entry.track].baseTrack ?? entry.track
       const trackMap = map.get(trackName) ?? new Map();
       const existing = trackMap.get(entry.category);
 
@@ -271,8 +108,8 @@ export default function TmnfHistory() {
         let currentBestTime: number | null = null;
         let currentColourIndex = 0;
 
-        const columns = categories[0].map((cat, i) => {
-          const best = getVisibleBest(trackMap, cat as any);
+        const columns = CATEGORY_NAMES.map((cat, i) => {
+          const best = getVisibleBest(trackMap, cat);
           if (!best) { 
             return {
               entry: null,
@@ -313,7 +150,7 @@ export default function TmnfHistory() {
                 Track
               </th>
 
-              {categories[0].toReversed()
+              {CATEGORY_NAMES.toReversed()
                 .map((c) => (
                   <th
                     key={c}
@@ -344,9 +181,7 @@ export default function TmnfHistory() {
                 {row.columns.toReversed().map((c, i) => (
                   <td
                     key={i}
-                    className={`px-3 py-1.5 tabular-nums ${
-                      categories[1][c.colourIndex]
-                    }`}
+                    className={`px-3 py-1.5 tabular-nums ${CATEGORY_COLOURS[c.colourIndex]}`}
                   >
                     {c.entry ? (
                       <span className="text-slate-300">

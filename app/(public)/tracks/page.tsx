@@ -1,18 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { gameLinks, trackList, categoryFilters, GraphCategory, TasEntry } from "@/lib/TrackList";
-import { useTasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { CATEGORY_COLOURS, CATEGORY_FILTERS, GRAPH_CATEGORIES } from "@/utils/constants";
 import { formatDate, formatTime } from "@/utils/formatting"
-import { RecordProgressionGraph, categoryColours } from "./ProgressionGraph";
+import { TasEntry, Game } from "@/utils/typing";
+import { useTasRecords } from "@/lib/TasRecords";
+import { RecordProgressionGraph } from "./ProgressionGraph";
+import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { gameLinks, trackList, tracksByGame } from "@/lib/TrackList";
+
+const GAME_OPTIONS = gameLinks.map((g) => g.name);
+
+export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
 
 export default function TracksPage() {
 
   const router = useRouter();
   const searchParams = useSearchParams();
-  const gameOptions = gameLinks.map((g) => g.name);
+  const [currentTas, setCurrentTas] = useState<TasEntry | null>(null);
 
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
@@ -21,47 +27,34 @@ export default function TracksPage() {
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords])
 
-  const [game, setGame] = useState("TMNF");
-  const [track, setTrack] = useState("A01-Race");
-  const [currentTas, setCurrentTas] = useState<TasEntry | null>(null);
-
-  const trackOptions = useMemo(() => {
-    return Object.entries(trackList)
-      .filter(([, t]) => t.game === game)
-      .map(([name]) => name);
-  }, [game]);
-
-  // Default from URL or fallback
-  useEffect(() => {
-    const g = searchParams.get("game");
+  const [game, setGame] = useState<Game>(() =>
+    { return searchParams.get("game") as Game ?? "TMNF" }
+  );
+  
+  const [track, setTrack] = useState<string>(() => {
     const t = searchParams.get("track");
+    if (t) return t;
 
-    if (g) {
-      setGame(g);
-      if (t) {
-        setTrack(t);
-      }
-    } else if (trackOptions.length) {
-      const random = trackOptions[Math.floor(Math.random() * trackOptions.length)];
-      setGame("TMNF")
-      setTrack(random);
-    }
-  }, [searchParams]);
+    const initTracks = tracksByGame["TMNF"]
+    return initTracks[Math.floor(Math.random() * initTracks.length)];
+  });
 
-  useEffect(() => {
-    if (!trackOptions.includes(track)) {
-      setTrack(trackOptions[0] ?? "");
-    }
-  }, [game, trackOptions]);
-
-  const updateURL = (g: string, t: string) => {
-    router.replace(`/tracks?game=${encodeURIComponent(g)}&track=${encodeURIComponent(t)}`);
-  };
-
+  const trackOptions = tracksByGame[game];
   const rta = bestRtaByTrack.get(track)
   const isStunt = track ? trackList[track].category === "Stunt" : false
   const isTM2 = track ? trackList[track].game === "TM2" : false
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
+
+  function updateGame(g: Game) {
+    const newTrack = tracksByGame[g][0];
+    setGame(g);
+    setTrack(newTrack);
+    updateURL(g, newTrack);
+  }
+
+  function updateURL(g: string, t: string) {
+    router.replace(`/tracks?game=${encodeURIComponent(g)}&track=${encodeURIComponent(t)}`);
+  };
 
   const tasRows = useMemo(() => {
     if (!track) return [];
@@ -79,7 +72,7 @@ export default function TracksPage() {
     );
 
     const buildPoints = (category: GraphCategory) => {
-      const allowedCategories = categoryFilters[category]
+      const allowedCategories = CATEGORY_FILTERS[category]
       const points: { date: string; time: number, category: string }[] = [];
       
       if (isStunt) {
@@ -128,7 +121,7 @@ export default function TracksPage() {
       "No Cut": buildPoints("No Cut"),
       "RTA": rta? [{ date: rta.date, time: rtaTime }]: [],
     };
-  }, [tasRows, useMinutes]);
+  }, [tasRows, useMinutes, rta, isStunt]);
 
   return (
     <div className="mx-auto flex w-full pt-20 flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
@@ -136,14 +129,11 @@ export default function TracksPage() {
         <select
           value={game}
           onChange={(e) => {
-            const newGame = e.target.value;
-            setGame(newGame);
-            setTrack("");
-            updateURL(newGame, "");
+            updateGame( e.target.value as Game)
           }}
           className="w-40 rounded-md bg-slate-800 px-3 py-2"
         >
-          {gameOptions.map((g) => (
+          {GAME_OPTIONS.map((g) => (
             <option key={g} value={g}>
               {g}
             </option>
@@ -197,7 +187,7 @@ export default function TracksPage() {
                 {tasRows.map((tas, i) => {
                   
                   const colourIndex = i % 2 == 0 ? 2 : 1
-                  const rowColour = categoryColours[tas.category]?.[colourIndex] ?? "bg-slate-500/10"
+                  const rowColour = CATEGORY_COLOURS[tas.category]?.[colourIndex] ?? "bg-slate-500/10"
                   
                   return (
                     <tr

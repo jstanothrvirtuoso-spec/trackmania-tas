@@ -2,7 +2,9 @@
 
 import { notFound } from "next/navigation";
 import { use, useState, useMemo } from "react";
-import { trackList, TasEntry, Category, Environment, categoryFilters, gameSlugMap } from "@/lib/TrackList";
+import { CATEGORY_FILTERS } from "@/utils/constants";
+import { Environment, Category, TasEntry } from "@/utils/typing";
+import { trackList, gameSlugMap } from "@/lib/TrackList";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfile } from "@/lib/Profiles";
@@ -28,7 +30,7 @@ export default function GamePage({
   const [selectedAuthor, setSelectedAuthor] = useState<string>("All Authors");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
-  const allowedCategories = categoryFilters[selectedCategory]
+  const allowedCategories = CATEGORY_FILTERS[selectedCategory]
 
   const { data: profile, isLoading } = useProfile();
   const { data: rtaRecords = [] } = useRtaRecords();
@@ -76,7 +78,7 @@ export default function GamePage({
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get(track) ?? null,
       }));
-  }, [game, selectedCategory, bestRtaByTrack, tasRecords]);
+  }, [game, bestRtaByTrack, tasRecords, allowedCategories]);
 
   if (isLoading) {
     return <div className="text-white p-10">Loading...</div>;

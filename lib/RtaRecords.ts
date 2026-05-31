@@ -2,14 +2,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { STALE_TIME } from "@/utils/constants";
-import { RtaEntry } from "./TrackList";
+import { RtaEntry } from "@/utils/typing";
 
 async function getRtaRecords(): Promise<RtaEntry[]> {
   const supabase = createClient();
 
   const pageSize = 2000;
+  const allRows: RtaEntry[] = [];
   let from = 0;
-  let allRows: RtaEntry[] = [];
 
   while (true) {
     const { data, error } = await supabase

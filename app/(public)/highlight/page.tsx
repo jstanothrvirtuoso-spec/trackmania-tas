@@ -1,9 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
+import { CATEGORIES } from "@/utils/constants";
+import { TasEntry, Category } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
-import { trackList, TasEntry, Category, categories } from "@/lib/TrackList";
+import { trackList } from "@/lib/TrackList";
+
+const reversedCategories = [...CATEGORIES].reverse();
 
 function getYouTubeId(input?: string | null): string | null {
   if (!input) return null;
@@ -54,7 +58,7 @@ export default function HighlightPage() {
     const undoneTracks: string[] = [];
     const topTasList: TasEntry[] = [];
 
-    for (const entry of tasRecords as TasEntry[]) {
+    for (const entry of tasRecords) {
       const trackName = entry.game === "TMNF No Cut" ? entry.track.split(" No Cut")[0] : entry.track
       const trackMap = bestByTrackAndCategory.get(trackName) ?? new Map();
       const existing = trackMap.get(entry.category);
@@ -78,9 +82,7 @@ export default function HighlightPage() {
       }
 
       let bestTimeSoFar = Infinity;
-      const revCats = Array.from(categories).reverse();
-
-      for (const category of revCats) {
+      for (const category of reversedCategories) {
         const tas = categoryMap.get(category as Category);
         if (!tas) continue;
 
@@ -97,7 +99,7 @@ export default function HighlightPage() {
     }
 
     const topAuthors = Array.from(authorCounts.entries())
-      .filter(([_, count]) => count >= 5)
+      .filter(([, count]) => count >= 5)
       .map(([author]) => author);
 
     return { undoneTracks, topTasList, topAuthors };
@@ -108,7 +110,7 @@ export default function HighlightPage() {
       if (length === 0) return -1;
       const today = new Date();
       const seed = (today.getUTCMonth() + 1) * 100 + today.getUTCDate()
-      return (Math.round(Math.abs(Math.sin(seed) * 125114136345))) % length + 1;
+      return (Math.floor(Math.abs(Math.sin(seed) * 125114136345))) % length;
     }
 
     return {
@@ -116,7 +118,7 @@ export default function HighlightPage() {
       undoneTasOfTheDay: undoneTracks[dailyIndex(undoneTracks.length)] ?? null,
       authorOfTheDay: topAuthors[dailyIndex(topAuthors.length)] ?? null,
     };
-  }, [topTasList, undoneTracks]);
+  }, [topTasList, undoneTracks, topAuthors]);
 
   const videoId1 = getYouTubeId(tasOfTheDay?.video);
   const videoId2 = getYouTubeId(bestRtaByTrack.get(undoneTasOfTheDay)?.video)

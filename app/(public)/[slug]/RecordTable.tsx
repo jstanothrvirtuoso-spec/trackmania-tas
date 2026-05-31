@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { SortOrder } from "@/utils/typing";
+import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
+import { SortOrder, Game, Environment, RecordRow, Category } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
 import SortIndicator from "@/components/SortIndicator"
-import { Game, gameSets, Environment, RecordRow, categoryOrder, Category } from "@/lib/TrackList";
+import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate";
 
@@ -23,125 +24,7 @@ function getTrackDifficultyTint(category: string, i: number) {
     default:
       return "";
   }
-}
-
-function getEnvironmentSymbol(env: string) {
-  const key = env.toLowerCase().replace(/\s+/g, "-").replace("²", "")
-
-  return (
-    <div className="w-6 h-5 flex items-center justify-center">
-      <img
-        src={`/environments/${key}.webp`}
-        alt={env}
-        className="w-5 h-5"
-      />
-    </div>
-  )
-}
-
-function renderLinks(links: { video: string; replay: string; inputs: string }) {
-  return (
-    <div className="flex items-center justify-center gap-1">
-      <div className="w-5 h-5 flex items-center justify-center">
-        {links.video && (
-          <a
-            href={links.video}
-            target="_blank"
-            rel="noreferrer"
-            title="Watch video"
-            className="hover:opacity-80 transition"
-          >
-            { links.video.includes("discord.") 
-              ? <img src="/links/discord.webp" alt="Replay" className="w-4 h-4" />
-              : links.video.includes("streamable.com")
-                ? <img src="/links/streamable.webp" alt="Replay" className="w-4.5" />
-                : <img src="/links/youtube.webp" alt="Replay" className="w-4 h-4" />
-            }
-          </a>
-        )}
-      </div>
-
-      <div className="w-5 h-5 flex items-center justify-center">
-        {links.replay && (
-          <a
-            href={links.replay}
-            target="_blank"
-            rel="noreferrer"
-            title="Download replay"
-            className="hover:opacity-80 transition"
-          >
-            { links.replay.includes("discord.") 
-              ? <img src="/links/discord.webp" alt="Replay" className="w-auto h-4" />
-              : <img src="/links/replay.webp" alt="Replay" className="w-3.5 h-3.5" />
-            }
-          </a>
-        )}
-      </div>
-
-      <div className="w-5 h-5 flex items-center justify-center">
-        {links.inputs && (
-          <a
-            href={links.inputs}
-            target="_blank"
-            rel="noreferrer"
-            title="Show inputs"
-            className="hover:opacity-80 transition"
-          >
-            <img src="/links/pastebin.webp" alt="Inputs" className="w-3.5 h-3.5" />
-          </a>
-        )}
-      </div>
-
-      <div className="w-5 h-5 flex items-center justify-center">
-        {links.replay && (
-          <a
-            href={get3dGbxUrl(links.replay)}
-            target="_blank"
-            rel="noreferrer"
-            title="Open 3D GBX tools"
-            className="hover:opacity-80 transition"
-          >
-            <img src="/links/3dgbx.webp" alt="3dGbx" className="w-4.5" />
-          </a>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function renderRtaLinks(links: { video: string; replay: string }) {
-  return (
-    <div className="flex items-center justify-center gap-1">
-      <div className="w-5 h-5 flex items-center justify-center">
-        {links.video && (
-          <a
-            href={links.video}
-            target="_blank"
-            rel="noreferrer"
-            title="Watch video"
-            className="hover:opacity-80 transition"
-          >
-            <img src="/links/youtube.webp" alt="YouTube" className="w-4 h-4" />
-          </a>
-        )}
-      </div>
-
-      <div className="w-5 h-5 flex items-center justify-center">
-        {links.replay && (
-          <a
-            href={links.replay}
-            target="_blank"
-            rel="noreferrer"
-            title="Download replay"
-            className="hover:opacity-80 transition"
-          >
-            <img src="/links/replay.webp" alt="Replay" className="w-3.5 h-3.5" />
-          </a>
-        )}
-      </div>
-    </div>
-  );
-}
+};
 
 function isRecentEntry(dateStr: string, showRecent: boolean) {
 
@@ -156,24 +39,17 @@ function isRecentEntry(dateStr: string, showRecent: boolean) {
   const diff = now.getTime() - entryDate.getTime();
   const oneMonth = 30 * 24 * 60 * 60 * 1000;
   return diff >= 0 && diff <= oneMonth;
-}
+};
 
-function get3dGbxUrl(url?: string) {
-  const id = url ? new URL(url).searchParams.get("id") : null;
-  return id
-    ? `https://3d.gbx.tools/view/replay?gd=${id}`
-    : "https://3d.gbx.tools";
-}
-
-const getTmxLink = (trackInfo: { id: number; game: Game }) => {
-  if (trackInfo.game === "TMNF" || trackInfo.game === "TMNF No Cut") {
-    return `https://tmnf.exchange/trackshow/${trackInfo.id}`;
-  } else if (trackInfo.game === "TM2") {
-    return `https://tm.mania.exchange/mapshow/${trackInfo.id}`;
-  } else if (trackInfo.game === "ESWC") {
-    return `https://nations.tm-exchange.com/trackshow/${trackInfo.id}`;
+function getTmxLink(id: number, game: Game) {
+  if (game === "TMNF" || game === "TMNF No Cut") {
+    return `https://tmnf.exchange/trackshow/${id}`;
+  } else if (game === "TM2") {
+    return `https://tm.mania.exchange/mapshow/${id}`;
+  } else if (game === "ESWC") {
+    return `https://nations.tm-exchange.com/trackshow/${id}`;
   } else {
-    return `https://tmuf.exchange/trackshow/${trackInfo.id}`;
+    return `https://tmuf.exchange/trackshow/${id}`;
   }
 };
 
@@ -184,7 +60,7 @@ interface RecordTableProps {
   currentRecords: RecordRow[];
   selectedAuthor: string;
   selectedEnvironment: Environment;
-}
+};
 
 export default function RecordTable({ game, showRta, highlightRecent, currentRecords, selectedAuthor, selectedEnvironment }: RecordTableProps) {
 
@@ -193,7 +69,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
   const isTM2 = game === "TM2"
 
   const categoryIndexes = useMemo(
-    () => new Map(gameSets[game].map((c, i) => [c, i])),
+    () => new Map(GAME_SETS[game].map((c, i) => [c, i])),
     [game]
   );
 
@@ -244,8 +120,8 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
           break;
         case "category":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
-          aVal = categoryOrder[a.tas?.category as Category] ?? "";
-          bVal = categoryOrder[b.tas?.category as Category] ?? "";
+          aVal = CATEGORY_ORDER[a.tas?.category as Category] ?? "";
+          bVal = CATEGORY_ORDER[b.tas?.category as Category] ?? "";
           break;
         case "rtaDate":
           if (aHasRta !== bHasRta) return aHasRta ? -1 : 1;
@@ -273,7 +149,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
     });
 
     return sorted;
-  }, [currentRecords, sortField, sortOrder]);
+  }, [currentRecords, sortField, sortOrder, categoryIndexes]);
 
   const filteredRows = useMemo(() => {
     return sortedRows.filter((row) => {
@@ -426,7 +302,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               const entry = row.tas;
               const recent = entry ? isRecentEntry(entry.date, highlightRecent) : false;
               const rtaRecent = row.rta ? isRecentEntry(row.rta.date, highlightRecent) : false;
-              const tmxLink = getTmxLink(row.trackInfo);
+              const tmxLink = getTmxLink(row.trackInfo.id, row.trackInfo.game);
               const colour = getTrackDifficultyTint(row.trackInfo.category, i)
               const bgColour = `${recent ? "italic bg-sky-400/30 text-sky-100" : colour}`
               const rtaColour = `${rtaRecent ? "italic bg-sky-400/30 text-sky-100" : colour}`
@@ -445,11 +321,11 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                       ) : null}
                   </td>
                   <td
-                    className={`pl-1.5 pr-1 py-1 border-b border-l border-slate-800 text-slate-100 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
+                    className={`px-1 py-[0px] border-b border-l border-slate-800 text-slate-100 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
                       i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
                     }`}
                   >
-                    {getEnvironmentSymbol(row.trackInfo.environment)}
+                    {<EnvironmentIcon environment={row.trackInfo.environment}/>}
                   </td>
                   <td className={ `pr-2 py-1 text-slate-100 border-b border-slate-800 align-middle w-max whitespace-nowrap group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {tmxLink ? (
@@ -469,27 +345,27 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                     {entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}
                   </td>
                   <td
-  className={`px-1.5 py-1 border-b border-slate-800 text-center italic align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
-    entry &&
-    row.rta &&
-    ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) ||
-      (entry.time_ms - row.rta.time_ms < 0 && isStunt))
-      ? "text-red-300"
-      : "text-slate-100"
-  }`}
-  style={{
-    fontFamily: "DOSVGA, monospace",
-    letterSpacing: "0.05em",
+                    className={`px-1.5 py-1 border-b border-slate-800 text-center italic align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
+                      entry &&
+                      row.rta &&
+                      ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) ||
+                        (entry.time_ms - row.rta.time_ms < 0 && isStunt))
+                        ? "text-red-300"
+                        : "text-slate-100"
+                    }`}
+                    style={{
+                      fontFamily: "DOSVGA, monospace",
+                      letterSpacing: "0.05em",
 
-    // 💡 glow stack (like your vga-text)
-    textShadow: `
-      0 0 4px #000000,
-      0 0 10px #000000,
-      0 0 18px hsla(0, 0%, 100%, 0.59),
-      1px 1px 0 hsl(0, 0%, 100%)
-    `,
-  }}
->
+                      // 💡 glow stack (like your vga-text)
+                      textShadow: `
+                        0 0 4px #000000,
+                        0 0 10px #000000,
+                        0 0 18px hsla(0, 0%, 100%, 0.59),
+                        1px 1px 0 hsl(0, 0%, 100%)
+                      `,
+                    }}
+                  >
                     {entry && row.rta
                       ? formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)
                       : "-"}
@@ -512,7 +388,25 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                   <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
                         i === filteredRows.length - 1 ? "rounded-br-lg" : ""
                       }`}>
-                    {entry ? renderLinks({ video: entry.video, replay: entry.replay, inputs: entry.inputs }) : "-"}
+                    {entry ? 
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-5 h-5 flex items-center justify-center">
+                          {entry.video && (<VideoIcon video_url={entry.video}/>)}
+                        </div>
+
+                        <div className="w-5 h-5 flex items-center justify-center">
+                          {entry.replay && (<ReplayIcon replay_url={entry.replay}/>)}
+                        </div>
+
+                        <div className="w-5 h-5 flex items-center justify-center">
+                          {entry.inputs && (<InputsIcon inputs_url={entry.inputs}/>)}
+                        </div>
+
+                        <div className="w-5 h-5 flex items-center justify-center">
+                          {entry.replay && (<GbxIcon replay_url={entry.replay}/>)}
+                        </div>
+                      </div>
+                    : "-"}
                   </td>
                   {showRta && (
                     <>
@@ -531,7 +425,17 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                       <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour} ${
                             i === filteredRows.length - 1 ? "rounded-br-lg" : ""
                           }`}>
-                        {row.rta ? renderRtaLinks({ video: row.rta.video, replay: row.rta.replay }) : "-"}
+                        {row.rta ?
+                          <div className="flex items-center justify-center gap-1">
+                            <div className="w-5 h-5 flex items-center justify-center">
+                              {row.rta.video && (<VideoIcon video_url={row.rta.video}/>)}
+                            </div>
+
+                            <div className="w-5 h-5 flex items-center justify-center">
+                              {row.rta.replay && (<ReplayIcon replay_url={row.rta.replay}/>)}
+                            </div>
+                          </div> 
+                        : "-"}
                       </td>
                     </>
                   )}

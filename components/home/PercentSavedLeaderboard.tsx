@@ -1,38 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { TasEntry, RtaEntry, trackList } from "@/lib/TrackList";
+import { TasEntry, trackList } from "@/lib/TrackList";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 
-function buildPercentSavedLeaderboard(
-  records: {
-    track: string;
-    tas: TasEntry | null;
-    rta: RtaEntry | null;
-  }[]
-) {
-  return records
-    .filter((r) => r.tas && r.rta)
-    .map((r) => {
-      const tas = r.tas!;
-      const rta = r.rta!;
-      const pcSaved = ((rta.time_ms - tas.time_ms) / rta.time_ms) * 100;
-      const tier = pcSaved > 70 ? 0 : pcSaved > 60 ? 1 : 2
-
-      return {
-        track: r.track,
-        tas,
-        rta,
-        pcSaved,
-        tier,
-      };
-    })
-    .filter((r) => r.pcSaved >= 50)
-    .sort((a, b) => b.pcSaved - a.pcSaved);
-}
-
-const tierColours = [
+const TIER_COLOURS = [
   ["bg-emerald-700/30", "bg-emerald-700/40"],
   ["bg-orange-400/25", "bg-orange-400/30"],
   ["bg-purple-950/20", "bg-purple-950/35"],
@@ -42,6 +15,7 @@ export default function PercentSavedLeaderboard() {
 
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
+
   const bestRtaByTrack = useMemo(() => {
     if (!rtaRecords.length) return new Map();
     return buildBestRtaByTrack(rtaRecords)
@@ -57,8 +31,7 @@ export default function PercentSavedLeaderboard() {
         !existing ||
         entry.time_ms < existing.time_ms ||
         (entry.time_ms === existing.time_ms &&
-          new Date(entry.date).getTime() <
-            new Date(existing.date).getTime())
+          entry.date < existing.date)
       ) {
         map.set(entry.track, entry);
       }
@@ -67,19 +40,32 @@ export default function PercentSavedLeaderboard() {
     return map;
   }, [tasRecords]);
 
-  const currentRecords = useMemo(() => {
-    return Object.entries(trackList).map(([track, info]) => ({
-      track,
-      info,
-      tas: bestTasByTrack.get(track) ?? null,
-      rta: bestRtaByTrack.get(track) ?? null,
-    }));
-  }, [bestTasByTrack, bestRtaByTrack]);
-
   const data = useMemo(() => {
-    if (!currentRecords?.length) return [];
-    return buildPercentSavedLeaderboard(currentRecords);
-  }, [currentRecords]);
+    const result = [];
+
+    for (const track of Object.keys(trackList)) {
+      const tas = bestTasByTrack.get(track);
+      const rta = bestRtaByTrack.get(track);
+
+      if (!tas || !rta) continue;
+
+      const pcSaved = ((rta.time_ms - tas.time_ms) / rta.time_ms) * 100;
+
+      if (pcSaved < 50) continue;
+
+      result.push({
+        track,
+        tas,
+        rta,
+        pcSaved,
+        tier: pcSaved > 70 ? 0 : pcSaved > 60 ? 1 : 2,
+      });
+    }
+
+    result.sort((a, b) => b.pcSaved - a.pcSaved || a.tas.date.localeCompare(b.tas.date));
+
+    return result;
+  }, [bestTasByTrack, bestRtaByTrack]);
 
   if (data.length === 0) return null;
 
@@ -105,7 +91,7 @@ export default function PercentSavedLeaderboard() {
             const nextTier = data[index + 1]?.tier ?? null;
             const showDivider = row.tier !== nextTier && nextTier !== null;
             const colourIndex = index % 2 == 0 ? 1 : 0
-            const rowColour = tierColours[row.tier]?.[colourIndex] ?? "bg-slate-500/10"
+            const rowColour = TIER_COLOURS[row.tier]?.[colourIndex] ?? "bg-slate-500/10"
             
             return (
               <tr

@@ -1,8 +1,59 @@
 
+import { Category, Game } from "./typing";
+
+//////////////////////////////////////////////////////////////
+// Small constants //
+//////////////////////////////////////////////////////////////
+
 export const MAX_NOTES = 300;
 export const STALE_TIME = 1000 * 60 * 60; // 60 minutes
 export const MAX_REPLAY_SIZE = 10 * 1024 * 1024;  // 10 MB
 export const CURSOR = "cursor-[url('/cursor.png')_0_0,_auto]";
+
+
+//////////////////////////////////////////////////////////////
+// TrackMania TAS info //
+//////////////////////////////////////////////////////////////
+
+export const GAME_LIST = ["TMNF", "TMNF No Cut", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "TM2"] as const;
+
+export const ENVIRONMENT = ["All", "Stadium", "Island", "Desert", "Rally", "Bay", "Coast", "Snow", "Canyon", "Stadium²", "Valley", "Lagoon"] as const;
+
+export const CATEGORIES = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "Low Input"] as const;
+export const CATEGORY_ORDER = Object.fromEntries(CATEGORIES.map((c, i) => [c, i]));
+
+export const GRAPH_CATEGORIES = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "RTA"] as const;
+
+
+export const GAME_SETS: Record<Game, string[]> = {
+  "TMNF": ["White", "Green", "Blue", "Red", "Black"],
+  "TMNF No Cut": ["White", "Green", "Blue", "Red", "Black"],
+  "ESWC": ["Beginner", "Advanced", "Expert", "Pro", "Bonus"],
+  "TMN Remakes": ["Beginner", "Advanced", "Expert", "Pro", "Bonus"],
+  "TMUF": ["White", "Green", "Blue", "Red", "Black", "TMU", "Platform", "Puzzle", "Stunt", "StuntRace"],
+  "StarTrack": ["White", "Green", "Blue", "Red", "Black"],
+  "TMS": ["Race", "Extreme", "Crazy", "Bonus", "Platform", "Puzzle", "Stunt", "StuntRace", "Remix"],
+  "TMO": ["Race", "Survival", "Platform", "Puzzle", "Stunt", "StuntRace"],
+  "Demo/Beta": ["TM Demo 1", "TM Demo 2", "TMPU Demo", "TMO Demo", "TMS Beta", "TMSX Demo", "Stunt", "TMU Beta", "TMNF Prerelease", "ESWC Beta", "TMX 22nd Anniversary", "TMSX Demo Stunt"],
+  "TM2": ["Canyon", "Stadium", "Valley", "Lagoon", "Platform", "Beta"],
+} as const;
+
+
+export const CATEGORY_FILTERS: Record<Category | "RTA", Set<Category | "RTA">> = {
+  "Open": new Set(["Open", "NOseboost", "No Uber", "WR Route", "No Cut"]),
+  "NOseboost": new Set(["NOseboost", "No Uber", "WR Route", "No Cut"]),
+  "No Uber": new Set(["No Uber", "WR Route", "No Cut"]),
+  "WR Route": new Set(["WR Route", "No Cut"]),
+  "No Cut": new Set(["No Cut"]),
+  "Low Input": new Set(["Low Input"]),
+  "RTA": new Set(["RTA"])
+} as const;
+
+
+
+//////////////////////////////////////////////////////////////
+// General //
+//////////////////////////////////////////////////////////////
 
 export const PROFILE_BANNERS: Record<number, string> = {
   0: "/banners/bay.webp",
@@ -50,4 +101,30 @@ export const DISPLAY_SETTINGS = [
   { key: "show_rta_leaderboard", label: "RTA Leaderboard", desc: "Show RTA leaderboard rankings"},
   { key: "highlight_recent", label: "Highlight Recent", desc: "Highlight recently added TASes" },
   { key: "show_visitor_counter", label: "Visitor Counter", desc: "Display visitor count" },
+] as const;
+
+export const CATEGORY_COLOURS: Record<string, [string, string, string]> = {
+  "Open": ["#c271f8", "bg-[#c271f8]/20", "bg-[#c271f8]/25"],
+  "NOseboost": ["#60a5fa", "bg-[#60a5fa]/20", "bg-[#60a5fa]/25"],
+  "No Uber": ["#34d399", "bg-[#34d399]/10", "bg-[#34d399]/15"],
+  "WR Route": ["#ffc637", "bg-[#ffc637]/10", "bg-[#ffc637]/15"],
+  "No Cut": ["#4d59ff", "bg-[#4d59ff]/10", "bg-[#4d59ff]/15"],
+  "RTA": ["#fa5252", "bg-[#fa5252]/10", "bg-[#fa5252]/15"],
+} as const;
+
+export const BADGE_RANKS = {
+  TAS: [2, 5, 10, 20, 40, 60, 80, 100],
+  Contributions: [1.5, 2.5, 5, 10, 20, 40, 70, 100],
+  Saved: [5, 15, 30, 60, 90, 120, 240, 360]
+} as const;
+
+export const BADGE_IMAGES = [
+  "novice.png",
+  "apprentice.png",
+  "adept.png",
+  "expert.png",
+  "elite.png",
+  "master.png",
+  "legend.png",
+  "mythic.png",
 ] as const;

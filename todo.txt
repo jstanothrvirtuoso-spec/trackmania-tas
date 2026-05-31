@@ -21,8 +21,9 @@ Profile:
  - Add TASes for verified profiles
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Add UX replacement for all alerts
-
-Use gpt for clean-up, efficiency reports (done up to authors so far)
+Proper indexing of tases for progression graph in /tracks
+Update URL for authors page
+Change badges to Image format
 
 
 

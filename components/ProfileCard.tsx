@@ -1,9 +1,17 @@
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { Profile } from "@/lib/Profiles";
 import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS } from "@/utils/constants"
 
 export default function ProfileCard({ profile }: { profile: Profile }) {
+
+  const cardRef = useRef<HTMLDivElement>(null);
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const avatar = PROFILE_AVATARS[profile.avatar] ?? PROFILE_AVATARS[0];
+  const banner = PROFILE_BANNERS[profile.banner] ?? PROFILE_BANNERS[0];
+  const avatar_colour = PROFILE_COLOURS[profile.colour] ?? PROFILE_COLOURS[0];
 
   useEffect(() => {
     const el = cardRef.current;
@@ -34,23 +42,17 @@ export default function ProfileCard({ profile }: { profile: Profile }) {
     };
   }, [profile]);
 
-  const cardRef = useRef<HTMLDivElement>(null);
-  const rectRef = useRef<DOMRect | null>(null);
-  const rafRef = useRef<number | null>(null);
-
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-
-    if (!rectRef.current || !cardRef.current) return;
 
     const el = cardRef.current;
     const rect = rectRef.current;
+    if (!el || !rect) return;
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
     el.style.setProperty("--x", `${x}px`);
     el.style.setProperty("--y", `${y}px`);
-
-    if (!el || !rect) return;
 
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
@@ -95,6 +97,7 @@ export default function ProfileCard({ profile }: { profile: Profile }) {
     }, 220);
   };
 
+
   if (!profile) {
     return (
       <div className="text-white p-10">
@@ -118,17 +121,20 @@ export default function ProfileCard({ profile }: { profile: Profile }) {
       {/* BACKGROUND */}
       <div className="absolute inset-0 overflow-hidden bg-slate-800">
         <div className="relative w-full h-full banner-frame">
-          <img
-            src={PROFILE_BANNERS[profile.banner]}
-            onLoad={() => {
-              rectRef.current =
-              cardRef.current?.getBoundingClientRect() || null;
+          <Image
+            src={banner}
+            alt="Banner"
+            fill
+            className="object-cover opacity-40"
+            onLoadingComplete={() => {
+              rectRef.current = cardRef.current?.getBoundingClientRect() || null;
             }}
-            className="w-full h-full object-cover opacity-40"
+            sizes="100vw"
+            priority
           />
 
-        {/* GLOSS */}
-        <div className="absolute inset-0 pointer-events-none banner-gloss" /></div>
+          <div className="absolute inset-0 pointer-events-none banner-gloss" />
+        </div>
       </div>
 
       {/* CONTENT */}
@@ -137,11 +143,13 @@ export default function ProfileCard({ profile }: { profile: Profile }) {
           {/* AVATAR */}
           <div 
             className="w-[280px] h-[280px] rounded-full overflow-hidden bg-slate-800 border border-black shadow-xl p-4"
-            style={{ backgroundColor: PROFILE_COLOURS[profile?.colour ?? 0]}}
+            style={{ backgroundColor: avatar_colour}}
           >
-            <img
-              src={PROFILE_AVATARS[profile.avatar]}
-              className="w-full h-full object-cover"
+            <Image
+              src={avatar}
+              alt="Avatar"
+              width={280}
+              height={280}
             />
           </div>
 
