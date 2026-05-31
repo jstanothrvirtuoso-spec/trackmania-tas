@@ -12,13 +12,18 @@ const FAME_CONTENTS: Record<string, Record<string, string>> = {
   "United Aftermovie": { date: "???", link: "" },
 }
 
+const HIGHLIGHTED = new Set([
+  "TMNF Sub 60 Minutes Campaign",
+  "Island/Coast Start Trick Discovery",
+  "Stadium Start Trick Discovery",
+]);
+
 export function HallOfFame() {
 
   return (
-    <div className="relative w-[390px] p-4
-      bg-black/50 backdrop-blur-md
-      border border-white/10
-      shadow-[0_0_18px_rgba(0,0,0,0.6),inset_0_0_25px_rgba(255,255,255,0.03)]">
+    <div className="relative w-[390px] p-4 hall-frame
+  bg-black/50 backdrop-blur-md
+  shadow-[0_0_18px_rgba(0,0,0,0.6),inset_0_0_25px_rgba(255,255,255,0.03)]">
       
       {/* Subtle paper glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_60%)] pointer-events-none" />
@@ -45,12 +50,18 @@ export function HallOfFame() {
               {...(link ? { href: link, target: "_blank", rel: "noreferrer" } : {})}
               className="flex justify-between items-center border border-white/10 bg-white/5 rounded-md px-3 py-2 hover:bg-white/10 transition"
             >
-              <span className="font-[OktaNeue] tracking-wide text-white">
-                {title}
-              </span>
-              <span className="text-gray-400 text-xs whitespace-nowrap">
-                {date}
-              </span>
+              <span
+  className={`font-[OktaNeue] tracking-wide ${
+    HIGHLIGHTED.has(title)
+      ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]"
+      : "text-white"
+  }`}
+>
+  {title}
+</span>
+              <span className="text-gray-400 text-xs whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+  {date}
+</span>
             </Wrapper>
           );
         })}
@@ -58,3 +69,5 @@ export function HallOfFame() {
     </div>
   )
 }
+
+

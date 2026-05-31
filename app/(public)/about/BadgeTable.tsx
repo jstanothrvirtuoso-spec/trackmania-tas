@@ -1,55 +1,156 @@
-
 import { BadgeIcon } from "@/components/Icons"
 import { BADGE_IMAGES, BADGE_RANKS } from "@/utils/constants"
 
 export function BadgeTable() {
 
   return (
-    <div className="z-20">
-      <div className="w-[520px]
-        bg-black/60 backdrop-blur-md
-        border border-red-500/20
-        shadow-[0_0_30px_rgba(255,0,0,0.15)]
-        text-xs text-red-100 font-mono">
-    
+    <div className="z-20 flex justify-center">
+      <div
+        className="
+          w-[520px]
+          relative overflow-hidden
+
+          rounded-2xl
+          backdrop-blur-2xl
+
+          bg-gradient-to-b from-[#120b10]/80 via-[#1a0f14]/70 to-[#0c080b]/85
+
+          border border-pink-200/10
+          shadow-[0_0_60px_rgba(255,182,193,0.12)]
+
+          text-xs font-mono text-pink-100
+        "
+      >
+
+        {/* soft sakura glow overlay */}
+        <div className="
+          absolute inset-0
+          pointer-events-none
+          opacity-40
+          bg-[radial-gradient(circle_at_top,rgba(255,192,203,0.15),transparent_60%)]
+        " />
+
+        {/* floating petals feel (very subtle noise layer) */}
+        <div className="
+          absolute inset-0
+          pointer-events-none
+          opacity-[0.06]
+          bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]
+        " />
+
         {/* HEADER */}
-        <div className="text-center py-2 border-b border-red-500/20 tracking-[0.4em]">
+        <div className="
+          relative text-center py-3
+          tracking-[0.5em]
+          text-pink-100/90
+
+          border-b border-pink-200/10
+
+          bg-white/5
+        ">
           ACHIEVEMENT SPECIAL ROLES
         </div>
-    
+
         {/* COLUMN HEADER */}
-        <div className="grid grid-cols-4 text-center border-b border-red-500/20 py-2 text-red-300">
+        <div className="
+          relative grid grid-cols-4 text-center
+          py-2.5
+
+          text-pink-200/80
+          uppercase tracking-widest
+
+          border-b border-pink-200/10
+
+          bg-white/5
+        ">
           <div>BADGE</div>
           <div>TASES</div>
           <div>CONTRIBUTION</div>
           <div>TIME SAVED</div>
         </div>
-    
+
         {/* ROWS */}
-        <div className="divide-y divide-red-500/10">
+        <div className="divide-y divide-pink-200/10">
           {BADGE_IMAGES.map((img, i) => (
-            <div key={img} className="grid grid-cols-4 items-center text-center py-2">
-              <div className="flex justify-center h-6">
-                <BadgeIcon badge_src={img}/>
+            <div
+              key={img}
+              className="
+                relative grid grid-cols-4 items-center text-center
+                py-2.5
+
+                transition-all duration-300 ease-out
+
+                hover:bg-white/5
+                hover:backdrop-blur-md
+              "
+            >
+
+              {/* soft sakura “petal glow” on hover */}
+              <div className="
+                absolute inset-0
+                opacity-0 hover:opacity-100
+                transition-opacity duration-300
+                bg-[radial-gradient(circle_at_center,rgba(255,182,193,0.08),transparent_60%)]
+              " />
+
+              {/* BADGE */}
+              <div className="flex justify-center h-6 relative">
+                <div className="
+                  drop-shadow-[0_0_8px_rgba(255,182,193,0.35)]
+                ">
+                  <BadgeIcon badge_src={img} />
+                </div>
               </div>
-    
-              <div>{BADGE_RANKS.TAS[i]}</div>
-              <div>{BADGE_RANKS.Contributions[i]}</div>
-              <div>
-                {i >= 5 ? BADGE_RANKS.Saved[i] / 60 : BADGE_RANKS.Saved[i]}
-                {i >= 5 ? " MIN" : " SEC"}
+
+              {/* TAS */}
+              <div className="text-pink-100/80 tabular-nums">
+                {BADGE_RANKS.TAS[i]}
               </div>
+
+              {/* CONTRIBUTION */}
+              <div className="text-pink-100/80 tabular-nums">
+                {BADGE_RANKS.Contributions[i]}
+              </div>
+
+              {/* TIME */}
+              <div className="text-pink-200/70 tabular-nums">
+                {i >= 5
+                  ? BADGE_RANKS.Saved[i] / 60
+                  : BADGE_RANKS.Saved[i]}
+                <span className="ml-1 text-pink-300/50">
+                  {i >= 5 ? "MIN" : "SEC"}
+                </span>
+              </div>
+
             </div>
           ))}
         </div>
-    
+
         {/* FOOTER */}
-        <div className="text-center py-2 border-t border-red-500/20 tracking-[0.3em]">
+        <div className="
+          relative text-center py-3
+
+          tracking-[0.45em]
+          text-pink-200/80
+
+          border-t border-pink-200/10
+
+          bg-white/5
+        ">
           HOW TO CLAIM BADGES
         </div>
-    
+
+        {/* bottom ambient glow */}
+        <div className="
+          absolute -bottom-20 left-1/2 -translate-x-1/2
+          w-[300px] h-[200px]
+          bg-pink-300/10
+          blur-3xl
+          rounded-full
+          pointer-events-none
+        " />
+
       </div>
     </div>
-    
   )
-};
+}

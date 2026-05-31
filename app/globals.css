@@ -283,5 +283,540 @@ body.loading {
   filter: drop-shadow(0 0 1px rgba(255, 120, 200, 0.08));
 }
 
+/* =========================
+   🐠 AQUARIUM FRAME
+========================= */
 
 
+.aquarium-glass-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  pointer-events: none;
+  padding: 2px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.25),
+    rgba(120,200,255,0.08),
+    rgba(0,0,0,0.25)
+  );
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.12),
+    inset 0 0 20px rgba(120,200,255,0.10),
+    0 10px 30px rgba(0,0,0,0.45);
+
+  backdrop-filter: blur(6px);
+
+  /* mask MUST be inside selector */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  animation: glassShimmer 8s ease-in-out infinite;
+}
+
+@keyframes glassShimmer {
+  0%, 100% {
+    opacity: 0.65;
+    filter: blur(0px);
+  }
+
+  50% {
+    opacity: 0.9;
+    filter: blur(0.2px);
+  }
+}
+
+.aquarium-frame {
+  isolation: isolate;
+}
+
+@keyframes glassMove {
+  0% { transform: translateX(-60%) rotate(12deg); opacity: 0; }
+  20% { opacity: 0.25; }
+  50% { opacity: 0.12; }
+  100% { transform: translateX(160%) rotate(12deg); opacity: 0; }
+}
+
+.glass-shimmer {
+  position: absolute;
+  top: -40%;
+  left: 0;
+  width: 60%;
+  height: 180%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,0.35) 45%,
+    rgba(255,255,255,0.10) 55%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  animation: glassMove 6s infinite ease-in-out;
+}
+
+/* =========================
+   🌊 WATER VOLUME
+========================= */
+
+.aquarium-water {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 30% 30%, rgba(120,200,255,0.12), transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(180,240,255,0.08), transparent 65%);
+
+  opacity: 0.4;
+
+  /* IMPORTANT: remove heavy blur */
+  filter: none;
+
+  mix-blend-mode: screen;
+}
+
+/* slow fluid motion */
+@keyframes aquaFlow {
+  0%   { transform: translate(0px, 0px); }
+  25%  { transform: translate(2px, 1px); }
+  50%  { transform: translate(-1px, 2px); }
+  75%  { transform: translate(1px, -1px); }
+  100% { transform: translate(0px, 0px); }
+}
+
+.aquarium-water-1 {
+  animation: aquaFlow 12s ease-in-out infinite;
+}
+
+.aquarium-water-2 {
+  animation: aquaFlow 18s ease-in-out infinite reverse;
+  opacity: 0.25;
+}
+
+/* =========================
+   🌊 WATER SURFACE (KEY WOW EFFECT)
+========================= */
+
+.water-surface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.18),
+    transparent
+  );
+
+  opacity: 0.25;
+  filter: blur(1px);
+
+  animation: surfaceWave 6s ease-in-out infinite;
+}
+
+@keyframes surfaceWave {
+  0%, 100% { transform: translateX(-2%); }
+  50%      { transform: translateX(2%); }
+}
+
+/* =========================
+   🫧 BUBBLES (INSIDE WATER ONLY FEEL)
+========================= */
+
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.9;
+  }
+
+  60% {
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(-160px) translateX(10px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.bubble {
+  position: absolute;
+  bottom: -20px;
+
+  border-radius: 9999px;
+
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255,255,255,1),
+    rgba(170,220,255,0.25),
+    transparent 70%
+  );
+
+  box-shadow:
+    0 0 10px rgba(120,200,255,0.25);
+
+  animation: bubbleRise linear infinite;
+}
+
+/* sizes */
+.b1 { width: 10px; height: 10px; left: 10%; animation-duration: 7s; }
+.b2 { width: 18px; height: 18px; left: 25%; animation-duration: 9s; }
+.b3 { width: 6px;  height: 6px;  left: 40%; animation-duration: 6s; }
+.b4 { width: 22px; height: 22px; left: 60%; animation-duration: 10s; }
+.b5 { width: 12px; height: 12px; left: 75%; animation-duration: 8s; }
+.b6 { width: 8px;  height: 8px;  left: 90%; animation-duration: 7.5s; }
+.b7 { width: 14px; height: 14px; left: 15%; animation-duration: 8.5s; }
+.b8 { width: 9px;  height: 9px;  left: 55%; animation-duration: 7.2s; }
+
+/* delays */
+.b1 { animation-delay: 0s; }
+.b2 { animation-delay: 1s; }
+.b3 { animation-delay: 2s; }
+.b4 { animation-delay: 0.5s; }
+.b5 { animation-delay: 1.8s; }
+.b6 { animation-delay: 3s; }
+.b7 { animation-delay: 2.5s; }
+.b8 { animation-delay: 0.8s; }
+
+
+/* =========================
+   🫧 BUBBLES (CLEANED)
+========================= */
+
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.95;
+  }
+
+  60% {
+    transform: translateY(-80px) translateX(8px) scale(1);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: translateY(-150px) translateX(-10px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 9999px;
+
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255,255,255,1),
+    rgba(170,220,255,0.25),
+    transparent 70%
+  );
+
+  opacity: 0.75;
+  filter: blur(0.2px);
+
+  box-shadow:
+    0 0 10px rgba(255,255,255,0.25),
+    0 0 18px rgba(120,200,255,0.15);
+
+  animation: bubbleRise linear infinite;
+}
+
+/* sizes */
+.b1 { width: 10px; height: 10px; left: 10%; animation-duration: 7s; }
+.b2 { width: 18px; height: 18px; left: 25%; animation-duration: 9s; }
+.b3 { width: 6px;  height: 6px;  left: 40%; animation-duration: 6s; }
+.b4 { width: 22px; height: 22px; left: 60%; animation-duration: 10s; }
+.b5 { width: 12px; height: 12px; left: 75%; animation-duration: 8s; }
+.b6 { width: 8px;  height: 8px;  left: 90%; animation-duration: 7.5s; }
+.b7 { width: 14px; height: 14px; left: 15%; animation-duration: 8.5s; }
+.b8 { width: 9px;  height: 9px;  left: 55%; animation-duration: 7.2s; }
+
+/* staggered delays */
+.b1 { animation-delay: 0s; }
+.b2 { animation-delay: 1s; }
+.b3 { animation-delay: 2s; }
+.b4 { animation-delay: 0.5s; }
+.b5 { animation-delay: 1.8s; }
+.b6 { animation-delay: 3s; }
+.b7 { animation-delay: 2.5s; }
+.b8 { animation-delay: 0.8s; }
+
+
+.window-reflection {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.window-reflection::before {
+  content: "";
+
+  position: absolute;
+  inset: -50%;
+
+  background:
+    linear-gradient(
+      115deg,
+      transparent 30%,
+      rgba(255,255,255,0.015) 40%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(255,255,255,0.015) 60%,
+      transparent 70%
+    ),
+
+    linear-gradient(
+      115deg,
+      transparent 48%,
+      rgba(255,255,255,0.04) 50%,
+      transparent 52%
+    );
+
+  filter: blur(24px);
+
+  transform: translateX(-120%);
+  animation: windowSweep 24s ease-in-out infinite;
+
+  mix-blend-mode: screen;
+}
+
+.window-reflection::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      ellipse at top,
+      rgba(255,255,255,0.12),
+      transparent 60%
+    );
+
+  mix-blend-mode: screen;
+}
+
+@keyframes windowSweep {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  40% {
+    transform: translateX(120%);
+  }
+
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+
+.hall-frame {
+  position: relative;
+}
+
+.hall-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  pointer-events: none;
+
+  /* ONLY border colors (white / pink / purple) */
+  background: linear-gradient(
+    90deg,
+    #ffffff,
+    hsl(315, 100%, 99%),
+    hwb(303 44% 0%),
+    #ffffff
+  );
+
+  background-size: 300% 300%;
+  animation: borderFlow 6s linear infinite;
+
+  /* clean cutout border (stable SSR-safe) */
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@keyframes borderFlow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+
+@keyframes sakuraBreath {
+  0% {
+
+    box-shadow: 0 0 18px rgba(255, 182, 193, 0.10),
+                inset 0 0 18px rgba(255, 182, 193, 0.05);
+  }
+  50% {
+    transform: translateY(-1px);
+    box-shadow: 0 0 28px rgba(255, 182, 193, 0.18),
+                inset 0 0 26px rgba(255, 182, 193, 0.10);
+  }
+  100% {
+    transform: translateY(0px);
+    box-shadow: 0 0 18px rgba(255, 182, 193, 0.10),
+                inset 0 0 18px rgba(255, 182, 193, 0.05);
+  }
+}
+
+.sakura-flake {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 182, 193, 0.6);
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: sakuraFall 6s linear infinite;
+}
+
+.delay-1 { left: 30%; animation-delay: 2s; }
+.delay-2 { left: 70%; animation-delay: 4s; }
+
+@keyframes sakuraFall {
+  0% {
+    transform: translateY(-20px) translateX(0px);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  100% {
+    transform: translateY(120px) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.sakura-drift {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 182, 193, 0.5);
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: sakuraFloat 7s linear infinite;
+  left: 20%;
+}
+
+.delay-1 { left: 50%; animation-delay: 2s; }
+.delay-2 { left: 80%; animation-delay: 4s; }
+
+@keyframes sakuraFloat {
+  0% {
+    transform: translateY(-10px) translateX(0px);
+    opacity: 0;
+  }
+  20% { opacity: 0.7; }
+  100% {
+    transform: translateY(140px) translateX(15px);
+    opacity: 0;
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.6;
+  }
+  70% {
+    transform: translateY(-100px) scale(1.1);
+    opacity: 0.4;
+  }
+  90% {
+    transform: translateY(-110px) scale(0.3);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(-120px) scale(0);
+    opacity: 0;
+  }
+}
+
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 9999px;
+
+  /* MUCH brighter */
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255,255,255,1),
+    rgba(180,220,255,0.25),
+    transparent 70%
+  );
+
+  opacity: 0.8;
+
+  animation: floatUp linear infinite;
+  filter: blur(0.1px);
+
+  /* glow so they stand out */
+  box-shadow:
+    0 0 8px rgba(255,255,255,0.25),
+    0 0 16px rgba(120,200,255,0.15);
+}
+
+/* Different sizes + speeds */
+.b1 { width: 10px; height: 10px; left: 10%; animation-duration: 6s; }
+.b2 { width: 18px; height: 18px; left: 25%; animation-duration: 8s; }
+.b3 { width: 6px; height: 6px; left: 40%; animation-duration: 5s; }
+.b4 { width: 22px; height: 22px; left: 60%; animation-duration: 9s; }
+.b5 { width: 12px; height: 12px; left: 75%; animation-duration: 7s; }
+.b6 { width: 8px; height: 8px; left: 90%; animation-duration: 6.5s; }
+.b7 { width: 14px; height: 14px; left: 15%; animation-duration: 7.5s; }
+.b8 { width: 9px; height: 9px; left: 55%; animation-duration: 6.8s; }
+.b1 { animation-delay: 0s; }
+.b2 { animation-delay: 1s; }
+.b3 { animation-delay: 2s; }
+.b4 { animation-delay: 0.5s; }
+.b5 { animation-delay: 1.8s; }
+.b6 { animation-delay: 3s; }
+.b7 { animation-delay: 2.5s; }
+.b8 { animation-delay: 0.8s; }
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.95;
+  }
+
+  60% {
+    transform: translateY(-70px) translateX(10px) scale(1);
+    opacity: 0.9;
+  }
+
+  85% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateY(-140px) translateX(-10px) scale(1.2);
+    opacity: 0;
+  }
+}
