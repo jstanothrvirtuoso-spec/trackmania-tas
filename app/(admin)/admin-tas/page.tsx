@@ -7,6 +7,7 @@ import { formatTime } from "@/utils/formatting";
 import { CATEGORIES, GAME_LIST } from "@/utils/constants";
 import { SubmitForm, TimeState, Game, Category, TasEntry, AuthorInfo } from "@/utils/typing";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
+import { useAlert } from "@/components/AlertProvider";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { usePendingSubmissions } from "@/lib/TasSubmissions";
@@ -38,6 +39,7 @@ const URL_FIELDS = [
 
 export default function AdminPanel() {
 
+  const { showAlert } = useAlert();
   const queryClient = useQueryClient();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
@@ -241,7 +243,7 @@ export default function AdminPanel() {
         queryKey: ["tasRecords"],
       });
 
-      alert("Success!");
+      showAlert("Success!");
     } finally {
       setLoading(false);
     }
@@ -272,9 +274,9 @@ export default function AdminPanel() {
       });
 
       if (error) {
-        alert(error.message);
+        showAlert(error.message);
       } else {
-        alert("Record successfully deleted!")
+        showAlert("Record successfully deleted!")
       }
     } finally {
       setLoading(false);
@@ -320,7 +322,7 @@ export default function AdminPanel() {
       } 
       
       if (status === "rejected") {
-        alert("Record successfully deleted!")
+        showAlert("Record successfully deleted!")
       } else {
         await submit()
       }

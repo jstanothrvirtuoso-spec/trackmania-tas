@@ -1562,8 +1562,6 @@ export const gameSlugMap = Object.values(trackList).reduce((acc, t) => {
   return acc;
 }, {} as Record<string, Game>);
 
-console.log(gameSlugMap)
-
 export const gameLinks = Array.from(
   new Map(
     Object.values(trackList).map((t) => [

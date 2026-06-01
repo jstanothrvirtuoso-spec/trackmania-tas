@@ -7,6 +7,7 @@ import { Profile, useProfile, useUpdateProfile } from "@/lib/Profiles";
 import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS, DISPLAY_SETTINGS } from "@/utils/constants";
 
 type EditMode = "avatar" | "banner" | null;
+const USERNAME_REGEX = /^(?! )[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*(?<! )$/;
 
 export default function ProfilePage() {
 
@@ -17,6 +18,7 @@ export default function ProfilePage() {
   const [editMode, setEditMode] = useState<EditMode>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [draftProfile, setDraftProfile] = useState<Profile | null>(null);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
 
   function startEditing() {
     if (!profile) return;
@@ -37,7 +39,7 @@ export default function ProfilePage() {
   };
 
   function handleSaveProfile() {
-    if (!draftProfile || !draftProfile.username) return;
+    if (!draftProfile?.username || usernameError) return;
 
     setIsSaving(true);
 
@@ -237,12 +239,32 @@ export default function ProfilePage() {
                 <input
                   value={draftProfile?.username ?? ""}
                   maxLength={20}
-                  onChange={(e) =>
-                    updateDraftProfile("username", e.target.value)
-                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    updateDraftProfile("username", value);
+
+                    if (!value) {
+                      setUsernameError("Username is required");
+                    } else if (value.length < 3) {
+                      setUsernameError("Too short (min 3 characters)");
+                    } else if (value.length > 20) {
+                      setUsernameError("Too long (max 20 characters)");
+                    } else if (value[0] === " ") {
+                      setUsernameError("You cannot start your username with a space");
+                    } else if (!USERNAME_REGEX.test(value)) {
+                      setUsernameError("This username is invalid");
+                    } else {
+                      setUsernameError(null);
+                    }
+                  }}
                   className="w-full p-3 bg-slate-800 rounded-xl"
                   placeholder="Username"
                 />
+                {usernameError && (
+                  <p className="mt-1 text-sm text-red-400">
+                    {usernameError}
+                  </p>
+                )}
 
                 {/* BIO */}
                 <textarea
@@ -300,7 +322,7 @@ export default function ProfilePage() {
               </button>
 
               <button
-                disabled={!draftProfile || !draftProfile.username || isSaving}
+                disabled={!draftProfile || !draftProfile.username || (usernameError?.length ?? 0) > 0 || isSaving}
                 onClick={handleSaveProfile}
                 className="px-5 py-3 bg-emerald-600 rounded-xl disabled:opacity-50 hover:bg-emerald-500 flex items-center justify-center cursor-pointer"
               >

@@ -4,14 +4,14 @@ import { useMemo, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { TimeState, AuthorInfo, Category } from "@/utils/typing";
-import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constants";
+import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES, KEY_AUTHORS } from "@/utils/constants";
+import { useAlert } from "@/components/AlertProvider";
 import { trackIds } from "@/lib/TrackId"
 import { useAuthors } from "@/lib/Authors";
 import { useProfile } from "@/lib/Profiles";
 import { trackList } from "@/lib/TrackList";
 
 type FormState = {
-  track: string;
   authors: string[];
   category: Category | "Unsure";
   video: string;
@@ -26,6 +26,12 @@ type GBXData = {
   stuntScore: number | null;
   validable: boolean | null;
 };
+
+type ReplayState = {
+  file: File | null,
+  track: string;
+  time: TimeState;
+}
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -72,20 +78,20 @@ async function parseGBX(file: File): Promise<GBXData> {
   };
 }
 
+const supabase = createClient();
+const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-slate-100";
+const labelClass = "text-sm text-slate-300 py-0.5";
+
 export default function SubmitPage() {
 
-  const supabase = createClient();
   const { data: profile } = useProfile();
-  const [replayFile, setReplayFile] = useState<File | null>(null);
+  const { data: authorData = [] } = useAuthors();
+  const { showAlert } = useAlert();
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [warning, setWarning] = useState("");
-  const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-slate-100";
-  const labelClass = "text-sm text-slate-300 py-0.5";
-  const { data: authorData = [] } = useAuthors();
 
   const [form, setForm] = useState<FormState>({
-    track: "",
     authors: [""],
     category: "Open",
     video: "",
@@ -93,22 +99,27 @@ export default function SubmitPage() {
     date: today,
   });
 
-  const [time, setTime] = useState<TimeState>({
-    minutes: 0,
-    seconds: 0,
-    hundredths: 0,
-    thousandth: 0,
+  const [replay, setReplay] = useState<ReplayState>({
+    file: null,
+    track: "",
+    time: timeMsToState(0),
   });
 
-  const timeMs = timeStateToMs(time);
+  const timeMs = timeStateToMs(replay.time);
 
   const authorOptions = useMemo(() => {
     const rest = authorData.filter((a) => a.author !== "Unknown");
-    const priority = rest.slice(0, 25);
-    const remaining = rest.slice(25);
-    const sorted = (arr: AuthorInfo[]) => [...arr].sort((a, b) => a.author.localeCompare(b.author));
+
+    const keySet = new Set(KEY_AUTHORS);
+
+    const keyAuthors = rest.filter((a) => keySet.has(a.author));
+    const remaining = rest.filter((a) => !keySet.has(a.author));
+
+    const sorted = (arr: AuthorInfo[]) =>
+      [...arr].sort((a, b) => a.author.localeCompare(b.author));
+
     return [
-      ...sorted(priority),
+      ...sorted(keyAuthors),
       { id: "", author: "" },
       ...sorted(remaining),
     ];
@@ -146,9 +157,8 @@ export default function SubmitPage() {
   }
 
   function resetForm() {
-    setTime(timeMsToState(0))
+    setReplay({ file: null, track: "", time: timeMsToState(0) });
     setForm({
-      track: "",
       authors: [""],
       category: "Open",
       video: "",
@@ -156,38 +166,34 @@ export default function SubmitPage() {
       date: today,
     });
     setWarning("");
-    setReplayFile(null);
   }
 
   async function onFileSelect(file?: File) {
 
-    update("track", "");
-    setReplayFile(null);
-    setTime(timeMsToState(0));
+    setReplay({ file: null, track: "", time: timeMsToState(0) });
 
     if (!file) return;
     if (!file.name.toLowerCase().endsWith(".gbx")) {
-      alert("Only .gbx files allowed");
+      showAlert("Only .gbx files allowed");
       return;
     }
 
     if (file.size > MAX_REPLAY_SIZE) {
-      alert("Replay exceeds 10 MB limit");
+      showAlert("Replay exceeds 10 MB limit");
       return;
     }
 
     const parsed = await parseGBX(file);
     if (!parsed.uid) {
-      alert("Invalid replay file");
+      showAlert("Invalid replay file");
       return;
     };
-    setReplayFile(file);
 
-    const track = trackIds[parsed.uid] ?? trackIds[`${parsed.uid}-${parsed.version}`] ?? "";
-    update("track", track)
-    if (parsed.bestTime && parsed.validable) {
-      setTime(timeMsToState(parsed.bestTime));
-    }
+    setReplay({
+      file: file,
+      track: trackIds[parsed.uid] ?? trackIds[`${parsed.uid}-${parsed.version}`] ?? "",
+      time: parsed.bestTime && parsed.validable ? timeMsToState(parsed.bestTime) : timeMsToState(0),
+    });
   }
 
   async function submit() {
@@ -198,7 +204,7 @@ export default function SubmitPage() {
 
     try {
 
-      if (!replayFile) {
+      if (!replay.file) {
         setWarning("Please upload a replay file");
         return;
       }
@@ -215,33 +221,17 @@ export default function SubmitPage() {
         return;
       }
 
-      const user = (await supabase.auth.getUser()).data.user;
-
-      if (!user) {
-        setWarning("You must be signed in");
+      if (!profile?.id) {
+        setWarning("Please log in to submit a TAS");
         return;
       }
 
-      const todayStart = new Date();
-      todayStart.setHours(0,0,0,0);
-
-      const { count } = await supabase
-        .from("tas_submissions")
-        .select("id", { count: "exact", head: true })
-        .eq("submitted_by", user.id)
-        .gte("created_at", todayStart.toISOString());
-
-      if ((count ?? 0) >= 20) {
-        setWarning("You have reached the daily maximum of 20 submissions. Please try again tomorrow.");
-        return;
-      }
-
-      const game = trackList[form.track]?.game;
-      const filePath = `pending/${user.id}/${crypto?.randomUUID?.() ?? Date.now()}.gbx`;
+      const game = trackList[replay.track]?.game;
+      const filePath = `pending/${profile.id}/${crypto?.randomUUID?.() ?? Date.now()}.gbx`;
 
       const { error: uploadError } = await supabase.storage
         .from("replays")
-        .upload(filePath, replayFile);
+        .upload(filePath, replay.file);
 
       if (uploadError) {
         setWarning(`Replay error: ${uploadError.message}`);
@@ -250,7 +240,7 @@ export default function SubmitPage() {
 
       const payload = {
         game,
-        track: form.track,
+        track: replay.track,
         category: form.category,
         time_ms: timeMs ?? null,
         authors: cleanAuthors,
@@ -258,8 +248,8 @@ export default function SubmitPage() {
         video: videoUrl || null,
         user_notes: form.user_notes.trim() || null,
         replay_path: filePath,
-        file_name: replayFile.name,
-        submitted_by: user.id,
+        file_name: replay.file.name,
+        submitted_by: profile.id,
         submitted_by_name: profile?.username ?? null,
         status: "pending",
       };
@@ -276,7 +266,7 @@ export default function SubmitPage() {
         return;
       }
 
-      alert("Your TAS was submitted successfully! A moderator will review your submission soon. You will be notified when it has been processed.");
+      showAlert("Your TAS was submitted successfully! A moderator will review your submission soon. You will be notified when it has been processed.");
       resetForm();
     } finally {
       setLoading(false);
@@ -293,11 +283,12 @@ export default function SubmitPage() {
             Submit TAS
           </h1>
 
-          <button
+          <button 
             type="button"
             onClick={resetForm}
             disabled={loading}
-            className={`rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 ${CURSOR}`}
+            title="Clear the form"
+            className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 cursor-pointer"
           >
             Reset
           </button>
@@ -348,23 +339,23 @@ export default function SubmitPage() {
               or click to browse
             </div>
 
-            {replayFile && (
-              <div className={`mt-3 text-xs ${form.track ? "text-emerald-400" : "text-red-400"}`}>
-                {replayFile.name} ({(replayFile.size / 1024 / 1024).toFixed(2)} MB)
+            {replay.file && (
+              <div className={`mt-3 text-xs ${replay.track ? "text-emerald-400" : "text-red-400"}`}>
+                {replay.file.name} ({(replay.file.size / 1024 / 1024).toFixed(2)} MB)
               </div>
             )}
           </label>
         </div>
 
         {/* TRACK AND TIME */}
-        {replayFile && (
+        {replay.file && (
           <div className="rounded-lg bg-slate-800/60 px-4 py-3 text-sm">
-            {form.track ? (
+            {replay.track ? (
               <>
                 <div>
                   Track:
                   <span className="ml-2 font-medium text-emerald-400">
-                    {form.track}
+                    {replay.track}
                   </span>
                 </div>
               
@@ -373,10 +364,10 @@ export default function SubmitPage() {
                     <div className="mt-1">
                       Time:
                       <span className="ml-2 font-medium text-emerald-400">
-                        {`${time.minutes > 0 ? String(time.minutes) + ":" : ""}`}
-                        {String(time.seconds).padStart(2,"0")}.
-                        {String(time.hundredths).padStart(2,"0")}
-                        {`${trackList[form.track].game === "TM2" ? time.thousandth : ""}`}
+                        {`${replay.time.minutes > 0 ? String(replay.time.minutes) + ":" : ""}`}
+                        {String(replay.time.seconds).padStart(2,"0")}.
+                        {String(replay.time.hundredths).padStart(2,"0")}
+                        {`${trackList[replay.track].game === "TM2" ? replay.time.thousandth : ""}`}
                       </span>
                     </div>
                   </>
@@ -400,7 +391,14 @@ export default function SubmitPage() {
             <div className={labelClass}>Author(s)</div>
           </div>
 
-          <div className="space-y-1">
+          
+            <div
+              className={`space-y-1 ${
+                form.authors.length > 4
+                  ? "max-h-56 overflow-y-auto pr-1"
+                  : ""
+              }`}
+            >
             {form.authors.map((author, index) => (
               <div key={index} className="flex gap-2">
                 <select
@@ -453,7 +451,20 @@ export default function SubmitPage() {
 
         {/* VIDEO */}
         <div>
-          <div className={labelClass}>Video URL (recommended)</div>
+          <div className="flex items-center w-full">
+            <div className={labelClass}>Video (recommended)</div>
+
+            <div className="group relative ml-auto cursor-help px-1 py-0.5">
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">
+                ?
+              </span>
+
+              <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-1/2 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                Provide a video URL for your TAS. YouTube is preferred (even if unlisted), but Streamable or Discord videos will be accepted. You must provide a video for your TAS to be eligible for TAS of the Day.
+              </div>
+            </div>
+          </div>
+
           <input
             value={form.video}
             onChange={(e) => update("video", e.target.value)}
@@ -478,7 +489,20 @@ export default function SubmitPage() {
 
         {/* CATEGORY */}
         <div>
-          <div className={labelClass}>Category</div>
+          <div className="flex items-center w-full">
+            <div className={labelClass}>Category (optional)</div>
+
+            <div className="group relative ml-auto cursor-help px-1 py-0.5">
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">
+                ?
+              </span>
+
+              <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-1/2 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                You may indicate the target category for your TAS. Note, this may be updated by the moderators at any time. Please see the About page for more info on TAS categories.
+              </div>
+            </div>
+          </div>
+          
           <select
             value={form.category}
             onChange={(e) => update("category", e.target.value as Category)}
@@ -497,7 +521,20 @@ export default function SubmitPage() {
 
         {/* NOTES */}
         <div>
-          <div className={labelClass}>Notes (optional)</div>
+          <div className="flex items-center w-full">
+            <div className={labelClass}>Notes (optional)</div>
+
+            <div className="group relative ml-auto cursor-help px-1 py-0.5">
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">
+                ?
+              </span>
+
+              <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-64 -translate-x-1/2 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                These are notes viewable only to the moderators. Use this if one of the TAS authors is not in the authors list above, or if you have any other pertinent information that may be needed to process the TAS.
+              </div>
+            </div>
+          </div>
+          
           <textarea
             rows={2}
             value={form.user_notes}
@@ -541,9 +578,9 @@ export default function SubmitPage() {
 
           <button
             onClick={submit}
-            disabled={loading || !replayFile || form.authors.filter((a) => a.trim() !== "").length === 0}
+            disabled={loading || !replay.file || form.authors.filter((a) => a.trim() !== "").length === 0}
             className={`w-full rounded-md bg-emerald-600 px-4 py-2 font-medium disabled:opacity-50 ${
-              loading || !replayFile || form.authors.filter((a) => a.trim() !== "").length === 0 ? "cursor-not-allowed" : "hover:bg-emerald-500 cursor-pointer"
+              loading || !replay.file || form.authors.filter((a) => a.trim() !== "").length === 0 ? "cursor-not-allowed" : "hover:bg-emerald-500 cursor-pointer"
             }`}
           >
             {loading ? "Submitting..." : "Submit"}

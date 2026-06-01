@@ -68,6 +68,7 @@ export type AuthorInfo = {
 };
 
 export type RtaEntry = {
+  id: number;
   game: Game;
   track: string;
   record: string;
@@ -79,6 +80,7 @@ export type RtaEntry = {
 };
 
 export type TasEntry = {
+  id: number;
   game: Game;
   track: string;
   category: Category;

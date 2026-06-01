@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAlert } from "@/components/AlertProvider";
 
 const supabase = createClient();
 
 export default function LoginPage() {
 
+  const { showAlert } = useAlert();
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -100,7 +102,7 @@ export default function LoginPage() {
       }
 
       setErrorMessage("Account opened. Please check your email now to validate your account before logging in.");
-      alert("Account opened. Please check your email now to validate your account before logging in. Make sure to check your junk mail.")
+      showAlert("Account opened. Please check your email now to validate your account before logging in. Make sure to check your junk mail.")
       setPassword("");
       setConfirmPassword("");
     } finally {

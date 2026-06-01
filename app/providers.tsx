@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { STALE_TIME } from "@/utils/constants";
+import { AlertProvider } from "@/components/AlertProvider";
 
 export default function Providers({
   children,
@@ -23,7 +24,7 @@ export default function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <AlertProvider>{children}</AlertProvider>
     </QueryClientProvider>
   );
 }

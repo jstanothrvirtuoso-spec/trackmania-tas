@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { STALE_TIME } from "@/utils/constants";
-import { AuthorInfo } from "@/lib/TrackList"
+import { AuthorInfo } from "@/utils/typing"
 
 async function getAuthors(): Promise<AuthorInfo[]> {
 

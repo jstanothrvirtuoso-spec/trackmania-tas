@@ -6,6 +6,7 @@ import { formatTime, formatDate } from "@/utils/formatting";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { TimeState, Game, RtaEntry } from "@/utils/typing";
 import { GAME_LIST } from "@/utils/constants";
+import { useAlert } from "@/components/AlertProvider";
 import { useRtaRecords } from "@/lib/RtaRecords";
 import { trackList, tracksByGame } from "@/lib/TrackList";
 import { VideoIcon } from "@/components/Icons";
@@ -30,6 +31,7 @@ const URL_FIELDS = [
 
 export default function AdminPanel() {
 
+  const { showAlert } = useAlert();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
   const { data: rtaRecords = [] } = useRtaRecords();
@@ -130,9 +132,9 @@ export default function AdminPanel() {
       .upsert(payload, { onConflict: "track,time_ms" });
 
     if (error) {
-      alert(error.message);
+      showAlert(error.message);
     } else {
-      alert("Success!");
+      showAlert("Success!");
     }
     setLoading(false);
   }
@@ -155,9 +157,9 @@ export default function AdminPanel() {
       .eq("time_ms", t.time_ms);
 
     if (error) {
-      alert(error.message);
+      showAlert(error.message);
     } else {
-      alert("Record successfully deleted!")
+      showAlert("Record successfully deleted!")
     }
   }
 

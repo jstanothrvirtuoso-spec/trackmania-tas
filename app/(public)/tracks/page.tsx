@@ -13,6 +13,12 @@ import { gameLinks, trackList, tracksByGame } from "@/lib/TrackList";
 const GAME_OPTIONS = gameLinks.map((g) => g.name);
 
 export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
+export type ProgressionGraphPoint = {
+  id: number,
+  date: string, 
+  time: number, 
+  category: GraphCategory
+}
 
 export default function TracksPage() {
 
@@ -69,12 +75,12 @@ export default function TracksPage() {
   const tasRows = useMemo(() => {
     if (!track) return [];
 
-    return tasRecords
+    return [...tasRecords]
       .filter((t) => t.track === track)
       .sort((a, b) => a.time_ms - b.time_ms);
   }, [track, tasRecords]);
 
-  const progression = useMemo<Record<GraphCategory, { date: string; time: number }[]>>(() => {
+  const progression = useMemo<Record<GraphCategory, ProgressionGraphPoint[]>>(() => {
     const sorted = [...tasRows].sort(
       (a, b) =>
         new Date(a.date).getTime() -
@@ -83,7 +89,7 @@ export default function TracksPage() {
 
     const buildPoints = (category: GraphCategory) => {
       const allowedCategories = CATEGORY_FILTERS[category]
-      const points: { date: string; time: number, category: string }[] = [];
+      const points: ProgressionGraphPoint[] = [];
       
       if (isStunt) {
         let best = 0;
@@ -93,9 +99,10 @@ export default function TracksPage() {
             if (tas.time_ms > best) {
               best = tas.time_ms;
               points.push({
+                id: tas.id,
                 date: tas.date,
                 time: tas.time_ms / 1000,
-                category: tas.category
+                category: tas.category as GraphCategory
               });
             }
           });
@@ -107,9 +114,10 @@ export default function TracksPage() {
             if (tas.time_ms < best) {
               best = tas.time_ms;
               points.push({
+                id: tas.id,
                 date: tas.date,
                 time: useMinutes ? tas.time_ms / 60000 : tas.time_ms / 1000,
-                category: tas.category
+                category: tas.category as GraphCategory
               });
             }
           });
@@ -129,7 +137,7 @@ export default function TracksPage() {
       "No Uber": buildPoints("No Uber"),
       "WR Route": buildPoints("WR Route"),
       "No Cut": buildPoints("No Cut"),
-      "RTA": rta? [{ date: rta.date, time: rtaTime }]: [],
+      "RTA": rta? [{ id: 0, date: rta.date, time: rtaTime, category: "RTA" }]: [],
     };
   }, [tasRows, useMinutes, rta, isStunt]);
 

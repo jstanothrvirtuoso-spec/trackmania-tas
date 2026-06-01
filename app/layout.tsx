@@ -7,8 +7,10 @@ import VisitorCounter from "@/components/VisitorCounter";
 
 export default function RootLayout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: any;
 }) {
   return (
     <html
@@ -20,6 +22,7 @@ export default function RootLayout({
           <Header />
           <main className="sticky inset-0">{children}</main>
           <VisitorCounter />
+          {modal}
         </Providers>
       </body>
     </html>

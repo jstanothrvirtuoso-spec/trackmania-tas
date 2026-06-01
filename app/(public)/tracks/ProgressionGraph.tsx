@@ -1,8 +1,8 @@
 
 import { useState, useMemo } from "react";
-import { TasEntry } from "@/utils/typing";
+import { Category, TasEntry } from "@/utils/typing";
 import { CATEGORY_COLOURS, GRAPH_CATEGORIES } from "@/utils/constants";
-import { GraphCategory } from "./page";
+import { GraphCategory, ProgressionGraphPoint } from "./page";
 
 const WIDTH = 600;
 const HEIGHT = 320;
@@ -47,7 +47,7 @@ function generateYAxisTicks(min: number, max: number) {
 }
 
 export function RecordProgressionGraph({ progression, useMinutes, isStunt, currentTas }: {
-  progression: Record<GraphCategory, { date: string; time: number }[]>;
+  progression: Record<GraphCategory, ProgressionGraphPoint[]>;
   useMinutes: boolean;
   isStunt: boolean;
   currentTas: TasEntry | null;
@@ -104,7 +104,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   const hovered = currentTas ? (() => {
     const category = currentTas.category as GraphCategory;
     const points = progression[category] ?? [];
-    const index = points.findIndex((p) => p.date === currentTas.date && Math.abs(p.time - currentTas.time_ms / 1000) < 1e-6);
+    const index = points.findIndex((p) => p.id === currentTas.id);
     return index !== -1 ? { category, index, points } : null;
   })() : null;
 
