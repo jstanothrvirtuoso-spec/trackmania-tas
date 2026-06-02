@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CATEGORY_COLOURS, CATEGORY_FILTERS, GRAPH_CATEGORIES } from "@/utils/constants";
 import { formatDate, formatTime } from "@/utils/formatting"
@@ -33,23 +33,28 @@ export default function TracksPage() {
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords])
 
-  const [game, setGame] = useState<Game>(() =>
-    { return searchParams.get("game") as Game ?? "TMNF" }
-  );
+  const [game, setGame] = useState<Game>("TMNF");
+  const [track, setTrack] = useState<string>("");
   
-  const [track, setTrack] = useState<string>(() => {
-    const t = searchParams.get("track");
-    if (t) return t;
-
-    const initTracks = tracksByGame["TMNF"]
-    return initTracks[Math.floor(Math.random() * initTracks.length)];
-  });
-
   const trackOptions = tracksByGame[game];
   const rta = bestRtaByTrack.get(track)
   const isStunt = track ? trackList[track].category === "Stunt" : false
   const isTM2 = track ? trackList[track].game === "TM2" : false
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
+
+  useEffect(() => {
+    const g = searchParams.get("game") as Game | null;
+    const t = searchParams.get("track");
+
+    const resolvedGame = g ?? "TMNF";
+    const options = tracksByGame[resolvedGame];
+
+    const resolvedTrack =
+      t ?? options[Math.floor(Math.random() * options.length)];
+
+    setGame(resolvedGame);
+    setTrack(resolvedTrack);
+  }, []);
 
   function updateTrack(track: string) {
     setTrack(track);

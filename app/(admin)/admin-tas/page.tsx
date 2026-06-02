@@ -5,13 +5,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime } from "@/utils/formatting";
 import { CATEGORIES, GAME_LIST } from "@/utils/constants";
-import { SubmitForm, TimeState, Game, Category, TasEntry, AuthorInfo } from "@/utils/typing";
+import { SubmitForm, TimeState, Game, Category, TasEntry } from "@/utils/typing";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { useAlert } from "@/components/AlertProvider";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { usePendingSubmissions } from "@/lib/TasSubmissions";
 import { trackList, tracksByGame } from "@/lib/TrackList";
+import AuthorSelector from "@/components/AuthorSelector";
 import TrackRecords from "./TrackRecords";
 import PendingRecords from "./PendingRecords";
 
@@ -71,23 +72,6 @@ export default function AdminPanel() {
   const timeMs = timeStateToMs(time);
   const trackOptions = tracksByGame[form.game]
 
-  const authorOptions = useMemo(() => {
-
-    const unknown = authorData.find((a) => a.author === "Unknown");
-    const rest = authorData.filter((a) => a.author !== "Unknown");
-    const priority = rest.slice(0, 25);
-    const remaining = rest.slice(25);
-
-    const sorted = (arr: AuthorInfo[]) => [...arr].sort((a, b) => a.author.localeCompare(b.author));
-
-    return [
-      ...(unknown ? [{ id: unknown.id, author: unknown.author }] : []),
-      ...sorted(priority),
-      { id: "", author: "" },
-      ...sorted(remaining),
-    ];
-  }, [authorData]);
-
   const trackTases = useMemo(() => {
     if (!form.track) return [];
     return tasRecords
@@ -97,19 +81,6 @@ export default function AdminPanel() {
 
   function update<K extends keyof TasForm>(field: K, value: TasForm[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
-  }
-
-  function addAuthor() {
-    if (form.authors.length >= 20) return;
-    update("authors", [...form.authors, "Unknown"]);
-  }
-
-  function removeAuthor(index: number) {
-    if (form.authors.length <= 1) return;
-    update(
-      "authors",
-      form.authors.filter((_, i) => i !== index)
-    );
   }
 
   function resetForm() {
@@ -167,13 +138,6 @@ export default function AdminPanel() {
     });
 
     setTime(timeMsToState(s.time_ms ?? 0));
-  }
-
-  function updateAuthor(index: number, value: string) {
-    const next = [...form.authors];
-    next[index] = value;
-    const unique = [...new Set(next)];
-    update("authors", unique);
   }
 
   async function submit() {
@@ -514,51 +478,10 @@ export default function AdminPanel() {
             </div>
 
             {/* AUTHORS */}
-            <div>
-              <div className="flex items-center justify-between">
-                <div className={labelClass}>Author(s)</div>
-              </div>
-
-              <div className="space-y-1">
-                {form.authors.map((author, index) => (
-                  <div 
-                    key={author} 
-                    className="flex gap-2 items-stretch"
-                  >
-                    <select
-                      value={author}
-                      onChange={(e) => updateAuthor(index, e.target.value)}
-                      className={`h-8 cursor-pointer ${inputClass} flex-1`}
-                    >
-                      {authorOptions.map((a, i) => (
-                        <option key={a.author} value={a.author} className={`${i <= 25 ? "" : "italic"}`}>
-                          {a.author}
-                        </option>
-                      ))}
-                    </select>
-
-                    {index === 0 ? (
-                      <button
-                        type="button"
-                        onClick={addAuthor}
-                        disabled={form.authors.length >= 20}
-                        className="rounded bg-emerald-600 w-10 hover:bg-emerald-500 disabled:opacity-40 cursor-pointer"
-                      >
-                        +
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => removeAuthor(index)}
-                        className="rounded bg-red-600 w-10 hover:bg-red-500 cursor-pointer"
-                      >
-                        -
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
+            <AuthorSelector
+              authors={form.authors}
+              onChange={(next) => update("authors", next)}
+            />
 
             {/* DATE */}
             <div>

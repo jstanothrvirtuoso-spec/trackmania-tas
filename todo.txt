@@ -17,6 +17,7 @@ Profile:
  - Add table to connect players with authors
  - Add TASes for verified profiles
 Loading symbols for tables while waiting for supabase (noseboosting car??)
+Need to be able to add new authors to database table
 
 
 

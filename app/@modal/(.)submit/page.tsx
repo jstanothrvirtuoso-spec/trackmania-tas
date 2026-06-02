@@ -1,14 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
-import { TimeState, AuthorInfo, Category } from "@/utils/typing";
-import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES, KEY_AUTHORS } from "@/utils/constants";
+import { TimeState, Category } from "@/utils/typing";
+import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constants";
 import { useAlert } from "@/components/AlertProvider";
+import AuthorSelector from "@/components/AuthorSelector";
 import { trackIds } from "@/lib/TrackId"
-import { useAuthors } from "@/lib/Authors";
 import { useProfile } from "@/lib/Profiles";
 import { trackList } from "@/lib/TrackList";
 
@@ -86,7 +86,6 @@ const labelClass = "text-sm text-slate-300 py-0.5";
 export default function SubmitPage() {
 
   const { data: profile } = useProfile();
-  const { data: authorData = [] } = useAuthors();
   const { showAlert } = useAlert();
   const router = useRouter();
   const [dragging, setDragging] = useState(false);
@@ -94,7 +93,7 @@ export default function SubmitPage() {
   const [warning, setWarning] = useState("");
 
   const [form, setForm] = useState<FormState>({
-    authors: [""],
+    authors: [],
     category: "Open",
     video: "",
     user_notes: "",
@@ -109,59 +108,14 @@ export default function SubmitPage() {
 
   const timeMs = timeStateToMs(replay.time);
 
-  const authorOptions = useMemo(() => {
-    const rest = authorData.filter((a) => a.author !== "Unknown");
-
-    const keySet = new Set(KEY_AUTHORS);
-
-    const keyAuthors = rest.filter((a) => keySet.has(a.author));
-    const remaining = rest.filter((a) => !keySet.has(a.author));
-
-    const sorted = (arr: AuthorInfo[]) =>
-      [...arr].sort((a, b) => a.author.localeCompare(b.author));
-
-    return [
-      ...sorted(keyAuthors),
-      { id: "", author: "" },
-      ...sorted(remaining),
-    ];
-  }, [authorData]);
-
-  const usedAuthors = useMemo(
-    () => new Set(form.authors),
-    [form.authors]
-  );
-
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function updateAuthor(index: number, value: string) {
-    setForm((prev) => {
-      const next = [...prev.authors];
-      next[index] = value;
-      return { ...prev, authors: next };
-    });
-  }
-
-  function addAuthor() {
-    setForm((prev) => ({
-      ...prev,
-      authors: [...prev.authors, ""],
-    }));
-  }
-
-  function removeAuthor(index: number) {
-    setForm((prev) => ({
-      ...prev,
-      authors: prev.authors.filter((_, i) => i !== index),
-    }));
   }
 
   function resetForm() {
     setReplay({ file: null, track: "", time: timeMsToState(0) });
     setForm({
-      authors: [""],
+      authors: [],
       category: "Open",
       video: "",
       user_notes: "",
@@ -283,7 +237,7 @@ export default function SubmitPage() {
         onClick={() => router.back()}
       />
 
-      <div className="relative z-10 w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
+      <div className="relative z-10 w-full max-w-3xl rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
         
         {/* HEADER */}
         <div className="flex items-start justify-between">
@@ -395,61 +349,10 @@ export default function SubmitPage() {
           )}
 
           {/* AUTHORS */}
-          <div>
-            <div className="flex items-center justify-between">
-              <div className={labelClass}>Author(s)</div>
-            </div>
-
-            <div className="space-y-1">
-              {form.authors.map((author, index) => (
-                <div key={index} className="flex gap-2">
-                  <select
-                    value={author}
-                    onChange={(e) => updateAuthor(index, e.target.value)}
-                    className={`${inputClass} ${!author ? "text-slate-500" : "text-slate-100"} flex-1 cursor-pointer`}
-                  >
-                    {!author && (
-                      <option value="" disabled hidden>
-                        Select author
-                      </option>
-                    )}
-                    {authorOptions.map((a) => {
-                      const alreadyUsed = usedAuthors.has(a.author) && a.author !== author;
-                      return (
-                        <option
-                          key={a.author}
-                          value={a.author}
-                          disabled={alreadyUsed}
-                          className={alreadyUsed ? "text-emerald-500" : "text-slate-100"}
-                        >
-                          {a.author}
-                        </option>
-                      );
-                    })}
-                  </select>
-
-                  {index === 0 ? (
-                    <button
-                      type="button"
-                      onClick={addAuthor}
-                      disabled={form.authors.length >= 20}
-                      className="rounded cursor-pointer bg-emerald-600 w-10 hover:bg-emerald-500 disabled:opacity-40"
-                    >
-                      +
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => removeAuthor(index)}
-                      className="rounded cursor-pointer bg-red-800 w-10 hover:bg-red-500"
-                    >
-                      -
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <AuthorSelector
+            authors={form.authors}
+            onChange={(next) => update("authors", next)}
+          />
 
           {/* VIDEO */}
           <div>
