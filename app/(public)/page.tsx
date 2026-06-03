@@ -26,7 +26,7 @@ export default function Home() {
               <CompletionTable />
             </div>
 
-            <div className="w-fit">
+            <div className="w-full">
               <PercentSavedLeaderboard />
             </div>
           </div>

@@ -25,16 +25,6 @@ export function Maintainers() {
         <span className="bubble b7" />
         <span className="bubble b8" />
       </div>
-   
-      
-
-      {/* CORNERS */}
-<div className="pointer-events-none absolute inset-0">
-  <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-red-400/30" />
-  <div className="absolute top-0 right-0 w-3 h-3 border-t border-r border-red-400/30" />
-  <div className="absolute bottom-0 left-0 w-3 h-3 border-b border-l border-red-400/30" />
-  <div className="absolute bottom-0 right-0 w-3 h-3 border-b border-r border-red-400/30" />
-</div>
 
       <p className="relative mb-3 px-2 text-sm tracking-[0.35em] text-center sakura-font pink-white-gradient">
         Hosted and maintained by
@@ -88,6 +78,7 @@ export function Maintainers() {
               alt="Cat-ears"
               width={64}
               height={64}
+              unoptimized
               className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 scale-150"
             />
           </div>

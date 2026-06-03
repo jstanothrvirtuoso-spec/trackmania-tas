@@ -2,15 +2,14 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CATEGORY_COLOURS, CATEGORY_FILTERS, GRAPH_CATEGORIES } from "@/utils/constants";
+import { CATEGORY_COLOURS, CATEGORY_FILTERS, GAME_LIST, GRAPH_CATEGORIES } from "@/utils/constants";
 import { formatDate, formatTime } from "@/utils/formatting"
 import { TasEntry, Game } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
 import { RecordProgressionGraph } from "./ProgressionGraph";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
-import { gameLinks, trackList, tracksByGame } from "@/lib/TrackList";
-
-const GAME_OPTIONS = gameLinks.map((g) => g.name);
+import { trackList, tracksByGame } from "@/lib/TrackList";
+import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
 
 export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
 export type ProgressionGraphPoint = {
@@ -148,6 +147,14 @@ export default function TracksPage() {
 
   return (
     <div className="mx-auto flex w-full pt-20 flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
+
+      {/* WALLPAPER */}
+      <div
+        className="fixed inset-0 -z-10 bg-center bg-no-repeat bg-cover pointer-events-none blur-xs scale-105"
+        style={{ backgroundImage: "url('/wallpapers/stadium.webp')" }}
+      />
+      <div className="fixed inset-0 -z-10 bg-slate-950/70 pointer-events-none" />
+
       <div className="flex flex-row items-start gap-4">
         <select
           value={game}
@@ -156,7 +163,7 @@ export default function TracksPage() {
           }}
           className="w-40 rounded-md bg-slate-800 px-3 py-2"
         >
-          {GAME_OPTIONS.map((g) => (
+          {GAME_LIST.map((g) => (
             <option key={g} value={g}>
               {g}
             </option>
@@ -179,28 +186,55 @@ export default function TracksPage() {
       </div>
 
       <div className="mb-4 mt-6 text-center">
-        <h1 className="text-2xl font-bold text-white">
-          {track}
-        </h1>
 
-        <div className="mt-1 text-slate-400">
-          {rta && `RTA: ${formatTime(rta.time_ms, isStunt, isTM2)} by ${rta.player} (${formatDate(rta.date)})`}
+        <div className="flex flex-col items-center">
+          <div className="text-4xl font-black tracking-tight text-white [text-shadow:2px_2px_4px_rgba(0,0,0,0.6)]">
+            {track}
+          </div>
+
+          <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-xl" />
         </div>
+
+        {rta && (
+          <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
+            <div className="text-left">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                RTA Record
+              </div>
+
+              <div className="font-mono text-lg font-semibold text-emerald-400">
+                {formatTime(rta.time_ms, isStunt, isTM2)}
+              </div>
+            </div>
+
+            <div className="h-8 w-px bg-slate-700" />
+
+            <div className="text-left">
+              <div className="text-slate-200 italic text-lg">
+                {rta.player}
+              </div>
+
+              <div className="text-xs text-slate-400">
+                {formatDate(rta.date)}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {track && (
 
         <div className="flex items-start gap-5">
 
-          <div className="overflow-x-auto">
-            <table className="border-collapsed text-sm rounded-lg">
+          <div className="overflow-hidden rounded-xl border border-slate-800 shadow-xl">
+            <table className="text-sm bg-slate-800/90">
               <thead>
-                <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/90 ">
+                <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/40 ">
+                  <th className="px-3 py-2 text-center whitespace-nowrap">Category</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Record</th>
-                  <th className="px-3 py-2 text-center whitespace-nowrap">Time Saved</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Authors</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 text-center whitespace-nowrap">Category</th>
+                  <th className="px-3 py-2 text-center whitespace-nowrap">Links</th>
                 </tr>
               </thead>
 
@@ -215,14 +249,14 @@ export default function TracksPage() {
                       key={`${tas.time_ms}-${tas.date}`}
                       onMouseEnter={() => setCurrentTas(tas)}
                       onMouseLeave={() => setCurrentTas(null)}
-                      className={`border-x border-slate-800 transition-colors hover:bg-emerald-400/20 ${rowColour}`}
+                      className={`border-x border-slate-800 transition-colors hover:bg-orange-500/60 ${rowColour}`}
                     >
-                      <td className="px-3 py-1.5 text-center font-medium text-slate-200">
-                        { formatTime(tas.time_ms, isStunt, isTM2) }
+                      <td className="px-3 py-1.5 text-center text-slate-300 whitespace-nowrap">
+                        {tas.category}
                       </td>
 
-                      <td className="px-3 py-1.5 text-center italic font-bold text-slate-200">
-                        { rta ? formatTime(tas.time_ms - rta.time_ms, isStunt, isTM2, true) : "-" }
+                      <td className="px-3 py-1.5 text-center font-medium text-slate-200">
+                        { formatTime(tas.time_ms, isStunt, isTM2) }
                       </td>
 
                       <td className="px-3 py-1.5 text-center text-slate-200 max-w-[420px]">
@@ -234,7 +268,23 @@ export default function TracksPage() {
                       </td>
                       
                       <td className="px-3 py-1.5 text-center text-slate-300 whitespace-nowrap">
-                        {tas.category}
+                        <div className="flex items-center justify-center gap-1">
+                          <div className="w-5 h-5 flex items-center justify-center">
+                            {tas.video && (<VideoIcon video_url={tas.video}/>)}
+                          </div>
+
+                          <div className="w-5 h-5 flex items-center justify-center">
+                            {tas.replay && (<ReplayIcon replay_url={tas.replay}/>)}
+                          </div>
+
+                          <div className="w-5 h-5 flex items-center justify-center">
+                            {tas.inputs && (<InputsIcon inputs_url={tas.inputs}/>)}
+                          </div>
+
+                          <div className="w-5 h-5 flex items-center justify-center">
+                            {tas.replay && (<GbxIcon replay_url={tas.replay}/>)}
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   );

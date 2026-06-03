@@ -38,6 +38,17 @@ export const GAME_SETS: Record<Game, string[]> = {
   "TM2": ["Canyon", "Stadium", "Valley", "Lagoon", "Platform", "Beta"],
 } as const;
 
+export const GAME_SLUGS: Record<string, Game> = {
+  "tmnf": "TMNF",
+  "eswc": "ESWC",
+  "tmn-remakes": "TMN Remakes",
+  "tmuf": "TMUF",
+  "star-track": "StarTrack",
+  "tms": "TMS",
+  "tmo": "TMO",
+  "demo-beta": "Demo/Beta",
+  "tm2": "TM2"
+}
 
 export const CATEGORY_FILTERS: Record<Category | "RTA", Set<Category | "RTA">> = {
   "Open": new Set(["Open", "NOseboost", "No Uber", "WR Route", "No Cut"]),
@@ -104,18 +115,19 @@ export const DISPLAY_SETTINGS = [
 ] as const;
 
 export const CATEGORY_COLOURS: Record<string, [string, string, string]> = {
-  "Open": ["#c271f8", "bg-[#c271f8]/20", "bg-[#c271f8]/25"],
-  "NOseboost": ["#60a5fa", "bg-[#60a5fa]/20", "bg-[#60a5fa]/25"],
-  "No Uber": ["#34d399", "bg-[#34d399]/10", "bg-[#34d399]/15"],
-  "WR Route": ["#ffc637", "bg-[#ffc637]/10", "bg-[#ffc637]/15"],
-  "No Cut": ["#4d59ff", "bg-[#4d59ff]/10", "bg-[#4d59ff]/15"],
-  "RTA": ["#fa5252", "bg-[#fa5252]/10", "bg-[#fa5252]/15"],
+  "Open": ["#c271f8", "bg-[#c271f8]/30", "bg-[#c271f8]/40"],
+  "NOseboost": ["#60a5fa", "bg-[#60a5fa]/30", "bg-[#60a5fa]/40"],
+  "No Uber": ["#34d399", "bg-[#34d399]/20", "bg-[#34d399]/30"],
+  "WR Route": ["#ffc637", "bg-[#ffc637]/20", "bg-[#ffc637]/30"],
+  "No Cut": ["#4d59ff", "bg-[#4d59ff]/20", "bg-[#4d59ff]/30"],
+  "RTA": ["#fa5252", "bg-[#fa5252]/20", "bg-[#fa5252]/30"],
+  "Low Input": ["#000000", "bg-[#000000]/30", "bg-[#000000]/50"],
 } as const;
 
 export const BADGE_RANKS = {
-  TAS: [2, 5, 10, 20, 40, 60, 80, 100],
-  Contributions: [1.5, 2.5, 5, 10, 20, 40, 70, 100],
-  Saved: [5, 15, 30, 60, 90, 120, 240, 360]
+  "TAS": [2, 5, 10, 20, 40, 60, 80, 100],
+  "Contributions": [1.5, 2.5, 5, 10, 20, 40, 70, 100],
+  "Saved": [5, 15, 30, 60, 90, 120, 240, 360]
 } as const;
 
 export const BADGE_IMAGES = [

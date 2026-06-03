@@ -42,6 +42,7 @@ function isRecentEntry(dateStr: string, showRecent: boolean) {
 };
 
 function getTmxLink(id: number, game: Game) {
+  if (id === 0) return "";
   if (game === "TMNF" || game === "TMNF No Cut") {
     return `https://tmnf.exchange/trackshow/${id}`;
   } else if (game === "TM2") {
@@ -416,7 +417,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                           }`}>
                         {row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}
                       </td>
-                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour}` }>
+                      <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle whitespace-nowrap group-hover:bg-emerald-400/20 transition-colors ${rtaColour}` }>
                         {row.rta?.player ?? "-"}
                       </td>
                       <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle whitespace-nowrap group-hover:bg-emerald-400/20 transition-colors ${rtaColour}` }>

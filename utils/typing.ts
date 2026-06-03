@@ -52,6 +52,7 @@ export type TrackInfo = {
   order?: number; // Sorting non-alphabetical tracks
   overrideTimeSaved?: number;  // For multilap tracks with partial TASes
   baseTrack?: string;  // Reference to original track for no-cut tracks
+  noCutTrack?: string;  // Reference to no-cut version for TMNF tracks
 };
 
 export type RecordRow = {

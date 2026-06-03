@@ -60,7 +60,7 @@ export default function CompletionTable() {
           <tr>
             <th className="py-1.5">Game</th>
             <th className="px-6 py-1.5">Progress</th>
-            <th className="py-1.5">Tracks</th>
+            <th className="py-1.5 px-8">Tracks</th>
           </tr>
         </thead>
 

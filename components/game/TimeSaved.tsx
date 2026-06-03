@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { RecordRow } from "@/lib/TrackList";
+import { RecordRow } from "@/utils/typing";
 import { formatTime, formatPercentSaved } from "@/utils/formatting";
 
 type CategoryTotals = {
@@ -161,7 +161,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
                 {total.rtaMs > 0 ? formatTime(total.tasMs - total.rtaMs, false, false, true) : "-"}
               </td>
 
-              <td className="px-2 py-[4px]">
+              <td className="px-2 py-[4px] font-bold">
                 {total.rtaMs > 0 ? formatPercentSaved(total.tasMs, total.rtaMs, 4) : "-"}
               </td>
             </tr>

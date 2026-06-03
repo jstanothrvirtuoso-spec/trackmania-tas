@@ -9,7 +9,7 @@ import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { trackList } from "@/lib/TrackList";
 import SortIndicator from "@/components/SortIndicator"
-import { BadgeIcon } from "../Icons";
+import { BadgeIcon } from "@/components/Icons";
 
 type AuthorStat = {
   author: string;
@@ -162,6 +162,8 @@ export default function GlobalLeaderboard() {
     }
   };
 
+  const isLoading = sortedAuthorStats.length === 0 && (tasRecords.length === 0 || rtaRecords.length === 0);
+
   return (
     <div className="relative mx-auto w-full max-w-5xl flex flex-col gap-3">
 
@@ -223,52 +225,63 @@ export default function GlobalLeaderboard() {
           </thead>
 
           <tbody className="divide-y divide-slate-800">
-            {sortedAuthorStats.map((a, index) => {
-              const rowColour = index % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10";
-              const badge = Math.min(BADGE_RANKS.TAS.length - 1, a.badge)
+            {isLoading 
+              ? Array.from({ length: 25 }).map((_, i) => (
+                <tr key={i} className={`${i % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10"}`}>
+                  <td className="py-2"><div className="h-4 w-7 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+                  <td className="py-2"><div className="h-4 w-29 bg-slate-700 animate-pulse rounded" /></td>
+                  <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+                  <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+                  <td className="py-2"><div className="h-4 w-16 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+                </tr> 
+                )) 
+              : sortedAuthorStats.map((a, index) => {
+                const rowColour = index % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10";
+                const badge = Math.min(BADGE_RANKS.TAS.length - 1, a.badge)
 
-              return (
-                <tr
-                  key={a.author}
-                  className={`${rowColour} hover:bg-emerald-900/50`}
-                >
-                  <td className="px-2 text-center">
-                    {badge >= 0 ? (
-                      <div className="flex items-center justify-center">
-                        <div className="flex justify-center h-6 w-10 relative">
-                          <BadgeIcon badge_src={BADGE_IMAGES[badge]} />
+                return (
+                  <tr
+                    key={a.author}
+                    className={`${rowColour} hover:bg-emerald-900/50`}
+                  >
+                    <td className="px-2 text-center">
+                      {badge >= 0 ? (
+                        <div className="flex items-center justify-center">
+                          <div className="flex justify-center h-6 w-10 relative">
+                            <BadgeIcon badge_src={BADGE_IMAGES[badge]} />
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                  </td>
+                      ) : (
+                        ""
+                      )}
+                    </td>
 
-                  <td className="px-1 py-1.5 text-slate-100">
-                    <Link
-                      href={`/authors?author=${encodeURIComponent(
-                        a.author
-                      )}`}
-                      className="hover:text-white underline-offset-2 hover:underline"
-                    >
-                      {a.author}
-                    </Link>
-                  </td>
+                    <td className="px-1 py-1.5 text-slate-100">
+                      <Link
+                        href={`/authors?author=${encodeURIComponent(
+                          a.author
+                        )}`}
+                        className="hover:text-white underline-offset-2 hover:underline"
+                      >
+                        {a.author}
+                      </Link>
+                    </td>
 
-                  <td className="px-2 py-1.5 text-slate-100">
-                    {a.tases}
-                  </td>
+                    <td className="px-2 py-1.5 text-slate-100">
+                      {a.tases}
+                    </td>
 
-                  <td className="px-2 py-1.5 text-slate-100">
-                    {a.contributions.toFixed(2)}
-                  </td>
+                    <td className="px-2 py-1.5 text-slate-100">
+                      {a.contributions.toFixed(2)}
+                    </td>
 
-                  <td className="px-2 py-1.5 text-slate-300">
-                    {formatTime(a.totalSaved)}
-                  </td>
-                </tr>
-              );
-            })}
+                    <td className="px-2 py-1.5 text-slate-300">
+                      {formatTime(a.totalSaved)}
+                    </td>
+                  </tr>
+                );
+              })
+            }
           </tbody>
         </table>
       </div>

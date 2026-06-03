@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 Expand home page:
- - Add dropdown to change % saved leaderboard based on TAS categories
+ - Recently added TASes
 Admin panel:
  - Deleting of old replay items
 Add TMNF Hist page:

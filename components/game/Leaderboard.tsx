@@ -175,7 +175,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   <td className="px-2 py-[4px] font-medium text-slate-200">
                     <Link
                       href={`/authors?author=${encodeURIComponent(row.author)}`}
-                      className="hover:text-white underline-offset-2 hover:underline"
+                      className="hover:text-white underline-offset-2 hover:underline whitespace-nowrap"
                     >
                       {row.author}
                     </Link>

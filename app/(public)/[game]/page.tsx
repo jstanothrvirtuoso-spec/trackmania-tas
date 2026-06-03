@@ -2,22 +2,22 @@
 
 import { notFound } from "next/navigation";
 import { use, useState, useMemo } from "react";
-import { CATEGORY_FILTERS } from "@/utils/constants";
+import { CATEGORY_FILTERS, GAME_SLUGS } from "@/utils/constants";
 import { Environment, Category, TasEntry } from "@/utils/typing";
-import { trackList, gameSlugMap } from "@/lib/TrackList";
+import { trackList } from "@/lib/TrackList";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfile } from "@/lib/Profiles";
-import HeaderOptions from "./HeaderOptions";
-import RecordTable from "./RecordTable";
-import TimeSaved from "./TimeSaved";
-import Leaderboard from "./Leaderboard";
-import RtaTable from "./RtaLeaderboard";
+import HeaderOptions from "@/components/game/HeaderOptions";
+import RecordTable from "@/components/game/RecordTable";
+import TimeSaved from "@/components/game/TimeSaved";
+import Leaderboard from "@/components/game/Leaderboard";
+import RtaTable from "@/components/game/RtaLeaderboard";
 
 export default function GamePage({ params }: { params: Promise<{ game: string }> }) {
 
   const { game } = use(params);
-  const gameName = gameSlugMap[game];
+  const gameName = GAME_SLUGS[game];
 
   if (!gameName) {
     notFound();
@@ -47,32 +47,31 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   const currentRecords = useMemo(() => {
     const bestTasByTrack = new Map<string, TasEntry>();
 
-    Object.values(tasRecords)
-      .filter((e) => e.game === gameName)
-      .filter((e) => allowedCategories.has(e.category))
-      .forEach((entry) => {
-        const existing = bestTasByTrack.get(entry.track);
+    for (const entry of Object.values(tasRecords)) {
+      if (!allowedCategories.has(entry.category)) continue;
 
-        if (
-          !existing ||
-          entry.time_ms < existing.time_ms ||
-          (
-            entry.time_ms === existing.time_ms &&
-            new Date(entry.date).getTime() <
-              new Date(existing.date).getTime()
-          )
-        ) {
-          bestTasByTrack.set(entry.track, entry);
-        }
-      });
+      const baseTrack = trackList[entry.track].baseTrack ?? entry.track
+      const tasGame = trackList[baseTrack].game
+
+      if (tasGame !== gameName) continue;
+
+      const existing = bestTasByTrack.get(baseTrack);
+
+      if (
+        !existing || entry.time_ms < existing.time_ms ||
+        (entry.time_ms === existing.time_ms && entry.date < existing.date)
+      ) {
+        bestTasByTrack.set(baseTrack, entry);
+      }
+    }
 
     return Object.entries(trackList)
       .filter(([, info]) => info.game === gameName)
       .map(([track, trackInfo]) => ({
-        track,
-        trackInfo,
+        track: (trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track,
+        trackInfo: (trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackList[trackInfo.noCutTrack] : trackInfo,
         tas: bestTasByTrack.get(track) ?? null,
-        rta: bestRtaByTrack.get(track) ?? null,
+        rta: bestRtaByTrack.get((trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track) ?? null,
       }));
   }, [gameName, bestRtaByTrack, tasRecords, allowedCategories]);
 

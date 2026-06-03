@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { SortOrder } from "@/utils/typing";
-import { RecordRow } from "@/lib/TrackList";
+import { RecordRow } from "@/utils/typing";
 import SortIndicator from "@/components/SortIndicator"
 
 type SortField = "player" | "wrs";

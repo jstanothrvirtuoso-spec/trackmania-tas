@@ -53,6 +53,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   currentTas: TasEntry | null;
 }) {
 
+  const [forceZeroY, setForceZeroY] = useState(false);
   const [visibleCategories, setVisibleCategories] = useState(INITIAL_VISIBLE);
 
   const allPoints = Object.values(progression).flat();
@@ -88,7 +89,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   const startYear = new Date(minDate).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
   const paddingSeconds = Math.max((rawMaxTime - rawMinTime) * 0.08, Math.max(0.001 * rawMinTime, 0.025));
-  const minTime = Math.max(0, rawMinTime - paddingSeconds);
+  const minTime = forceZeroY ? 0 : Math.max(0, rawMinTime - paddingSeconds);
   const maxTime = rawMaxTime + paddingSeconds;
   const yTicks = generateYAxisTicks(minTime, maxTime);
   const yTickDecimals = maxTime - minTime <= 0.5 ? 2 : maxTime - minTime <= 5 ? 1 : 0
@@ -109,7 +110,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   })() : null;
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm shadow-xl">
       <h2 className="mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Record Progression ({isStunt ? "pts" : useMinutes ? "min" : "sec"})
       </h2>
@@ -165,7 +166,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
                 y1={y}
                 x2={WIDTH - PADDING_X / 2}
                 y2={y}
-                className="stroke-slate-800"
+                className="stroke-slate-700/50"
               />
 
               <text
@@ -173,6 +174,20 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
                 y={y + 4}
                 textAnchor="end"
                 className="fill-slate-400 text-[10px]"
+              >
+                {tick.toFixed(yTickDecimals)}
+              </text>
+
+              <text
+                x={PADDING_X - 8}
+                y={y + 4}
+                textAnchor="end"
+                className={
+                  tick === yTicks[0]
+                    ? "fill-emerald-400 text-[10px] cursor-pointer hover:fill-slate-200"
+                    : "fill-slate-400 text-[10px]"
+                }
+                onClick={ tick === yTicks[0] ? () => setForceZeroY(v => !v) : undefined}
               >
                 {tick.toFixed(yTickDecimals)}
               </text>
