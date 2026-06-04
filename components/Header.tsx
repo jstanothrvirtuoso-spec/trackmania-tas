@@ -143,10 +143,10 @@ export default function Header() {
 
                 </div>
               </div>
-            </div> 
+            </div>
             
             {/* HOME */}
-            <div className="pt-1">
+            <div className="mt-[2px]">
               <Link
                 href="/"
                 style={{ fontFamily: "DOSVGA" }}

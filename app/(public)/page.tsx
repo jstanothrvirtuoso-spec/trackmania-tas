@@ -4,6 +4,7 @@ import VideoBackground from "@/components/home/VideoBackground";
 import CompletionTable from "@/components/home/CompletionTable";
 import GlobalLeaderboard from "@/components/home/GlobalLeaderboard";
 import PercentSavedLeaderboard from "@/components/home/PercentSavedLeaderboard";
+import RecentlyAdded from "@/components/home/RecentlyAdded";
 
 export default function Home() {
   return (
@@ -15,7 +16,7 @@ export default function Home() {
 
       {/* Leaderboards */}
       <div className="pt-20 pb-6 flex justify-center w-full">
-        <div className="w-full max-w-5xl px-4 flex flex-row gap-4 items-start">
+        <div className="w-full max-w-7xl px-4 flex flex-row gap-4 items-start">
 
           <div className="w-fit">
             <GlobalLeaderboard />
@@ -29,6 +30,10 @@ export default function Home() {
             <div className="w-full">
               <PercentSavedLeaderboard />
             </div>
+          </div>
+          
+          <div className="w-fit">
+            <RecentlyAdded />
           </div>
 
         </div>

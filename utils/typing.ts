@@ -92,6 +92,7 @@ export type TasEntry = {
   video: string;
   replay: string;
   inputs: string;
+  created_at: string;
 };
 
 

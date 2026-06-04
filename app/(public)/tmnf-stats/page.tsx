@@ -8,6 +8,7 @@ import { useTasRecords } from "@/lib/TasRecords";
 import { TmnfHistoryGraph } from "./TmnfHistoryGraph"
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { trackList } from "@/lib/TrackList";
+import PercentSavedTmnf from "./PercentSavedTmnf";
 
 const CATEGORY_NAMES = ["No Cut", "WR Route", "No Uber", "NOseboost", "Open"] as const;
 const CATEGORY_COLOURS = ["bg-white/10", "bg-green-500/10", "bg-blue-500/10", "bg-red-500/10", "bg-black/10"] as const;
@@ -140,11 +141,11 @@ export default function TmnfHistory() {
   }, [bestByTrackAndCategory, bestRtaByTrack]);
 
   return (
-    <div className="flex gap-4 justify-center pt-16">
+    <div className="flex gap-4 justify-center pt-20">
 
-      <div className="my-5 mx-3 overflow-auto rounded-xl border border-slate-800 bg-slate-900/20 text-center">
+      <div className="mx-1 overflow-auto rounded-xl border border-slate-800 bg-slate-900/20 text-center">
         <table className="w-full text-xs">
-          <thead className="text-slate-200 px-3 py-2 bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] text-sm cursor-pointer hover:text-slate-300 transition whitespace-nowrap">
+          <thead className="text-slate-200 px-3 py-2 bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] text-sm transition whitespace-nowrap">
             <tr className="">
               <th className="px-3 py-2 tracking-wide">
                 Track
@@ -209,9 +210,13 @@ export default function TmnfHistory() {
         </table>
       </div>
 
-      <div className="flex justify-center my-5">
+      <div className="flex flex-col items-start gap-2">
         <div className="w-auto">
             <TmnfHistoryGraph points={points} />
+        </div>
+        
+        <div className="w-184">
+            <PercentSavedTmnf />
         </div>
       </div>
     </div>

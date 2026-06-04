@@ -3,12 +3,9 @@
 // Virtuoso
 //////////////////////////////////////////////////////////////////////////
 
-Expand home page:
- - Recently added TASes
 Admin panel:
  - Deleting of old replay items
 Add TMNF Hist page:
- - Top percent saved table
  - Add links to category table
  - Cumulative time saved per track set?
  - Any other ideas??

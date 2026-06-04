@@ -8,6 +8,7 @@ const TOTAL_BY_GAME = (() => {
   const map = new Map<string, number>();
 
   for (const track of TRACK_ARRAY) {
+    if (track.game === "TM2") continue;
     map.set(track.game, (map.get(track.game) ?? 0) + 1);
   }
 
