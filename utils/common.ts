@@ -60,3 +60,10 @@ export function useHoverDropdown(delay = 100) {
     closeNow,
   };
 }
+
+export function generateGraphColours(n: number) {
+  return Array.from({ length: n }, (_, i) => {
+    const hue = Math.round((360 * i) / n);
+    return `hsl(${hue}, 70%, 55%)`;
+  });
+}

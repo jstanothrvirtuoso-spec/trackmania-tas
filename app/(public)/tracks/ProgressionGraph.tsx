@@ -1,8 +1,8 @@
 
 import { useState, useMemo } from "react";
-import { Category, TasEntry } from "@/utils/typing";
+import { TasEntry } from "@/utils/typing";
 import { CATEGORY_COLOURS, GRAPH_CATEGORIES } from "@/utils/constants";
-import { GraphCategory, ProgressionGraphPoint } from "./page";
+import { GraphCategory, ProgressionGraphPoint } from "./TracksPage";
 
 const WIDTH = 600;
 const HEIGHT = 320;
@@ -283,7 +283,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
 
       </svg>
 
-      {/* legend */}
+      {/* Legend */}
       <div className="mt-4 flex flex-wrap justify-center gap-4 text-[10px]">
         {GRAPH_CATEGORIES.map((category) => {
           const points = progression[category];

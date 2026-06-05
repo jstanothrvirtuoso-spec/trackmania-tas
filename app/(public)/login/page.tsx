@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAlert } from "@/components/AlertProvider";
@@ -12,7 +12,6 @@ export default function LoginPage() {
 
   const { showAlert } = useAlert();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -20,7 +19,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const next = searchParams.get("next") || "/";
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -66,13 +64,12 @@ export default function LoginPage() {
         queryKey: ["profile"],
       });
 
-      router.push(next);
+      router.push("/");
       router.refresh();
 
     } finally {
       setLoading(false);
     }
-
   }
 
   async function signUp() {

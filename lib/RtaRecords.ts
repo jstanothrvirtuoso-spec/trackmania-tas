@@ -39,7 +39,7 @@ export function useRtaRecords() {
   });
 }
 
-export function buildBestRtaByTrack(records: RtaEntry[]) {
+export function buildBestRtaByTrack(records: RtaEntry[]): Map<string, RtaEntry> {
   const map = new Map<string, RtaEntry>();
 
   for (const entry of records) {

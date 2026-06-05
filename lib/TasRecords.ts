@@ -15,6 +15,8 @@ async function getTasRecords(): Promise<TasEntry[]> {
     const { data, error } = await supabase
       .from("tas_with_authors")
       .select("*")
+      .order("date", { ascending: true })
+      .order("id", { ascending: true })
       .range(from, from + pageSize - 1);
 
     if (error) throw error;

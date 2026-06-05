@@ -6,7 +6,7 @@
 Admin panel:
  - Deleting of old replay items
 Add TMNF Hist page:
- - Add links to category table
+ - Line chart of number of TAS WRs over time (one line for each author)
  - Cumulative time saved per track set?
  - Any other ideas??
 Profile:

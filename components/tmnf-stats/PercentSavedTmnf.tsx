@@ -95,7 +95,7 @@ export default function PercentSavedTmnf() {
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-end py-2">
+      <div className="flex justify-end pb-2">
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value as Category)}
