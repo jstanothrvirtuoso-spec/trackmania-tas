@@ -72,12 +72,11 @@ export type RtaEntry = {
   id: number;
   game: Game;
   track: string;
-  record: string;
   time_ms: number;
   player: string;
   date: string;
-  video: string;
-  replay: string;
+  video: string | null;
+  replay: string | null;
 };
 
 export type TasEntry = {
@@ -85,12 +84,12 @@ export type TasEntry = {
   game: Game;
   track: string;
   category: Category;
-  record: string;
   time_ms: number;
+  num_inputs: number | null;
   authors: string[];
   date: string;
-  video: string;
-  replay: string;
-  inputs: string;
+  video: string | null;
+  replay: string | null;
+  inputs: string | null;
   created_at: string;
 };

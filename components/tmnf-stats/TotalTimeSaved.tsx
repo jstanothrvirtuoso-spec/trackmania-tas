@@ -8,13 +8,13 @@ const PADDING_X = 35;
 const PADDING_Y = 20;
 const Y_TICKS = [0, 600000, 1200000, 1800000, 2400000, 3000000, 3600000, 4200000] as const;
 
-export default function TmnfHistoryGraph( { bestRtaByTrack, tasRecords } : {
+export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } : {
   bestRtaByTrack: Map<string, RtaEntry>, 
-  tasRecords: TasEntry[] 
+  filteredTasRecords: TasEntry[] 
 } ) {
   
   const points = useMemo(() => {
-    const tas = tasRecords
+    const tas = filteredTasRecords
       .filter((e) => e.game === "TMNF" || e.game === "TMNF No Cut")
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -48,7 +48,7 @@ export default function TmnfHistoryGraph( { bestRtaByTrack, tasRecords } : {
     }
 
     return result;
-  }, [tasRecords, bestRtaByTrack]);
+  }, [filteredTasRecords, bestRtaByTrack]);
   
   const [maxDate] = useState<number>(() => Date.now());
 

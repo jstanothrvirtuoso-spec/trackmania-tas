@@ -12,8 +12,8 @@ import { useHoverDropdown } from "@/utils/common";
 
 const MENU_LINKS = [
   { href: "/", label: "Global Leaderboard" },
-  { href: "highlight", label: "Highlight" },
-  { href: "inputs", label: "Inputs" },
+  { href: "/highlight", label: "Highlight" },
+  { href: "/inputs", label: "Inputs" },
   { href: "/authors", label: "Authors" },
   { href: "/tracks", label: "Tracks" },
   { href: "/tmnf-stats", label: "TMNF Stats" },
@@ -36,6 +36,7 @@ export default function Header() {
 
   const menu = useHoverDropdown();
   const userMenu = useHoverDropdown();
+  const adminMenu = useHoverDropdown();
 
   useEffect(() => {
     let ticking = false;
@@ -75,23 +76,11 @@ export default function Header() {
 
   return (
     <header
-      className={`
-        fixed top-0 left-0 right-0 z-50
-        transition-all duration-500 ease-out
-        ${
-          showHeader
-            ? "-translate-y-0.5 opacity-100"
-            : "-translate-y-6 opacity-0 pointer-events-none"
-        }
-      `}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out
+        ${showHeader ? "-translate-y-0.5 opacity-100" : "-translate-y-6 opacity-0 pointer-events-none"}`}
     >
       <div className="flex justify-center px-4">
-        <div
-          className="w-full max-w-6xl border border-slate-700 bg-slate-950/50 shadow-xl backdrop-blur-md
-            bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3
-          "
-        >
-          {/* LEFT */}
+        <div className="w-full max-w-6xl border border-slate-700 bg-slate-950/50 shadow-xl backdrop-blur-md bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3">
           <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4">
 
             {/* MENU */}
@@ -156,7 +145,7 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* CENTER */}
+            {/* GAMES */}
             <div className="hidden md:flex min-w-0 items-center justify-center px-6">
               <nav className="flex items-center gap-4 overflow-x-auto scrollbar-none">
                 {Object.entries(GAME_SLUGS).map(([slug, game]) => {
@@ -179,10 +168,8 @@ export default function Header() {
               </nav>
             </div>
           
-            {/* RIGHT */}
+            {/* USER */}
             <div className="flex items-center gap-4 whitespace-nowrap">
-              
-              {/* USER */}
               <div className="relative">
                 {!isLoading && profile?.username ? (
                   <>
@@ -229,23 +216,58 @@ export default function Header() {
                         <Link href="/profile" className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded">
                           Profile
                         </Link>
-
+                                                
                         {profile?.role === "admin" && (
-                          <>
-                            <Link
-                              href="/admin-tas"
-                              className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                          <div
+                            className="relative"
+                            onMouseEnter={adminMenu.openNow}
+                            onMouseLeave={adminMenu.closeLater}
+                          >
+                            <div
+                              className="flex items-center justify-between px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded cursor-pointer"
+                              onMouseEnter={adminMenu.openNow}
                             >
-                              Admin TAS
-                            </Link>
-                            
-                            <Link
-                              href="/admin-rta"
-                              className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                              <span>Admin</span>
+                              <span className="text-slate-400">▶</span>
+                            </div>
+
+                            <div
+                              onMouseEnter={adminMenu.openNow}
+                              onMouseLeave={adminMenu.closeLater}
+                              className={`
+                                absolute left-full top-0 w-40
+                                transition-all duration-150
+                                ${
+                                  adminMenu.open
+                                    ? "opacity-100 pointer-events-auto"
+                                    : "opacity-0 pointer-events-none"
+                                }
+                              `}
                             >
-                              Admin RTA
-                            </Link>
-                          </>
+                              <div className="rounded-md border border-slate-700 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
+                                <Link
+                                  href="/admin-tas"
+                                  className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                                >
+                                  TAS
+                                </Link>
+
+                                <Link
+                                  href="/admin-rta"
+                                  className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                                >
+                                  RTA
+                                </Link>
+
+                                <Link
+                                  href="/admin-authors"
+                                  className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                                >
+                                  Authors
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
                         )}
 
                         <button
@@ -261,7 +283,6 @@ export default function Header() {
                   <div className="h-10.5 w-30" />
                 )}
               </div>
-
             </div>
           </div>
         </div>

@@ -101,6 +101,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
           highlightRecent={highlight_recent}
           currentRecords={currentRecords}
           selectedAuthor={selectedAuthor}
+          selectedCategory={selectedCategory}
           selectedEnvironment={selectedEnvironment}
         />
 

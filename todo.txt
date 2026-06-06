@@ -14,7 +14,9 @@ Profile:
  - Add table to connect players with authors
  - Add TASes for verified profiles
 Loading symbols for tables while waiting for supabase (noseboosting car??)
-Need to be able to add new authors to database table
+
+Fix Time Saved for WR History graph
+Improvements for Cumulative Time Saved graph (add track groups and legend with switching off, auto scale y-axis, etc.)
 
 
 

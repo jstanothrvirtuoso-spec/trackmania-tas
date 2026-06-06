@@ -7,7 +7,7 @@ import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting"
 import SortIndicator from "@/components/SortIndicator"
 import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
 
-type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate";
+type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate" | "inputs";
 
 function getTrackDifficultyTint(category: string, i: number) {
   switch (category) {
@@ -60,10 +60,11 @@ interface RecordTableProps {
   highlightRecent: boolean;
   currentRecords: RecordRow[];
   selectedAuthor: string;
+  selectedCategory: string;
   selectedEnvironment: Environment;
 };
 
-export default function RecordTable({ game, showRta, highlightRecent, currentRecords, selectedAuthor, selectedEnvironment }: RecordTableProps) {
+export default function RecordTable({ game, showRta, highlightRecent, currentRecords, selectedAuthor, selectedCategory, selectedEnvironment }: RecordTableProps) {
 
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
@@ -98,6 +99,11 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
           aVal = a.tas ? a.tas.time_ms : 0;
           bVal = b.tas ? b.tas.time_ms : 0;
+          break;
+        case "inputs":
+          if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
+          aVal = a.tas ? a.tas.num_inputs ?? 0 : 0;
+          bVal = b.tas ? b.tas.num_inputs ?? 0 : 0;
           break;
         case "diff":
           if (aHasEntry !== bHasEntry) return aHasEntry ? -1 : 1;
@@ -186,33 +192,60 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                   <SortIndicator active={sortField === "track"} order={sortOrder} />
                 </div>
               </th>
-              <th
-                onClick={() => handleSort("time")}
-                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>Time</span>
-                  <SortIndicator active={sortField === "time"} order={sortOrder} />
-                </div>
-              </th>
-              <th
-                onClick={() => handleSort("diff")}
-                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>Diff</span>
-                  <SortIndicator active={sortField === "diff"} order={sortOrder} />
-                </div>
-              </th>
-              <th
-                onClick={() => handleSort("percentSaved")}
-                className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>%</span>
-                  <SortIndicator active={sortField === "percentSaved"} order={sortOrder} />
-                </div>
-              </th>
+
+              
+              {selectedCategory === "Low Input" ? 
+                <>
+                  <th
+                    onClick={() => handleSort("inputs")}
+                    className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Inputs</span>
+                      <SortIndicator active={sortField === "inputs"} order={sortOrder} />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort("time")}
+                    className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Time</span>
+                      <SortIndicator active={sortField === "time"} order={sortOrder} />
+                    </div>
+                  </th>
+                </>
+                :
+                <>
+                  <th
+                    onClick={() => handleSort("time")}
+                    className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Time</span>
+                      <SortIndicator active={sortField === "time"} order={sortOrder} />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort("diff")}
+                    className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>Diff</span>
+                      <SortIndicator active={sortField === "diff"} order={sortOrder} />
+                    </div>
+                  </th>
+                  <th
+                    onClick={() => handleSort("percentSaved")}
+                    className="px-2 py-1 bg-slate-900/90 border-y border-slate-800 w-[60px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <span>%</span>
+                      <SortIndicator active={sortField === "percentSaved"} order={sortOrder} />
+                    </div>
+                  </th>
+                </>
+              }
               <th
                 onClick={() => handleSort("authors")}
                 className="px-2 py-1 bg-slate-900/90 border border-slate-800 w-[320px] font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition"
@@ -290,7 +323,9 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
               <th className="border-b border-slate-400"></th>
               <th className="border-b border-slate-400"></th>
               <th className="border-b border-slate-400"></th>
-              <th className="border-b border-slate-400"></th>
+              {selectedCategory !== "Low Input" && (
+                <th className="border-b border-slate-400"></th>
+              )}
               <th></th>
               <th className="border-b border-slate-400"></th>
               <th className="border-b border-slate-400"></th>
@@ -342,40 +377,44 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                       row.track
                     )}
                   </td>
-                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
-                    {entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}
-                  </td>
-                  <td
-                    className={`px-1.5 py-1 border-b border-slate-800 text-center italic align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
-                      entry &&
-                      row.rta &&
-                      ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) ||
-                        (entry.time_ms - row.rta.time_ms < 0 && isStunt))
-                        ? "text-red-300"
-                        : "text-slate-100"
-                    }`}
-                    style={{
-                      fontFamily: "DOSVGA, monospace",
-                      letterSpacing: "0.05em",
+                  {selectedCategory === "Low Input" ? 
+                    <>
+                      <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
+                        {entry?.num_inputs}
+                      </td>
+                      <td className={ `px-3 py-1 text-slate-100 border-b border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
+                        {entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}
+                      </td>
+                    </>
+                    :
+                    <>
+                      <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
+                        {entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}
+                      </td>
+                      <td
+                        className={`px-1.5 py-1 border-b border-slate-800 text-center italic align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
+                          entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt)) ? "text-red-300" : "text-slate-100"
+                        }`}
+                        style={{
+                          fontFamily: "DOSVGA, monospace",
+                          letterSpacing: "0.05em",
 
-                      // 💡 glow stack (like your vga-text)
-                      textShadow: `
-                        0 0 4px #000000,
-                        0 0 10px #000000,
-                        0 0 18px hsla(0, 0%, 100%, 0.59),
-                        1px 1px 0 hsl(0, 0%, 100%)
-                      `,
-                    }}
-                  >
-                    {entry && row.rta
-                      ? formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)
-                      : "-"}
-                  </td>
-                  <td className={ `px-1.5 py-1 text-slate-100 border-b border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
-                    {entry && row.rta
-                      ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt)
-                      : "-"}
-                  </td>
+                          // 💡 glow stack (like your vga-text)
+                          textShadow: `
+                            0 0 4px #000000,
+                            0 0 10px #000000,
+                            0 0 18px hsla(0, 0%, 100%, 0.59),
+                            1px 1px 0 hsl(0, 0%, 100%)
+                          `,
+                        }}
+                      >
+                        {entry && row.rta ? formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true) : "-"}
+                      </td>
+                      <td className={ `px-1.5 py-1 text-slate-100 border-b border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
+                        {entry && row.rta ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt) : "-"}
+                      </td>
+                    </>
+                  }
                   <td className={ `px-1.5 py-1 text-slate-100 border-b border-l border-slate-800 break-words min-w-[320px] whitespace-normal text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour}` }>
                     {entry ? entry.authors.join(", ") : "-"}
                   </td>

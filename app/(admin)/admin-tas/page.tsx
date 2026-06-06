@@ -20,6 +20,7 @@ export type TasForm = {
   game: Game;
   track: string;
   category: Category;
+  num_inputs: number;
   authors: string[];
   date: string;
   video: string;
@@ -38,7 +39,7 @@ const URL_FIELDS = [
   ["Inputs", "inputs", "https://pastebin.com/<id>"],
 ] as const;
 
-export default function AdminPanel() {
+export default function AdminTas() {
 
   const { showAlert } = useAlert();
   const queryClient = useQueryClient();
@@ -54,6 +55,7 @@ export default function AdminPanel() {
     game: "TMNF",
     track: "",
     category: "Open",
+    num_inputs: 0,
     authors: ["Kimura"],
     date: today,
     video: "",
@@ -89,6 +91,7 @@ export default function AdminPanel() {
       game: form.game,
       track: form.track,
       category: "Open",
+      num_inputs: 0,
       authors: ["Kimura"],
       date: today,
       video: "",
@@ -112,6 +115,7 @@ export default function AdminPanel() {
       game: t.game,
       track: t.track,
       category: t.category,
+      num_inputs: t.num_inputs ?? 0,
       authors: t.authors,
       date: t.date.slice(0, 10),
       video: t.video ?? "",
@@ -130,6 +134,7 @@ export default function AdminPanel() {
       game: s.game ?? "TMNF",
       track: s.track ?? "",
       category: category,
+      num_inputs: 0,
       authors: Array.isArray(s.authors) ? s.authors : [],
       date: s.date?.slice(0, 10) ?? today,
       video: s.video ?? "",
@@ -160,6 +165,7 @@ export default function AdminPanel() {
         game: form.game,
         track: form.track,
         category: form.category,
+        num_inputs: form.num_inputs || null,
         time_ms: timeMs,
         date: new Date(form.date).toISOString(),
         video: form.video || null,
@@ -178,22 +184,53 @@ export default function AdminPanel() {
         return;
       }
 
-      // 2. Convert author names -> junction rows
-      const authorRows = form.authors.map((name) => {
-        const author = authorData.find((a) => a.author === name);
-        return {
-          tas_record_id: tasRecord.id,
-          author_id: author?.id,
-        };
-      }).filter((x) => x.author_id);
+      // Find authors that don't exist yet
+      const existingAuthors = authorData.map((a) => a.author);
 
-      // Clear existing author links first
+      const newAuthors = form.authors.filter(
+        (name) => !existingAuthors.includes(name)
+      );
+
+      // Insert missing authors
+      if (newAuthors.length) {
+        const { error: newAuthorsError } = await supabase
+          .from("authors")
+          .insert(newAuthors.map((author) => ({ author })));
+
+        if (newAuthorsError) {
+          setWarning(newAuthorsError.message);
+          return;
+        }
+        
+        await queryClient.invalidateQueries({
+          queryKey: ["authors"],
+        });
+      }
+
+      // Re-fetch all relevant authors
+      const { data: allAuthors, error: authorsFetchError } = await supabase
+        .from("authors")
+        .select("id, author")
+        .in("author", form.authors);
+
+      if (authorsFetchError) {
+        setWarning(authorsFetchError.message);
+        return;
+      }
+
+      // Build junction rows
+      const authorRows = form.authors.map((name) => ({
+        tas_record_id: tasRecord.id,
+        author_id: allAuthors.find((a) => a.author === name)?.id,
+      }));
+
+      // Clear existing links
       await supabase
         .from("tas_record_authors")
         .delete()
         .eq("tas_record_id", tasRecord.id);
 
-      // Insert new links
+      // Insert links
       const { error: authorsError } = await supabase
         .from("tas_record_authors")
         .insert(authorRows);
@@ -477,6 +514,24 @@ export default function AdminPanel() {
               </div>
             </div>
 
+            {/* NUM INPUTS */}
+            {form.category === "Low Input" && (
+              <div>
+                <div className={labelClass}>Num Inputs (Low Input TASes only)</div>
+
+                <div className="grid grid-cols-4 gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={60}
+                    className={inputClass}
+                    value={form.num_inputs}
+                    onChange={(e) => update("num_inputs", Number(e.target.value))}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* AUTHORS */}
             <AuthorSelector
               authors={form.authors}
@@ -600,6 +655,5 @@ export default function AdminPanel() {
         <div className="fixed inset-0 z-[9999] cursor-wait" />
       )}
     </div>
-    
   );
 }

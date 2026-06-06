@@ -342,31 +342,31 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
             <table className="border-separate border border-slate-800 rounded-lg overflow-hidden text-center text-sm">
               <thead>
                 <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
-                  <th className="px-3 py-2 font-normal">
+                  <th className="px-3 py-1.5 font-normal">
                     Date
                   </th>
 
-                  <th className="px-3 py-2 font-normal">
+                  <th className="px-3 py-1.5 font-normal">
                     Track
                   </th>
 
-                  <th className="px-3 py-2 font-normal">
+                  <th className="px-3 py-1.5 font-normal">
                     Game
                   </th>
 
-                  <th className="px-3 py-2 font-normal">
+                  <th className="px-3 py-1.5 font-normal">
                     Cat.
                   </th>
 
-                  <th className="px-3 py-2 font-normal">
+                  <th className="px-3 py-1.5 font-normal">
                     TAS
                   </th>
 
-                  <th className="px-3 py-2 font-normal">
+                  <th className="px-3 py-1.5 font-normal">
                     RTA
                   </th>
 
-                  <th className="px-3 py-2 font-normal">
+                  <th className="px-3 py-1.5 font-normal">
                     Saved
                   </th>
                 </tr>
@@ -381,38 +381,33 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                   return (
                     <tr
                       key={ index }
-                      className={`
-                        border-b border-slate-800
-                        ${index % 2 === 0
-                          ? "bg-violet-950/10"
-                          : "bg-violet-950/20"}
-                      `}
+                      className={`border-b border-slate-800 ${index % 2 === 0 ? "bg-violet-950/10" : "bg-violet-950/20"}`}
                     >
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-1.5">
                         { formatDate(row.tas.date) }
                       </td>
 
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-1.5">
                         {row.track}
                       </td>
 
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-1.5">
                         {tasGame}
                       </td>
 
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-1.5">
                         { row.tas.category}
                       </td>
 
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-1.5">
                         { formatTime(row.tas.time_ms, isStunt)}
                       </td>
 
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-1.5">
                         { row.rta ? formatTime(row.rta.time_ms, isStunt) : "-" }
                       </td>
 
-                      <td className="px-3 py-2 italic">
+                      <td className="px-3 py-1.5 italic">
                         { row.rta ? formatTime(row.tas.time_ms - row.rta.time_ms, isStunt, false, true) : "-" }
                       </td>
                     </tr>

@@ -1,37 +1,49 @@
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { TasEntry } from "@/utils/typing";
 import { generateGraphColours } from "@/utils/common";
 
+type GraphType = "TASes" | "Contributions" | "TimeSaved"
+
 function round(n: number) { return Math.round(n * 1000) / 1000 }
 
-const AUTHORS = ["Virtuoso", "charlie", "mufattmf", "igntuL", "threadd", "Thoman", "Bice", "CrizpyCheese", "BdcapTAS", "ezmTAS", "Lukalyc", "trabadia"] as const
 const START_DATE = new Date("2021-06-01").getTime();
 const WIDTH = 700;
-const HEIGHT = 320;
+const HEIGHT = 370;
 const PADDING_X = 35;
 const PADDING_Y = 20;
-const Y_TICKS = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24] as const;
-const INITIAL_VISIBLE = Object.fromEntries(AUTHORS.map(c => [c, true])) as Record<string, boolean>;
+const NUM_AUTHORS = 6;
+const Y_STEP = 2;
+const COLOURS = generateGraphColours(NUM_AUTHORS);
 
-export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEntry[] } ) {
+export default function AuthorLeaderboard( { filteredTasRecords, authors } : { 
+  filteredTasRecords: TasEntry[],
+  authors: string[],
+} ) {
 
-  const [visibleAuthors, setVisibleAuthors] = useState(INITIAL_VISIBLE);
-  const [hoverAuthor, setHoverAuthor] = useState("");
+  const [visibleAuthors, setVisibleAuthors] = useState<Record<string, boolean>>(() => (
+    Object.fromEntries(authors.map((a) => [a, true]))
+  ));
+  const [extraAuthor, setExtraAuthor] = useState<string>("");
+  const [hoverAuthor, setHoverAuthor] = useState<string>("");
+  const [graphType, setGraphType] = useState<GraphType>("TASes");
   const [nowDate] = useState(() => Date.now());
 
-  const series = useMemo(() => {
+  const { series, authorMax } = useMemo(() => {
     const currentWR = new Map<string, TasEntry>();
     const authorPoints = new Map<string, number>();
+    const authorMax = new Map<string, number>();
 
     const series: Record<string, { date: string; value: number }[]> =
-      Object.fromEntries(AUTHORS.map(a => [a, []])) as any;
+      Object.fromEntries(authors.map(author => [author, []]));
+    
+    if (!authors?.length) return { series, authorMax };
 
     let lastDay: string | null = null;
     let dirty = false;
 
     function snapshot(date: string) {
-      for (const a of AUTHORS) {
+      for (const a of authors) {
         series[a].push({
           date,
           value: authorPoints.get(a) ?? 0,
@@ -39,10 +51,9 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
       }
     }
 
-    for (const tas of tasRecords) {
+    for (const tas of filteredTasRecords) {
       if (tas.game !== "TMNF") continue;
       if (new Date(tas.date).getTime() < START_DATE) continue;
-
 
       const day = tas.date.slice(0, 10);
 
@@ -57,16 +68,27 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
 
       if (existing && existing.time_ms <= tas.time_ms) continue;
 
-      if (existing) {
+      if (existing && existing.authors.length > 0) {
+        const points = graphType === "TASes" ? 1 
+          : graphType === "TimeSaved" ? existing.time_ms / existing.authors.length / 60000
+          : 1 / existing.authors.length
         for (const a of existing.authors) {
-          authorPoints.set(a, (authorPoints.get(a) ?? 0) - 1);
+          authorPoints.set(a, (authorPoints.get(a) ?? 0) - points);
         }
       }
 
       currentWR.set(tas.track, tas);
-
+      
+      const num_authors = tas.authors.length || 1
+      const points = graphType === "TASes" ? 1 
+        : graphType === "TimeSaved" ? tas.time_ms / num_authors / 60000
+        : 1 / num_authors
       for (const a of tas.authors) {
-        authorPoints.set(a, (authorPoints.get(a) ?? 0) + 1);
+        const currentPoints = (authorPoints.get(a) ?? 0) + points
+        authorPoints.set(a, currentPoints);
+        if (currentPoints > (authorMax.get(a) ?? 0)) {
+          authorMax.set(a, currentPoints)
+        }
       }
 
       dirty = true;
@@ -76,44 +98,99 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
       snapshot(lastDay);
     }
 
-    return series;
-  }, [tasRecords]);
+    return {
+      series,
+      authorMax,
+    };
+  }, [filteredTasRecords, authors, graphType]);
 
-  const colours = useMemo(() => generateGraphColours(AUTHORS.length), []);
-  
-  const COLOUR_MAP = Object.fromEntries(
-    AUTHORS.map((a, i) => [a, colours[i]])
-  );
+  const topAuthors = useMemo(() => {
+    return [...authorMax.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, NUM_AUTHORS)
+      .map(([author]) => author)
+  }, [authorMax]);
+
+  useEffect(() => {
+    if (extraAuthor && topAuthors.includes(extraAuthor)) {
+      setExtraAuthor("");
+    }
+  }, [topAuthors, extraAuthor]);
 
   const datePadding = Math.max((nowDate - START_DATE) * 0.03, 1000 * 60 * 60 * 24 * 30);
   const minDate = START_DATE - datePadding;
   const startYear = new Date(minDate).getFullYear();
   const endYear = new Date(nowDate).getFullYear();
-  const years = Array.from(
-    { length: endYear - startYear + 1 },
-    (_, i) => startYear + i
-  );
+  const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+  const y_step = graphType === "TimeSaved" ? 2 : 2
 
-  const orderedAuthors = [...AUTHORS].sort((a, b) => {
-    if (a === hoverAuthor) return 1;
-    if (b === hoverAuthor) return -1;
-    return 0;
-  });
-  
+  const colour_map = useMemo(() => {
+    return Object.fromEntries(
+      topAuthors.map((a, i) => [a, COLOURS[i]])
+    );
+  }, [topAuthors]);
+
+  const safeExtraAuthor = extraAuthor && topAuthors.includes(extraAuthor) ? "" : extraAuthor;
+  const orderedAuthors = useMemo(() => {
+    const base = [...topAuthors];
+
+    if (safeExtraAuthor) {
+      base.push(safeExtraAuthor);
+    }
+
+    return base.sort((a, b) => {
+      if (a === hoverAuthor) return 1;
+      if (b === hoverAuthor) return -1;
+      return 0;
+    });
+  }, [topAuthors, safeExtraAuthor, hoverAuthor]);
+
+  const extraAuthorOptions = useMemo(() => {
+    return [...authorMax.entries()]
+      .filter(([, max]) => max > 0)
+      .sort((a, b) => b[1] - a[1])
+      .map(([author]) => author);
+  }, [authorMax]);
+
+  const maxTick = useMemo(() => {
+    const activeAuthors = [...topAuthors, extraAuthor].filter(Boolean);
+    const visible = activeAuthors.filter((a) => visibleAuthors[a]);
+
+    if (visible.length === 0) return 10;
+
+    let max = 8;
+    for (const a of visible) {
+      max = Math.max(max, authorMax.get(a) ?? 0);
+    }
+    return Math.ceil((max + 0.1) / Y_STEP) * Y_STEP;
+  }, [topAuthors, extraAuthor, visibleAuthors, authorMax]);
+
   function xScale(date: string) {
     const t = new Date(date).getTime();
     return round(PADDING_X + ((t - minDate) / (nowDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
   };
 
   function yScale(v: number) {
-    return round(HEIGHT - PADDING_Y - ((v - Y_TICKS[0]) / (Y_TICKS[Y_TICKS.length - 1] - Y_TICKS[0] || 1)) * (HEIGHT - PADDING_Y * 2));
+    return round(HEIGHT - PADDING_Y - (v / maxTick) * (HEIGHT - PADDING_Y * 2));
   }
 
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm shadow-xl">
-      <h2 className="mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-        WR History
-      </h2>
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+          WR History
+        </h2>
+
+        <select
+          value={graphType}
+          onChange={(e) => setGraphType(e.target.value as GraphType)}
+          className="text-[13px] bg-slate-800 text-slate-300 border border-slate-700 rounded px-2 py-1 cursor-pointer"
+        >
+          <option value="TASes">TASes</option>
+          <option value="Contributions">Contributions</option>
+          <option value="TimeSaved">Time Saved</option>
+        </select>
+      </div>
 
       <svg width={WIDTH} height={HEIGHT}>
 
@@ -122,7 +199,10 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
         <line x1={PADDING_X} y1={PADDING_Y} x2={PADDING_X} y2={HEIGHT - PADDING_Y} className="stroke-slate-600" />
 
         {/* Y Ticks */}
-        {Y_TICKS.map(tick => {
+        {Array.from(
+          { length: Math.floor(maxTick / y_step) + 1 },
+          (_, i) => i * y_step
+        ).map((tick) => {
           const y = yScale(tick);
 
           return (
@@ -187,10 +267,14 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
             const x = xScale(p.date);
             const y = yScale(p.value);
 
-            if (i === 0) {
-              d += `M ${x} ${y}`;
+            if (d === "") {
+              if (p.value === 0) continue;
+              d += `M ${x} ${yScale(0)} V ${y}`;
             } else {
-              d += ` H ${x} V ${y}`;
+              if (p.value > 0) {
+                d += ` H ${x}`
+              };
+              d += ` V ${y}`;
             }
           }
 
@@ -199,8 +283,8 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
               key={author}
               d={d}
               fill="none"
-              stroke={COLOUR_MAP[author]}
-              strokeWidth={hoverAuthor === author ? 4 : 1.5}
+              stroke={colour_map[author] ?? "#fff"}
+              strokeWidth={ hoverAuthor === author ? 4 : extraAuthor === author ? 2 : 1.5 }
             />
           );
         })}
@@ -209,9 +293,9 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
       
       {/* Legend */}
       <div className="mt-4 flex justify-center">
-        <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center max-w-[70%] text-[10px]">
-          {AUTHORS.map((author) => {
-            const colour = COLOUR_MAP[author];
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[45%] text-[10px]">
+          {topAuthors.map(author => {
+            const colour = colour_map[author];
             const active = visibleAuthors[author];
 
             return (
@@ -237,6 +321,25 @@ export default function AuthorLeaderboard( { tasRecords } : { tasRecords: TasEnt
               </button>
             );
           })}
+
+          <select
+            value={extraAuthor}
+            onMouseEnter={() => setHoverAuthor(extraAuthor)}
+            onMouseLeave={() => setHoverAuthor("")}
+            onChange={(e) => setExtraAuthor(e.target.value)}
+            className="text-[10px] bg-slate-800 text-slate-300 border border-slate-700 rounded px-2 py-1 cursor-pointer"
+          >
+            <option value="">Add author...</option>
+
+            {extraAuthorOptions
+              .filter((a) => !topAuthors.includes(a))
+              .map((author) => (
+                <option key={author} value={author}>
+                  {`${author} (Max: ${Math.round((authorMax.get(author) ?? 0) * 100) / 100})`}
+                </option>
+              ))}
+          </select>
+
         </div>
       </div>
       

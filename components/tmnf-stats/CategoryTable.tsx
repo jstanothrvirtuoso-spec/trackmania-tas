@@ -98,9 +98,9 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
     
     <div className="mx-1 overflow-auto rounded-xl border border-slate-800 bg-slate-900/20 text-center">
       <table className="w-full text-xs">
-        <thead className="text-slate-200 px-3 py-2 bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] text-sm transition whitespace-nowrap">
+        <thead className="text-slate-200 px-3 py-1.5 bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] text-sm transition whitespace-nowrap">
           <tr className="">
-            <th className="px-3 py-2 tracking-wide">
+            <th className="px-3 py-1.5 tracking-wide">
               Track
             </th>
 
@@ -108,13 +108,13 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               .map((category) => (
                 <th
                   key={category}
-                  className="px-3 py-2"
+                  className="px-3 py-1.5"
                 >
                   {category}
                 </th>
               ))}
 
-            <th className="px-3 py-2">
+            <th className="px-3 py-1.5">
               RTA
             </th>
           </tr>
@@ -127,11 +127,11 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               className="hover:bg-emerald-800/40 transition-colors odd:bg-slate-800/10"
             >
               {/* Track */}
-              <td>
+              <td className="bg-purple-800/5">
                 <Link
                   key={row.track}
                   href={`/tracks?track=${encodeURIComponent(row.track)}`}
-                  className="px-3 py-1.5 text-slate-300 bg-purple-800/5 whitespace-nowrap hover:text-emerald-300"
+                  className="px-3 py-1.5 text-slate-300 whitespace-nowrap hover:text-emerald-300"
                 >
                   {row.track}
                 </Link>

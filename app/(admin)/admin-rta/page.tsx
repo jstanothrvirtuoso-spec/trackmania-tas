@@ -29,7 +29,7 @@ const URL_FIELDS = [
   ["Replay", "replay", "https://drive.google.com/uc?export=download&id=<id>"],
 ] as const;
 
-export default function AdminPanel() {
+export default function AdminRta() {
 
   const { showAlert } = useAlert();
   const [warning, setWarning] = useState("");

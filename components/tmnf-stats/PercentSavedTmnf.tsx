@@ -1,11 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { TasEntry, Category } from "@/utils/typing";
-import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
+import { useMemo } from "react";
+import { TasEntry, Category, RtaEntry } from "@/utils/typing";
+import { CATEGORIES } from "@/utils/constants";
 import { trackList } from "@/lib/TrackList";
-import { useTasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 
 const TIER_COLOURS = [
   ["bg-emerald-700/30", "bg-emerald-700/40"],
@@ -18,28 +16,15 @@ const TIERS: Record<Category, number[]> = {
   "NOseboost": [10, 20, 30],
   "No Uber": [5, 10, 20],
   "WR Route": [2, 4, 5],
-  "No Cut": [1, 2, 4],
+  "No Cut": [0.5, 1, 2],
   "Low Input": [0, 1, 2],
 }
 
-export default function PercentSavedTmnf() {
-
-  const { data: rtaRecords = [] } = useRtaRecords();
-  const { data: tasRecords = [] } = useTasRecords();
-  const [category, setCategory] = useState<Category>("Open");
-
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords])
-
-  const filteredTasRecords = useMemo(() => {
-    if (category === "Open") return tasRecords;
-
-    const allowed = CATEGORY_FILTERS[category];
-
-    return tasRecords.filter((r) => allowed.has(r.category));
-  }, [tasRecords, category]);
+export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, category } : {
+  bestRtaByTrack: Map<string, RtaEntry>, 
+  filteredTasRecords: TasEntry[],
+  category: Category,
+} ) {
 
   const bestTasByTrack = useMemo(() => {
     const map = new Map<string, TasEntry>();
@@ -95,19 +80,6 @@ export default function PercentSavedTmnf() {
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-end pb-2">
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value as Category)}
-          className="rounded bg-slate-800 px-2 py-1 text-sm"
-        >
-          {CATEGORIES.filter((r) => (r != "Low Input")).map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </div>
 
       <div className="overflow-hidden w-full rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
         <table className="table-fixed w-full text-center backdrop-blur-md rounded-2xl">
