@@ -74,7 +74,7 @@ export function Maintainers() {
             </div>
 
             <Image
-              src="/avatars/catears.gif"
+              src="/avatars/catears.png"
               alt="Cat-ears"
               width={64}
               height={64}

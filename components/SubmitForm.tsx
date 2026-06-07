@@ -224,6 +224,15 @@ export default function SubmitForm() {
       resetForm();
     } finally {
       setLoading(false);
+      const audio = new Audio("/sounds/stary.mp3");
+
+audio.addEventListener("error", (e) => {
+  console.error("Audio error:", e);
+});
+
+audio.play().catch((err) => {
+  console.error("Play failed:", err);
+});
     }
   }
 

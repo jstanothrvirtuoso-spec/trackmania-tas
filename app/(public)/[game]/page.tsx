@@ -79,8 +79,22 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
     return <div className="text-white p-10">Loading...</div>;
   }
 
-  return (
-    <div className="bg-slate-950 pt-16 min-h-screen min-w-screen">
+ return (
+  <div className="relative pt-16 min-h-screen min-w-screen overflow-hidden">
+
+    {/* Blurred wallpaper layer */}
+    <div
+      className="absolute inset-0 bg-cover bg-center scale-110 blur-md"
+      style={{ backgroundImage: "url('/wallpapers/gamewp.webp')" }}
+    />
+
+    {/* Dark overlay */}
+    <div className="absolute inset-0 bg-black/60" />
+
+    {/* Content */}
+    <div className="relative z-10">
+
+
       <div className="flex justify-center py-3">
         <HeaderOptions
           game={gameName}
@@ -114,6 +128,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
