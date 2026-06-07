@@ -60,9 +60,10 @@ export default function TmnfHistory() {
           </select>
         </div>
         
-        {authors && filteredTasRecords && (
+        {authors.length > 0 && bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
           <div className="w-184">
             <AuthorLeaderboard 
+              bestRtaByTrack={bestRtaByTrack} 
               filteredTasRecords={filteredTasRecords}
               authors={authors}
             />
@@ -70,10 +71,12 @@ export default function TmnfHistory() {
         )}
 
         <div className="w-auto">
-          <TotalTimeSaved
-            bestRtaByTrack={bestRtaByTrack} 
-            filteredTasRecords={filteredTasRecords}
-          />
+          {bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
+            <TotalTimeSaved
+              bestRtaByTrack={bestRtaByTrack} 
+              filteredTasRecords={filteredTasRecords}
+            />
+          )}
         </div>
         
         <div className="w-184">

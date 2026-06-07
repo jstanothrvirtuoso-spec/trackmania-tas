@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { OVERRIDE } from "@/utils/constants";
 import { SortOrder, RecordRow } from "@/utils/typing";
 import SortIndicator from "@/components/SortIndicator"
-import { trackList } from "@/lib/TrackList"
 
 type SortField = "author" | "tases" | "contributions" | "timeSaved";
 type LeaderboardRows = {
@@ -26,10 +26,10 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
         const authors = row.tas.authors;
         const contribution = 1 / authors.length;
+        const override = OVERRIDE[row.track]?.[row.tas.time_ms];
 
         let timeSaved = 0;
-        const override = trackList[row.track]?.overrideTimeSaved;
-        if (override != null) {
+        if (override) {
           timeSaved = override * 1000;
         } else if (row.rta && row.rta.time_ms > row.tas.time_ms && row.trackInfo.category !== "Stunt") {
           timeSaved = row.rta.time_ms - row.tas.time_ms;

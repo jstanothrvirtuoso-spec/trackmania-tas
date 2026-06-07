@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { SortOrder, TasEntry } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
-import { BADGE_IMAGES, BADGE_RANKS } from "@/utils/constants";
+import { BADGE_IMAGES, BADGE_RANKS, OVERRIDE } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { trackList } from "@/lib/TrackList";
@@ -65,9 +65,10 @@ export default function GlobalLeaderboard() {
 
     bestTasByTrack.forEach((entry) => {
 
-      let savedMs = 0;
       const rta = bestRtaByTrack.get(entry.track);
-      const override = trackList[entry.track].overrideTimeSaved;
+      const override = OVERRIDE[entry.track]?.[entry.time_ms];
+
+      let savedMs = 0;
       if (override) {
         savedMs = override * 1000;
       } else if (rta) {

@@ -8,7 +8,7 @@ import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constant
 import { useAlert } from "@/components/AlertProvider";
 import AuthorSelector from "@/components/AuthorSelector";
 import { trackIds } from "@/lib/TrackId"
-import { useProfile } from "@/lib/Profiles";
+import { useProfilePublicMe } from "@/lib/Profiles";
 import { trackList } from "@/lib/TrackList";
 
 type FormState = {
@@ -84,7 +84,7 @@ const labelClass = "text-sm text-slate-300 py-0.5";
 
 export default function SubmitForm() {
 
-  const { data: profile } = useProfile();
+  const { data: profilePublicMe } = useProfilePublicMe();
   const { showAlert } = useAlert();
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -175,13 +175,13 @@ export default function SubmitForm() {
         return;
       }
 
-      if (!profile?.id) {
+      if (!profilePublicMe?.id) {
         setWarning("Please log in to submit a TAS");
         return;
       }
 
       const game = trackList[replay.track]?.game;
-      const filePath = `pending/${profile.id}/${crypto?.randomUUID?.() ?? Date.now()}.gbx`;
+      const filePath = `pending/${profilePublicMe.id}/${crypto?.randomUUID?.() ?? Date.now()}.gbx`;
 
       const { error: uploadError } = await supabase.storage
         .from("replays")
@@ -203,8 +203,8 @@ export default function SubmitForm() {
         user_notes: form.user_notes.trim() || null,
         replay_path: filePath,
         file_name: replay.file.name,
-        submitted_by: profile.id,
-        submitted_by_name: profile?.username ?? null,
+        submitted_by: profilePublicMe.id,
+        submitted_by_name: profilePublicMe?.display_name ?? null,
         status: "pending",
       };
 

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { FaDiscord } from "react-icons/fa";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { useProfile } from "@/lib/Profiles";
+import { useProfilePublicMe } from "@/lib/Profiles";
 import { PROFILE_AVATARS, PROFILE_COLOURS, CURSOR, GAME_SLUGS } from "@/utils/constants"
 import { useHoverDropdown } from "@/utils/common";
 
@@ -28,7 +29,7 @@ export default function Header() {
   const pathname = usePathname();
   const currentPage = pathname === "/" ? "/" : pathname.split("/")[1];
 
-  const { data: profile, isLoading } = useProfile();
+  const { data: profilePublicMe, isLoading } = useProfilePublicMe();
   const queryClient = useQueryClient();
 
   const [showHeader, setShowHeader] = useState(true);
@@ -109,7 +110,7 @@ export default function Header() {
               >
                 <div className="rounded-lg border border-slate-500 bg-gradient-to-bl from-green-900/95 to-blue-900/90 shadow-lg p-2 flex flex-col gap-1 whitespace-nowrap">
 
-                  {!profile?.username && (
+                  {!profilePublicMe?.username && (
                     <Link
                       href={`/login?next=${encodeURIComponent(pathname)}`}
                       style={{ fontFamily: "DOSVGA" }}
@@ -168,10 +169,12 @@ export default function Header() {
               </nav>
             </div>
           
-            {/* USER */}
+            {/* RIGHT */}
             <div className="flex items-center gap-4 whitespace-nowrap">
+
+              {/* USER */}
               <div className="relative">
-                {!isLoading && profile?.username ? (
+                {!isLoading && profilePublicMe?.display_name ? (
                   <>
                     <button
                       onMouseEnter={userMenu.openNow}
@@ -180,10 +183,10 @@ export default function Header() {
                     >
                       <div 
                         className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30"
-                        style={{ backgroundColor: PROFILE_COLOURS[profile.colour] ?? PROFILE_COLOURS[0]}}
+                        style={{ backgroundColor: PROFILE_COLOURS[profilePublicMe.colour] ?? PROFILE_COLOURS[0]}}
                       >
                         <Image
-                          src={PROFILE_AVATARS[profile.avatar] ?? PROFILE_AVATARS[0]}
+                          src={PROFILE_AVATARS[profilePublicMe.avatar] ?? PROFILE_AVATARS[0]}
                           alt="Avatar"
                           width={24}
                           height={24}
@@ -192,7 +195,7 @@ export default function Header() {
                       </div>
 
                       <span className="hidden text-[17px] lg:block">
-                        {profile.username.length > 15 ? `${profile.username.slice(0, 15)}...` : profile.username}
+                        {profilePublicMe.display_name.length > 15 ? `${profilePublicMe.display_name.slice(0, 15)}...` : profilePublicMe.display_name}
                       </span>
                     </button>
 
@@ -217,7 +220,7 @@ export default function Header() {
                           Profile
                         </Link>
                                                 
-                        {profile?.role === "admin" && (
+                        {profilePublicMe?.role === "admin" && (
                           <div
                             className="relative"
                             onMouseEnter={adminMenu.openNow}
@@ -283,6 +286,17 @@ export default function Header() {
                   <div className="h-10.5 w-30" />
                 )}
               </div>
+
+              {/* DISCORD */}
+              <a
+                href="https://discord.gg/tD4rarRYpj"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5865F2] text-white transition-transform hover:scale-105"
+                aria-label="Discord"
+              >
+                <FaDiscord size={22} />
+              </a>
             </div>
           </div>
         </div>

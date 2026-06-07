@@ -56,15 +56,15 @@ function getTmxLink(id: number, game: Game) {
 
 interface RecordTableProps {
   game: Game;
-  showRta: boolean;
-  highlightRecent: boolean;
+  show_rta: boolean;
+  show_recent: boolean;
   currentRecords: RecordRow[];
   selectedAuthor: string;
   selectedCategory: string;
   selectedEnvironment: Environment;
 };
 
-export default function RecordTable({ game, showRta, highlightRecent, currentRecords, selectedAuthor, selectedCategory, selectedEnvironment }: RecordTableProps) {
+export default function RecordTable({ game, show_rta, show_recent, currentRecords, selectedAuthor, selectedCategory, selectedEnvironment }: RecordTableProps) {
 
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
@@ -277,7 +277,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                 Links
               </th>
 
-              {showRta && (
+              {show_rta && (
                 <>
                   <th className="pl-5"></th>
                   <th 
@@ -336,8 +336,8 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
           <tbody className="font-sans divide-y divide-slate-800">
             {filteredRows.map((row, i) => {
               const entry = row.tas;
-              const recent = entry ? isRecentEntry(entry.date, highlightRecent) : false;
-              const rtaRecent = row.rta ? isRecentEntry(row.rta.date, highlightRecent) : false;
+              const recent = entry ? isRecentEntry(entry.date, show_recent) : false;
+              const rtaRecent = row.rta ? isRecentEntry(row.rta.date, show_recent) : false;
               const tmxLink = getTmxLink(row.trackInfo.id, row.trackInfo.game);
               const colour = getTrackDifficultyTint(row.trackInfo.category, i)
               const bgColour = `${recent ? "italic bg-sky-400/30 text-sky-100" : colour}`
@@ -448,7 +448,7 @@ export default function RecordTable({ game, showRta, highlightRecent, currentRec
                       </div>
                     : "-"}
                   </td>
-                  {showRta && (
+                  {show_rta && (
                     <>
                       <td className="pl-5"></td>
                       <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour} ${

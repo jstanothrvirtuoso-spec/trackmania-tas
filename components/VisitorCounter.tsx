@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useProfile } from "@/lib/Profiles";
+import { useProfilePrivate } from "@/lib/Profiles";
 
 export default function VisitorCounter() {
 
-  const { data: profile } = useProfile();
+  const { data: profilePrivate } = useProfilePrivate();
   const [visits, setVisits] = useState<string>("0");
   const [uniqueVisitors, setUniqueVisitors] = useState<string>("0");
   const [onSite, setOnSite] = useState<string>("0");
@@ -88,7 +88,7 @@ export default function VisitorCounter() {
     };
   }, []);
 
-  if (!mounted || !profile?.show_visitor_counter) return null;
+  if (!mounted || !profilePrivate?.show_visitor_counter) return null;
 
   return (
     <div className="fixed bottom-6 right-6 rounded border border-green-500 bg-black/80 p-4 font-mono text-xs text-green-400 backdrop-blur-md">

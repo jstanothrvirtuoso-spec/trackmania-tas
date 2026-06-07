@@ -7,7 +7,7 @@ import { Environment, Category, TasEntry } from "@/utils/typing";
 import { trackList } from "@/lib/TrackList";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
-import { useProfile } from "@/lib/Profiles";
+import { useProfilePrivate } from "@/lib/Profiles";
 import HeaderOptions from "@/components/game/HeaderOptions";
 import RecordTable from "@/components/game/RecordTable";
 import TimeSaved from "@/components/game/TimeSaved";
@@ -28,7 +28,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
   const allowedCategories = CATEGORY_FILTERS[selectedCategory]
 
-  const { data: profile, isLoading } = useProfile();
+  const { data: profilePrivate, isLoading } = useProfilePrivate();
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
   const bestRtaByTrack = useMemo(() => {
@@ -41,8 +41,8 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
     show_time_saved = true,
     show_leaderboard = true,
     show_rta_leaderboard = true,
-    highlight_recent = true,
-  } = profile ?? {};
+    show_recent = true,
+  } = profilePrivate ?? {};
 
   const currentRecords = useMemo(() => {
     const bestTasByTrack = new Map<string, TasEntry>();
@@ -97,8 +97,8 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
       <div className="lg:flex justify-center">
         <RecordTable 
           game={gameName}
-          showRta={show_rta}
-          highlightRecent={highlight_recent}
+          show_rta={show_rta}
+          show_recent={show_recent}
           currentRecords={currentRecords}
           selectedAuthor={selectedAuthor}
           selectedCategory={selectedCategory}

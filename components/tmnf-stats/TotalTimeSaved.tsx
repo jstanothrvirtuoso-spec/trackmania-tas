@@ -1,89 +1,136 @@
 
 import { useState, useMemo } from "react";
 import { RtaEntry, TasEntry } from "@/utils/typing";
+import { trackList } from "@/lib/TrackList";
+
+type TrackSets = "Overall" | "White" | "Green" | "Blue" | "Red" | "Black"
 
 const WIDTH = 700;
 const HEIGHT = 420;
 const PADDING_X = 35;
 const PADDING_Y = 20;
-const Y_TICKS = [0, 600000, 1200000, 1800000, 2400000, 3000000, 3600000, 4200000] as const;
+const TRACK_SET_COLOURS: Record<TrackSets, string> = {
+  Overall: "#5a0da3",
+  White: "#dbdbdb",
+  Green: "#21b858",
+  Blue: "#185fd1",
+  Red: "#b92020",
+  Black: "#59575a",
+};
 
 export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } : {
   bestRtaByTrack: Map<string, RtaEntry>, 
   filteredTasRecords: TasEntry[] 
 } ) {
   
-  const points = useMemo(() => {
-    const tas = filteredTasRecords
-      .filter((e) => e.game === "TMNF" || e.game === "TMNF No Cut")
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const [maxDate] = useState<number>(() => Date.now());
+  const [visibleSets, setVisibleSets] = useState<Record<string, boolean>>(() => {
+    return { "Overall": true, "White": true, "Green": true, "Blue": true, "Red": true, "Black": true }
+  });
 
+  const points = useMemo(() => {
+
+    const tmnfRecords = filteredTasRecords.filter((e) => e.game === "TMNF" || e.game === "TMNF No Cut")
     const cutoff = new Date("2021-01-01").getTime();
     const bestTasByTrack = new Map<string, number>();
-    let cumulativeSaved = 0;
 
-    const result: { date: string; time_ms: number }[] = [];
+    const cumulativeSaved = {
+      "White": 0,
+      "Green": 0,
+      "Blue": 0,
+      "Red": 0,
+      "Black": 0,
+      "Overall": 0,
+    } satisfies Record<TrackSets, number>;
 
-    for (const entry of tas) {
-      const rta = bestRtaByTrack.get(entry.track);
-      if (!rta) continue;
-      const rtaTime = rta.time_ms;
-      const currentBest = bestTasByTrack.get(entry.track);
+    const trackSet = {
+      "White": [] as { date: string; time_ms: number }[],
+      "Green": [] as { date: string; time_ms: number }[],
+      "Blue": [] as { date: string; time_ms: number }[],
+      "Red": [] as { date: string; time_ms: number }[],
+      "Black": [] as { date: string; time_ms: number }[],
+      "Overall": [] as { date: string; time_ms: number }[],
+    };
 
-      if (currentBest === undefined || entry.time_ms < currentBest) {
-        const prevBest = currentBest ?? rtaTime;
-        const improvement = prevBest - entry.time_ms;
+    for (const tas of tmnfRecords) {
+      const track = trackList[tas.track].baseTrack ?? tas.track
+      const rta = bestRtaByTrack.get(track)!;
+      const currentBest = bestTasByTrack.get(track) ?? rta.time_ms;
 
-        if (improvement > 0) {
-          cumulativeSaved += improvement;
-          bestTasByTrack.set(entry.track, entry.time_ms);
+      if (tas.time_ms < currentBest) {
 
-          if (new Date(entry.date).getTime() < cutoff) continue;
-          result.push({
-            date: entry.date,
-            time_ms: cumulativeSaved,
-          });
-        }
+        const improvement = currentBest - tas.time_ms;
+        const category = trackList[track].category as TrackSets;
+
+        cumulativeSaved[category] += improvement;
+        cumulativeSaved["Overall"] += improvement;
+        bestTasByTrack.set(track, tas.time_ms);
+
+        if (new Date(tas.date).getTime() < cutoff) continue;
+        trackSet["Overall"].push({
+          date: tas.date,
+          time_ms: cumulativeSaved["Overall"],
+        });
+
+        trackSet[category].push({
+          date: tas.date,
+          time_ms: cumulativeSaved[category],
+        })
       }
     }
-
-    return result;
+    
+    return trackSet;
   }, [filteredTasRecords, bestRtaByTrack]);
-  
-  const [maxDate] = useState<number>(() => Date.now());
 
-  if (!points.length) return null;
-  
-  const firstDate = new Date(points[2].date).getTime();
-  const lastDate = new Date(points[points.length - 1].date).getTime();
+  const firstDate = new Date(points["Overall"][2].date).getTime();
+  const lastDate = new Date(points["Overall"][points["Overall"].length - 1].date).getTime();
   const datePadding = Math.max((lastDate - firstDate) * 0.05, 1000 * 60 * 60 * 24 * 30);
   const minDate = firstDate - datePadding;
   const startYear = new Date(minDate).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
-
-  const years = Array.from(
-    { length: endYear - startYear + 1 },
-    (_, i) => startYear + i
-  );
+  const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
   
+  const { maxTick, yStep } = useMemo(() => {
+    let max = 0.01;
+    for (const set of Object.keys(points) as TrackSets[]) {
+      if (!visibleSets[set]) continue;
+
+      const data = points[set];
+      max = Math.max(max, (data[data.length - 1]?.time_ms ?? 0) / 60000);
+    }
+
+    const yStep = max > 30 ? 10 : max > 10 ? 2 : max > 2 ? 1 : max > 0.5 ? 0.5 : 0.02;
+    const maxTick = Math.ceil((max + 0.001) / yStep) * yStep
+
+    return { maxTick, yStep };
+  }, [visibleSets, points]);
+
   const xScale = (date: string) => {
     const t = new Date(date).getTime();
     return (PADDING_X + ((t - minDate) / (maxDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
   };
 
   const yScale = (v: number) => {
-    const chartMin = Y_TICKS[0];
-    const chartMax = Y_TICKS[Y_TICKS.length - 1];
-    return (HEIGHT - PADDING_Y - ((v - chartMin) / (chartMax - chartMin || 1)) * (HEIGHT - PADDING_Y * 2));
+    return (HEIGHT - PADDING_Y - (v / maxTick) * (HEIGHT - PADDING_Y * 2));
   };
 
-  let path = "";
-  points.forEach((p, i) => {
-    const x = xScale(p.date);
-    const y = yScale(p.time_ms);
+  const paths = (Object.keys(points) as TrackSets[]).map((set) => {
+    let path = `M ${PADDING_X} ${HEIGHT - PADDING_Y}`;
 
-    if (i === 0) path += `M ${x} ${y}`;
-    else path += ` L ${x} ${y}`;
+    points[set].forEach((p, i) => {
+      const x = xScale(p.date);
+      const y = yScale(p.time_ms / 60000);
+
+      path += ` H ${x} V ${y}`;
+    });
+
+    path += `H ${PADDING_X + (WIDTH - PADDING_X * 1.5)}`
+
+    return {
+      set,
+      path,
+      colour: TRACK_SET_COLOURS[set],
+    };
   });
 
   return (
@@ -111,7 +158,10 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
         />
 
         {/* Y Ticks */}
-        {Y_TICKS.map((tick) => {
+        {Array.from(
+          { length: Math.floor(maxTick / yStep) + 1 },
+          (_, i) => i * yStep
+        ).map((tick) => {
           const y = yScale(tick);
 
           return (
@@ -130,7 +180,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
                 textAnchor="end"
                 className="fill-slate-500 text-[10px]"
               >
-                {Math.round(tick / 60000)}
+                {tick}
               </text>
             </g>
           );
@@ -165,24 +215,49 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
         })}
 
         {/* Line */}
-        <path
-          d={path}
-          fill="none"
-          stroke="#34d399"
-          strokeWidth="2"
-        />
-
-        {/* Points */}
-        {points.map((p) => (
-          <circle
-            key={`${p.date}-${p.time_ms}`}
-            cx={xScale(p.date)}
-            cy={yScale(p.time_ms)}
-            r={3}
-            fill="#34d399"
-          />
-        ))}
+        {paths.map(({ set, path, colour }) => {
+          if (!visibleSets[set]) return null;
+          return (
+            <path
+              key={set}
+              d={path}
+              fill="none"
+              stroke={colour}
+              strokeWidth={set === "Overall" ? 3 : 2}
+            />
+          )
+        })}
       </svg>
+      
+      {/* Legend */}
+      <div className="mt-4 flex justify-center">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[48%] text-[10px]">
+          {paths.map(({ set, colour }) => {
+            const active = visibleSets[set];
+
+            return (
+              <button
+                key={set}
+                onClick={() => setVisibleSets((prev) => ({ ...prev, [set]: !prev[set] }))}
+                className={`flex items-center gap-2 transition-opacity cursor-pointer hover:bg-slate-800 ${
+                  active ? "opacity-100" : "opacity-90"
+                }`}
+              >
+                <div
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: colour }}
+                />
+
+                <span
+                  className={active ? "text-slate-300" : "text-slate-600"}
+                >
+                  {set}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

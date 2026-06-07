@@ -6,18 +6,12 @@
 Admin panel:
  - Deleting of old replay items
 Add TMNF Hist page:
- - Line chart of number of TAS WRs over time (one line for each author)
- - Cumulative time saved per track set?
  - Any other ideas??
 Profile:
  - Add user stats
  - Add table to connect players with authors
  - Add TASes for verified profiles
 Loading symbols for tables while waiting for supabase (noseboosting car??)
-
-Fix Time Saved for WR History graph
-Improvements for Cumulative Time Saved graph (add track groups and legend with switching off, auto scale y-axis, etc.)
-
 
 
 

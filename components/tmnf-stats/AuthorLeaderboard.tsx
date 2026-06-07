@@ -1,7 +1,9 @@
 
 import { useState, useMemo, useEffect } from "react";
-import { TasEntry } from "@/utils/typing";
+import { OVERRIDE } from "@/utils/constants";
+import { RtaEntry, TasEntry } from "@/utils/typing";
 import { generateGraphColours } from "@/utils/common";
+import { trackList } from "@/lib/TrackList";
 
 type GraphType = "TASes" | "Contributions" | "TimeSaved"
 
@@ -13,10 +15,10 @@ const HEIGHT = 370;
 const PADDING_X = 35;
 const PADDING_Y = 20;
 const NUM_AUTHORS = 6;
-const Y_STEP = 2;
 const COLOURS = generateGraphColours(NUM_AUTHORS);
 
-export default function AuthorLeaderboard( { filteredTasRecords, authors } : { 
+export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords, authors } : { 
+  bestRtaByTrack: Map<string, RtaEntry>,
   filteredTasRecords: TasEntry[],
   authors: string[],
 } ) {
@@ -37,8 +39,6 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
     const series: Record<string, { date: string; value: number }[]> =
       Object.fromEntries(authors.map(author => [author, []]));
     
-    if (!authors?.length) return { series, authorMax };
-
     let lastDay: string | null = null;
     let dirty = false;
 
@@ -52,7 +52,7 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
     }
 
     for (const tas of filteredTasRecords) {
-      if (tas.game !== "TMNF") continue;
+      if (tas.game !== "TMNF" && tas.game !== "TMNF No Cut") continue;
       if (new Date(tas.date).getTime() < START_DATE) continue;
 
       const day = tas.date.slice(0, 10);
@@ -64,27 +64,43 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
 
       lastDay = day;
 
-      const existing = currentWR.get(tas.track);
+      const track = trackList[tas.track].baseTrack ?? tas.track
+
+      const existing = currentWR.get(track);
+      const rta = bestRtaByTrack.get(tas.track)!;
 
       if (existing && existing.time_ms <= tas.time_ms) continue;
+      if (graphType === "TimeSaved" && !rta) continue;
 
       if (existing && existing.authors.length > 0) {
-        const points = graphType === "TASes" ? 1 
-          : graphType === "TimeSaved" ? existing.time_ms / existing.authors.length / 60000
-          : 1 / existing.authors.length
+
+        let pointsOff: number;
+        if (graphType === "TASes") {
+          pointsOff = 1;
+        } else if (graphType === "TimeSaved") {
+          pointsOff = (OVERRIDE[existing.track]?.[existing.time_ms] ?? ((rta.time_ms - existing.time_ms) / 1000)) / existing.authors.length;
+        } else {
+          pointsOff = 1 / existing.authors.length;
+        }
+
         for (const a of existing.authors) {
-          authorPoints.set(a, (authorPoints.get(a) ?? 0) - points);
+          authorPoints.set(a, (authorPoints.get(a) ?? 0) - pointsOff);
         }
       }
 
-      currentWR.set(tas.track, tas);
+      currentWR.set(track, tas);
       
-      const num_authors = tas.authors.length || 1
-      const points = graphType === "TASes" ? 1 
-        : graphType === "TimeSaved" ? tas.time_ms / num_authors / 60000
-        : 1 / num_authors
+      let pointsOn: number;
+      if (graphType === "TASes") {
+        pointsOn = 1;
+      } else if (graphType === "TimeSaved") {
+        pointsOn = (OVERRIDE[tas.track]?.[tas.time_ms] ?? ((rta.time_ms - tas.time_ms) / 1000)) / tas.authors.length;
+      } else {
+        pointsOn = 1 / tas.authors.length;
+      }
+
       for (const a of tas.authors) {
-        const currentPoints = (authorPoints.get(a) ?? 0) + points
+        const currentPoints = (authorPoints.get(a) ?? 0) + pointsOn
         authorPoints.set(a, currentPoints);
         if (currentPoints > (authorMax.get(a) ?? 0)) {
           authorMax.set(a, currentPoints)
@@ -122,7 +138,6 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
   const startYear = new Date(minDate).getFullYear();
   const endYear = new Date(nowDate).getFullYear();
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
-  const y_step = graphType === "TimeSaved" ? 2 : 2
 
   const colour_map = useMemo(() => {
     return Object.fromEntries(
@@ -152,17 +167,21 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
       .map(([author]) => author);
   }, [authorMax]);
 
-  const maxTick = useMemo(() => {
+  const { maxTick, yStep } = useMemo(() => {
     const activeAuthors = [...topAuthors, extraAuthor].filter(Boolean);
     const visible = activeAuthors.filter((a) => visibleAuthors[a]);
 
-    if (visible.length === 0) return 10;
+    if (visible.length === 0) return { maxTick: 10, yStep: 2 };
 
-    let max = 8;
+    let max = 2;
     for (const a of visible) {
       max = Math.max(max, authorMax.get(a) ?? 0);
     }
-    return Math.ceil((max + 0.1) / Y_STEP) * Y_STEP;
+
+    const yStep = max > 100 ? 30 : max > 30 ? 10 : max > 10 ? 2 : 1;
+    const maxTick = Math.ceil((max + 0.1) / yStep) * yStep
+
+    return { maxTick, yStep };
   }, [topAuthors, extraAuthor, visibleAuthors, authorMax]);
 
   function xScale(date: string) {
@@ -188,7 +207,7 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
         >
           <option value="TASes">TASes</option>
           <option value="Contributions">Contributions</option>
-          <option value="TimeSaved">Time Saved</option>
+          <option value="TimeSaved">Time Saved (sec)</option>
         </select>
       </div>
 
@@ -200,8 +219,8 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
 
         {/* Y Ticks */}
         {Array.from(
-          { length: Math.floor(maxTick / y_step) + 1 },
-          (_, i) => i * y_step
+          { length: Math.floor(maxTick / yStep) + 1 },
+          (_, i) => i * yStep
         ).map((tick) => {
           const y = yScale(tick);
 
@@ -293,7 +312,7 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
       
       {/* Legend */}
       <div className="mt-4 flex justify-center">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[45%] text-[10px]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[48%] text-[10px]">
           {topAuthors.map(author => {
             const colour = colour_map[author];
             const active = visibleAuthors[author];
@@ -342,7 +361,6 @@ export default function AuthorLeaderboard( { filteredTasRecords, authors } : {
 
         </div>
       </div>
-      
     </div>
   )
 }

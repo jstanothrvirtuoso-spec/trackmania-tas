@@ -60,6 +60,37 @@ export const CATEGORY_FILTERS: Record<Category | "RTA", Set<Category | "RTA">> =
   "RTA": new Set(["RTA"])
 } as const;
 
+export const OVERRIDE: Record<string, Record<number, number>> = {
+  "E05-Endurance": { 
+    1480790: 61.17,  // Open 2 laps by VIIT
+    1354190: 95.94,  // Open 3 laps by KMSS
+    1283240: 131.23,  // Open 4 laps by KMSST
+    1243670: 166.62,  // Open 5 laps by T
+    1229990: 167.76,  // Open 5 laps by TM
+    1109590: 108.19,  // Open 3 laps by JVTCIM
+    2786990: 10.83,  // NOseboost 1 lap by Alex
+    2738990: 11.63,  // NOseboost 1 lap by Alex
+    2698790: 12.30,  // NOseboost 1 lap by Alex
+    2569190: 24.90,  // NOseboost 2 laps by AD
+    2267990: 19.47,  // NOseboost 1 lap by Midnight
+    3158790: 1.37,  // No cut 2 laps by Virtuoso
+  },
+  "E03-Endurance": {
+    267110: 2.23,  // WR Route by DELETE_CLUB
+    265820: 2.66,  // WR Route by DELETE_CLUB
+    249590: 8.07,  // No Uber by DELETE_CLUB
+    248180: 8.54,  // No Uber by DELETE_CLUB
+    245030: 9.59,  // No Uber by threadd
+    165620: 36.06,  // Open by Lukalyc
+  },
+  "D15-Endurance": {
+    410690: 2.66,  // No Uber by DarkLink
+    395790: 6.37,  // No Uber by DV
+    382640: 9.00,  // No Uber by CrizpyCheese
+    187610: 117.11,  // Open by EGF
+    123540: 60.82,  // Open by CM
+  },
+}
 
 
 //////////////////////////////////////////////////////////////
@@ -110,7 +141,7 @@ export const DISPLAY_SETTINGS = [
   { key: "show_time_saved", label: "Time Saved", desc: "Display time saved table"},
   { key: "show_leaderboard", label: "Leaderboard", desc: "Show TAS leaderboard rankings" },
   { key: "show_rta_leaderboard", label: "RTA Leaderboard", desc: "Show RTA leaderboard rankings"},
-  { key: "highlight_recent", label: "Highlight Recent", desc: "Highlight recently added TASes" },
+  { key: "show_recent", label: "Highlight Recent", desc: "Highlight recently added TASes" },
   { key: "show_visitor_counter", label: "Visitor Counter", desc: "Display visitor count" },
 ] as const;
 

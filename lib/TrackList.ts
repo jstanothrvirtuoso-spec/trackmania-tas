@@ -64,12 +64,12 @@ export const trackList: Record<string, TrackInfo> = {
   "D12-Speed": { game: "TMNF", id: 2439, category: "Red", environment: "Stadium", noCutTrack: "D12-Speed No Cut" },
   "D13-Race": { game: "TMNF", id: 2441, category: "Red", environment: "Stadium" },
   "D14-Endurance": { game: "TMNF", id: 2443, category: "Red", environment: "Stadium", noCutTrack: "D14-Endurance No Cut" },
-  "D15-Endurance": { game: "TMNF", id: 2445, category: "Red", environment: "Stadium", noCutTrack: "D15-Endurance No Cut", overrideTimeSaved: 60.82 },
+  "D15-Endurance": { game: "TMNF", id: 2445, category: "Red", environment: "Stadium", noCutTrack: "D15-Endurance No Cut" },
   "E01-Obstacle": { game: "TMNF", id: 2447, category: "Black", environment: "Stadium" },
   "E02-Endurance": { game: "TMNF", id: 2449, category: "Black", environment: "Stadium", noCutTrack: "E02-Endurance No Cut" },
-  "E03-Endurance": { game: "TMNF", id: 2451, category: "Black", environment: "Stadium", noCutTrack: "E03-Endurance No Cut", overrideTimeSaved: 36.06 },
+  "E03-Endurance": { game: "TMNF", id: 2451, category: "Black", environment: "Stadium", noCutTrack: "E03-Endurance No Cut" },
   "E04-Obstacle": { game: "TMNF", id: 2454, category: "Black", environment: "Stadium", noCutTrack: "E04-Obstacle No Cut" },
-  "E05-Endurance": { game: "TMNF", id: 2455, category: "Black", environment: "Stadium", overrideTimeSaved: 108.2 },
+  "E05-Endurance": { game: "TMNF", id: 2455, category: "Black", environment: "Stadium" },
 
   // TMNF No Cut
   "A02-Race No Cut": { game: "TMNF No Cut", id: 9421268, category: "White", environment: "Stadium", baseTrack: "A02-Race" },

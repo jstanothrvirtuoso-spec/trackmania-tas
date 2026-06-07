@@ -1,10 +1,10 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
-import { Profile } from "@/lib/Profiles";
+import { ProfilePublic } from "@/lib/Profiles";
 import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS } from "@/utils/constants"
 
-export default function ProfileCard({ profile }: { profile: Profile }) {
+export default function ProfileCard({ profile }: { profile: ProfilePublic }) {
 
   const cardRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
@@ -156,7 +156,7 @@ export default function ProfileCard({ profile }: { profile: Profile }) {
 
           {/* USERNAME */}
           <h2 className="text-4xl font-bold mt-6 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "OktaNeue" }}>
-            {profile.username}
+            {profile.display_name}
           </h2>
 
           {/* BIO */}

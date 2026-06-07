@@ -3,47 +3,101 @@
 import Image from "next/image";
 import { useState } from "react";
 import ProfileCard from "@/components/ProfileCard";
-import { Profile, useProfile, useUpdateProfile } from "@/lib/Profiles";
+import { useProfilePrivate, useProfilePublicMe, useUpdateProfilePrivate, useUpdateProfilePublic } from "@/lib/Profiles";
 import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS, DISPLAY_SETTINGS } from "@/utils/constants";
 
 type EditMode = "avatar" | "banner" | null;
-const USERNAME_REGEX = /^(?! )[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*(?<! )$/;
+type ProfileDraft = {
+  display_name: string;
+  bio: string;
+  avatar: number;
+  banner: number;
+  colour: number;
+
+  show_rta: boolean;
+  show_time_saved: boolean;
+  show_leaderboard: boolean;
+  show_rta_leaderboard: boolean;
+  show_recent: boolean;
+  show_visitor_counter: boolean;
+};
+
+const DISPLAY_NAME_REGEX = /^(?! )[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*(?<! )$/;
 
 export default function ProfilePage() {
 
-  const { data: profile, isLoading } = useProfile();
-  const updateProfile = useUpdateProfile();
+  const { data: profilePublicMe } = useProfilePublicMe();
+  const { data: profilePrivate, isLoading } = useProfilePrivate();
+  const updateProfilePublic = useUpdateProfilePublic();
+  const updateProfilePrivate = useUpdateProfilePrivate();
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editMode, setEditMode] = useState<EditMode>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [draftProfile, setDraftProfile] = useState<Profile | null>(null);
-  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+
+  const [draft, setDraft] = useState<ProfileDraft | null>(null);
 
   function startEditing() {
-    if (!profile) return;
+    if (!profilePrivate || !profilePublicMe) return;
+    
+    if (!draft) {
+      setDraft({
+        display_name: profilePublicMe.display_name,
+        bio: profilePublicMe.bio ?? "",
+        avatar: profilePublicMe.avatar,
+        banner: profilePublicMe.banner,
+        colour: profilePublicMe.colour,
 
-    if (!draftProfile) {
-      setDraftProfile(profile)
-    };
+        show_rta: profilePrivate.show_rta,
+        show_time_saved: profilePrivate.show_time_saved,
+        show_leaderboard: profilePrivate.show_leaderboard,
+        show_rta_leaderboard: profilePrivate.show_rta_leaderboard,
+        show_recent: profilePrivate.show_recent,
+        show_visitor_counter: profilePrivate.show_visitor_counter,
+      });
+    }
 
     setIsEditingProfile(true);
   }
 
-  function updateDraftProfile<K extends keyof Profile>(key: K, value: Profile[K]) {
-    setDraftProfile(prev => prev ? { ...prev, [key]: value } : prev);
-  };
-
-  function toggleSetting(key: keyof Profile) {
-    setDraftProfile(prev => prev ? { ...prev, [key]: !prev[key] } : prev);
-  };
+  function updateDraft<K extends keyof ProfileDraft>(key: K, value: ProfileDraft[K]) {
+    setDraft(prev => prev ? { ...prev, [key]: value } : prev);
+  }
 
   function handleSaveProfile() {
-    if (!draftProfile?.username || usernameError) return;
+    if (!draft?.display_name || displayNameError) return;
 
     setIsSaving(true);
 
-    updateProfile.mutate(draftProfile, {
+    const publicDraft = {
+      display_name: draft.display_name,
+      bio: draft.bio,
+      avatar: draft.avatar,
+      banner: draft.banner,
+      colour: draft.colour,
+    }
+
+    updateProfilePublic.mutate({ user: profilePublicMe, profileUpdate: publicDraft }, {
+      onSuccess: () => {
+        setIsSaving(false);
+        setIsEditingProfile(false);
+      },
+      onError: () => {
+        setIsSaving(false);
+      },
+    });
+
+    const privateDraft = {
+      show_rta: draft.show_rta,
+      show_time_saved: draft.show_time_saved,
+      show_leaderboard: draft.show_leaderboard,
+      show_rta_leaderboard: draft.show_rta_leaderboard,
+      show_recent: draft.show_recent,
+      show_visitor_counter: draft.show_visitor_counter,
+    }
+
+    updateProfilePrivate.mutate(privateDraft, {
       onSuccess: () => {
         setIsSaving(false);
         setIsEditingProfile(false);
@@ -54,7 +108,7 @@ export default function ProfilePage() {
     });
   };
 
-  if (isLoading || !profile) {
+  if (isLoading || !profilePublicMe) {
     return (
       <div className="text-white p-10">
         Loading...
@@ -89,7 +143,7 @@ export default function ProfilePage() {
 
           {/* PROFILE CARD */}
           <ProfileCard 
-            profile={profile}
+            profile={profilePublicMe}
           />
 
         </div>
@@ -115,7 +169,7 @@ export default function ProfilePage() {
                 >
                   <div className="relative w-full h-full banner-frame">
                     <Image
-                      src={PROFILE_BANNERS[draftProfile?.banner ?? 0]}
+                      src={PROFILE_BANNERS[draft?.banner ?? 0]}
                       alt="Banner"
                       fill
                       className="object-cover opacity-80"
@@ -134,11 +188,11 @@ export default function ProfilePage() {
                         key={key}
                         type="button"
                         onClick={() => {
-                          updateDraftProfile("banner", id);
+                          updateDraft("banner", id);
                           setEditMode(null);
                         }}
-                        className={`h-16 rounded overflow-hidden border ${
-                          draftProfile?.banner === id ? "border-emerald-500" : "border-transparent"}`}
+                        className={`h-16 rounded overflow-hidden border cursor-pointer ${
+                          draft?.banner === id ? "border-emerald-500" : "border-transparent"}`}
                       >
                         <Image
                           src={src}
@@ -146,7 +200,7 @@ export default function ProfilePage() {
                           width={50}
                           height={50}
                           className={`object-cover hover:opacity-100 transition ${
-                            draftProfile?.banner === id ? "opacity-100" : "opacity-50"}`}
+                            draft?.banner === id ? "opacity-100" : "opacity-50"}`}
                         />
                       </button>
                     );
@@ -163,11 +217,11 @@ export default function ProfilePage() {
                     type="button"
                     onClick={() => setEditMode("avatar")}
                     className="w-[120px] h-[120px] rounded-full overflow-hidden hover:bg-slate-800 cursor-pointer"
-                    style={{ backgroundColor: PROFILE_COLOURS[draftProfile?.colour ?? 0]}}
+                    style={{ backgroundColor: PROFILE_COLOURS[draft?.colour ?? 0]}}
                   >
                     <div className="flex justify-center">
                       <Image
-                        src={PROFILE_AVATARS[draftProfile?.avatar ?? 0]}
+                        src={PROFILE_AVATARS[draft?.avatar ?? 0]}
                         alt="Avatar"
                         width={100}
                         height={100}
@@ -186,11 +240,11 @@ export default function ProfilePage() {
                             key={key}
                             type="button"
                             onClick={() => {
-                              updateDraftProfile("avatar", id);
+                              updateDraft("avatar", id);
                               setEditMode(null);
                             }}
-                            className={`h-16 rounded overflow-hidden border ${
-                              draftProfile?.avatar === id
+                            className={`h-16 rounded overflow-hidden border cursor-pointer ${
+                              draft?.avatar === id
                                 ? "border-emerald-500"
                                 : "border-transparent"
                             }`}
@@ -202,7 +256,7 @@ export default function ProfilePage() {
                                 width={50}
                                 height={50}
                                 className={`object-cover hover:opacity-100 transition ${
-                                  draftProfile?.avatar === id ? "opacity-100" : "opacity-50"}`}
+                                  draft?.avatar === id ? "opacity-100" : "opacity-50"}`}
                               />
                             </div>
 
@@ -220,11 +274,11 @@ export default function ProfilePage() {
                             key={key}
                             type="button"
                             onClick={() => {
-                              updateDraftProfile("colour", id);
+                              updateDraft("colour", id);
                               setEditMode(null);
                             }}
-                            className={`h-7 rounded overflow-hidden border hover:opacity-100 ${
-                              draftProfile?.colour === id ? "border-emerald-500" : "border-transparent opacity-50"}`}
+                            className={`h-7 rounded overflow-hidden border hover:opacity-100 cursor-pointer ${
+                              draft?.colour === id ? "border-emerald-500" : "border-transparent opacity-50"}`}
                             style={{ backgroundColor: colour }}
                           >
                           </button>
@@ -234,42 +288,42 @@ export default function ProfilePage() {
                   </>
                 )}
 
-                {/* USERNAME */}
+                {/* DISPLAY NAME */}
                 <input
-                  value={draftProfile?.username ?? ""}
+                  value={draft?.display_name ?? ""}
                   maxLength={20}
                   onChange={(e) => {
                     const value = e.target.value;
-                    updateDraftProfile("username", value);
+                    updateDraft("display_name", value);
 
                     if (!value) {
-                      setUsernameError("Username is required");
+                      setDisplayNameError("Display name is required");
                     } else if (value.length < 3) {
-                      setUsernameError("Too short (min 3 characters)");
+                      setDisplayNameError("Too short (min 3 characters)");
                     } else if (value.length > 20) {
-                      setUsernameError("Too long (max 20 characters)");
+                      setDisplayNameError("Too long (max 20 characters)");
                     } else if (value[0] === " ") {
-                      setUsernameError("You cannot start your username with a space");
-                    } else if (!USERNAME_REGEX.test(value)) {
-                      setUsernameError("This username is invalid");
+                      setDisplayNameError("You cannot start your display name with a space");
+                    } else if (!DISPLAY_NAME_REGEX.test(value)) {
+                      setDisplayNameError("This display name is invalid");
                     } else {
-                      setUsernameError(null);
+                      setDisplayNameError(null);
                     }
                   }}
                   className="w-full p-3 bg-slate-800 rounded-xl"
-                  placeholder="Username"
+                  placeholder="Display Name"
                 />
-                {usernameError && (
+                {displayNameError && (
                   <p className="mt-1 text-sm text-red-400">
-                    {usernameError}
+                    {displayNameError}
                   </p>
                 )}
 
                 {/* BIO */}
                 <textarea
-                  value={draftProfile?.bio ?? ""}
+                  value={draft?.bio ?? ""}
                   onChange={(e) =>
-                    updateDraftProfile("bio", e.target.value)
+                    updateDraft("bio", e.target.value)
                   }
                   className="w-full p-3 bg-slate-800 rounded-xl"
                   rows={4}
@@ -296,13 +350,13 @@ export default function ProfilePage() {
 
                       <button
                         type="button"
-                        onClick={() => toggleSetting(setting.key)}
+                        onClick={() => updateDraft(setting.key, !(draft?.[setting.key] ?? true))}
                         className={`relative w-10 h-6 rounded-full transition cursor-pointer ${
-                          draftProfile?.[setting.key] ? "bg-emerald-600 hover:bg-emerald-500" : "bg-slate-700 hover:bg-slate-600"}`}
+                          draft?.[setting.key] ? "bg-emerald-600 hover:bg-emerald-500" : "bg-slate-700 hover:bg-slate-600"}`}
                       >
                         <div
                           className={`absolute top-1 left-1 h-4 w-4 bg-white rounded-full transition-transform duration-200 ${
-                            draftProfile?.[setting.key] ? "translate-x-4" : "translate-x-0"}`}
+                            draft?.[setting.key] ? "translate-x-4" : "translate-x-0"}`}
                         />
                       </button>
                     </div>
@@ -321,7 +375,7 @@ export default function ProfilePage() {
               </button>
 
               <button
-                disabled={!draftProfile || !draftProfile.username || (usernameError?.length ?? 0) > 0 || isSaving}
+                disabled={!draft || !draft.display_name || (displayNameError?.length ?? 0) > 0 || isSaving}
                 onClick={handleSaveProfile}
                 className="px-5 py-3 bg-emerald-600 rounded-xl disabled:opacity-50 hover:bg-emerald-500 flex items-center justify-center cursor-pointer"
               >
