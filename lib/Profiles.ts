@@ -94,7 +94,7 @@ export function useProfilePublic(userId?: string) {
 }
 
 /* =========================================================
-   UPDATE USERNAME
+   UPDATE
 ========================================================= */
 
 export function useUpdateProfilePrivate() {

@@ -111,7 +111,7 @@ export default function Header() {
               >
                 <div className="rounded-lg border border-slate-500 bg-gradient-to-bl from-green-900/95 to-blue-900/90 shadow-lg p-2 flex flex-col gap-1 whitespace-nowrap">
 
-                  {!profilePublicMe?.username && (
+                  {!profilePublicMe?.display_name && (
                     <Link
                       href={`/login?next=${encodeURIComponent(pathname)}`}
                       style={{ fontFamily: "DOSVGA" }}

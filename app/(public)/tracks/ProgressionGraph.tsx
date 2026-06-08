@@ -252,18 +252,22 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
                 stroke="#f16717"
                 strokeWidth={3}
               />
-              <circle
-                cx={x1}
-                cy={y}
-                r={5}
-                fill="#f16717"
-              />
-              <circle
-                cx={x2}
-                cy={y}
-                r={5}
-                fill="#f16717"
-              />
+              {x1 > PADDING_X && (
+                <circle
+                  cx={x1}
+                  cy={y}
+                  r={5}
+                  fill="#f16717"
+                />
+              )}
+              {x2 < WIDTH - PADDING_X && (
+                <circle
+                  cx={x2}
+                  cy={y}
+                  r={5}
+                  fill="#f16717"
+                />
+              )}
             </g>
           );
         })()}

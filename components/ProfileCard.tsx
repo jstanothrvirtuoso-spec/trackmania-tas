@@ -154,7 +154,7 @@ export default function ProfileCard({ profile }: { profile: ProfilePublic }) {
             />
           </div>
 
-          {/* USERNAME */}
+          {/* DISPLAY NAME */}
           <h2 className="text-4xl font-bold mt-6 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "OktaNeue" }}>
             {profile.display_name}
           </h2>
