@@ -10,7 +10,7 @@ export default function RootLayout({
   modal,
 }: {
   children: React.ReactNode;
-  modal: any;
+  modal: React.ReactNode;
 }) {
   return (
     <html

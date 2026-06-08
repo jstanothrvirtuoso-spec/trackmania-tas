@@ -4,10 +4,10 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CATEGORY_COLOURS, CATEGORY_FILTERS, GAME_LIST, GRAPH_CATEGORIES } from "@/utils/constants";
 import { formatDate, formatTime } from "@/utils/formatting"
-import { TasEntry, Game } from "@/utils/typing";
+import { Game, Category } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
 import { RecordProgressionGraph } from "./ProgressionGraph";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { useRtaRecords } from "@/lib/RtaRecords";
 import { trackList, tracksByGame } from "@/lib/TrackList";
 import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
 
@@ -19,26 +19,59 @@ export type ProgressionGraphPoint = {
   category: GraphCategory
 }
 
+const BASELINE_DATE = new Date("2021-06-01").getTime();
+
 export default function TracksPage({ initialGame, initialTrack }: { initialGame?: Game, initialTrack?: string }) {
 
   const router = useRouter();
-  const [currentTas, setCurrentTas] = useState<TasEntry | null>(null);
+  const [nowDate] = useState<number>(() => Date.now());
+  const [currentRecord, setCurrentRecord] = useState<{ category: string, id: number } | null>(null);
 
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords])
 
   const [game, setGame] = useState<Game>(initialGame ?? "TMNF");
   const [track, setTrack] = useState<string>(() => {
     const options = tracksByGame[game];
     return initialTrack ?? options[Math.floor(Math.random() * options.length)]
   });
-  
+
+  const { records, rta, minDate } = useMemo(() => {
+    if (!track || !rtaRecords || !tasRecords) return { 
+      records: [], 
+      rta: { time_ms: 0, player: "", date: ""},
+      minDate: BASELINE_DATE,
+    };
+
+    const tasRows = [...tasRecords].filter((t) => t.track === track)
+    const rtaRows = [...rtaRecords]
+      .filter(r => r.track === track)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const firstTasDate = Math.min(BASELINE_DATE, ...tasRows.map(row => new Date(row.date).getTime()));
+    const datePadding = Math.max((nowDate - firstTasDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
+    const minDate = firstTasDate - datePadding;
+    
+    const cutoffIndex = rtaRows.findLastIndex(r => new Date(r.date).getTime() < minDate);
+    const relevantRtaRows = rtaRows
+      .slice(Math.max(0, cutoffIndex))
+      .map(rta => ({
+        ...rta,
+        category: "RTA" as Category,
+        authors: [rta.player],
+        inputs: "",
+      }));
+    
+    return { 
+      records: [...tasRows, ...relevantRtaRows]
+        .filter((t) => t.track === track)
+        .sort((a, b) => a.time_ms - b.time_ms), 
+      rta: rtaRows[0] ?? null,
+      minDate: minDate
+    };
+  }, [track, tasRecords, rtaRecords, nowDate]);
+
   const trackOptions = tracksByGame[game];
-  const rta = bestRtaByTrack.get(track)
   const isStunt = track ? trackList[track].category === "Stunt" : false
   const isTM2 = track ? trackList[track].game === "TM2" : false
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
@@ -64,17 +97,8 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
     router.replace(`/tracks?${params.toString()}`);
   }
 
-  const tasRows = useMemo(() => {
-    if (!track) return [];
-
-    return [...tasRecords]
-      .filter((t) => t.track === track)
-      .sort((a, b) => a.time_ms - b.time_ms);
-  }, [track, tasRecords]);
-
   const progression = useMemo<Record<GraphCategory, ProgressionGraphPoint[]>>(() => {
-    const sorted = [...tasRows].sort(
-      (a, b) =>
+    const sorted = [...records].sort((a, b) =>
         new Date(a.date).getTime() -
         new Date(b.date).getTime()
     );
@@ -120,29 +144,27 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
       return filterPoints.length > 0 ? points : [];
     };
 
-    const rtaTime = rta ? isStunt ? rta.time_ms / 1000
-      : useMinutes ? rta.time_ms / 60000 : rta.time_ms / 1000 : 0
-
     return {
       "Open": buildPoints("Open"),
       "NOseboost": buildPoints("NOseboost"),
       "No Uber": buildPoints("No Uber"),
       "WR Route": buildPoints("WR Route"),
       "No Cut": buildPoints("No Cut"),
-      "RTA": rta? [{ id: 0, date: rta.date, time: rtaTime, category: "RTA" }]: [],
+      "RTA": buildPoints("RTA"),
     };
-  }, [tasRows, useMinutes, rta, isStunt]);
+  }, [records, useMinutes, isStunt]);
 
   return (
     <div className="mx-auto flex w-full pt-20 flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
 
-      {/* WALLPAPER */}
+      {/* Wallpaper */}
       <div
         className="fixed inset-0 -z-10 bg-center bg-no-repeat bg-cover pointer-events-none blur-xs scale-105"
         style={{ backgroundImage: "url('/wallpapers/stadium.webp')" }}
       />
       <div className="fixed inset-0 -z-10 bg-slate-950/70 pointer-events-none" />
 
+      {/* Options */}
       <div className="flex flex-row items-start gap-4">
         <select
           value={game}
@@ -173,6 +195,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
         </select>
       </div>
 
+      {/* Title/RTA */}
       <div className="mb-4 mt-6 text-center">
 
         <div className="flex flex-col items-center">
@@ -211,9 +234,9 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
       </div>
 
       {track && (
-
         <div className="flex items-start gap-5">
 
+          {/* Record table */}
           <div className="overflow-hidden rounded-xl border border-slate-800 shadow-xl">
             <table className="text-sm bg-slate-800/90">
               <thead>
@@ -227,7 +250,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
               </thead>
 
               <tbody>
-                {tasRows.map((tas, i) => {
+                {records.map((tas, i) => {
                   
                   const colourIndex = i % 2 == 0 ? 2 : 1
                   const rowColour = CATEGORY_COLOURS[tas.category]?.[colourIndex] ?? "bg-slate-500/10"
@@ -235,8 +258,8 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
                   return (
                     <tr
                       key={`${tas.time_ms}-${tas.date}`}
-                      onMouseEnter={() => setCurrentTas(tas)}
-                      onMouseLeave={() => setCurrentTas(null)}
+                      onMouseEnter={() => setCurrentRecord({ category: tas.category, id: tas.id })}
+                      onMouseLeave={() => setCurrentRecord(null)}
                       className={`border-x border-slate-800 transition-colors hover:bg-orange-500/60 ${rowColour}`}
                     >
                       <td className="px-3 py-1.5 text-center text-slate-300 whitespace-nowrap">
@@ -281,11 +304,14 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
             </table>
           </div>
 
+          {/* Progression graph */}
           <RecordProgressionGraph 
             progression={progression}
             useMinutes={useMinutes}
             isStunt={isStunt}
-            currentTas={currentTas}
+            currentRecord={currentRecord}
+            minDate={minDate}
+            maxDate={nowDate}
           />
 
         </div>

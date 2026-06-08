@@ -1,5 +1,5 @@
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { OVERRIDE } from "@/utils/constants";
 import { RtaEntry, TasEntry } from "@/utils/typing";
 import { generateGraphColours } from "@/utils/common";
@@ -26,7 +26,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
   const [visibleAuthors, setVisibleAuthors] = useState<Record<string, boolean>>(() => (
     Object.fromEntries(authors.map((a) => [a, true]))
   ));
-  const [extraAuthor, setExtraAuthor] = useState<string>("");
+  const [extraAuthorRaw, setExtraAuthorRaw] = useState<string>("");
   const [hoverAuthor, setHoverAuthor] = useState<string>("");
   const [graphType, setGraphType] = useState<GraphType>("TASes");
   const [nowDate] = useState(() => Date.now());
@@ -118,7 +118,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
       series,
       authorMax,
     };
-  }, [filteredTasRecords, authors, graphType]);
+  }, [filteredTasRecords, authors, bestRtaByTrack, graphType]);
 
   const topAuthors = useMemo(() => {
     return [...authorMax.entries()]
@@ -127,11 +127,10 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
       .map(([author]) => author)
   }, [authorMax]);
 
-  useEffect(() => {
-    if (extraAuthor && topAuthors.includes(extraAuthor)) {
-      setExtraAuthor("");
-    }
-  }, [topAuthors, extraAuthor]);
+  const extraAuthor = useMemo(() => {
+    if (!extraAuthorRaw) return "";
+    return topAuthors.includes(extraAuthorRaw) ? "" : extraAuthorRaw;
+  }, [extraAuthorRaw, topAuthors]);
 
   const datePadding = Math.max((nowDate - START_DATE) * 0.03, 1000 * 60 * 60 * 24 * 30);
   const minDate = START_DATE - datePadding;
@@ -345,7 +344,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
             value={extraAuthor}
             onMouseEnter={() => setHoverAuthor(extraAuthor)}
             onMouseLeave={() => setHoverAuthor("")}
-            onChange={(e) => setExtraAuthor(e.target.value)}
+            onChange={(e) => setExtraAuthorRaw(e.target.value)}
             className="text-[10px] bg-slate-800 text-slate-300 border border-slate-700 rounded px-2 py-1 cursor-pointer"
           >
             <option value="">Add author...</option>

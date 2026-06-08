@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime, formatDate } from "@/utils/formatting";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
@@ -32,6 +33,7 @@ const URL_FIELDS = [
 export default function AdminRta() {
 
   const { showAlert } = useAlert();
+  const queryClient = useQueryClient();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
   const { data: rtaRecords = [] } = useRtaRecords();
@@ -105,38 +107,46 @@ export default function AdminRta() {
     setLoading(true);
     setWarning("");
 
-    if (!form.track) {
-      setWarning("Please select a track.");
-      setLoading(false);
-      return;
-    }
+    try {
 
-    if (timeMs <= 0) {
-      setWarning("Please set the time");
-      setLoading(false);
-      return;
-    }
+      if (!form.track) {
+        setWarning("Please select a track.");
+        return;
+      }
 
-    const payload = {
-      game: form.game,
-      track: form.track,
-      time_ms: timeMs,
-      player: form.player,
-      date: new Date(form.date).toISOString(),
-      video: form.video || null,
-      replay: form.replay || null,
-    };
+      if (timeMs <= 0) {
+        setWarning("Please set the time");
+        return;
+      }
 
-    const { error } = await supabase
-      .from("rta_records")
-      .upsert(payload, { onConflict: "track,time_ms" });
+      const payload = {
+        game: form.game,
+        track: form.track,
+        time_ms: timeMs,
+        player: form.player,
+        date: new Date(form.date).toISOString(),
+        video: form.video || null,
+        replay: form.replay || null,
+      };
 
-    if (error) {
-      showAlert(error.message);
-    } else {
+      const { error } = await supabase
+        .from("rta_records")
+        .upsert(payload, { onConflict: "track,time_ms" });
+
+      if (error) {
+        showAlert(error.message);
+        return;
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: ["rtaRecords"],
+      });
+
       showAlert("Success!");
+
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
   
   async function deleteRta(t: RtaEntry) {
@@ -159,6 +169,11 @@ export default function AdminRta() {
     if (error) {
       showAlert(error.message);
     } else {
+      
+      await queryClient.invalidateQueries({
+        queryKey: ["rtaRecords"],
+      });
+
       showAlert("Record successfully deleted!")
     }
   }
@@ -183,7 +198,7 @@ export default function AdminRta() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700"
+                className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 cursor-pointer"
               >
                 Reset
               </button>
@@ -198,7 +213,7 @@ export default function AdminRta() {
               <select
                 value={form.game}
                 onChange={(e) => update("game", e.target.value as Game)}
-                className={inputClass}
+                className={`${inputClass} cursor-pointer`}
               >
                 {GAME_LIST.map((g) => (
                   <option key={g} value={g}>
@@ -214,7 +229,7 @@ export default function AdminRta() {
               <select
                 value={form.track}
                 onChange={(e) => update("track", e.target.value)}
-                className={inputClass}
+                className={`${inputClass} cursor-pointer`}
               >
                 <option value="">Select track</option>
                 {trackOptions.map((t) => (
@@ -298,7 +313,7 @@ export default function AdminRta() {
               <div className={labelClass}>Date</div>
               <input
                 type="date"
-                className={inputClass}
+                className={`${inputClass} cursor-pointer`}
                 value={form.date}
                 onChange={(e) => update("date", e.target.value)}
               />
@@ -316,7 +331,7 @@ export default function AdminRta() {
                     <button
                       type="button"
                       onClick={() => window.open(value, "_blank")}
-                      className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 disabled:opacity-40"
+                      className="rounded bg-slate-800 px-2 py-1 text-xs text-slate-300 hover:bg-slate-700 disabled:opacity-40 cursor-pointer"
                     >
                       Check URL
                     </button>
@@ -343,7 +358,7 @@ export default function AdminRta() {
               <button
                 onClick={submit}
                 disabled={loading}
-                className="w-full rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50"
+                className="w-full rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? "Submitting..." : "Submit"}
               </button>
@@ -407,7 +422,7 @@ export default function AdminRta() {
                           <button
                             onClick={() => copyRtaToForm(t)}
                             title="Copy to form"
-                            className="rounded bg-slate-800 px-2 py-0.5 hover:bg-slate-700"
+                            className="rounded bg-slate-800 px-2 py-0.5 hover:bg-slate-700 cursor-pointer"
                           >
                             Copy
                           </button>
@@ -417,7 +432,7 @@ export default function AdminRta() {
                           <button
                             onClick={() => deleteRta(t)}
                             title="Delete record"
-                            className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700"
+                            className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700 cursor-pointer"
                           >
                             Delete
                           </button>

@@ -73,7 +73,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get((trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track) ?? null,
       }));
-  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories]);
+  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory]);
 
   if (isLoading) {
     return <div className="text-white p-10">Loading...</div>;

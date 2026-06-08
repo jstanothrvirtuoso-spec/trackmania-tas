@@ -69,7 +69,8 @@ export default function Header() {
 
   async function signOut() {
     await supabase.auth.signOut();
-    queryClient.removeQueries({ queryKey: ["profile"] });
+    queryClient.removeQueries({ queryKey: ["profile_public_me"] });
+    queryClient.removeQueries({ queryKey: ["profile_private"] });
     userMenu.closeNow();
     router.push("/");
     router.refresh();

@@ -75,9 +75,10 @@ export function useProfilePublicMe() {
   });
 }
 
-export function useProfilePublic(userId: string) {
+export function useProfilePublic(userId?: string) {
   return useQuery<ProfilePublic | null>({
     queryKey: ["profile_public", userId],
+    enabled: !!userId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles_public")
@@ -146,7 +147,7 @@ export function useUpdateProfilePublic() {
     },
 
     onSuccess: (updatedProfile) => {
-      queryClient.setQueryData<ProfilePublic>(["profiles_public"], updatedProfile);
+      queryClient.setQueryData<ProfilePublic>(["profile_public_me"], updatedProfile);
     },
   });
 }

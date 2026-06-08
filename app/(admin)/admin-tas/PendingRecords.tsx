@@ -49,7 +49,7 @@ export default function PendingRecords({
           <tbody>
             {submissions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-6 text-center text-slate-500">
+                <td colSpan={9} className="py-6 text-center text-slate-500">
                   No pending submissions
                 </td>
               </tr>

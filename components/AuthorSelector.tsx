@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useAuthors } from "@/lib/Authors";
 import { KEY_AUTHORS } from "@/utils/constants";
 import { AuthorInfo } from "@/utils/typing";
@@ -36,10 +36,6 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
       ...sorted(remaining),
     ];
   }, [authorData]);
-
-  useEffect(() => {
-    setSelectedSuggestion(0);
-  }, [authorQuery]);
 
   const knownAuthors = useMemo(
     () => new Set(authorOptions.map((a) => a.author)),
@@ -85,7 +81,7 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
     }
 
     return matches;
-  }, [authorOptions, authors, authorQuery]);
+  }, [authors, authorOptions, authorQuery, knownAuthors]);
   
   function addAuthor(author: string) {
     const clean = author.replace(/\s+/g, " ").trim();
@@ -97,8 +93,8 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
     if (authors.length >= 20) return;
 
     onChange([...authors, clean]);
-    setAuthorQuery("");
     setSelectedSuggestion(0);
+    setAuthorQuery("");
   }
 
   function removeAuthor(author: string) {
@@ -150,6 +146,7 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
             onChange={(e) => {
               const val = e.target.value;
               if (val.length <= MAX_LEN && /^[a-zA-Z0-9 _.'-]*$/.test(val)) {
+                setSelectedSuggestion(0)
                 setAuthorQuery(val);
               }
             }}

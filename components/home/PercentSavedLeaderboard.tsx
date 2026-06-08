@@ -87,7 +87,7 @@ export default function PercentSavedLeaderboard() {
     result.sort((a, b) => b.pcSaved - a.pcSaved || a.tas.date.localeCompare(b.tas.date));
 
     return result;
-  }, [bestTasByTrack, bestRtaByTrack]);
+  }, [bestTasByTrack, bestRtaByTrack, category]);
 
   if (data.length === 0) return null;
 

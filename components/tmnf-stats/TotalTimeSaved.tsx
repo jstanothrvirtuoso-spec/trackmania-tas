@@ -115,15 +115,13 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
   };
 
   const paths = (Object.keys(points) as TrackSets[]).map((set) => {
+    
     let path = `M ${PADDING_X} ${HEIGHT - PADDING_Y}`;
-
-    points[set].forEach((p, i) => {
+    points[set].forEach((p) => {
       const x = xScale(p.date);
       const y = yScale(p.time_ms / 60000);
-
       path += ` H ${x} V ${y}`;
     });
-
     path += `H ${PADDING_X + (WIDTH - PADDING_X * 1.5)}`
 
     return {

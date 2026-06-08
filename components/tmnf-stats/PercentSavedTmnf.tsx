@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { TasEntry, Category, RtaEntry } from "@/utils/typing";
-import { CATEGORIES } from "@/utils/constants";
 import { trackList } from "@/lib/TrackList";
 
 const TIER_COLOURS = [
@@ -74,7 +73,7 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
     result.sort((a, b) => b.pcSaved - a.pcSaved || a.tas.date.localeCompare(b.tas.date));
 
     return result;
-  }, [bestTasByTrack, bestRtaByTrack]);
+  }, [bestTasByTrack, category, bestRtaByTrack]);
 
   if (data.length === 0) return null;
 

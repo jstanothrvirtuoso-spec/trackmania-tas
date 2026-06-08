@@ -88,6 +88,7 @@ export function InputsIcon({ inputs_url }: { inputs_url: string }) {
 export function GbxIcon({ replay_url }: { replay_url: string }) {
 
   const id = new URL(replay_url).searchParams.get("id");
+  if (!id) return;
   const gbx_url = `https://3d.gbx.tools/view/replay?gd=${id}`
 
   return (

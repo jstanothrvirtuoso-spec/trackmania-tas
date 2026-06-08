@@ -5,14 +5,14 @@
 
 Admin panel:
  - Deleting of old replay items
-Add TMNF Hist page:
- - Any other ideas??
+ - Connecting accounts with authors
 Profile:
  - Add user stats
- - Add table to connect players with authors
  - Add TASes for verified profiles
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 
+Fix GBX 3d viewer for tmx links
+Allow closing of profile editing with mouse click outside box
 
 
 

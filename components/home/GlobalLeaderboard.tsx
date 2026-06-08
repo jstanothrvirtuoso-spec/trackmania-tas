@@ -7,7 +7,6 @@ import { formatTime } from "@/utils/formatting";
 import { BADGE_IMAGES, BADGE_RANKS, OVERRIDE } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
-import { trackList } from "@/lib/TrackList";
 import SortIndicator from "@/components/SortIndicator"
 import { BadgeIcon } from "@/components/Icons";
 

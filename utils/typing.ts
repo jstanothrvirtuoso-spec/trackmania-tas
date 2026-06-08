@@ -59,6 +59,7 @@ export type RecordRow = {
   trackInfo: TrackInfo;
   tas: TasEntry | null;
   rta: RtaEntry | null;
+  isCurrentBestTas?: boolean;
 };
 
 export type AuthorInfo = {

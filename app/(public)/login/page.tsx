@@ -61,7 +61,11 @@ export default function LoginPage() {
       }
 
       await queryClient.invalidateQueries({
-        queryKey: ["profile"],
+        queryKey: ["profile_public_me"],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["profile_private"],
       });
 
       router.push("/");
@@ -98,8 +102,7 @@ export default function LoginPage() {
         return;
       }
 
-      setErrorMessage("Account opened. Please check your email now to validate your account before logging in.");
-      showAlert("Account opened. Please check your email now to validate your account before logging in. Make sure to check your junk mail.")
+      showAlert("Account opened. You will receive a confirmation email from Supabase. Use this to verify your account before logging in. Make sure to check your junk mail.")
       setPassword("");
       setConfirmPassword("");
     } finally {

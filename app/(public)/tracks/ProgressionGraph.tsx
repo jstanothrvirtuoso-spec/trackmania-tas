@@ -1,6 +1,5 @@
 
 import { useState, useMemo } from "react";
-import { TasEntry } from "@/utils/typing";
 import { CATEGORY_COLOURS, GRAPH_CATEGORIES } from "@/utils/constants";
 import { GraphCategory, ProgressionGraphPoint } from "./TracksPage";
 
@@ -8,7 +7,6 @@ const WIDTH = 600;
 const HEIGHT = 320;
 const PADDING_X = 35;
 const PADDING_Y = 20;
-
 const INITIAL_VISIBLE = Object.fromEntries(
   GRAPH_CATEGORIES.map(c => [c, true])
 ) as Record<GraphCategory, boolean>;
@@ -46,45 +44,29 @@ function generateYAxisTicks(min: number, max: number) {
   return ticks.map((t) => Math.round(t * 1e6) / 1e6);
 }
 
-export function RecordProgressionGraph({ progression, useMinutes, isStunt, currentTas }: {
+export function RecordProgressionGraph({ progression, useMinutes, isStunt, currentRecord, minDate, maxDate }: {
   progression: Record<GraphCategory, ProgressionGraphPoint[]>;
   useMinutes: boolean;
   isStunt: boolean;
-  currentTas: TasEntry | null;
+  currentRecord: { category: string, id: number } | null;
+  minDate: number;
+  maxDate: number;
 }) {
 
   const [forceZeroY, setForceZeroY] = useState(false);
   const [visibleCategories, setVisibleCategories] = useState(INITIAL_VISIBLE);
 
-  const allPoints = Object.values(progression).flat();
   const visiblePoints = GRAPH_CATEGORIES
     .filter(category => visibleCategories[category])
     .flatMap(category => progression[category] ?? []);
 
-  const { firstDate, rawMinTime, rawMaxTime } = useMemo(() => {
-    let firstDate = Infinity;
-    let rawMinTime = Infinity;
-    let rawMaxTime = -Infinity;
-
-    for (const p of visiblePoints) {
-      const date = new Date(p.date).getTime();
-      const time = p.time;
-
-      if (date < firstDate) firstDate = date;
-      if (time < rawMinTime) rawMinTime = time;
-      if (time > rawMaxTime) rawMaxTime = time;
-    }
-
-    return { firstDate, rawMinTime, rawMaxTime };
+  const { rawMinTime, rawMaxTime } = useMemo(() => {
+    const times = visiblePoints.map(p => p.time);
+    return {
+      rawMinTime: Math.min(...times),
+      rawMaxTime: Math.max(...times),
+    };
   }, [visiblePoints]);
-  
-  const [nowDate] = useState<number>(() => Date.now());
-
-  if (allPoints.length === 0) return null;
-
-  const datePadding = Math.max((nowDate - firstDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
-  const minDate = firstDate - datePadding;
-  const maxDate = nowDate;
 
   const startYear = new Date(minDate).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
@@ -98,14 +80,15 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
     const t = new Date(date).getTime();
     return round(PADDING_X + ((t - minDate) / (maxDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
   };
+
   const yScale = (time: number) => {
     return round(HEIGHT - PADDING_Y - ((time - yTicks[0]) / (yTicks[yTicks.length - 1] - yTicks[0] || 1)) * (HEIGHT - PADDING_Y * 2));
   };
 
-  const hovered = currentTas ? (() => {
-    const category = currentTas.category as GraphCategory;
+  const hovered = currentRecord ? (() => {
+    const category = currentRecord.category as GraphCategory;
     const points = progression[category] ?? [];
-    const index = points.findIndex((p) => p.id === currentTas.id);
+    const index = points.findIndex((p) => p.id === currentRecord.id);
     return index !== -1 ? { category, index, points } : null;
   })() : null;
 
@@ -206,9 +189,9 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
             const y = yScale(point.time);
 
             if (i === 0) {
-              path += `M ${x} ${y}`;
+              path += `M ${Math.max(PADDING_X, x)} ${y}`;
             } else {
-              path += ` H ${x} V ${y}`;
+              path += ` H ${Math.max(PADDING_X, x)} V ${y}`;
             }
           });
 
@@ -234,6 +217,8 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
             const x = xScale(p.date);
             const y = yScale(p.time);
 
+            if (x < PADDING_X) return;
+
             return (
               <circle
                 key={`${category}-${p.date}-${p.time}`}
@@ -251,9 +236,11 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
           const { index, points } = hovered;
           const p1 = points[index];
           const p2 = points[index + 1];
-          const x1 = xScale(p1.date);
+          const x1 = Math.max(PADDING_X, xScale(p1.date));
           const x2 = index < points.length - 1 ? xScale(p2.date) : xScale(new Date().toISOString());
           const y = yScale(p1.time);
+
+          if (x2 < PADDING_X) return;
 
           return (
             <g key={`hover-${hovered.category}-${index}`}>
