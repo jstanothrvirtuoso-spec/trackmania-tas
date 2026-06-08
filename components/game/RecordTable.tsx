@@ -41,7 +41,7 @@ function isRecentEntry(dateStr: string, showRecent: boolean) {
   return diff >= 0 && diff <= oneMonth;
 };
 
-function getTmxLink(id: number, game: Game) {
+function getTmxLink(id: number, game: string) {
   if (id === 0) return "";
   if (game === "TMNF" || game === "TMNF No Cut") {
     return `https://tmnf.exchange/trackshow/${id}`;
@@ -59,12 +59,10 @@ interface RecordTableProps {
   show_rta: boolean;
   show_recent: boolean;
   currentRecords: RecordRow[];
-  selectedAuthor: string;
   selectedCategory: string;
-  selectedEnvironment: Environment;
 };
 
-export default function RecordTable({ game, show_rta, show_recent, currentRecords, selectedAuthor, selectedCategory, selectedEnvironment }: RecordTableProps) {
+export default function RecordTable({ game, show_rta, show_recent, currentRecords, selectedCategory }: RecordTableProps) {
 
   const [sortField, setSortField] = useState<SortField>("track");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
@@ -87,8 +85,8 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
 
       switch (sortField) {
         case "track": {
-          const aCategoryIndex = categoryIndexes.get(a.trackInfo.category);
-          const bCategoryIndex = categoryIndexes.get(b.trackInfo.category);
+          const aCategoryIndex = categoryIndexes.get(a.trackInfo.category)?.toString().padStart(2, "0");
+          const bCategoryIndex = categoryIndexes.get(b.trackInfo.category)?.toString().padStart(2, "0");
           const aOrder = a.trackInfo.order ? a.trackInfo.order.toString().padStart(2, "0") : a.track;
           const bOrder = b.trackInfo.order ? b.trackInfo.order.toString().padStart(2, "0") : b.track;
           aVal = `${aCategoryIndex}-${aOrder}`;
@@ -157,14 +155,6 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
 
     return sorted;
   }, [currentRecords, sortField, sortOrder, categoryIndexes]);
-
-  const filteredRows = useMemo(() => {
-    return sortedRows.filter((row) => {
-      const matchesAuthor = !selectedAuthor || selectedAuthor === "All Authors" || row.tas?.authors.includes(selectedAuthor)
-      const matchesEnvironment = selectedEnvironment === "All" || row.trackInfo.environment === selectedEnvironment
-      return matchesEnvironment && matchesAuthor;
-    })
-  }, [sortedRows, selectedAuthor, selectedEnvironment]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -334,11 +324,11 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
             </tr>
           </thead>
           <tbody className="font-sans divide-y divide-slate-800">
-            {filteredRows.map((row, i) => {
+            {sortedRows.map((row, i) => {
               const entry = row.tas;
               const recent = entry ? isRecentEntry(entry.date, show_recent) : false;
               const rtaRecent = row.rta ? isRecentEntry(row.rta.date, show_recent) : false;
-              const tmxLink = getTmxLink(row.trackInfo.id, row.trackInfo.game);
+              const tmxLink = getTmxLink(row.trackInfo.id, row.trackInfo.tmx ?? row.trackInfo.game);
               const colour = getTrackDifficultyTint(row.trackInfo.category, i)
               const bgColour = `${recent ? "italic bg-sky-400/30 text-sky-100" : colour}`
               const rtaColour = `${rtaRecent ? "italic bg-sky-400/30 text-sky-100" : colour}`
@@ -358,7 +348,7 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
                   </td>
                   <td
                     className={`px-1 py-[0px] border-b border-l border-slate-800 text-slate-100 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
-                      i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
+                      i === sortedRows.length - 1 ? "rounded-bl-lg" : ""
                     }`}
                   >
                     {<EnvironmentIcon environment={row.trackInfo.environment}/>}
@@ -426,7 +416,7 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
                   </td>
                   
                   <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${bgColour} ${
-                        i === filteredRows.length - 1 ? "rounded-br-lg" : ""
+                        i === sortedRows.length - 1 ? "rounded-br-lg" : ""
                       }`}>
                     {entry ? 
                       <div className="flex items-center justify-center gap-1">
@@ -443,7 +433,7 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
                         </div>
 
                         <div className="w-5 h-5 flex items-center justify-center">
-                          {entry.replay && (<GbxIcon replay_url={entry.replay}/>)}
+                          {entry.replay && (<GbxIcon replay_url={entry.replay} track={entry.track}/>)}
                         </div>
                       </div>
                     : "-"}
@@ -452,7 +442,7 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
                     <>
                       <td className="pl-5"></td>
                       <td className={ `px-2 py-1 text-slate-100 border-b border-l border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour} ${
-                            i === filteredRows.length - 1 ? "rounded-bl-lg" : ""
+                            i === sortedRows.length - 1 ? "rounded-bl-lg" : ""
                           }`}>
                         {row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}
                       </td>
@@ -463,7 +453,7 @@ export default function RecordTable({ game, show_rta, show_recent, currentRecord
                         {row.rta ? formatDate(row.rta.date) : "-"}
                       </td>
                       <td className={ `px-2 py-1 text-slate-100 border-b border-x border-slate-800 text-center align-middle group-hover:bg-emerald-400/20 transition-colors ${rtaColour} ${
-                            i === filteredRows.length - 1 ? "rounded-br-lg" : ""
+                            i === sortedRows.length - 1 ? "rounded-br-lg" : ""
                           }`}>
                         {row.rta ?
                           <div className="flex items-center justify-center gap-1">

@@ -168,8 +168,8 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   className="
                     border-b border-slate-800 last:border-b-0
                     hover:bg-blue-900/20 transition-colors
-                    odd:bg-violet-600/10
-                    even:bg-violet-900/7
+                    odd:bg-violet-600/20
+                    even:bg-violet-800/10
                   "
                 >
                   <td className="px-2 py-[4px] font-medium text-slate-200">

@@ -73,7 +73,28 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get((trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track) ?? null,
       }));
-  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory]);
+  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory, selectedEnvironment]);
+
+  const selectedAuthorCheck = useMemo(() => {
+    if (!selectedAuthor) return "";
+
+    const authors = new Set<string>();
+    for (const row of currentRecords) {
+      const a = row.tas?.authors;
+      if (!a) continue;
+      for (const author of a) authors.add(author);
+    }
+    
+    return authors.has(selectedAuthor) ? selectedAuthor : "All Authors";
+  }, [selectedAuthor, currentRecords]);
+
+  const filteredRows = useMemo(() => {
+    return currentRecords.filter((row) => {
+      const matchesAuthor = !selectedAuthorCheck || selectedAuthorCheck === "All Authors" || row.tas?.authors.includes(selectedAuthorCheck)
+      const matchesEnvironment = selectedEnvironment === "All" || row.trackInfo.environment === selectedEnvironment
+      return matchesEnvironment && matchesAuthor;
+    })
+  }, [currentRecords, selectedAuthorCheck, selectedEnvironment]);
 
   if (isLoading) {
     return <div className="text-white p-10">Loading...</div>;
@@ -89,17 +110,16 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
     />
 
     {/* Dark overlay */}
-    <div className="absolute inset-0 bg-black/60" />
+    <div className="absolute inset-0 bg-black/80" />
 
     {/* Content */}
     <div className="relative z-10">
-
 
       <div className="flex justify-center py-3">
         <HeaderOptions
           game={gameName}
           currentRecords={currentRecords}
-          selectedAuthor={selectedAuthor}
+          selectedAuthor={selectedAuthorCheck}
           selectedCategory={selectedCategory}
           selectedEnvironment={selectedEnvironment}
           onAuthorChange={setSelectedAuthor}
@@ -113,18 +133,16 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
           game={gameName}
           show_rta={show_rta}
           show_recent={show_recent}
-          currentRecords={currentRecords}
-          selectedAuthor={selectedAuthor}
+          currentRecords={filteredRows}
           selectedCategory={selectedCategory}
-          selectedEnvironment={selectedEnvironment}
         />
 
         <div className="flex flex-col items-start gap-1">
-          {show_time_saved && (<TimeSaved currentRecords={currentRecords} />)}
+          {show_time_saved && (<TimeSaved currentRecords={filteredRows} />)}
 
           <div className="flex flex-row items-start gap-1">
-            {show_leaderboard && (<Leaderboard currentRecords={currentRecords} />)}
-            {show_rta_leaderboard && (<RtaTable currentRecords={currentRecords} />)}
+            {show_leaderboard && (<Leaderboard currentRecords={filteredRows} />)}
+            {show_rta_leaderboard && (<RtaTable currentRecords={filteredRows} />)}
           </div>
         </div>
       </div>

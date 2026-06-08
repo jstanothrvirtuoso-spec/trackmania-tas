@@ -151,8 +151,14 @@ export default function ProfilePage() {
 
       {/* EDIT PAGE */}
       {isEditingProfile && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50">
-          <div className="bg-slate-900 p-8 rounded-2xl w-full max-w-4xl">
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50"
+          onClick={() => setIsEditingProfile(false)}
+        >
+          <div
+            className="bg-slate-900 p-8 rounded-2xl w-full max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
 
             <h2 className="text-2xl font-bold mb-6">
               Edit Profile

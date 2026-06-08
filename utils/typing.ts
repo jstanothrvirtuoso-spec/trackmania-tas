@@ -52,6 +52,7 @@ export type TrackInfo = {
   order?: number; // Sorting non-alphabetical tracks
   baseTrack?: string;  // Reference to original track for no-cut tracks
   noCutTrack?: string;  // Reference to no-cut version for TMNF tracks
+  tmx?: string;  // TMX when track is on a different tmx to the game set
 };
 
 export type RecordRow = {

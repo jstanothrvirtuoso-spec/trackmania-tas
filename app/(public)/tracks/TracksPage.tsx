@@ -293,7 +293,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
                           </div>
 
                           <div className="w-5 h-5 flex items-center justify-center">
-                            {tas.replay && (<GbxIcon replay_url={tas.replay}/>)}
+                            {tas.replay && (<GbxIcon replay_url={tas.replay} track={tas.track}/>)}
                           </div>
                         </div>
                       </td>

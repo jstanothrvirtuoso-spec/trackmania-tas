@@ -1,6 +1,20 @@
 
 import Image from "next/image";
 import { Environment } from "@/utils/typing";
+import { trackList } from "@/lib/TrackList";
+
+const GAME_CONVERT: Record<string, string> = {
+  "TMNF": "TMNF",
+  "TMNF No Cut": "TMNF",
+  "ESWC": "ESWC",
+  "TMN Remakes": "TMUF",
+  "TMUF": "TMUF",
+  "StarTrack": "TMUF",
+  "TMS": "TMUF",
+  "TMO": "TMUF",
+  "Demo/Beta": "TMUF",
+  "TM2": "TM2"
+}
 
 export function VideoIcon({ video_url }: { video_url: string }) {
   const type = video_url.includes("discord.")
@@ -85,11 +99,25 @@ export function InputsIcon({ inputs_url }: { inputs_url: string }) {
   );
 }
 
-export function GbxIcon({ replay_url }: { replay_url: string }) {
+export function GbxIcon({ replay_url, track }: { replay_url: string, track: string }) {
 
   const id = new URL(replay_url).searchParams.get("id");
-  if (!id) return;
-  const gbx_url = `https://3d.gbx.tools/view/replay?gd=${id}`
+
+  let gbx_url = "";
+  if (id) {
+    gbx_url = `https://3d.gbx.tools/view/replay?gd=${id}`;
+  } else {
+    const trackInfo = trackList[track]
+    const game = GAME_CONVERT[trackInfo.tmx ?? trackInfo.game];
+    const mapId = trackInfo.id;
+    const replayId = replay_url.split("/").pop();
+
+    if (game === "TM2") {
+      gbx_url = `https://3d.gbx.tools/view/replay?mx=${game}&id=${replayId}&mapid=${mapId}`;
+    } else { 
+      gbx_url = `https://3d.gbx.tools/view/replay?tmx=${game}&id=${replayId}&mapid=${mapId}`;
+    }
+  }
 
   return (
     <a

@@ -84,7 +84,6 @@ export default function HeaderOptions({
         ))}
       </select>
 
-
       {environmentOptions.length > 1 && (
         <select
           value={selectedEnvironment}

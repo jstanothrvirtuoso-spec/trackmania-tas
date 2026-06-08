@@ -11,9 +11,6 @@ Profile:
  - Add TASes for verified profiles
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 
-Fix GBX 3d viewer for tmx links
-Allow closing of profile editing with mouse click outside box
-
 
 
 //////////////////////////////////////////////////////////////////////////

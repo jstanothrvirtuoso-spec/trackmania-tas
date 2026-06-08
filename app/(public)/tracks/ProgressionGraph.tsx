@@ -3,8 +3,8 @@ import { useState, useMemo } from "react";
 import { CATEGORY_COLOURS, GRAPH_CATEGORIES } from "@/utils/constants";
 import { GraphCategory, ProgressionGraphPoint } from "./TracksPage";
 
-const WIDTH = 600;
-const HEIGHT = 320;
+const WIDTH = 700;
+const HEIGHT = 400;
 const PADDING_X = 35;
 const PADDING_Y = 20;
 const INITIAL_VISIBLE = Object.fromEntries(
