@@ -121,8 +121,8 @@ export default function PendingRecords({
                     </div>
                   </td>
 
-                  <td className="px-2 py-2 max-w-150 break-all whitespace-normal">
-                      {s.user_notes ?? "-"}
+                  <td className="px-2 py-2 max-w-[28rem] break-words whitespace-pre-wrap">
+                    {s.user_notes ?? "-"}
                   </td>
                 </tr>
               ))

@@ -6,10 +6,8 @@
 Admin panel:
  - Deleting of old replay items
  - Connecting accounts with authors
-Profile:
- - Add user stats
- - Add TASes for verified profiles
 Loading symbols for tables while waiting for supabase (noseboosting car??)
+Fix visitor counter
 
 
 

@@ -3,7 +3,7 @@ import "./globals.css";
 import { CURSOR } from "@/utils/constants";
 import Header from "@/components/Header";
 import Providers from "./providers";
-import VisitorCounter from "@/components/VisitorCounter";
+// import VisitorCounter from "@/components/VisitorCounter";
 
 export default function RootLayout({
   children,
@@ -21,7 +21,7 @@ export default function RootLayout({
         <Providers>
           <Header />
           <main className="sticky inset-0">{children}</main>
-          <VisitorCounter />
+          {/* <VisitorCounter /> */}
           {modal}
         </Providers>
       </body>

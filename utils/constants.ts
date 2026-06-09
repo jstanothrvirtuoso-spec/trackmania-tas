@@ -142,7 +142,7 @@ export const DISPLAY_SETTINGS = [
   { key: "show_leaderboard", label: "Leaderboard", desc: "Show TAS leaderboard rankings" },
   { key: "show_rta_leaderboard", label: "RTA Leaderboard", desc: "Show RTA leaderboard rankings"},
   { key: "show_recent", label: "Highlight Recent", desc: "Highlight recently added TASes" },
-  { key: "show_visitor_counter", label: "Visitor Counter", desc: "Display visitor count" },
+  // { key: "show_visitor_counter", label: "Visitor Counter", desc: "Display visitor count" },
 ] as const;
 
 export const CATEGORY_COLOURS: Record<string, [string, string, string]> = {

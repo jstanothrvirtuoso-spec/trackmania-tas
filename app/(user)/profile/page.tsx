@@ -79,7 +79,8 @@ export default function ProfilePage() {
         show_leaderboard: profilePrivate.show_leaderboard,
         show_rta_leaderboard: profilePrivate.show_rta_leaderboard,
         show_recent: profilePrivate.show_recent,
-        show_visitor_counter: profilePrivate.show_visitor_counter,
+        show_visitor_counter: false,
+        // show_visitor_counter: profilePrivate.show_visitor_counter,
       });
     }
 
@@ -119,7 +120,8 @@ export default function ProfilePage() {
       show_leaderboard: draft.show_leaderboard,
       show_rta_leaderboard: draft.show_rta_leaderboard,
       show_recent: draft.show_recent,
-      show_visitor_counter: draft.show_visitor_counter,
+      show_visitor_counter: false,
+      // show_visitor_counter: draft.show_visitor_counter,
     }
 
     updateProfilePrivate.mutate(privateDraft, {
