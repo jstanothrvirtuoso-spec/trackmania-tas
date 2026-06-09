@@ -81,8 +81,8 @@ export default function Header() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out
         ${showHeader ? "-translate-y-0.5 opacity-100" : "-translate-y-6 opacity-0 pointer-events-none"}`}
     >
-      <div className="flex justify-center px-4">
-        <div className="w-full max-w-6xl border border-slate-700 bg-slate-950/50 shadow-xl backdrop-blur-md bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3">
+      <div className="flex justify-center">
+        <div className="w-full max-w-[76rem] border border-slate-700 bg-slate-950/50 shadow-xl backdrop-blur-md bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3">
           <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4">
 
             {/* MENU */}

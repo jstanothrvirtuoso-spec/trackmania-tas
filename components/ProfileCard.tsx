@@ -2,7 +2,14 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
+import { Role } from "@/utils/typing";
 import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS } from "@/utils/constants"
+
+const ROLE_TEXT: Record<Role, string> = {
+  "user": "Verified TASer",
+  "moderator": "Moderator",
+  "admin": "Admin",
+}
 
 export default function ProfileCard({ profile }: { profile: ProfilePublic }) {
 
@@ -159,8 +166,13 @@ export default function ProfileCard({ profile }: { profile: ProfilePublic }) {
             {profile.display_name}
           </h2>
 
+          {/* ROLE */}
+          <h2 className="text-lg text-emerald-500 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "DOSVGA" }}>
+            {ROLE_TEXT[profile.role]}
+          </h2>
+
           {/* BIO */}
-          <p className="text-slate-300 mt-4 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]">
+          <p className="text-slate-300 italic mt-4 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]">
             {profile.bio ?? ""}
           </p>
       </div>
