@@ -49,6 +49,11 @@ export function useHoverDropdown(delay = 100) {
     setOpen(false);
   }, [clear]);
 
+  const toggle = useCallback(() => {
+    clear();
+    setOpen((prevOpen) => !prevOpen);
+  }, [clear]);
+
   useEffect(() => {
     return clear;
   }, [clear]);
@@ -58,6 +63,7 @@ export function useHoverDropdown(delay = 100) {
     openNow,
     closeLater,
     closeNow,
+    toggle,
   };
 }
 

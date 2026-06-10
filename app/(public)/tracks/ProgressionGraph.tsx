@@ -94,11 +94,14 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
 
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm shadow-xl">
-      <h2 className="mb-1 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+      <h2 className="mb-1 uppercase tracking-[0.18em] text-slate-300 text-xs lg:text-sm lg:font-semibold">
         Record Progression ({isStunt ? "pts" : useMinutes ? "min" : "sec"})
       </h2>
 
-      <svg width={WIDTH} height={HEIGHT}>
+      <svg
+        viewBox="0 0 700 400"
+        className="w-full md:w-[700px] h-auto"
+      >
         {/* Axes */}
         <line
           x1={PADDING_X}
@@ -131,7 +134,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
               x={x}
               y={HEIGHT - PADDING_Y + 16}
               textAnchor="middle"
-              className="fill-slate-400 text-[10px]"
+              className="fill-slate-400 text-[14px] lg:text-[10px]"
             >
               {year}
             </text>
@@ -156,19 +159,10 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
                 x={PADDING_X - 8}
                 y={y + 4}
                 textAnchor="end"
-                className="fill-slate-400 text-[10px]"
-              >
-                {tick.toFixed(yTickDecimals)}
-              </text>
-
-              <text
-                x={PADDING_X - 8}
-                y={y + 4}
-                textAnchor="end"
                 className={
                   tick === yTicks[0]
-                    ? "fill-emerald-400 text-[10px] cursor-pointer hover:fill-slate-200"
-                    : "fill-slate-400 text-[10px]"
+                    ? "fill-emerald-400 text-[14px] lg:text-[10px] cursor-pointer hover:fill-slate-200"
+                    : "fill-slate-400 text-[14px] lg:text-[10px]"
                 }
                 onClick={ tick === yTicks[0] ? () => setForceZeroY(v => !v) : undefined}
               >

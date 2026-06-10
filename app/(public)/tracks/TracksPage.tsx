@@ -155,7 +155,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
   }, [records, useMinutes, isStunt]);
 
   return (
-    <div className="mx-auto flex w-full pt-20 flex-col items-center overflow-x-auto px-4 py-8 text-slate-100">
+    <div className="mx-auto flex w-full pt-20 flex-col items-center px-4 py-8 text-slate-100">
 
       {/* Wallpaper */}
       <div
@@ -165,7 +165,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
       <div className="fixed inset-0 -z-10 bg-slate-950/70 pointer-events-none" />
 
       {/* Options */}
-      <div className="flex flex-row items-start gap-4">
+      <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
         <select
           value={game}
           onChange={(e) => {
@@ -234,18 +234,18 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
       </div>
 
       {track && (
-        <div className="flex items-start gap-5">
+        <div className="flex flex-col gap-5 lg:flex-row">
 
           {/* Record table */}
-          <div className="overflow-hidden rounded-xl border border-slate-800 shadow-xl">
-            <table className="text-sm bg-slate-800/90">
+          <div className="overflow-x-auto rounded-xl border border-slate-800 shadow-xl w-full lg:max-w-[60%]">
+            <table className="min-w-full table-auto text-sm bg-slate-800/90">
               <thead>
                 <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/40 ">
                   <th className="px-3 py-2 text-center whitespace-nowrap">Category</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Record</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Authors</th>
                   <th className="px-3 py-2 text-center whitespace-nowrap">Date</th>
-                  <th className="px-3 py-2 text-center whitespace-nowrap">Links</th>
+                  <th className="px-3 py-2 whitespace-nowrap hidden md:table-cell text-center">Links</th>
                 </tr>
               </thead>
 
@@ -278,7 +278,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
                         { formatDate(tas.date) }
                       </td>
                       
-                      <td className="px-3 py-1.5 text-center text-slate-300 whitespace-nowrap">
+                      <td className="px-3 py-1.5 text-center text-slate-300 whitespace-nowrap hidden md:table-cell">
                         <div className="flex items-center justify-center gap-1">
                           <div className="w-5 h-5 flex items-center justify-center">
                             {tas.video && (<VideoIcon video_url={tas.video}/>)}

@@ -38,6 +38,7 @@ export default function Header() {
   const menu = useHoverDropdown();
   const userMenu = useHoverDropdown();
   const adminMenu = useHoverDropdown();
+  const gamesMenu = useHoverDropdown();
 
   useEffect(() => {
     let ticking = false;
@@ -83,14 +84,16 @@ export default function Header() {
     >
       <div className="flex justify-center">
         <div className="w-full max-w-[76rem] border border-slate-700 bg-slate-950/50 shadow-xl backdrop-blur-md bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3">
-          <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-4">
-
+          <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
+            
             {/* MENU */}
             <div className="relative inline-block">
               <button
                 onMouseEnter={menu.openNow}
                 onMouseLeave={menu.closeLater}
+                onClick={menu.toggle}
                 className={`flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-slate-500 bg-slate-700 transition hover:bg-slate-700 shadow-lg ${CURSOR}`}
+                aria-label="Open menu"
               >
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
                 <span className="h-0.5 w-5 rounded bg-slate-100" />
@@ -116,6 +119,7 @@ export default function Header() {
                       href={`/login?next=${encodeURIComponent(pathname)}`}
                       style={{ fontFamily: "DOSVGA" }}
                       className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvga"
+                      onClick={menu.closeNow}
                     >
                       Login/Register
                     </Link>
@@ -127,6 +131,7 @@ export default function Header() {
                       href={link.href}
                       style={{ fontFamily: "DOSVGA" }}
                       className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvga"
+                      onClick={menu.closeNow}
                     >
                       {link.label}
                     </Link>
@@ -141,7 +146,7 @@ export default function Header() {
               <Link
                 href="/"
                 style={{ fontFamily: "DOSVGA" }}
-                className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
+                className="text-lg md:text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
               >
                 Leaderboard
               </Link>
@@ -171,7 +176,39 @@ export default function Header() {
             </div>
           
             {/* RIGHT */}
-            <div className="flex items-center gap-4 whitespace-nowrap">
+            <div className="flex items-center gap-3 whitespace-nowrap">
+
+              {/* MOBILE GAMES */}
+              <div className="relative md:hidden">
+                <button
+                  onMouseEnter={gamesMenu.openNow}
+                  onMouseLeave={gamesMenu.closeLater}
+                  onClick={gamesMenu.toggle}
+                  className="flex h-10 items-center gap-2 rounded-lg border border-slate-500 bg-slate-700 px-3 text-sm text-slate-200 transition hover:bg-slate-700 shadow-lg"
+                  aria-label="Open games menu"
+                >
+                  Games
+                </button>
+
+                <div
+                  onMouseEnter={gamesMenu.openNow}
+                  onMouseLeave={gamesMenu.closeLater}
+                  className={`absolute right-0 top-full mt-1 w-44 transition-all duration-200 origin-top ${gamesMenu.open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}
+                >
+                  <div className="rounded-lg border border-slate-500 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
+                    {Object.entries(GAME_SLUGS).map(([slug, game]) => (
+                      <Link
+                        key={slug}
+                        href={`/${slug}`}
+                        className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                        onClick={gamesMenu.closeNow}
+                      >
+                        {game}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
               {/* USER */}
               <div className="relative">
@@ -180,7 +217,9 @@ export default function Header() {
                     <button
                       onMouseEnter={userMenu.openNow}
                       onMouseLeave={userMenu.closeLater}
+                      onClick={userMenu.toggle}
                       className={`flex items-center gap-2 rounded-full border border-slate-500 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 ${CURSOR}`}
+                      aria-label="User menu"
                     >
                       <div 
                         className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30"
@@ -213,11 +252,11 @@ export default function Header() {
                       `}
                     >
                       <div className="rounded-md border border-slate-700 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
-                        <Link href="/submit" className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded">
+                        <Link href="/submit" className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded" onClick={userMenu.closeNow}>
                           Submit TAS
                         </Link>
 
-                        <Link href="/profile" className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded">
+                        <Link href="/profile" className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded" onClick={userMenu.closeNow}>
                           Profile
                         </Link>
                                                 
@@ -230,6 +269,7 @@ export default function Header() {
                             <div
                               className="flex items-center justify-between px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded cursor-pointer"
                               onMouseEnter={adminMenu.openNow}
+                              onClick={adminMenu.toggle}
                             >
                               <span>Admin</span>
                               <span className="text-slate-400">▶</span>
@@ -252,6 +292,10 @@ export default function Header() {
                                 <Link
                                   href="/admin-tas"
                                   className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                                  onClick={() => {
+                                    adminMenu.closeNow();
+                                    userMenu.closeNow();
+                                  }}
                                 >
                                   TAS
                                 </Link>
@@ -259,6 +303,10 @@ export default function Header() {
                                 <Link
                                   href="/admin-rta"
                                   className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                                  onClick={() => {
+                                    adminMenu.closeNow();
+                                    userMenu.closeNow();
+                                  }}
                                 >
                                   RTA
                                 </Link>
@@ -266,6 +314,10 @@ export default function Header() {
                                 <Link
                                   href="/admin-authors"
                                   className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                                  onClick={() => {
+                                    adminMenu.closeNow();
+                                    userMenu.closeNow();
+                                  }}
                                 >
                                   Authors
                                 </Link>
