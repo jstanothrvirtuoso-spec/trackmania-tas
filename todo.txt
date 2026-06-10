@@ -12,10 +12,10 @@ Fix visitor counter
 Work on mobile viewing:
  - Tracks [DONE]
  - Header
- - Home
+ - Home [DONE]
  - Highlight
  - Inputs [DONE]
- - Authors
+ - Authors [DONE]
  - TMNF Stats
  - About
  - Game pages

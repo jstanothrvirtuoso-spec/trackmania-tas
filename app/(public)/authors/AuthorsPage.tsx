@@ -142,9 +142,9 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
       </div>
 
       {selectedAuthor && (
-        <div className="flex items-start gap-4">
+        <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-start">
 
-          {/* PROFILE CARD */}
+          {/* Profile card */}
           {profilePublic && (
             <ProfileCard 
               profile={profilePublic}
@@ -164,7 +164,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                     Track
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal">
+                  <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
                     Game
                   </th>
 
@@ -176,11 +176,11 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                     TAS
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal">
+                  <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
                     RTA
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal">
+                  <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
                     Saved
                   </th>
                 </tr>
@@ -198,7 +198,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                       key={ index }
                       className={`border-b border-slate-800 ${index % 2 === 0 ? "bg-violet-950/10" : "bg-violet-950/20"} ${opacity}`}
                     >
-                      <td className="px-3 py-1.5">
+                      <td className="px-3 py-1.5 whitespace-nowrap">
                         { formatDate(row.tas.date) }
                       </td>
 
@@ -206,7 +206,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                         {row.track}
                       </td>
 
-                      <td className="px-3 py-1.5">
+                      <td className="px-3 py-1.5 hidden sm:table-cell">
                         {tasGame}
                       </td>
 
@@ -218,11 +218,11 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                         { formatTime(row.tas.time_ms, isStunt)}
                       </td>
 
-                      <td className="px-3 py-1.5">
+                      <td className="px-3 py-1.5 hidden sm:table-cell">
                         { row.rta ? formatTime(row.rta.time_ms, isStunt) : "-" }
                       </td>
 
-                      <td className="px-3 py-1.5 italic">
+                      <td className="px-3 py-1.5 italic hidden sm:table-cell">
                         { row.rta ? formatTime(row.tas.time_ms - row.rta.time_ms, isStunt, false, true) : "-" }
                       </td>
                     </tr>
@@ -233,7 +233,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
           </div>
 
           {/* Stats charts */}
-          <div className="flex flex-col items-start gap-4">
+          <div className="flex flex-col items-center gap-4 lg:items-start">
             <AuthorYearChart rows={visibleRows} />
             <AuthorGameChart rows={visibleRows} />
             <AuthorEnvironmentChart rows={visibleRows} />

@@ -146,14 +146,14 @@ export default function Header() {
               <Link
                 href="/"
                 style={{ fontFamily: "DOSVGA" }}
-                className="text-lg md:text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
+                className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
               >
                 Leaderboard
               </Link>
             </div>
 
             {/* GAMES */}
-            <div className="hidden md:flex min-w-0 items-center justify-center px-6">
+            <div className="hidden lg:flex min-w-0 items-center justify-center px-6">
               <nav className="flex items-center gap-4 overflow-x-auto scrollbar-none">
                 {Object.entries(GAME_SLUGS).map(([slug, game]) => {
                   const isActive = currentPage === slug;
@@ -175,40 +175,40 @@ export default function Header() {
               </nav>
             </div>
           
-            {/* RIGHT */}
-            <div className="flex items-center gap-3 whitespace-nowrap">
+            {/* MOBILE GAMES */}
+            <div className="relative lg:hidden">
+              <button
+                onMouseEnter={gamesMenu.openNow}
+                onMouseLeave={gamesMenu.closeLater}
+                onClick={gamesMenu.toggle}
+                className="flex h-10 items-center gap-2 rounded-lg border border-slate-500 bg-slate-700 px-3 text-sm text-slate-200 transition hover:bg-slate-700 shadow-lg"
+                aria-label="Open games menu"
+              >
+                Games
+              </button>
 
-              {/* MOBILE GAMES */}
-              <div className="relative md:hidden">
-                <button
-                  onMouseEnter={gamesMenu.openNow}
-                  onMouseLeave={gamesMenu.closeLater}
-                  onClick={gamesMenu.toggle}
-                  className="flex h-10 items-center gap-2 rounded-lg border border-slate-500 bg-slate-700 px-3 text-sm text-slate-200 transition hover:bg-slate-700 shadow-lg"
-                  aria-label="Open games menu"
-                >
-                  Games
-                </button>
-
-                <div
-                  onMouseEnter={gamesMenu.openNow}
-                  onMouseLeave={gamesMenu.closeLater}
-                  className={`absolute right-0 top-full mt-1 w-44 transition-all duration-200 origin-top ${gamesMenu.open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}
-                >
-                  <div className="rounded-lg border border-slate-500 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
-                    {Object.entries(GAME_SLUGS).map(([slug, game]) => (
-                      <Link
-                        key={slug}
-                        href={`/${slug}`}
-                        className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
-                        onClick={gamesMenu.closeNow}
-                      >
-                        {game}
-                      </Link>
-                    ))}
-                  </div>
+              <div
+                onMouseEnter={gamesMenu.openNow}
+                onMouseLeave={gamesMenu.closeLater}
+                className={`absolute right-0 top-full mt-1 w-44 transition-all duration-200 origin-top ${gamesMenu.open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}
+              >
+                <div className="rounded-lg border border-slate-500 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
+                  {Object.entries(GAME_SLUGS).map(([slug, game]) => (
+                    <Link
+                      key={slug}
+                      href={`/${slug}`}
+                      className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                      onClick={gamesMenu.closeNow}
+                    >
+                      {game}
+                    </Link>
+                  ))}
                 </div>
               </div>
+            </div>
+
+            {/* RIGHT */}
+            <div className="flex items-center gap-3 whitespace-nowrap">
 
               {/* USER */}
               <div className="relative">
@@ -234,7 +234,7 @@ export default function Header() {
                         />
                       </div>
 
-                      <span className="hidden text-[17px] lg:block">
+                      <span className="text-[17px]">
                         {profilePublicMe.display_name.length > 15 ? `${profilePublicMe.display_name.slice(0, 15)}...` : profilePublicMe.display_name}
                       </span>
                     </button>
@@ -345,7 +345,7 @@ export default function Header() {
                 href="https://discord.gg/tD4rarRYpj"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5865F2] text-white transition-transform hover:scale-105"
+                className="h-9 w-9 items-center justify-center rounded-full bg-[#5865F2] text-white transition-transform hover:scale-105 hidden lg:flex"
                 aria-label="Discord"
               >
                 <FaDiscord size={22} />

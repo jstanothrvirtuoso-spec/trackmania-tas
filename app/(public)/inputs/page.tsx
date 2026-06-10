@@ -158,7 +158,7 @@ export default function InputsPage() {
           {/* ENVIRONMENT TITLE */}
           <div className="flex items-center gap-4 py-1">
             <div className="h-[3px] flex-1 bg-cyan-400/40" />
-            <span className="text-lg font-bold tracking-[0.4em] text-cyan-200 pl-[0.4em]">
+            <span className="font-bold tracking-[0.4em] text-cyan-200 pl-[0.4em] text-sm xl:text-lg">
               {activeEnv}
             </span>
             <div className="h-[3px] flex-1 bg-cyan-400/40" />
@@ -186,7 +186,7 @@ export default function InputsPage() {
                   {/* VIDEO */}
                   <div className="border border-cyan-400/20 bg-[#0b1020] overflow-hidden rounded-xl">
                     <video
-                      className="h-[260px] w-full object-cover"
+                      className="w-full object-cover"
                       autoPlay
                       muted
                       loop
@@ -222,9 +222,9 @@ export default function InputsPage() {
                 </div>
 
                 {/* INSTRUCTIONS */}
-                <div className="relative z-10 flex flex-col items-center">
+                <div className="relative z-10 flex-col items-center hidden md:flex">
                   {activeEnv === "STADIUM" && (
-                    <div className="overflow-hidden rounded-lg hidden lg:flex">
+                    <div className="overflow-hidden rounded-lg hidden md:flex">
                     <Image
                       src="/inputs/stadiumtrick.png"
                       alt="Stadium trick instructions"
@@ -234,7 +234,9 @@ export default function InputsPage() {
                     </div>
                   )}
                   <div
-                    className={`italic tracking-wide teko-font text-slate-200 leading-loose [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)] ${activeEnv === "BAY" ? "md:text-2xl" : "lg:text-3xl"}`}
+                    className={`italic tracking-wide teko-font text-slate-200 py-2 text-center [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)] ${
+                      activeEnv === "BAY" ? "text-2xl" : "text-3xl"
+                    }`}
                     style={{ fontFamily: "Teko" }}
                   >
                     {trick.notes.map((note) => (

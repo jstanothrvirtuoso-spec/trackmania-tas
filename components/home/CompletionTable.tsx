@@ -55,7 +55,7 @@ export default function CompletionTable() {
   
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-950/70 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.85)] backdrop-blur-md">
-      <table className="w-full">
+      <table className="w-auto">
 
         <thead className="border-b text-slate-300 uppercase text-center text-sm bg-slate-950/30">
           <tr>
@@ -99,11 +99,9 @@ export default function CompletionTable() {
           })}
 
           <tr className="border-t border-slate-800 text-center bg-gradient-to-bl from-red-800/90 to-blue-800/90">
-            <td></td>
-            <td className="pb-1.5 text-2xl [text-shadow:0_2px_4px_rgba(0,0,0,0.8)] font-bold italic" style={{ fontFamily: "OktaNeue" }}>
+            <td colSpan={3} className="pb-1.5 text-2xl [text-shadow:0_2px_4px_rgba(0,0,0,0.8)] font-bold italic" style={{ fontFamily: "OktaNeue" }}>
               {`Completion: ${percentComplete}%`}
             </td>
-            <td></td>
           </tr>
 
         </tbody>

@@ -104,7 +104,6 @@ export default function ProfileCard({ profile }: { profile: ProfilePublic }) {
     }, 220);
   };
 
-
   if (!profile) {
     return (
       <div className="text-white p-10">

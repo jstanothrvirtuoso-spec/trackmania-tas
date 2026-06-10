@@ -234,7 +234,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
       </div>
 
       {track && (
-        <div className="flex flex-col gap-5 lg:flex-row">
+        <div className="flex flex-col gap-5 items-start lg:flex-row">
 
           {/* Record table */}
           <div className="overflow-x-auto rounded-xl border border-slate-800 shadow-xl w-full lg:max-w-[60%]">

@@ -16,20 +16,15 @@ export default function Home() {
 
       {/* Leaderboards */}
       <div className="pt-20 pb-6 flex justify-center w-full">
-        <div className="w-full max-w-7xl px-4 flex flex-row gap-4 items-start">
+        <div className="w-full max-w-7xl px-4 flex flex-col gap-4 items-center lg:flex-row lg:items-start">
 
-          <div className="w-fit">
+          <div className="lg:w-fit">
             <GlobalLeaderboard />
           </div>
 
-          <div className="w-fit flex flex-col gap-4">
-            <div className="">
-              <CompletionTable />
-            </div>
-
-            <div className="w-full">
-              <PercentSavedLeaderboard />
-            </div>
+          <div className="w-fit flex flex-col gap-4 items-center">
+            <CompletionTable />
+            <PercentSavedLeaderboard />
           </div>
           
           <div className="w-fit">
@@ -38,7 +33,6 @@ export default function Home() {
 
         </div>
       </div>
-
     </>
   );
 }

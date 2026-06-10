@@ -107,24 +107,17 @@ export default function PercentSavedLeaderboard() {
         </select>
       </div>
 
-      <div className="overflow-hidden w-full rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
-        <table className="table-fixed w-full text-center backdrop-blur-md rounded-2xl">
-
-          <colgroup>
-            <col className="w-40" />
-            <col className="w-22" />
-            <col />
-          </colgroup>
-
+      <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
+        <table className="table-fixed w-auto text-center backdrop-blur-md rounded-2xl">
           <thead className="text-slate-300 bg-slate-950/50">
             <tr>
-              <th className="px-3 py-1.5 uppercase whitespace-nowrap">
+              <th className="px-2 py-1.5 uppercase">
                 Track
               </th>
-              <th className="px-3 py-1.5 uppercase whitespace-nowrap">
-                % Saved
+              <th className="px-2 py-1.5 uppercase whitespace-nowrap">
+                %
               </th>
-              <th className="px-3 py-1.5 uppercase whitespace-nowrap">
+              <th className="px-2 py-1.5 uppercase">
                 Authors
               </th>
             </tr>
@@ -143,7 +136,7 @@ export default function PercentSavedLeaderboard() {
                   className={`border-t border-slate-800 ${rowColour} hover:bg-blue-900/50`}
                   style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
                 >
-                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap">
+                  <td className="px-3 py-1 text-slate-100 lg:whitespace-nowrap">
                     {row.track}
                   </td>
                   <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">

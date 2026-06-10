@@ -125,7 +125,7 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
                 title={`${game}: ${count}`}
               />
 
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-slate-500 whitespace-nowrap">
                 {game}
               </div>
             </div>

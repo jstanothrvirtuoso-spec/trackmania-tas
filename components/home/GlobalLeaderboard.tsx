@@ -20,6 +20,14 @@ type AuthorStat = {
 
 type SortField = "badge" | "author" | "tases" | "contributions" | "totalSaved";
 
+type LeaderboardProps = {
+  data: AuthorStat[];
+  isLoading: boolean;
+  sortField: SortField;
+  sortOrder: SortOrder;
+  handleSort: (field: SortField) => void;
+};
+
 function getRankIndex(value: number, thresholds: readonly number[]) {
   let index = -1;
 
@@ -30,6 +38,126 @@ function getRankIndex(value: number, thresholds: readonly number[]) {
   }
 
   return index;
+}
+
+function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: LeaderboardProps) {
+  return (
+    <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">
+      <thead className="bg-slate-900/90 text-slate-300">
+        <tr>
+          <th
+            onClick={() => handleSort("badge")}
+            className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
+          >
+            <div className="flex items-center justify-center gap-1">
+              Badge
+              <SortIndicator active={sortField === "badge"} order={sortOrder} />
+            </div>
+          </th>
+
+          <th
+            onClick={() => handleSort("author")}
+            className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap"
+          >
+            <div className="flex items-center justify-center gap-1">
+              Author
+              <SortIndicator active={sortField === "author"} order={sortOrder} />
+            </div>
+          </th>
+
+          <th
+            onClick={() => handleSort("tases")}
+            className="cursor-pointer px-3 py-1.5 whitespace-nowrap"
+          >
+            <div className="flex items-center justify-center gap-1">
+              TASes
+              <SortIndicator active={sortField === "tases"} order={sortOrder} />
+            </div>
+          </th>
+
+          <th
+            onClick={() => handleSort("contributions")}
+            className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
+          >
+            <div className="flex items-center justify-center gap-1">
+              Cont.
+              <SortIndicator active={sortField === "contributions"} order={sortOrder} />
+            </div>
+          </th>
+
+          <th
+            onClick={() => handleSort("totalSaved")}
+            className="cursor-pointer px-4 py-1.5 uppercase whitespace-nowrap"
+          >
+            <div className="flex items-center justify-center gap-1">
+              Saved
+              <SortIndicator active={sortField === "totalSaved"} order={sortOrder} />
+            </div>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody className="divide-y divide-slate-800">
+        {isLoading 
+          ? Array.from({ length: 25 }).map((_, i) => (
+            <tr key={i} className={`${i % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10"}`}>
+              <td className="py-2"><div className="h-4 w-7 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+              <td className="py-2"><div className="h-4 w-29 bg-slate-700 animate-pulse rounded" /></td>
+              <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+              <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+              <td className="py-2"><div className="h-4 w-16 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+            </tr> 
+            )) 
+          : data.map((a, index) => {
+            const rowColour = index % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10";
+            const badge = Math.min(BADGE_RANKS.TAS.length - 1, a.badge)
+
+            return (
+              <tr
+                key={a.author}
+                className={`${rowColour} hover:bg-emerald-900/50`}
+              >
+                <td className="px-2 text-center">
+                  {badge >= 0 ? (
+                    <div className="flex items-center justify-center">
+                      <div className="flex justify-center h-6 w-10 relative">
+                        <BadgeIcon badge_src={BADGE_IMAGES[badge]} />
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </td>
+
+                <td className="px-1 py-1.5 text-slate-100">
+                  <Link
+                    href={`/authors?author=${encodeURIComponent(
+                      a.author
+                    )}`}
+                    className="hover:text-white underline-offset-2 hover:underline"
+                  >
+                    {a.author}
+                  </Link>
+                </td>
+
+                <td className="px-2 py-1.5 text-slate-100">
+                  {a.tases}
+                </td>
+
+                <td className="px-2 py-1.5 text-slate-100">
+                  {a.contributions.toFixed(2)}
+                </td>
+
+                <td className="px-2 py-1.5 text-slate-300">
+                  {formatTime(a.totalSaved)}
+                </td>
+              </tr>
+            );
+          })
+        }
+      </tbody>
+    </table>
+  )
 }
 
 export default function GlobalLeaderboard() {
@@ -112,7 +240,7 @@ export default function GlobalLeaderboard() {
   }, [tasRecords, bestRtaByTrack]);
 
   const sortedAuthorStats = useMemo(() => {
-    return [...authorStats].filter((a) => a.tases >= 3).sort((a, b) => {
+    return [...authorStats].sort((a, b) => {
       let aVal: string | number = "";
       let bVal: string | number = "";
 
@@ -164,126 +292,33 @@ export default function GlobalLeaderboard() {
 
   const isLoading = sortedAuthorStats.length === 0 && (tasRecords.length === 0 || rtaRecords.length === 0);
 
+  const mobileAuthors = sortedAuthorStats.filter(a => a.tases >= 15);
+  const desktopAuthors = sortedAuthorStats.filter(a => a.tases >= 3);
+
   return (
     <div className="relative mx-auto w-full max-w-5xl flex flex-col gap-3">
 
       {/* TABLE */}
       <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
-        <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">
-          <thead className="bg-slate-900/90 text-slate-300">
-            <tr>
-              <th
-                onClick={() => handleSort("badge")}
-                className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  Badge
-                  <SortIndicator active={sortField === "badge"} order={sortOrder} />
-                </div>
-              </th>
+        <div className="block xl:hidden">
+          <Leaderboard 
+            data={mobileAuthors}
+            isLoading={isLoading}
+            sortField={sortField}
+            sortOrder={sortOrder}
+            handleSort={handleSort}
+          />
+        </div>
 
-              <th
-                onClick={() => handleSort("author")}
-                className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  Author
-                  <SortIndicator active={sortField === "author"} order={sortOrder} />
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort("tases")}
-                className="cursor-pointer px-3 py-1.5 whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  TASes
-                  <SortIndicator active={sortField === "tases"} order={sortOrder} />
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort("contributions")}
-                className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  Cont.
-                  <SortIndicator active={sortField === "contributions"} order={sortOrder} />
-                </div>
-              </th>
-
-              <th
-                onClick={() => handleSort("totalSaved")}
-                className="cursor-pointer px-4 py-1.5 uppercase whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  Saved
-                  <SortIndicator active={sortField === "totalSaved"} order={sortOrder} />
-                </div>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody className="divide-y divide-slate-800">
-            {isLoading 
-              ? Array.from({ length: 25 }).map((_, i) => (
-                <tr key={i} className={`${i % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10"}`}>
-                  <td className="py-2"><div className="h-4 w-7 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-                  <td className="py-2"><div className="h-4 w-29 bg-slate-700 animate-pulse rounded" /></td>
-                  <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-                  <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-                  <td className="py-2"><div className="h-4 w-16 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-                </tr> 
-                )) 
-              : sortedAuthorStats.map((a, index) => {
-                const rowColour = index % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10";
-                const badge = Math.min(BADGE_RANKS.TAS.length - 1, a.badge)
-
-                return (
-                  <tr
-                    key={a.author}
-                    className={`${rowColour} hover:bg-emerald-900/50`}
-                  >
-                    <td className="px-2 text-center">
-                      {badge >= 0 ? (
-                        <div className="flex items-center justify-center">
-                          <div className="flex justify-center h-6 w-10 relative">
-                            <BadgeIcon badge_src={BADGE_IMAGES[badge]} />
-                          </div>
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </td>
-
-                    <td className="px-1 py-1.5 text-slate-100">
-                      <Link
-                        href={`/authors?author=${encodeURIComponent(
-                          a.author
-                        )}`}
-                        className="hover:text-white underline-offset-2 hover:underline"
-                      >
-                        {a.author}
-                      </Link>
-                    </td>
-
-                    <td className="px-2 py-1.5 text-slate-100">
-                      {a.tases}
-                    </td>
-
-                    <td className="px-2 py-1.5 text-slate-100">
-                      {a.contributions.toFixed(2)}
-                    </td>
-
-                    <td className="px-2 py-1.5 text-slate-300">
-                      {formatTime(a.totalSaved)}
-                    </td>
-                  </tr>
-                );
-              })
-            }
-          </tbody>
-        </table>
+        <div className="hidden xl:block">
+          <Leaderboard 
+            data={desktopAuthors}
+            isLoading={isLoading}
+            sortField={sortField}
+            sortOrder={sortOrder}
+            handleSort={handleSort}
+          />
+        </div>
       </div>
     </div>
   );
