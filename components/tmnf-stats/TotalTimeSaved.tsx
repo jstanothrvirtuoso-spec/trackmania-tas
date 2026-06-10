@@ -5,6 +5,7 @@ import { trackList } from "@/lib/TrackList";
 
 type TrackSets = "Overall" | "White" | "Green" | "Blue" | "Red" | "Black"
 
+const START_DATE = new Date("2021-01-01").getTime();
 const WIDTH = 700;
 const HEIGHT = 420;
 const PADDING_X = 35;
@@ -82,11 +83,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
     return trackSet;
   }, [filteredTasRecords, bestRtaByTrack]);
 
-  const firstDate = new Date(points["Overall"][2].date).getTime();
-  const lastDate = new Date(points["Overall"][points["Overall"].length - 1].date).getTime();
-  const datePadding = Math.max((lastDate - firstDate) * 0.05, 1000 * 60 * 60 * 24 * 30);
-  const minDate = firstDate - datePadding;
-  const startYear = new Date(minDate).getFullYear();
+  const startYear = new Date(START_DATE).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
   
@@ -107,7 +104,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
 
   const xScale = (date: string) => {
     const t = new Date(date).getTime();
-    return (PADDING_X + ((t - minDate) / (maxDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
+    return (PADDING_X + ((t - START_DATE) / (maxDate - START_DATE || 1)) * (WIDTH - PADDING_X * 1.5));
   };
 
   const yScale = (v: number) => {
@@ -132,7 +129,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
   });
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
       <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Cumulative Time Saved (Mins)
       </h2>

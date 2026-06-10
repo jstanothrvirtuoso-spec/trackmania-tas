@@ -9,11 +9,12 @@ type GraphType = "TASes" | "Contributions" | "TimeSaved"
 
 function round(n: number) { return Math.round(n * 1000) / 1000 }
 
-const START_DATE = new Date("2021-06-01").getTime();
+const START_DATE = new Date("2021-01-01").getTime();
 const WIDTH = 700;
 const HEIGHT = 370;
 const PADDING_X = 35;
-const PADDING_Y = 20;
+const PADDING_T = 10;
+const PADDING_B = 35;
 const NUM_AUTHORS = 6;
 const COLOURS = generateGraphColours(NUM_AUTHORS);
 
@@ -26,6 +27,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
   const [visibleAuthors, setVisibleAuthors] = useState<Record<string, boolean>>(() => (
     Object.fromEntries(authors.map((a) => [a, true]))
   ));
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [extraAuthorRaw, setExtraAuthorRaw] = useState<string>("");
   const [hoverAuthor, setHoverAuthor] = useState<string>("");
   const [graphType, setGraphType] = useState<GraphType>("TASes");
@@ -132,11 +134,11 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
     return topAuthors.includes(extraAuthorRaw) ? "" : extraAuthorRaw;
   }, [extraAuthorRaw, topAuthors]);
 
-  const datePadding = Math.max((nowDate - START_DATE) * 0.03, 1000 * 60 * 60 * 24 * 30);
-  const minDate = START_DATE - datePadding;
-  const startYear = new Date(minDate).getFullYear();
+  const startYear = new Date(START_DATE).getFullYear();
   const endYear = new Date(nowDate).getFullYear();
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+  const xDomainStart = selectedYear ? new Date(selectedYear, 0, 1).getTime() : START_DATE;
+  const xDomainEnd = selectedYear ? new Date(selectedYear + 1, 0, 1).getTime() : nowDate;
 
   const colour_map = useMemo(() => {
     return Object.fromEntries(
@@ -185,11 +187,11 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
 
   function xScale(date: string) {
     const t = new Date(date).getTime();
-    return round(PADDING_X + ((t - minDate) / (nowDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
-  };
+    return round(PADDING_X + ((t - xDomainStart) / (xDomainEnd - xDomainStart || 1)) * (WIDTH - PADDING_X * 1.5));
+  }
 
   function yScale(v: number) {
-    return round(HEIGHT - PADDING_Y - (v / maxTick) * (HEIGHT - PADDING_Y * 2));
+    return round(HEIGHT - PADDING_B - (v / maxTick) * (HEIGHT - PADDING_B - PADDING_T));
   }
 
   return (
@@ -213,14 +215,11 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
       <svg width={WIDTH} height={HEIGHT}>
 
         {/* Axes */}
-        <line x1={PADDING_X} y1={HEIGHT - PADDING_Y} x2={WIDTH - PADDING_X / 2} y2={HEIGHT - PADDING_Y} className="stroke-slate-600" />
-        <line x1={PADDING_X} y1={PADDING_Y} x2={PADDING_X} y2={HEIGHT - PADDING_Y} className="stroke-slate-600" />
+        <line x1={PADDING_X} y1={HEIGHT - PADDING_B} x2={WIDTH - PADDING_X / 2} y2={HEIGHT - PADDING_B} className="stroke-slate-600" />
+        <line x1={PADDING_X} y1={PADDING_T} x2={PADDING_X} y2={HEIGHT - PADDING_B} className="stroke-slate-600" />
 
         {/* Y Ticks */}
-        {Array.from(
-          { length: Math.floor(maxTick / yStep) + 1 },
-          (_, i) => i * yStep
-        ).map((tick) => {
+        {Array.from({ length: Math.floor(maxTick / yStep) + 1 }, (_, i) => i * yStep).map((tick) => {
           const y = yScale(tick);
 
           return (
@@ -246,37 +245,79 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
         })}
 
         {/* X Ticks */}
-        {years.map((year) => {
+        {!selectedYear && years.map((year) => {
           const x = xScale(`${year}-01-01`);
 
-          if (x < PADDING_X || x > WIDTH - PADDING_X) return null;
-
           return (
-            <g key={year}>
+            <g
+              key={year}
+              onClick={() => setSelectedYear(year)}
+              className="cursor-pointer"
+            >
               <line
                 x1={x}
-                y1={PADDING_Y}
+                y1={PADDING_T}
                 x2={x}
-                y2={HEIGHT - PADDING_Y}
+                y2={HEIGHT - PADDING_B}
                 className="stroke-slate-800"
               />
 
               <text
                 x={x}
-                y={HEIGHT - PADDING_Y + 16}
+                y={HEIGHT - PADDING_B + 16}
                 textAnchor="middle"
-                className="fill-slate-500 text-[10px]"
+                className="fill-emerald-500 text-[10px] hover:fill-emerald-300"
               >
                 {year}
               </text>
             </g>
           );
         })}
+        {selectedYear && Array.from({ length: 12 }, (_, month) => {
+          const date = new Date(selectedYear, month, 1);
+          const x = xScale(date.toISOString());
+
+          return (
+            <g key={month}>
+              <line
+                x1={x}
+                y1={PADDING_T}
+                x2={x}
+                y2={HEIGHT - PADDING_B}
+                className="stroke-slate-800"
+              />
+
+              <text
+                x={x}
+                y={HEIGHT - PADDING_B + 16}
+                textAnchor="middle"
+                className="fill-slate-500 text-[10px]"
+              >
+                {date.toLocaleString("en-GB", { month: "short" })}
+              </text>
+            </g>
+          );
+        })}
+        {selectedYear && (
+          <text
+            x={WIDTH / 2}
+            y={HEIGHT}
+            textAnchor="middle"
+            className="fill-emerald-500 text-[14px] cursor-pointer hover:fill-emerald-300"
+            onClick={() => setSelectedYear(null)}
+          >
+            {selectedYear}
+          </text>
+        )}
 
         {/* Lines */}
         {orderedAuthors.map(author => {
-          const points = series[author];
-          if (!points?.length || !visibleAuthors[author]) return null;
+          if (!visibleAuthors[author]) return null;
+          const points = selectedYear 
+            ? series[author].filter(p => new Date(p.date).getFullYear() === selectedYear)
+            : series[author];
+          
+          if (!points?.length) return null;
 
           let d = "";
 
@@ -287,7 +328,12 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
 
             if (d === "") {
               if (p.value === 0) continue;
-              d += `M ${x} ${yScale(0)} V ${y}`;
+              if (selectedYear && selectedYear !== 2021 && x !== PADDING_X && i === 0) {
+                d += `M ${PADDING_X} ${y} V ${y}`;
+              } else {
+                d += `M ${x} ${yScale(0)} V ${y}`;
+              }
+              
             } else {
               if (p.value > 0) {
                 d += ` H ${x}`
@@ -295,7 +341,12 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
               d += ` V ${y}`;
             }
           }
-
+          if (selectedYear === years[years.length - 1]) {
+            d += ` H ${xScale(new Date(nowDate).toDateString())}`
+          } else {
+            d += ` H ${WIDTH - PADDING_X / 2}`
+          }
+          
           return (
             <path
               key={author}
@@ -308,9 +359,9 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
         })}
 
       </svg>
-      
+
       {/* Legend */}
-      <div className="mt-4 flex justify-center">
+      <div className="mt-2 flex justify-center">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[48%] text-[10px]">
           {topAuthors.map(author => {
             const colour = colour_map[author];

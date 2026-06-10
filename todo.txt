@@ -9,6 +9,8 @@ Admin panel:
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 
+Clicking on year on x-axis can convert graph to show data for that year only (maybe need a "view all" button?)
+
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -80,7 +80,7 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
   return (
     <div className="flex flex-col">
 
-      <div className="overflow-hidden w-full rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
+      <div className="overflow-hidden w-full rounded-xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
         <table className="table-fixed w-full text-center backdrop-blur-md rounded-2xl">
 
           <colgroup>
