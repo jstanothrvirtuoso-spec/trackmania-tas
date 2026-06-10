@@ -21,6 +21,7 @@ Work on mobile viewing:
  - Game pages
  - Profile
  - Submit form
+ - Admin?
 
 
 
