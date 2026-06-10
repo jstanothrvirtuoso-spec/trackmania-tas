@@ -14,7 +14,7 @@ Work on mobile viewing:
  - Header
  - Home
  - Highlight
- - Inputs
+ - Inputs [DONE]
  - Authors
  - TMNF Stats
  - About
