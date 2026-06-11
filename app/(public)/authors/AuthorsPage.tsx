@@ -11,7 +11,7 @@ import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
 import { trackList } from "@/lib/TrackList";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart } from "@/components/authors/AuthorCharts";
-import ProfileCard from "@/components/ProfileCard";
+import ProfileCard from "@/components/profile/ProfileCard";
 
 export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string }) {
 

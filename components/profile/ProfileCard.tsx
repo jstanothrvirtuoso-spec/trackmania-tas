@@ -146,34 +146,37 @@ export default function ProfileCard({ profile }: { profile: ProfilePublic }) {
       {/* CONTENT */}
       <div className="relative flex flex-col items-center text-center p-6 pt-15">
 
-          {/* AVATAR */}
-          <div 
-            className="w-[280px] h-[280px] rounded-full overflow-hidden bg-slate-800 border border-black shadow-xl p-4"
-            style={{ backgroundColor: avatar_colour}}
-          >
+        {/* AVATAR */}
+        <div 
+          className="relative w-4/5 aspect-square rounded-full overflow-hidden border border-black shadow-xl"
+          style={{ backgroundColor: avatar_colour}}
+        >
+          <div className="absolute inset-3">
             <Image
               src={avatar}
               alt="Avatar"
-              width={280}
-              height={280}
+              fill
+              className="object-contain"
+              sizes="128px"
               priority
             />
           </div>
+        </div>
 
-          {/* DISPLAY NAME */}
-          <h2 className="text-4xl font-bold mt-6 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "OktaNeue" }}>
-            {profile.display_name}
-          </h2>
+        {/* DISPLAY NAME */}
+        <h2 className="text-4xl font-bold mt-6 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "OktaNeue" }}>
+          {profile.display_name}
+        </h2>
 
-          {/* ROLE */}
-          <h2 className="text-lg text-emerald-500 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "DOSVGA" }}>
-            {ROLE_TEXT[profile.role]}
-          </h2>
+        {/* ROLE */}
+        <h2 className="text-lg text-emerald-500 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]" style={{ fontFamily: "DOSVGA" }}>
+          {ROLE_TEXT[profile.role]}
+        </h2>
 
-          {/* BIO */}
-          <p className="text-slate-300 italic mt-4 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]">
-            {profile.bio ?? ""}
-          </p>
+        {/* BIO */}
+        <p className="text-slate-300 italic mt-4 [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)]">
+          {profile.bio ?? ""}
+        </p>
       </div>
     </div>
   );

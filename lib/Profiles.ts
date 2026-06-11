@@ -57,7 +57,7 @@ export function useProfilePrivate() {
 }
 
 export function useProfilePublicMe() {
-  return useQuery({
+  return useQuery<ProfilePublic>({
     queryKey: ["profile_public_me"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();

@@ -11,9 +11,9 @@ Fix visitor counter
 
 Work on mobile viewing:
  - Tracks [DONE]
- - Header
+ - Header [DONE]
  - Home [DONE]
- - Highlight
+ - Highlight [DONE]
  - Inputs [DONE]
  - Authors [DONE]
  - TMNF Stats

@@ -82,9 +82,9 @@ export default function Header() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out
         ${showHeader ? "-translate-y-0.5 opacity-100" : "-translate-y-6 opacity-0 pointer-events-none"}`}
     >
-      <div className="flex justify-center">
+      <div className="flex justify-center px-2">
         <div className="w-full max-w-[76rem] border border-slate-700 bg-slate-950/50 shadow-xl backdrop-blur-md bg-gradient-to-br from-violet-700/30 to-blue-800/70 rounded-b-3xl px-4 py-3">
-          <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
+          <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center">
             
             {/* MENU */}
             <div className="relative inline-block">
@@ -125,6 +125,46 @@ export default function Header() {
                     </Link>
                   )}
 
+                  <div
+                    className="relative lg:hidden"
+                    onMouseEnter={gamesMenu.openNow}
+                    onMouseLeave={gamesMenu.closeLater}
+                  >
+                    <div
+                      className="flex items-center justify-between cursor-pointer px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvg"
+                      style={{ fontFamily: "DOSVGA" }}
+                      onMouseEnter={gamesMenu.openNow}
+                      onClick={gamesMenu.toggle}
+                    >
+                      <span>Games</span>
+                      <span className="text-slate-400">▶</span>
+                    </div>
+
+                    <div
+                      onMouseEnter={gamesMenu.openNow}
+                      onMouseLeave={gamesMenu.closeLater}
+                      className={`absolute left-full top-0 transition-all duration-150 rounded-lg border border-slate-500 bg-gradient-to-bl from-green-900/95 to-blue-900/90 shadow-lg p-2 flex flex-col whitespace-nowrap
+                        ${gamesMenu.open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+                    >
+                      <div className="flex flex-col gap-1">
+                        {Object.entries(GAME_SLUGS).map(([slug, game]) => (
+                          <Link
+                            key={slug}
+                            href={`/${slug}`}
+                            className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30"
+                            style={{ fontFamily: "DOSVGA" }}
+                            onClick={() => {
+                              gamesMenu.closeNow();
+                              menu.closeNow();
+                            }}
+                          >
+                            {game}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
                   {MENU_LINKS.map((link) => (
                     <Link
                       key={link.label}
@@ -142,7 +182,7 @@ export default function Header() {
             </div>
             
             {/* HOME */}
-            <div className="mt-[2px]">
+            <div className="mt-[2px] px-3">
               <Link
                 href="/"
                 style={{ fontFamily: "DOSVGA" }}
@@ -151,7 +191,7 @@ export default function Header() {
                 Leaderboard
               </Link>
             </div>
-
+            
             {/* GAMES */}
             <div className="hidden lg:flex min-w-0 items-center justify-center px-6">
               <nav className="flex items-center gap-4 overflow-x-auto scrollbar-none">
@@ -175,40 +215,8 @@ export default function Header() {
               </nav>
             </div>
           
-            {/* MOBILE GAMES */}
-            <div className="relative lg:hidden">
-              <button
-                onMouseEnter={gamesMenu.openNow}
-                onMouseLeave={gamesMenu.closeLater}
-                onClick={gamesMenu.toggle}
-                className="flex h-10 items-center gap-2 rounded-lg border border-slate-500 bg-slate-700 px-3 text-sm text-slate-200 transition hover:bg-slate-700 shadow-lg"
-                aria-label="Open games menu"
-              >
-                Games
-              </button>
-
-              <div
-                onMouseEnter={gamesMenu.openNow}
-                onMouseLeave={gamesMenu.closeLater}
-                className={`absolute right-0 top-full mt-1 w-44 transition-all duration-200 origin-top ${gamesMenu.open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}
-              >
-                <div className="rounded-lg border border-slate-500 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
-                  {Object.entries(GAME_SLUGS).map(([slug, game]) => (
-                    <Link
-                      key={slug}
-                      href={`/${slug}`}
-                      className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
-                      onClick={gamesMenu.closeNow}
-                    >
-                      {game}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
             {/* RIGHT */}
-            <div className="flex items-center gap-3 whitespace-nowrap">
+            <div className="flex justify-end items-center gap-2 whitespace-nowrap">
 
               {/* USER */}
               <div className="relative">
@@ -345,7 +353,7 @@ export default function Header() {
                 href="https://discord.gg/tD4rarRYpj"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-9 w-9 items-center justify-center rounded-full bg-[#5865F2] text-white transition-transform hover:scale-105 hidden lg:flex"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5865F2] text-white transition-transform hover:scale-105 border border-slate-400"
                 aria-label="Discord"
               >
                 <FaDiscord size={22} />

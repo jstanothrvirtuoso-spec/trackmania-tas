@@ -94,3 +94,18 @@ export type TasEntry = {
   inputs: string | null;
   created_at: string;
 };
+
+export type ProfileDraft = {
+  display_name: string;
+  bio: string;
+  avatar: number;
+  banner: number;
+  colour: number;
+
+  show_rta: boolean;
+  show_time_saved: boolean;
+  show_leaderboard: boolean;
+  show_rta_leaderboard: boolean;
+  show_recent: boolean;
+  show_visitor_counter: boolean;
+};
