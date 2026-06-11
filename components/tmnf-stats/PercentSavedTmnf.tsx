@@ -78,59 +78,50 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
   if (data.length === 0) return null;
 
   return (
-    <div className="flex flex-col">
+    <div className="overflow-hidden w-fit rounded-xl border border-slate-800 bg-slate-900/80 shadow-xl">
+      <table className="table-fixed text-center backdrop-blur-md rounded-2xl text-xs sm:text-sm">
 
-      <div className="overflow-hidden w-full rounded-xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
-        <table className="table-fixed w-full text-center backdrop-blur-md rounded-2xl">
+        <thead className="text-slate-300 bg-slate-950/50">
+          <tr>
+            <th className="px-3 py-1.5 uppercase whitespace-nowrap">
+              Track
+            </th>
+            <th className="px-3 py-1.5 uppercase whitespace-nowrap">
+              % Saved
+            </th>
+            <th className="px-3 py-1.5 uppercase whitespace-nowrap">
+              Authors
+            </th>
+          </tr>
+        </thead>
 
-          <colgroup>
-            <col className="w-40" />
-            <col className="w-22" />
-            <col />
-          </colgroup>
-
-          <thead className="text-slate-300 bg-slate-950/50">
-            <tr>
-              <th className="px-3 py-1.5 uppercase whitespace-nowrap">
-                Track
-              </th>
-              <th className="px-3 py-1.5 uppercase whitespace-nowrap">
-                % Saved
-              </th>
-              <th className="px-3 py-1.5 uppercase whitespace-nowrap">
-                Authors
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.map((row, index) => {
-              const nextTier = data[index + 1]?.tier ?? null;
-              const showDivider = row.tier !== nextTier && nextTier !== null;
-              const colourIndex = index % 2 == 0 ? 1 : 0
-              const rowColour = TIER_COLOURS[row.tier]?.[colourIndex] ?? "bg-slate-500/10"
-              
-              return (
-                <tr
-                  key={row.track}
-                  className={`border-t border-slate-800 ${rowColour} hover:bg-blue-900/50`}
-                  style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
-                >
-                  <td className="px-3 py-1 text-slate-100 whitespace-nowrap">
-                    {row.track}
-                  </td>
-                  <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
-                    {row.pcSaved.toPrecision(3)}
-                  </td>
-                  <td className="px-3 py-1 text-slate-200">
-                    {row.tas.authors.join(", ")}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+        <tbody>
+          {data.map((row, index) => {
+            const nextTier = data[index + 1]?.tier ?? null;
+            const showDivider = row.tier !== nextTier && nextTier !== null;
+            const colourIndex = index % 2 == 0 ? 1 : 0
+            const rowColour = TIER_COLOURS[row.tier]?.[colourIndex] ?? "bg-slate-500/10"
+            
+            return (
+              <tr
+                key={row.track}
+                className={`border-t border-slate-800 ${rowColour} hover:bg-blue-900/50`}
+                style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
+              >
+                <td className="px-3 py-1 text-slate-200 whitespace-nowrap">
+                  {row.track}
+                </td>
+                <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
+                  {row.pcSaved.toPrecision(3)}
+                </td>
+                <td className="px-3 py-1 text-slate-300">
+                  {row.tas.authors.join(", ")}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

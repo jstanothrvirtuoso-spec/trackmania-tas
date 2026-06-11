@@ -364,7 +364,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
 
       {/* Legend */}
       <div className="mt-2 flex justify-center">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[48%] text-[10px]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center text-[10px] max-w-[80%] md:max-w-[50%]">
           {topAuthors.map(author => {
             const colour = colour_map[author];
             const active = visibleAuthors[author];

@@ -202,7 +202,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                         { formatDate(row.tas.date) }
                       </td>
 
-                      <td className="px-2 py-1.5">
+                      <td className="px-1 py-1.5">
                         {row.track}
                       </td>
 

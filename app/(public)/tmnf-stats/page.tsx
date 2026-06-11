@@ -37,7 +37,7 @@ export default function TmnfHistory() {
   );
 
   return (
-    <div className="flex flex-col justify-center items-center pt-20 xl:flex-row xl:items-start">
+    <div className="flex flex-col justify-center items-center pt-20 pb-5 xl:flex-row xl:items-start">
       
       <CategoryTable
         bestRtaByTrack={bestRtaByTrack} 

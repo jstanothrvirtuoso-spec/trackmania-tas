@@ -16,6 +16,20 @@ const SHORT_GAMES = {
   "TM2": "TM²",
 }
 
+const SHORT_ENVIRONMENTS = {
+  "Stadium": "Stad.", 
+  "Island": "Island", 
+  "Desert": "Desert", 
+  "Rally": "Rally", 
+  "Bay": "Bay", 
+  "Coast": "Coast", 
+  "Snow": "Snow", 
+  "Canyon": "Cany.", 
+  "Stadium²": "Stad²", 
+  "Valley": "Valley", 
+  "Lagoon": "Lagoon"
+}
+
 export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
 
   const yearlyCounts = useMemo(() => {
@@ -46,12 +60,12 @@ export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
   const maxCount = Math.max(...yearlyCounts.map(([, c]) => c), 1);
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-slate-900/50 p-3">
       <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-        TASes per Year
+        Year
       </h2>
 
-      <div className="flex items-end gap-2 h-40">
+      <div className="flex items-end justify-center gap-2 h-40">
         {yearlyCounts.map(([year, count]) => {
           const height = (count / maxCount) * 120;
 
@@ -73,7 +87,7 @@ export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
                 title={`${year}: ${count}`}
               />
 
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-slate-400">
                 {year}
               </div>
             </div>
@@ -111,12 +125,12 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
   );
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-slate-900/50 p-3">
       <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-        TASes per Game
+        Game
       </h2>
 
-      <div className="flex items-end gap-2 h-40">
+      <div className="flex items-end justify-center gap-1.5 h-40">
         {gameCounts.map(([game, count]) => {
           const height = (count / maxCount) * 120;
 
@@ -138,7 +152,7 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
                 title={`${game}: ${count}`}
               />
 
-              <div className="text-[10px] text-slate-500 whitespace-nowrap">
+              <div className="text-[10px] text-slate-400 whitespace-nowrap">
                 {SHORT_GAMES[game]}
               </div>
             </div>
@@ -174,12 +188,12 @@ export function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
   const maxCount = Math.max(...environmentCounts.map(([, c]) => c), 1);
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/50 p-4">
+    <div className="rounded-lg border border-slate-800 bg-slate-900/50 items-center p-3">
       <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-        TASes per Environment
+        Environment
       </h2>
 
-      <div className="flex h-40 items-end gap-2">
+      <div className="flex h-40 items-end justify-center gap-1.5">
         {environmentCounts.map(([env, count]) => {
           const height = (count / maxCount) * 120;
 
@@ -201,8 +215,8 @@ export function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
                 title={`${env}: ${count}`}
               />
 
-              <div className="text-[9px] text-slate-500">
-                {env}
+              <div className="text-[9px] text-slate-400">
+                {SHORT_ENVIRONMENTS[env]}
               </div>
             </div>
           );

@@ -117,7 +117,7 @@ export default function ProfileCard({ profile }: { profile: ProfilePublic }) {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="w-100 aspect-[9/16] profile-card rounded-2xl overflow-hidden"
+      className="w-80 aspect-[9/16] profile-card rounded-2xl overflow-hidden"
       style={{
         transform: "perspective(1000px) rotateX(0deg) rotateY(0deg)",
         willChange: "transform",

@@ -22,6 +22,7 @@ Work on mobile viewing:
  - Profile [DONE]
  - Submit form
  - Admin?
+ - Fix header double-tapping issue
 
 
 

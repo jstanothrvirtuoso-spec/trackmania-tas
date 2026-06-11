@@ -228,7 +228,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
       
       {/* Legend */}
       <div className="mt-4 flex justify-center">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[48%] text-[10px]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[80%] text-[10px]">
           {paths.map(({ set, colour }) => {
             const active = visibleSets[set];
 

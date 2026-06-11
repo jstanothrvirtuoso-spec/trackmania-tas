@@ -98,8 +98,8 @@ export default function CompletionTable() {
             );
           })}
 
-          <tr className="border-t border-slate-800 text-center bg-gradient-to-bl from-red-800/90 to-blue-800/90">
-            <td colSpan={3} className="pb-1.5 text-2xl [text-shadow:0_2px_4px_rgba(0,0,0,0.8)] font-bold italic" style={{ fontFamily: "OktaNeue" }}>
+          <tr className="text-center border-t border-slate-800 bg-gradient-to-bl from-red-800/90 to-blue-800/90">
+            <td colSpan={3} className="py-0.5 text-xl [text-shadow:0_2px_4px_rgba(0,0,0,0.8)] font-bold italic" style={{ fontFamily: "Sakura" }}>
               {`Completion: ${percentComplete}%`}
             </td>
           </tr>
