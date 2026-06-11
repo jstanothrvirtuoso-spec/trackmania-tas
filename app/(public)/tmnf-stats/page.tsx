@@ -37,16 +37,16 @@ export default function TmnfHistory() {
   );
 
   return (
-    <div className="flex gap-4 justify-center pt-20 pb-5">
-
+    <div className="flex flex-col justify-center items-center pt-20 xl:flex-row xl:items-start">
+      
       <CategoryTable
         bestRtaByTrack={bestRtaByTrack} 
         tasRecords={tasRecords}
       />
 
-      <div className="flex flex-col items-start gap-4">
+      <div className="flex flex-col flex-1 items-center gap-3 px-2 max-w-180 py-3">
 
-        <div className="flex justify-end">
+        <div className="flex w-full justify-end">
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as Category)}
@@ -61,7 +61,7 @@ export default function TmnfHistory() {
         </div>
         
         {authors.length > 0 && bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
-          <div className="w-184">
+          <div className="items-start w-full">
             <AuthorLeaderboard 
               bestRtaByTrack={bestRtaByTrack} 
               filteredTasRecords={filteredTasRecords}
@@ -70,7 +70,7 @@ export default function TmnfHistory() {
           </div>
         )}
 
-        <div className="w-auto">
+        <div className="items-start w-full">
           {bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
             <TotalTimeSaved
               bestRtaByTrack={bestRtaByTrack} 
@@ -79,7 +79,7 @@ export default function TmnfHistory() {
           )}
         </div>
         
-        <div className="w-184">
+        <div className="w-full">
           <PercentSavedTmnf 
               bestRtaByTrack={bestRtaByTrack} 
               filteredTasRecords={filteredTasRecords}

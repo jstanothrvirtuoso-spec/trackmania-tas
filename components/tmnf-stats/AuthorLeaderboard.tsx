@@ -10,8 +10,8 @@ type GraphType = "TASes" | "Contributions" | "TimeSaved"
 function round(n: number) { return Math.round(n * 1000) / 1000 }
 
 const START_DATE = new Date("2021-01-01").getTime();
-const WIDTH = 700;
-const HEIGHT = 370;
+const WIDTH = 720;
+const HEIGHT = 405;
 const PADDING_X = 35;
 const PADDING_T = 10;
 const PADDING_B = 35;
@@ -195,7 +195,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm shadow-xl">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 w-full flex-1">
       <div className="flex items-center justify-between mb-1">
         <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
           WR History
@@ -212,153 +212,155 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
         </select>
       </div>
 
-      <svg width={WIDTH} height={HEIGHT}>
+      <div className="w-full aspect-[16/9]">
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-full">
 
-        {/* Axes */}
-        <line x1={PADDING_X} y1={HEIGHT - PADDING_B} x2={WIDTH - PADDING_X / 2} y2={HEIGHT - PADDING_B} className="stroke-slate-600" />
-        <line x1={PADDING_X} y1={PADDING_T} x2={PADDING_X} y2={HEIGHT - PADDING_B} className="stroke-slate-600" />
+          {/* Axes */}
+          <line x1={PADDING_X} y1={HEIGHT - PADDING_B} x2={WIDTH - PADDING_X / 2} y2={HEIGHT - PADDING_B} className="stroke-slate-600" />
+          <line x1={PADDING_X} y1={PADDING_T} x2={PADDING_X} y2={HEIGHT - PADDING_B} className="stroke-slate-600" />
 
-        {/* Y Ticks */}
-        {Array.from({ length: Math.floor(maxTick / yStep) + 1 }, (_, i) => i * yStep).map((tick) => {
-          const y = yScale(tick);
+          {/* Y Ticks */}
+          {Array.from({ length: Math.floor(maxTick / yStep) + 1 }, (_, i) => i * yStep).map((tick) => {
+            const y = yScale(tick);
 
-          return (
-            <g key={tick}>
-              <line
-                x1={PADDING_X}
-                y1={y}
-                x2={WIDTH - PADDING_X / 2}
-                y2={y}
-                className="stroke-slate-700/40"
-              />
+            return (
+              <g key={tick}>
+                <line
+                  x1={PADDING_X}
+                  y1={y}
+                  x2={WIDTH - PADDING_X / 2}
+                  y2={y}
+                  className="stroke-slate-700/40"
+                />
 
-              <text
-                x={PADDING_X - 8}
-                y={y + 4}
-                textAnchor="end"
-                className="fill-slate-400 text-[10px]"
+                <text
+                  x={PADDING_X - 8}
+                  y={y + 4}
+                  textAnchor="end"
+                  className="fill-slate-400 text-[12px]"
+                >
+                  {tick}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* X Ticks */}
+          {!selectedYear && years.map((year) => {
+            const x = xScale(`${year}-01-01`);
+
+            return (
+              <g
+                key={year}
+                onClick={() => setSelectedYear(year)}
+                className="cursor-pointer"
               >
-                {tick}
-              </text>
-            </g>
-          );
-        })}
+                <line
+                  x1={x}
+                  y1={PADDING_T}
+                  x2={x}
+                  y2={HEIGHT - PADDING_B}
+                  className="stroke-slate-800"
+                />
 
-        {/* X Ticks */}
-        {!selectedYear && years.map((year) => {
-          const x = xScale(`${year}-01-01`);
+                <text
+                  x={x}
+                  y={HEIGHT - PADDING_B + 16}
+                  textAnchor="middle"
+                  className="fill-emerald-500 text-[11px] hover:fill-emerald-300"
+                >
+                  {year}
+                </text>
+              </g>
+            );
+          })}
+          {selectedYear && Array.from({ length: 12 }, (_, month) => {
+            const date = new Date(selectedYear, month, 1);
+            const x = xScale(date.toISOString());
 
-          return (
-            <g
-              key={year}
-              onClick={() => setSelectedYear(year)}
-              className="cursor-pointer"
+            return (
+              <g key={month}>
+                <line
+                  x1={x}
+                  y1={PADDING_T}
+                  x2={x}
+                  y2={HEIGHT - PADDING_B}
+                  className="stroke-slate-800"
+                />
+
+                <text
+                  x={x}
+                  y={HEIGHT - PADDING_B + 16}
+                  textAnchor="middle"
+                  className="fill-slate-500 text-[10px]"
+                >
+                  {date.toLocaleString("en-GB", { month: "short" })}
+                </text>
+              </g>
+            );
+          })}
+          {selectedYear && (
+            <text
+              x={WIDTH / 2}
+              y={HEIGHT}
+              textAnchor="middle"
+              className="fill-emerald-500 text-[14px] cursor-pointer hover:fill-emerald-300"
+              onClick={() => setSelectedYear(null)}
             >
-              <line
-                x1={x}
-                y1={PADDING_T}
-                x2={x}
-                y2={HEIGHT - PADDING_B}
-                className="stroke-slate-800"
-              />
+              {selectedYear}
+            </text>
+          )}
 
-              <text
-                x={x}
-                y={HEIGHT - PADDING_B + 16}
-                textAnchor="middle"
-                className="fill-emerald-500 text-[10px] hover:fill-emerald-300"
-              >
-                {year}
-              </text>
-            </g>
-          );
-        })}
-        {selectedYear && Array.from({ length: 12 }, (_, month) => {
-          const date = new Date(selectedYear, month, 1);
-          const x = xScale(date.toISOString());
+          {/* Lines */}
+          {orderedAuthors.map(author => {
+            if (!visibleAuthors[author]) return null;
+            const points = selectedYear 
+              ? series[author].filter(p => new Date(p.date).getFullYear() === selectedYear)
+              : series[author];
+            
+            if (!points?.length) return null;
 
-          return (
-            <g key={month}>
-              <line
-                x1={x}
-                y1={PADDING_T}
-                x2={x}
-                y2={HEIGHT - PADDING_B}
-                className="stroke-slate-800"
-              />
+            let d = "";
 
-              <text
-                x={x}
-                y={HEIGHT - PADDING_B + 16}
-                textAnchor="middle"
-                className="fill-slate-500 text-[10px]"
-              >
-                {date.toLocaleString("en-GB", { month: "short" })}
-              </text>
-            </g>
-          );
-        })}
-        {selectedYear && (
-          <text
-            x={WIDTH / 2}
-            y={HEIGHT}
-            textAnchor="middle"
-            className="fill-emerald-500 text-[14px] cursor-pointer hover:fill-emerald-300"
-            onClick={() => setSelectedYear(null)}
-          >
-            {selectedYear}
-          </text>
-        )}
+            for (let i = 0; i < points.length; i++) {
+              const p = points[i];
+              const x = xScale(p.date);
+              const y = yScale(p.value);
 
-        {/* Lines */}
-        {orderedAuthors.map(author => {
-          if (!visibleAuthors[author]) return null;
-          const points = selectedYear 
-            ? series[author].filter(p => new Date(p.date).getFullYear() === selectedYear)
-            : series[author];
-          
-          if (!points?.length) return null;
-
-          let d = "";
-
-          for (let i = 0; i < points.length; i++) {
-            const p = points[i];
-            const x = xScale(p.date);
-            const y = yScale(p.value);
-
-            if (d === "") {
-              if (p.value === 0) continue;
-              if (selectedYear && selectedYear !== 2021 && x !== PADDING_X && i === 0) {
-                d += `M ${PADDING_X} ${y} V ${y}`;
+              if (d === "") {
+                if (p.value === 0) continue;
+                if (selectedYear && selectedYear !== 2021 && x !== PADDING_X && i === 0) {
+                  d += `M ${PADDING_X} ${y} V ${y}`;
+                } else {
+                  d += `M ${x} ${yScale(0)} V ${y}`;
+                }
+                
               } else {
-                d += `M ${x} ${yScale(0)} V ${y}`;
+                if (p.value > 0) {
+                  d += ` H ${x}`
+                };
+                d += ` V ${y}`;
               }
-              
-            } else {
-              if (p.value > 0) {
-                d += ` H ${x}`
-              };
-              d += ` V ${y}`;
             }
-          }
-          if (selectedYear === years[years.length - 1]) {
-            d += ` H ${xScale(new Date(nowDate).toDateString())}`
-          } else {
-            d += ` H ${WIDTH - PADDING_X / 2}`
-          }
-          
-          return (
-            <path
-              key={author}
-              d={d}
-              fill="none"
-              stroke={colour_map[author] ?? "#fff"}
-              strokeWidth={ hoverAuthor === author ? 4 : extraAuthor === author ? 2 : 1.5 }
-            />
-          );
-        })}
+            if (selectedYear === years[years.length - 1]) {
+              d += ` H ${xScale(new Date(nowDate).toDateString())}`
+            } else {
+              d += ` H ${WIDTH - PADDING_X / 2}`
+            }
+            
+            return (
+              <path
+                key={author}
+                d={d}
+                fill="none"
+                stroke={colour_map[author] ?? "#fff"}
+                strokeWidth={ hoverAuthor === author ? 4 : extraAuthor === author ? 2 : 1.5 }
+              />
+            );
+          })}
 
-      </svg>
+        </svg>
+      </div>
 
       {/* Legend */}
       <div className="mt-2 flex justify-center">

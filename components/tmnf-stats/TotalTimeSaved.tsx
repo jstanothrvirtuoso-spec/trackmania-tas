@@ -6,8 +6,8 @@ import { trackList } from "@/lib/TrackList";
 type TrackSets = "Overall" | "White" | "Green" | "Blue" | "Red" | "Black"
 
 const START_DATE = new Date("2021-01-01").getTime();
-const WIDTH = 700;
-const HEIGHT = 420;
+const WIDTH = 720;
+const HEIGHT = 405;
 const PADDING_X = 35;
 const PADDING_Y = 20;
 const TRACK_SET_COLOURS: Record<TrackSets, string> = {
@@ -129,100 +129,102 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
   });
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 w-full flex-1">
       <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Cumulative Time Saved (Mins)
       </h2>
 
-      <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-[420px]">
-        {/* Axes */}
-        <line
-          x1={PADDING_X}
-          y1={HEIGHT - PADDING_Y}
-          x2={WIDTH - PADDING_X / 2}
-          y2={HEIGHT - PADDING_Y}
-          className="stroke-slate-600"
-        />
+      <div className="w-full aspect-[16/9]">
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-full">
+          {/* Axes */}
+          <line
+            x1={PADDING_X}
+            y1={HEIGHT - PADDING_Y}
+            x2={WIDTH - PADDING_X / 2}
+            y2={HEIGHT - PADDING_Y}
+            className="stroke-slate-600"
+          />
 
-        <line
-          x1={PADDING_X}
-          y1={PADDING_Y}
-          x2={PADDING_X}
-          y2={HEIGHT - PADDING_Y}
-          className="stroke-slate-600"
-        />
+          <line
+            x1={PADDING_X}
+            y1={PADDING_Y}
+            x2={PADDING_X}
+            y2={HEIGHT - PADDING_Y}
+            className="stroke-slate-600"
+          />
 
-        {/* Y Ticks */}
-        {Array.from(
-          { length: Math.floor(maxTick / yStep) + 1 },
-          (_, i) => i * yStep
-        ).map((tick) => {
-          const y = yScale(tick);
+          {/* Y Ticks */}
+          {Array.from(
+            { length: Math.floor(maxTick / yStep) + 1 },
+            (_, i) => i * yStep
+          ).map((tick) => {
+            const y = yScale(tick);
 
-          return (
-            <g key={tick}>
-              <line
-                x1={PADDING_X}
-                y1={y}
-                x2={WIDTH - PADDING_X / 2}
-                y2={y}
-                className="stroke-slate-800"
+            return (
+              <g key={tick}>
+                <line
+                  x1={PADDING_X}
+                  y1={y}
+                  x2={WIDTH - PADDING_X / 2}
+                  y2={y}
+                  className="stroke-slate-800"
+                />
+
+                <text
+                  x={PADDING_X - 8}
+                  y={y + 4}
+                  textAnchor="end"
+                  className="fill-slate-400 text-[12px]"
+                >
+                  {tick}
+                </text>
+              </g>
+            );
+          })}
+          
+          {/* X Ticks */}
+          {years.map((year) => {
+            const x = xScale(`${year}-01-01`);
+
+            if (x < PADDING_X || x > WIDTH - PADDING_X) return null;
+
+            return (
+              <g key={year}>
+                <line
+                  x1={x}
+                  y1={PADDING_Y}
+                  x2={x}
+                  y2={HEIGHT - PADDING_Y}
+                  className="stroke-slate-800"
+                />
+
+                <text
+                  x={x}
+                  y={HEIGHT - PADDING_Y + 16}
+                  textAnchor="middle"
+                  className="fill-slate-400 text-[11px]"
+                >
+                  {year}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Line */}
+          {paths.map(({ set, path, colour }) => {
+            if (!visibleSets[set]) return null;
+            return (
+              <path
+                key={set}
+                d={path}
+                fill="none"
+                stroke={colour}
+                strokeWidth={set === "Overall" ? 3 : 2}
               />
-
-              <text
-                x={PADDING_X - 8}
-                y={y + 4}
-                textAnchor="end"
-                className="fill-slate-500 text-[10px]"
-              >
-                {tick}
-              </text>
-            </g>
-          );
-        })}
-        
-        {/* X Ticks */}
-        {years.map((year) => {
-          const x = xScale(`${year}-01-01`);
-
-          if (x < PADDING_X || x > WIDTH - PADDING_X) return null;
-
-          return (
-            <g key={year}>
-              <line
-                x1={x}
-                y1={PADDING_Y}
-                x2={x}
-                y2={HEIGHT - PADDING_Y}
-                className="stroke-slate-800"
-              />
-
-              <text
-                x={x}
-                y={HEIGHT - PADDING_Y + 16}
-                textAnchor="middle"
-                className="fill-slate-500 text-[10px]"
-              >
-                {year}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Line */}
-        {paths.map(({ set, path, colour }) => {
-          if (!visibleSets[set]) return null;
-          return (
-            <path
-              key={set}
-              d={path}
-              fill="none"
-              stroke={colour}
-              strokeWidth={set === "Overall" ? 3 : 2}
-            />
-          )
-        })}
-      </svg>
+            )
+          })}
+        </svg>
+      </div>
       
       {/* Legend */}
       <div className="mt-4 flex justify-center">

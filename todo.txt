@@ -16,10 +16,10 @@ Work on mobile viewing:
  - Highlight [DONE]
  - Inputs [DONE]
  - Authors [DONE]
- - TMNF Stats
- - About
+ - TMNF Stats [DONE]
+ - About [DONE]
  - Game pages
- - Profile
+ - Profile [DONE]
  - Submit form
  - Admin?
 

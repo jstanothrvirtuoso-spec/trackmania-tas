@@ -3,8 +3,8 @@ import { useState, useMemo } from "react";
 import { CATEGORY_COLOURS, GRAPH_CATEGORIES } from "@/utils/constants";
 import { GraphCategory, ProgressionGraphPoint } from "./TracksPage";
 
-const WIDTH = 700;
-const HEIGHT = 400;
+const WIDTH = 720;
+const HEIGHT = 405;
 const PADDING_X = 35;
 const PADDING_Y = 20;
 const INITIAL_VISIBLE = Object.fromEntries(
@@ -93,180 +93,179 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   })() : null;
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 backdrop-blur-sm shadow-xl">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 w-full flex-1 backdrop-blur-sm shadow-xl">
       <h2 className="mb-1 uppercase tracking-[0.18em] text-slate-300 text-xs lg:text-sm lg:font-semibold">
         Record Progression ({isStunt ? "pts" : useMinutes ? "min" : "sec"})
       </h2>
 
-      <svg
-        viewBox="0 0 700 400"
-        className="w-full md:w-[700px] h-auto"
-      >
-        {/* Axes */}
-        <line
-          x1={PADDING_X}
-          y1={HEIGHT - PADDING_Y}
-          x2={WIDTH - PADDING_X / 2}
-          y2={HEIGHT - PADDING_Y}
-          className="stroke-slate-600"
-        />
+      <div className="w-full aspect-[16/9]">
+        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-full">
+          {/* Axes */}
+          <line
+            x1={PADDING_X}
+            y1={HEIGHT - PADDING_Y}
+            x2={WIDTH - PADDING_X / 2}
+            y2={HEIGHT - PADDING_Y}
+            className="stroke-slate-600"
+          />
 
-        <line
-          x1={PADDING_X}
-          y1={PADDING_Y}
-          x2={PADDING_X}
-          y2={HEIGHT - PADDING_Y}
-          className="stroke-slate-600"
-        />
+          <line
+            x1={PADDING_X}
+            y1={PADDING_Y}
+            x2={PADDING_X}
+            y2={HEIGHT - PADDING_Y}
+            className="stroke-slate-600"
+          />
 
-        {/* Year labels */}
-        {Array.from( { length: endYear - startYear + 1 }, (_, i) => startYear + i).map((year) => {
-          const x = xScale(`${year}-01-01`);
+          {/* Year labels */}
+          {Array.from( { length: endYear - startYear + 1 }, (_, i) => startYear + i).map((year) => {
+            const x = xScale(`${year}-01-01`);
 
-          // Skip labels outside plotting region
-          if (x < PADDING_X || x > WIDTH - PADDING_X / 2) {
-            return null;
-          }
-
-          return (
-            <text
-              key={year}
-              x={x}
-              y={HEIGHT - PADDING_Y + 16}
-              textAnchor="middle"
-              className="fill-slate-400 text-[14px] lg:text-[10px]"
-            >
-              {year}
-            </text>
-          );
-        })}
-
-        {/* Time labels */}
-        {yTicks.map((tick) => {
-          const y = yScale(tick);
-
-          return (
-            <g key={tick}>
-              <line
-                x1={PADDING_X}
-                y1={y}
-                x2={WIDTH - PADDING_X / 2}
-                y2={y}
-                className="stroke-slate-700/50"
-              />
-
-              <text
-                x={PADDING_X - 8}
-                y={y + 4}
-                textAnchor="end"
-                className={
-                  tick === yTicks[0]
-                    ? "fill-emerald-400 text-[14px] lg:text-[10px] cursor-pointer hover:fill-slate-200"
-                    : "fill-slate-400 text-[14px] lg:text-[10px]"
-                }
-                onClick={ tick === yTicks[0] ? () => setForceZeroY(v => !v) : undefined}
-              >
-                {tick.toFixed(yTickDecimals)}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Graph */}
-        {GRAPH_CATEGORIES.map((category) => {
-          const points = progression[category];
-          if (points.length === 0 || !visibleCategories[category]) return null;
-          
-          let path = "";
-          points.forEach((point, i) => {
-            const x = xScale(point.date);
-            const y = yScale(point.time);
-
-            if (i === 0) {
-              path += `M ${Math.max(PADDING_X, x)} ${y}`;
-            } else {
-              path += ` H ${Math.max(PADDING_X, x)} V ${y}`;
+            // Skip labels outside plotting region
+            if (x < PADDING_X || x > WIDTH - PADDING_X / 2) {
+              return null;
             }
-          });
-
-          const lastPoint = points[points.length - 1];
-          if (lastPoint) { path += ` H ${xScale(new Date().toISOString())}` }
-          
-          return (
-            <path
-              key={category}
-              d={path}
-              fill="none"
-              stroke={CATEGORY_COLOURS[category][0]}
-              strokeWidth="2"
-            />
-          );
-        })}
-
-        {/* Points */}
-        {GRAPH_CATEGORIES.flatMap((category) => {
-          if (!visibleCategories[category]) return [];
-
-          return progression[category].map((p) => {
-            const x = xScale(p.date);
-            const y = yScale(p.time);
-
-            if (x < PADDING_X) return;
 
             return (
-              <circle
-                key={`${category}-${p.date}-${p.time}`}
-                cx={x}
-                cy={y}
-                r={3}
-                fill={CATEGORY_COLOURS[category][0]}
+              <text
+                key={year}
+                x={x}
+                y={HEIGHT - PADDING_Y + 16}
+                textAnchor="middle"
+                className="fill-slate-400 text-[11px]"
+              >
+                {year}
+              </text>
+            );
+          })}
+
+          {/* Time labels */}
+          {yTicks.map((tick) => {
+            const y = yScale(tick);
+
+            return (
+              <g key={tick}>
+                <line
+                  x1={PADDING_X}
+                  y1={y}
+                  x2={WIDTH - PADDING_X / 2}
+                  y2={y}
+                  className="stroke-slate-700/50"
+                />
+
+                <text
+                  x={PADDING_X - 8}
+                  y={y + 4}
+                  textAnchor="end"
+                  className={
+                    tick === yTicks[0]
+                      ? "fill-emerald-400 text-[12px] cursor-pointer hover:fill-slate-200"
+                      : "fill-slate-400 text-[12px]"
+                  }
+                  onClick={ tick === yTicks[0] ? () => setForceZeroY(v => !v) : undefined}
+                >
+                  {tick.toFixed(yTickDecimals)}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Graph */}
+          {GRAPH_CATEGORIES.map((category) => {
+            const points = progression[category];
+            if (points.length === 0 || !visibleCategories[category]) return null;
+            
+            let path = "";
+            points.forEach((point, i) => {
+              const x = xScale(point.date);
+              const y = yScale(point.time);
+
+              if (i === 0) {
+                path += `M ${Math.max(PADDING_X, x)} ${y}`;
+              } else {
+                path += ` H ${Math.max(PADDING_X, x)} V ${y}`;
+              }
+            });
+
+            const lastPoint = points[points.length - 1];
+            if (lastPoint) { path += ` H ${xScale(new Date().toISOString())}` }
+            
+            return (
+              <path
+                key={category}
+                d={path}
+                fill="none"
+                stroke={CATEGORY_COLOURS[category][0]}
+                strokeWidth="2"
               />
             );
-          });
-        })}
+          })}
 
-        {/* Hover highlight overlay */}
-        {hovered && (() => {
-          const { index, points } = hovered;
-          const p1 = points[index];
-          const p2 = points[index + 1];
-          const x1 = Math.max(PADDING_X, xScale(p1.date));
-          const x2 = index < points.length - 1 ? xScale(p2.date) : xScale(new Date().toISOString());
-          const y = yScale(p1.time);
+          {/* Points */}
+          {GRAPH_CATEGORIES.flatMap((category) => {
+            if (!visibleCategories[category]) return [];
 
-          if (x2 < PADDING_X) return;
+            return progression[category].map((p) => {
+              const x = xScale(p.date);
+              const y = yScale(p.time);
 
-          return (
-            <g key={`hover-${hovered.category}-${index}`}>
-              <line
-                x1={x1}
-                y1={y}
-                x2={x2}
-                y2={y}
-                stroke="#f16717"
-                strokeWidth={3}
-              />
-              {x1 > PADDING_X && (
+              if (x < PADDING_X) return;
+
+              return (
                 <circle
-                  cx={x1}
+                  key={`${category}-${p.date}-${p.time}`}
+                  cx={x}
                   cy={y}
-                  r={5}
-                  fill="#f16717"
+                  r={3}
+                  fill={CATEGORY_COLOURS[category][0]}
                 />
-              )}
-              {x2 < WIDTH - PADDING_X && (
-                <circle
-                  cx={x2}
-                  cy={y}
-                  r={5}
-                  fill="#f16717"
-                />
-              )}
-            </g>
-          );
-        })()}
+              );
+            });
+          })}
 
-      </svg>
+          {/* Hover highlight overlay */}
+          {hovered && (() => {
+            const { index, points } = hovered;
+            const p1 = points[index];
+            const p2 = points[index + 1];
+            const x1 = Math.max(PADDING_X, xScale(p1.date));
+            const x2 = index < points.length - 1 ? xScale(p2.date) : xScale(new Date().toISOString());
+            const y = yScale(p1.time);
+
+            if (x2 < PADDING_X) return;
+
+            return (
+              <g key={`hover-${hovered.category}-${index}`}>
+                <line
+                  x1={x1}
+                  y1={y}
+                  x2={x2}
+                  y2={y}
+                  stroke="#f16717"
+                  strokeWidth={3}
+                />
+                {x1 > PADDING_X && (
+                  <circle
+                    cx={x1}
+                    cy={y}
+                    r={5}
+                    fill="#f16717"
+                  />
+                )}
+                {x2 < WIDTH - PADDING_X && (
+                  <circle
+                    cx={x2}
+                    cy={y}
+                    r={5}
+                    fill="#f16717"
+                  />
+                )}
+              </g>
+            );
+          })()}
+
+        </svg>
+      </div>
 
       {/* Legend */}
       <div className="mt-4 flex flex-wrap justify-center gap-4 text-[10px]">

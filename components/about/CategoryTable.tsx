@@ -67,7 +67,7 @@ export function CategoryTable() {
             <div
               key={category}
               className="
-                relative grid grid-cols-2 lg:grid-cols-[100px_1fr] items-center text-center
+                relative grid grid-cols-2 grid-cols-[100px_1fr] items-center text-center
                 py-2.5
 
                 transition-all duration-300 ease-out

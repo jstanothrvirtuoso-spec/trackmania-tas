@@ -64,9 +64,12 @@ export default function Page() {
       </div>
 
       {/* ================= TOP LAYOUT ================= */}
-      <div className="relative z-10 flex gap-6 pt-10 px-6 items-start">
+      <div className="relative z-10 flex flex-col xl:flex-row gap-5 pt-10 px-6 items-center xl:items-start">
 
-        <HallOfFame />
+        {/* HALL OF FAME */}
+        <div className="flex justify-center">
+          <HallOfFame />
+        </div>
 
         {/* CENTER BOX */}
         <div className="relative w-auto p-6 overflow-hidden rounded-xl
@@ -96,7 +99,7 @@ export default function Page() {
             </div>
 
             {/* Tables */}
-            <div className="flex flex-row justify-center gap-6 items-start">
+            <div className="flex flex-col justify-center gap-6 items-center lg:items-start lg:flex-row px-3">
               <div className="flex flex-col gap-6 items-center">
                 <Maintainers />
                 <CategoryTable />
@@ -106,9 +109,10 @@ export default function Page() {
 
           </div>
         </div>
+
       </div>
 
-      <div className="flex flex-1 items-end justify-center pb-10">
+      <div className="flex flex-1 items-end justify-center pb-10 pt-5 px-3">
         <CommunityRules />
       </div>
     </main>
