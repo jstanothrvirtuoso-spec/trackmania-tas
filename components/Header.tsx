@@ -12,7 +12,7 @@ import { PROFILE_AVATARS, PROFILE_COLOURS, CURSOR, GAME_SLUGS } from "@/utils/co
 import { useHoverDropdown } from "@/utils/common";
 
 const MENU_LINKS = [
-  { href: "/", label: "Global Leaderboard" },
+  { href: "/", label: "Global LB" },
   { href: "/highlight", label: "Highlight" },
   { href: "/inputs", label: "Inputs" },
   { href: "/authors", label: "Authors" },
@@ -182,13 +182,22 @@ export default function Header() {
             </div>
             
             {/* HOME */}
-            <div className="mt-[2px] px-3">
+            <div className="mt-[2px] px-3 hidden sm:block">
               <Link
                 href="/"
                 style={{ fontFamily: "DOSVGA" }}
                 className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
               >
                 Leaderboard
+              </Link>
+            </div>
+            <div className="mt-[2px] px-3 block sm:hidden">
+              <Link
+                href="/"
+                style={{ fontFamily: "DOSVGA" }}
+                className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
+              >
+                Home
               </Link>
             </div>
             
@@ -208,7 +217,7 @@ export default function Header() {
                           : "text-slate-300 hover:text-white"
                       }`}
                     >
-                      {game}
+                      {game === "TM2" ? "TM²" : game}
                     </Link>
                   );
                 })}

@@ -1,9 +1,10 @@
 
 import Image from "next/image";
+import { Game } from "@/utils/typing";
 import { Environment } from "@/utils/typing";
 import { trackList } from "@/lib/TrackList";
 
-const GAME_CONVERT: Record<string, string> = {
+const GAME_CONVERT: Record<string, Game> = {
   "TMNF": "TMNF",
   "TMNF No Cut": "TMNF",
   "ESWC": "ESWC",

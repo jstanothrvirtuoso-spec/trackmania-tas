@@ -42,7 +42,7 @@ function getRankIndex(value: number, thresholds: readonly number[]) {
 
 function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: LeaderboardProps) {
   return (
-    <table className="min-w-full divide-y divide-slate-800 text-center text-sm backdrop-blur-md">
+    <table className="min-w-full divide-y divide-slate-800 text-center text-xs backdrop-blur-md sm:text-sm">
       <thead className="bg-slate-900/90 text-slate-300">
         <tr>
           <th
@@ -67,7 +67,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
 
           <th
             onClick={() => handleSort("tases")}
-            className="cursor-pointer px-3 py-1.5 whitespace-nowrap"
+            className="cursor-pointer px-2 py-1.5 whitespace-nowrap"
           >
             <div className="flex items-center justify-center gap-1">
               TASes
@@ -77,7 +77,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
 
           <th
             onClick={() => handleSort("contributions")}
-            className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
+            className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap"
           >
             <div className="flex items-center justify-center gap-1">
               Cont.
@@ -87,7 +87,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
 
           <th
             onClick={() => handleSort("totalSaved")}
-            className="cursor-pointer px-4 py-1.5 uppercase whitespace-nowrap"
+            className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
           >
             <div className="flex items-center justify-center gap-1">
               Saved
@@ -129,7 +129,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
                   )}
                 </td>
 
-                <td className="px-1 py-1.5 text-slate-100">
+                <td className="px-0 py-1.5 text-slate-100">
                   <Link
                     href={`/authors?author=${encodeURIComponent(
                       a.author
@@ -148,7 +148,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
                   {a.contributions.toFixed(2)}
                 </td>
 
-                <td className="px-2 py-1.5 text-slate-300">
+                <td className="px-3 py-1.5 text-slate-300">
                   {formatTime(a.totalSaved)}
                 </td>
               </tr>

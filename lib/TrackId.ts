@@ -1234,7 +1234,7 @@ export const trackIds: Record<string, string> = {
   "UKoLXpMPH0R6gweMRIyB9nerPCe": "TMPU Survival06 [Beta]",
   "6lEWLM9PDNXsTHjkMg6dCtRgxh": "TMPU TestNet [Beta]",
   
-  // TM2
+  // TM²
   "dd1v3VuYkSWRQ_L_J3hkrkDftG2": "Canyon A01",
   "ZxgrYTGoLR14Nhkh2W1EEurwvua": "Canyon A02",
   "RVkh5OfoIhm6pU0xrR7ztHOvPme": "Canyon A03",

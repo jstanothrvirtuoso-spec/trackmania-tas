@@ -153,34 +153,34 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
 
           {/* TAS table */}
           <div className="overflow-x-auto">
-            <table className="border-separate border border-slate-800 rounded-lg overflow-hidden text-center text-sm">
+            <table className="border-separate border border-slate-800 rounded-lg overflow-hidden text-center text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
-                  <th className="px-3 py-1.5 font-normal">
+                  <th className="px-2 py-1.5 font-normal">
                     Date
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal">
+                  <th className="px-2 py-1.5 font-normal">
                     Track
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
+                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">
                     Game
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal">
+                  <th className="px-2 py-1.5 font-normal">
                     Cat.
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal">
+                  <th className="px-2 py-1.5 font-normal">
                     TAS
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
+                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">
                     RTA
                   </th>
 
-                  <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
+                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">
                     Saved
                   </th>
                 </tr>
@@ -198,31 +198,31 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
                       key={ index }
                       className={`border-b border-slate-800 ${index % 2 === 0 ? "bg-violet-950/10" : "bg-violet-950/20"} ${opacity}`}
                     >
-                      <td className="px-3 py-1.5 whitespace-nowrap">
+                      <td className="px-2 py-1.5 whitespace-nowrap">
                         { formatDate(row.tas.date) }
                       </td>
 
-                      <td className="px-3 py-1.5">
+                      <td className="px-2 py-1.5">
                         {row.track}
                       </td>
 
-                      <td className="px-3 py-1.5 hidden sm:table-cell">
+                      <td className="px-2 py-1.5 hidden sm:table-cell">
                         {tasGame}
                       </td>
 
-                      <td className="px-3 py-1.5">
+                      <td className="px-2 py-1.5">
                         { row.tas.category}
                       </td>
 
-                      <td className="px-3 py-1.5">
+                      <td className="px-2 py-1.5">
                         { formatTime(row.tas.time_ms, isStunt)}
                       </td>
 
-                      <td className="px-3 py-1.5 hidden sm:table-cell">
+                      <td className="px-2 py-1.5 hidden sm:table-cell">
                         { row.rta ? formatTime(row.rta.time_ms, isStunt) : "-" }
                       </td>
 
-                      <td className="px-3 py-1.5 italic hidden sm:table-cell">
+                      <td className="px-2 py-1.5 italic hidden sm:table-cell">
                         { row.rta ? formatTime(row.tas.time_ms - row.rta.time_ms, isStunt, false, true) : "-" }
                       </td>
                     </tr>

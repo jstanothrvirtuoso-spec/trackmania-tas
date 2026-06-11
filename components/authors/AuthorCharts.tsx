@@ -3,6 +3,19 @@ import { useMemo } from "react";
 import { RecordRow } from "@/utils/typing";
 import { GAME_LIST, ENVIRONMENT } from "@/utils/constants";
 
+const SHORT_GAMES = {
+  "TMNF": "TMNF",
+  "TMNF No Cut": "No Cut",
+  "ESWC": "ESWC",
+  "TMN Remakes": "TMN R.",
+  "TMUF": "TMUF",
+  "StarTrack": "Star",
+  "TMS": "TMS",
+  "TMO": "TMO",
+  "Demo/Beta": "Demo",
+  "TM2": "TM²",
+}
+
 export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
 
   const yearlyCounts = useMemo(() => {
@@ -117,7 +130,7 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
               </div>
 
               <div
-                className="w-10 rounded-t bg-cyan-400/70 hover:bg-cyan-300 transition"
+                className="w-7 rounded-t bg-cyan-400/70 hover:bg-cyan-300 transition"
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",
@@ -125,8 +138,8 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
                 title={`${game}: ${count}`}
               />
 
-              <div className="text-xs text-slate-500 whitespace-nowrap">
-                {game}
+              <div className="text-[10px] text-slate-500 whitespace-nowrap">
+                {SHORT_GAMES[game]}
               </div>
             </div>
           );
@@ -180,15 +193,15 @@ export function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
               </div>
 
               <div
-                className="w-10 rounded-t bg-emerald-400/70 transition hover:bg-emerald-300"
+                className="w-7 rounded-t bg-emerald-400/70 transition hover:bg-emerald-300"
                 style={{
                   height: `${height}px`,
-                  minHeight: "3px",
+                  minHeight: "2px",
                 }}
                 title={`${env}: ${count}`}
               />
 
-              <div className="text-xs text-slate-500">
+              <div className="text-[9px] text-slate-500">
                 {env}
               </div>
             </div>

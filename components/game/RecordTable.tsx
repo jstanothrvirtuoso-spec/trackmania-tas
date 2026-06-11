@@ -41,7 +41,7 @@ function isRecentEntry(dateStr: string, showRecent: boolean) {
   return diff >= 0 && diff <= oneMonth;
 };
 
-function getTmxLink(id: number, game: string) {
+function getTmxLink(id: number, game: Game) {
   if (id === 0) return "";
   if (game === "TMNF" || game === "TMNF No Cut") {
     return `https://tmnf.exchange/trackshow/${id}`;

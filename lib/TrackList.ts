@@ -1262,7 +1262,7 @@ export const trackList: Record<string, TrackInfo> = {
   "TMPU Survival06 [Beta]": { game: "Demo/Beta", id: 7154641, category: "TMX 22nd Anniversary", environment: "Desert" },
   "TMPU TestNet [Beta]": { game: "Demo/Beta", id: 7154646, category: "TMX 22nd Anniversary", environment: "Desert" },
 
-  // TM2
+  // TM²
   "Canyon A01": { game: "TM2", id: 5474, category: "Canyon", environment: "Canyon" },
   "Canyon A02": { game: "TM2", id: 5475, category: "Canyon", environment: "Canyon" },
   "Canyon A03": { game: "TM2", id: 5476, category: "Canyon", environment: "Canyon" },
