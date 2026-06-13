@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const ENVIRONMENTS = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
 type Environment = (typeof ENVIRONMENTS)[number];
@@ -95,6 +95,105 @@ const btnClass = `sakura-font relative px-4 py-2 text-xs uppercase text-sky-100 
   text-sm md:text-[15px] tracking-[0.14em] uppercase font-medium
   hover:shadow-[0_0_18px_rgba(236,72,153,0.25)]`;
 
+
+
+
+export function CursorTrail() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const points: { x: number; y: number; time: number }[] = [];
+    const LIFETIME = 110;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    resize();
+
+    const onMove = (e: MouseEvent) => {
+      points.push({
+        x: e.clientX,
+        y: e.clientY,
+        time: performance.now(),
+      });
+    };
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", onMove);
+
+    let animationId: number;
+
+    const render = () => {
+      const now = performance.now();
+
+      // remove old points
+      for (let i = points.length - 1; i >= 0; i--) {
+        if (now - points[i].time > LIFETIME) {
+          points.splice(i, 1);
+        }
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (points.length > 2) {
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        for (let i = 1; i < points.length - 1; i++) {
+          const p0 = points[i - 1];
+          const p1 = points[i];
+          const p2 = points[i + 1];
+
+          const age = now - p1.time;
+          const life = Math.max(0, 1 - age / LIFETIME);
+
+          const alpha = life * (i / points.length) * 0.8;
+
+          const mx = (p1.x + p2.x) / 2;
+          const my = (p1.y + p2.y) / 2;
+
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.quadraticCurveTo(p1.x, p1.y, mx, my);
+
+          ctx.strokeStyle = `rgba(80,240,255,${alpha})`;
+          ctx.lineWidth = Math.max(1, alpha * 6);
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = "#00d8ff";
+
+          ctx.stroke();
+        }
+      }
+
+      animationId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-50"
+    />
+  );
+}
+
+  
 export default function InputsPage() {
   
   const [activeEnv, setActiveEnv] = useState<Environment>("STADIUM");
@@ -106,8 +205,10 @@ export default function InputsPage() {
     setTimeout(() => setCopied(null), 700);
   };
 
+  
   return (
     <div className="min-h-screen pt-16 relative overflow-hidden">
+      <CursorTrail />
 
       {/* WALLPAPER */}
       <div
@@ -122,15 +223,14 @@ export default function InputsPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="relative z-10 mx-auto max-w-7xl p-6 space-y-10 flex flex-col items-center justify-center">
+      <div className="relative z-10 mx-auto max-w-7xl p-6 space-y-10">
 
         {/* HEADER */}
         <div className="relative -translate-x-1">
-          <Image
+          <img
             src="/inputs/inputstxt.png"
             alt="Inputs"
-            width={250}
-            height={150}
+            className="mx-auto h-40 w-auto"
           />
         </div>
 
@@ -181,11 +281,11 @@ export default function InputsPage() {
               <div className="absolute inset-0 opacity-95 bg-gradient-to-r from-[#000404] via-[#070816dd] to-transparent"/>
 
               {/* INPUTS CARD */}
-              <div className="relative z-10 grid gap-6 p-4 md:p-8 md:grid-cols-[420px_1fr] items-center">
+              <div className="relative z-10 grid gap-6 p-8 md:grid-cols-[420px_1fr] items-center">
                 <div className="space-y-2 h-full flex flex-col justify-center">
 
                   {/* VIDEO */}
-                  <div className="border border-cyan-400/20 bg-[#0b1020] shadow-lg overflow-hidden rounded-xl">
+                  <div className="border border-cyan-400/20 bg-[#0b1020] overflow-hidden rounded-xl">
                     <video
                       className="w-full object-cover"
                       autoPlay
@@ -225,13 +325,13 @@ export default function InputsPage() {
                 {/* INSTRUCTIONS */}
                 <div className="relative z-10 flex-col items-center hidden md:flex">
                   {activeEnv === "STADIUM" && (
-                    <div className="overflow-hidden rounded-lg shadow-lg hidden md:flex">
-                      <Image
-                        src="/inputs/stadiumtrick.png"
-                        alt="Stadium trick instructions"
-                        width={650}
-                        height={400}
-                      />
+                    <div className="overflow-hidden rounded-lg hidden md:flex">
+                    <Image
+                      src="/inputs/stadiumtrick.png"
+                      alt="Stadium trick instructions"
+                      width={650}
+                      height={400}
+                    />
                     </div>
                   )}
                   <div

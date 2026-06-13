@@ -133,15 +133,27 @@ body.loading {
   pointer-events: none;
 
   background: linear-gradient(
+  120deg,
+  transparent 0%,
+  rgba(255,255,255,0.25) 40%,
+  rgba(255,255,255,0.6) 50%,
+  rgba(255,255,255,0.25) 60%,
+  transparent 100%
+);
+
+.reflection {
+  background: linear-gradient(
     120deg,
     transparent 0%,
-    transparent 30%,
-    rgba(255,255,255,0.02) 40%,
-    rgba(255,255,255,0.12) 50%,
-    rgba(255,255,255,0.02) 60%,
-    transparent 70%,
-    transparent 100%
+    rgba(255,255,255,0.0) 35%,
+    rgba(255,255,255,0.25) 45%,
+    rgba(255,255,255,0.6) 50%,
+    rgba(255,255,255,0.25) 55%,
+    transparent 65%
   );
+  filter: blur(2px);
+  transform: translateX(-40%);
+}
 
   transform: translateX(-120%);
   animation: glossMove 6s infinite ease-in-out;
@@ -809,6 +821,8 @@ body.loading {
 .b7 { animation-delay: 2.5s; }
 .b8 { animation-delay: 0.8s; }
 
+
+
 @keyframes floatUp {
   0% {
     transform: translateY(0) translateX(0) scale(0.8);
@@ -833,3 +847,5 @@ body.loading {
     opacity: 0;
   }
 }
+
+

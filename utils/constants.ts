@@ -108,6 +108,7 @@ export const PROFILE_BANNERS: Record<number, string> = {
   7: "/banners/snow.webp",
   8: "/banners/stadium.webp",
   9: "/banners/valley.webp",
+  10:"/banners/kim2.png",
 };
 
 export const PROFILE_AVATARS: Record<number, string> = {
@@ -121,6 +122,7 @@ export const PROFILE_AVATARS: Record<number, string> = {
   7: "/avatars/snow.webp",
   8: "/avatars/stadium.webp",
   9: "/avatars/valley.webp",
+  10: "/avatars/kim.webp",
 };
 
 export const PROFILE_COLOURS: Record<number, string> = {
