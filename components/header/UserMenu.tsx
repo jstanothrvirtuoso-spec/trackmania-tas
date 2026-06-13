@@ -84,8 +84,8 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
 
           {USER_LINKS.map((link) => (
             <Link
-              key={(link.modal && isTouch) ? `${link.href}?mode=page` : link.href }
-              href={link.href}
+              key={(link.modal && isTouch) ? `${link.href}?modal=0` : link.href}
+              href={(link.modal && isTouch) ? `${link.href}?modal=0` : link.href}
               className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
               onClick={userMenu.closeNow}
             >

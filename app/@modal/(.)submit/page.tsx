@@ -1,15 +1,11 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import SubmitForm from "@/components/SubmitForm";
 
 export default function SubmitPage() {
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const forceFull = searchParams.get("mode") === "page";
-
-  if (forceFull) return null;
 
   return (
     
