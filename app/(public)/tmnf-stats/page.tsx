@@ -79,7 +79,7 @@ export default function TmnfHistory() {
           )}
         </div>
         
-        <div className="w-full">
+        <div className="w-full justify-center flex">
           <PercentSavedTmnf 
               bestRtaByTrack={bestRtaByTrack} 
               filteredTasRecords={filteredTasRecords}

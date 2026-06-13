@@ -1,11 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import SubmitForm from "@/components/SubmitForm";
 
 export default function SubmitPage() {
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (window.matchMedia("(hover: none)").matches) {
+      router.replace("/submit");
+    }
+  }, []);
 
   return (
     

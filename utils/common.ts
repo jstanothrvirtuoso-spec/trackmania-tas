@@ -73,3 +73,30 @@ export function generateGraphColours(n: number) {
     return `hsl(${hue}, 70%, 55%)`;
   });
 }
+
+export function useOnClickOutside(
+  ref: React.RefObject<HTMLElement | null>,
+  handler: () => void,
+  enabled = true
+) {
+  useEffect(() => {
+    if (!enabled) return;
+
+    function handle(event: MouseEvent | TouchEvent) {
+      const el = ref.current;
+      if (!el) return;
+
+      if (!el.contains(event.target as Node)) {
+        handler();
+      }
+    }
+
+    document.addEventListener("mousedown", handle);
+    document.addEventListener("touchstart", handle);
+
+    return () => {
+      document.removeEventListener("mousedown", handle);
+      document.removeEventListener("touchstart", handle);
+    };
+  }, [ref, handler, enabled]);
+}

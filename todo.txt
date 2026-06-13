@@ -9,6 +9,8 @@ Admin panel:
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 
+On /tracks authors graph, No Uber, virtuoso+Kimura go slightly negative!?!
+
 Work on mobile viewing:
  - Tracks [DONE]
  - Header [DONE]
@@ -22,7 +24,7 @@ Work on mobile viewing:
  - Profile [DONE]
  - Submit form
  - Admin?
- - Fix header double-tapping issue
+ - Click outside of header should close all menus
 
 
 

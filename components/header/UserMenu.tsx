@@ -1,10 +1,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useHoverDropdown } from "@/utils/common";
+import { useHoverDropdown, useOnClickOutside } from "@/utils/common";
 import { PROFILE_AVATARS, PROFILE_COLOURS, CURSOR } from "@/utils/constants"
 import { ProfilePublic } from "@/lib/Profiles";
 
@@ -27,6 +28,9 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
   
   const userMenu = useHoverDropdown();
   const adminMenu = useHoverDropdown();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(ref, userMenu.closeNow, isTouch);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -38,7 +42,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
   }
 
   return (
-    <div className="relative">
+    <div ref={ref} className="relative">
       <button
         onMouseEnter={!isTouch ? userMenu.openNow : undefined}
         onMouseLeave={!isTouch ? userMenu.closeLater : undefined}

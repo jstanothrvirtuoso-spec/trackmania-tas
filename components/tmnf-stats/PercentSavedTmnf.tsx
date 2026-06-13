@@ -87,7 +87,7 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
               Track
             </th>
             <th className="px-3 py-1.5 uppercase whitespace-nowrap">
-              % Saved
+              %
             </th>
             <th className="px-3 py-1.5 uppercase whitespace-nowrap">
               Authors

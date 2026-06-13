@@ -1,7 +1,8 @@
 
 import Link from "next/link";
+import { useRef } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
-import { useHoverDropdown } from "@/utils/common";
+import { useHoverDropdown, useOnClickOutside } from "@/utils/common";
 import { GAME_SLUGS, CURSOR } from "@/utils/constants";
 
 const MENU_LINKS = [
@@ -22,9 +23,13 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
 
   const menu = useHoverDropdown();
   const gamesMenu = useHoverDropdown();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(ref, menu.closeNow, isTouch);
 
   return (
     <div 
+      ref={ref}
       onMouseEnter={!isTouch ? menu.openNow : undefined}
       onMouseLeave={!isTouch ? menu.closeLater : undefined}
       className="relative inline-block"
