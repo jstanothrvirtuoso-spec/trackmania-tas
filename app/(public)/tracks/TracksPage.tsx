@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CATEGORY_COLOURS, CATEGORY_FILTERS, GAME_LIST, GRAPH_CATEGORIES } from "@/utils/constants";
-import { formatDate, formatTime } from "@/utils/formatting"
+import { formatDate, formatPercentSaved, formatTime } from "@/utils/formatting"
 import { Game, Category } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
 import { RecordProgressionGraph } from "./ProgressionGraph";
@@ -21,7 +21,7 @@ export type ProgressionGraphPoint = {
 
 const BASELINE_DATE = new Date("2021-06-01").getTime();
 
-export default function TracksPage({ initialGame, initialTrack }: { initialGame?: Game, initialTrack?: string }) {
+export default function TracksPage({ initialGame, initialTrack }: { initialGame: Game, initialTrack: string }) {
 
   const router = useRouter();
   const [nowDate] = useState<number>(() => Date.now());
@@ -30,11 +30,8 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
 
-  const [game, setGame] = useState<Game>(initialGame ?? "TMNF");
-  const [track, setTrack] = useState<string>(() => {
-    const options = tracksByGame[game];
-    return initialTrack ?? options[Math.floor(Math.random() * options.length)]
-  });
+  const [game, setGame] = useState<Game>(initialGame);
+  const [track, setTrack] = useState<string>(initialTrack);
 
   const { records, rta, minDate } = useMemo(() => {
     if (!track || !rtaRecords || !tasRecords) return { 
@@ -43,7 +40,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
       minDate: BASELINE_DATE,
     };
 
-    const tasRows = [...tasRecords].filter((t) => t.track === track)
+    const tasRows = [...tasRecords].filter((t) => t.track === track);
     const rtaRows = [...rtaRecords]
       .filter(r => r.track === track)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -66,27 +63,27 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
       records: [...tasRows, ...relevantRtaRows]
         .filter((t) => t.track === track)
         .sort((a, b) => a.time_ms - b.time_ms), 
-      rta: rtaRows[0] ?? null,
+      rta: rtaRows[rtaRows.length - 1] ?? null,
       minDate: minDate
     };
   }, [track, tasRecords, rtaRecords, nowDate]);
 
   const trackOptions = tracksByGame[game];
-  const isStunt = track ? trackList[track].category === "Stunt" : false
-  const isTM2 = track ? trackList[track].game === "TM2" : false
+  const isStunt = track ? trackList[track].category === "Stunt" : false;
+  const isTM2 = track ? trackList[track].game === "TM2" : false;
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
 
   function updateTrack(track: string) {
     setTrack(track);
     updateURL(game, track);
-  }
+  };
 
   function updateGame(game: Game) {
     const newTrack = tracksByGame[game][0];
     setGame(game);
     setTrack(newTrack);
     updateURL(game, newTrack);
-  }
+  };
 
   function updateURL(gameId: string, trackId: string) {
     const params = new URLSearchParams({
@@ -95,7 +92,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
     });
 
     router.replace(`/tracks?${params.toString()}`);
-  }
+  };
 
   const progression = useMemo<Record<GraphCategory, ProgressionGraphPoint[]>>(() => {
     const sorted = [...records].sort((a, b) =>
@@ -104,7 +101,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
     );
 
     const buildPoints = (category: GraphCategory) => {
-      const allowedCategories = CATEGORY_FILTERS[category]
+      const allowedCategories = CATEGORY_FILTERS[category];
       const points: ProgressionGraphPoint[] = [];
       
       if (isStunt) {
@@ -137,9 +134,9 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
               });
             }
           });
-      }
+      };
 
-      const filterPoints = points.filter((tas) => tas.category === category)
+      const filterPoints = points.filter((tas) => tas.category === category);
 
       return filterPoints.length > 0 ? points : [];
     };
@@ -205,32 +202,59 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame?
 
           <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-xl" />
         </div>
+        <div className="flex flex-col gap-1 items-center sm:flex-row sm:gap-4">
+          {records.length > 0 && (
+            <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
+              <div className="text-left translate-y-[2px]">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                  TAS Record
+                </div>
 
-        {rta && (
-          <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
-            <div className="text-left">
-              <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                RTA Record
+                <div className="font-mono text-lg font-semibold text-emerald-400">
+                  {formatTime(records[0].time_ms, isStunt, isTM2)}
+                  <span className="text-xs text-blue-300">{` (-${rta ? formatPercentSaved(records[0].time_ms, rta.time_ms, 3) : ""}%)`}</span>
+                </div>
               </div>
 
-              <div className="font-mono text-lg font-semibold text-emerald-400">
-                {formatTime(rta.time_ms, isStunt, isTM2)}
+              <div className="h-8 w-px bg-slate-700" />
+
+              <div className="text-left">
+                <div className="text-slate-200 italic text-sm sm:text-lg">
+                  {records[0].authors.length > 2 ? `${records[0].authors[0]} + ${records[0].authors.length - 1} authors` : records[0].authors.join(', ')}
+                </div>
+
+                <div className="text-xs text-slate-400">
+                  {formatDate(records[0].date)}
+                </div>
               </div>
             </div>
+          )}
+          {rta && (
+            <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
+              <div className="text-left translate-y-[2px]">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                  RTA Record
+                </div>
 
-            <div className="h-8 w-px bg-slate-700" />
-
-            <div className="text-left">
-              <div className="text-slate-200 italic text-lg">
-                {rta.player}
+                <div className="font-mono text-lg font-semibold text-emerald-400">
+                  {formatTime(rta.time_ms, isStunt, isTM2)}
+                </div>
               </div>
 
-              <div className="text-xs text-slate-400">
-                {formatDate(rta.date)}
+              <div className="h-8 w-px bg-slate-700" />
+
+              <div className="text-left">
+                <div className="text-slate-200 italic text-sm sm:text-lg">
+                  {rta.player}
+                </div>
+
+                <div className="text-xs text-slate-400">
+                  {formatDate(rta.date)}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {track && (

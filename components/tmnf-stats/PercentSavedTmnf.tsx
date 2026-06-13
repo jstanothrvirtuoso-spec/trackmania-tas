@@ -105,10 +105,10 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
             return (
               <tr
                 key={row.track}
-                className={`border-t border-slate-800 ${rowColour} hover:bg-blue-900/50`}
+                className={`border-t border-slate-800 text-[9px] sm:text-sm ${rowColour} hover:bg-blue-900/50`}
                 style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
               >
-                <td className="px-3 py-1 text-slate-200 whitespace-nowrap">
+                <td className="px-3 py-1 text-slate-300 whitespace-nowrap">
                   {row.track}
                 </td>
                 <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">

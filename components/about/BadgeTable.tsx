@@ -7,7 +7,7 @@ export function BadgeTable() {
     <div className="z-20 flex justify-center">
       <div
         className="
-          w-[420px]
+          w-auto text-[10px] sm:w-[420px] sm:text-xs
           relative overflow-hidden
 
           rounded-2xl
@@ -18,7 +18,7 @@ export function BadgeTable() {
           border border-pink-200/10
           shadow-[0_0_60px_rgba(255,182,193,0.12)]
 
-          text-xs font-mono text-pink-100
+          font-mono text-pink-100
         "
       >
 
@@ -54,7 +54,7 @@ export function BadgeTable() {
         {/* COLUMN HEADER */}
         <div className="
           relative grid grid-cols-4 text-center
-          py-2.5
+          py-2.5 whitespace-nowrap
 
           text-pink-200/80
           uppercase tracking-widest

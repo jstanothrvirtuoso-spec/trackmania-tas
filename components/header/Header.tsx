@@ -1,0 +1,136 @@
+"use client";
+
+import Link from "next/link";
+import { FaDiscord } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { useProfilePublicMe } from "@/lib/Profiles";
+import { GAME_SLUGS } from "@/utils/constants"
+import { UserMenu } from "./UserMenu";
+import { MainMenu } from "./MainMenu";
+
+export default function Header() {
+
+  const pathname = usePathname();
+  const currentPage = pathname === "/" ? "/" : pathname.split("/")[1];
+  const { data: profilePublicMe, isLoading } = useProfilePublicMe();
+
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
+  const isTouch = typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
+
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const lastY = lastScrollY.current;
+
+        if (currentY <= 10) {
+          setShowHeader(true);
+        } else if (currentY > lastY) {
+          setShowHeader(false);
+        } else if (currentY < lastY && currentY <= 100) {
+          setShowHeader(true);
+        }
+
+        lastScrollY.current = currentY;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out
+        ${showHeader ? "-translate-y-0.5 opacity-100" : "-translate-y-6 opacity-0 pointer-events-none"}`}
+    >
+      <div className="mx-auto w-full max-w-[76rem] px-2">
+        <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center
+          border border-slate-700 bg-slate-950/50 bg-gradient-to-br from-violet-700/30 to-blue-800/70
+          shadow-xl backdrop-blur-md rounded-b-3xl px-4 py-3"
+        >
+          {/* MAIN MENU */}
+          <MainMenu 
+            pathname={pathname}
+            isTouch={isTouch}
+            profilePublicMe={profilePublicMe}
+          />
+
+          {/* HOME */}
+          <div className="mt-[2px] px-3 hidden sm:block">
+            <Link
+              href="/"
+              style={{ fontFamily: "DOSVGA" }}
+              className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
+            >
+              NadeoTAS
+            </Link>
+          </div>
+          <div className="mt-[2px] px-3 block sm:hidden">
+            <Link
+              href="/"
+              style={{ fontFamily: "DOSVGA" }}
+              className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
+            >
+              TAS
+            </Link>
+          </div>
+          
+          {/* GAMES */}
+          <div className="hidden lg:flex min-w-0 items-center justify-center px-6">
+            <nav className="flex items-center gap-4 overflow-x-auto scrollbar-none">
+              {Object.entries(GAME_SLUGS).map(([slug, game]) => {
+                const isActive = currentPage === slug;
+
+                return (
+                  <Link
+                    key={slug}
+                    href={`/${slug}`}
+                    className={`font-medium whitespace-nowrap transition [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] ${
+                      isActive
+                        ? "text-white border-b border-white"
+                        : "text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    {game === "TM2" ? "TM²" : game}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        
+          {/* RIGHT */}
+          <div className="flex justify-end items-center gap-2 whitespace-nowrap">
+            
+            {/* USER MENU */}
+            {!isLoading && profilePublicMe?.display_name && (
+              <UserMenu 
+                isTouch={isTouch}
+                profilePublicMe={profilePublicMe}
+              />
+            )}
+
+            {/* DISCORD */}
+            <a
+              href="https://discord.gg/tD4rarRYpj"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5865F2] text-white transition-transform hover:scale-105 border border-slate-400"
+              aria-label="Discord"
+            >
+              <FaDiscord size={22} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}

@@ -40,7 +40,7 @@ export default function Page() {
   }, []);
   
   return (
-    <main className="relative flex min-h-screen flex-col items-center overflow-hidden pt-12">
+    <main className="relative flex min-h-screen flex-col items-center overflow-hidden">
 
       <Rain />
 
@@ -64,15 +64,15 @@ export default function Page() {
       </div>
 
       {/* ================= TOP LAYOUT ================= */}
-      <div className="relative z-10 flex flex-col xl:flex-row gap-5 pt-10 px-6 items-center xl:items-start">
+      <div className="relative z-10 flex flex-col xl:flex-row mt-20 gap-5 px-6 items-center xl:items-start">
 
-        {/* HALL OF FAME */}
-        <div className="flex justify-center">
+        {/* HALL OF FAME (Large screen) */}
+        <div className="justify-center hidden xl:flex">
           <HallOfFame />
         </div>
 
         {/* CENTER BOX */}
-        <div className="relative w-auto p-6 overflow-hidden rounded-xl
+        <div className="relative w-auto overflow-hidden rounded-xl py-4 px-3 sm:px-6 sm:py-6
           border border-white/10 bg-white/5 backdrop-blur-2xl
           shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
 
@@ -92,14 +92,14 @@ export default function Page() {
           <div className="relative z-10 flex flex-col gap-4">
 
             {/* Header */}
-            <div className="text-center pointer-events-none">
-              <p className="text-[19px] tracking-[0.6em] sakura-font">
+            <div className="text-center pointer-events-none whitespace-nowrap">
+              <p className="tracking-[0.6em] sakura-font text-[14px] sm:text-[19px]">
                 🌸 Welcome to the about page 🌸
               </p>
             </div>
 
             {/* Tables */}
-            <div className="flex flex-col justify-center gap-6 items-center lg:items-start lg:flex-row px-3">
+            <div className="flex flex-col justify-center gap-6 items-center lg:items-start lg:flex-row">
               <div className="flex flex-col gap-6 items-center">
                 <Maintainers />
                 <CategoryTable />
@@ -108,6 +108,12 @@ export default function Page() {
             </div>
 
           </div>
+          
+        </div>
+
+        {/* HALL OF FAME (Small screen) */}
+        <div className="justify-center flex xl:hidden">
+          <HallOfFame />
         </div>
 
       </div>

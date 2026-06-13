@@ -50,7 +50,7 @@ export default function TmnfHistory() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as Category)}
-            className="rounded bg-slate-800 px-2 py-1 text-sm"
+            className="rounded bg-slate-800 px-2 py-1 text-sm cursor-pointer"
           >
             {CATEGORIES.filter((r) => (r != "Low Input")).map((c) => (
               <option key={c} value={c}>

@@ -647,6 +647,7 @@ body.loading {
   content: "";
   position: absolute;
   inset: 0;
+  transform: translateZ(0);
   padding: 2px;
   pointer-events: none;
 
@@ -663,8 +664,8 @@ body.loading {
   animation: borderFlow 6s linear infinite;
 
   /* clean cutout border (stable SSR-safe) */
-  -webkit-mask: linear-gradient(#000 0 0) content-box,
-                linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#ffffff 0 0) content-box,
+                linear-gradient(#ffffff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }

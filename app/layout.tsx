@@ -1,7 +1,7 @@
 
 import "./globals.css";
 import { CURSOR } from "@/utils/constants";
-import Header from "@/components/Header";
+import Header from "@/components/header/Header";
 import Providers from "./providers";
 // import VisitorCounter from "@/components/VisitorCounter";
 

@@ -95,7 +95,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
   }, [bestByTrackAndCategory, bestRtaByTrack]);
 
   return (
-    <div className="mx-2 overflow-auto rounded-xl border border-slate-800 bg-slate-900/20 text-center">
+    <div className="mx-2 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/20 text-center">
       <table className="w-full text-xs">
         <thead className="bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] transition whitespace-nowrap text-[8px] sm:text-sm">
           <tr className="">
@@ -140,7 +140,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               {row.columns.toReversed().map((c, i) => (
                 <td
                   key={i}
-                  className={`px-2 py-1.5 tabular-nums ${CATEGORY_COLOURS[c.colourIndex]}`}
+                  className={`px-1.5 py-1 tabular-nums sm:px-2 sm:py-1.5 ${CATEGORY_COLOURS[c.colourIndex]}`}
                 >
                   {c.entry ? (
                     <span className="text-slate-300">
@@ -153,7 +153,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               ))}
 
               {/* RTA */}
-              <td className="px-2 py-1.5 tabular-nums">
+              <td className="px-1.5 py-1 tabular-nums sm:px-2 sm:py-1.5">
                 {row.rta ? (
                   <span className="text-slate-300">
                     { formatTime(row.rta) }

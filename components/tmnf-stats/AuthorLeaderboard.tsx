@@ -237,7 +237,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
                   x={PADDING_X - 8}
                   y={y + 4}
                   textAnchor="end"
-                  className="fill-slate-400 text-[12px]"
+                  className="fill-slate-400 text-[13px]"
                 >
                   {tick}
                 </text>
@@ -267,7 +267,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
                   x={x}
                   y={HEIGHT - PADDING_B + 16}
                   textAnchor="middle"
-                  className="fill-emerald-500 text-[11px] hover:fill-emerald-300"
+                  className="fill-emerald-500 text-[12px] hover:fill-emerald-300"
                 >
                   {year}
                 </text>
@@ -292,7 +292,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
                   x={x}
                   y={HEIGHT - PADDING_B + 16}
                   textAnchor="middle"
-                  className="fill-slate-500 text-[10px]"
+                  className="fill-slate-500 text-[12px]"
                 >
                   {date.toLocaleString("en-GB", { month: "short" })}
                 </text>
@@ -364,7 +364,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
 
       {/* Legend */}
       <div className="mt-2 flex justify-center">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center text-[10px] max-w-[80%] md:max-w-[50%]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[80%] md:max-w-[50%]">
           {topAuthors.map(author => {
             const colour = colour_map[author];
             const active = visibleAuthors[author];
@@ -380,12 +380,12 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
                 }`}
               >
                 <div
-                  className="h-1.5 w-1.5 rounded-full"
+                  className="h-1 w-1 rounded-full sm:h-1.5 sm:w-1.5"
                   style={{ backgroundColor: colour }}
                 />
 
                 <span
-                  className={active ? "text-slate-300" : "text-slate-600"}
+                  className={`text-[8px] sm:text-[10px] ${active ? "text-slate-300" : "text-slate-600"}`}
                 >
                   {author}
                 </span>

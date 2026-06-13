@@ -180,11 +180,11 @@ export default function InputsPage() {
               <div className="absolute inset-0 opacity-95 bg-gradient-to-r from-[#000404] via-[#070816dd] to-transparent"/>
 
               {/* INPUTS CARD */}
-              <div className="relative z-10 grid gap-6 p-8 md:grid-cols-[420px_1fr] items-center">
+              <div className="relative z-10 grid gap-6 p-4 md:p-8 md:grid-cols-[420px_1fr] items-center">
                 <div className="space-y-2 h-full flex flex-col justify-center">
 
                   {/* VIDEO */}
-                  <div className="border border-cyan-400/20 bg-[#0b1020] overflow-hidden rounded-xl">
+                  <div className="border border-cyan-400/20 bg-[#0b1020] shadow-lg overflow-hidden rounded-xl">
                     <video
                       className="w-full object-cover"
                       autoPlay
@@ -224,13 +224,13 @@ export default function InputsPage() {
                 {/* INSTRUCTIONS */}
                 <div className="relative z-10 flex-col items-center hidden md:flex">
                   {activeEnv === "STADIUM" && (
-                    <div className="overflow-hidden rounded-lg hidden md:flex">
-                    <Image
-                      src="/inputs/stadiumtrick.png"
-                      alt="Stadium trick instructions"
-                      width={650}
-                      height={400}
-                    />
+                    <div className="overflow-hidden rounded-lg shadow-lg hidden md:flex">
+                      <Image
+                        src="/inputs/stadiumtrick.png"
+                        alt="Stadium trick instructions"
+                        width={650}
+                        height={400}
+                      />
                     </div>
                   )}
                   <div

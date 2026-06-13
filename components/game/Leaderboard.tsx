@@ -113,7 +113,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
   return (
     <aside className="pl-5 pb-4">
-      <div className="rounded-lg border border-slate-800 text-sm">
+      <div className="rounded-lg border border-slate-800 text-sm overflow-hidden">
         <table className="table-fixed text-center divide-y text-sm">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>

@@ -21,7 +21,7 @@ const HIGHLIGHTED = new Set([
 export function HallOfFame() {
 
   return (
-    <div className="relative w-[390px] p-4 hall-frame
+    <div className="relative w-auto p-4 hall-frame sm:w-[390px]
       bg-black/50 backdrop-blur-md
       shadow-[0_0_18px_rgba(0,0,0,0.6),inset_0_0_25px_rgba(255,255,255,0.03)]">
           
@@ -32,7 +32,7 @@ export function HallOfFame() {
         Hall of Fame
       </p>
 
-      <div className="space-y-1 text-gray-300 text-sm">
+      <div className="space-y-1 text-gray-300 text-xs sm:text-sm">
         {Object.entries(FAME_CONTENTS).map(([title, { date, link }]) => {
           const Wrapper = link ? "a" : "div";
 
@@ -40,10 +40,10 @@ export function HallOfFame() {
             <Wrapper
               key={title}
               {...(link ? { href: link, target: "_blank", rel: "noreferrer" } : {})}
-              className="flex justify-between items-center border border-white/10 bg-white/5 rounded-md px-3 py-2 hover:bg-white/10 transition"
+              className="flex justify-between items-center border border-white/10 bg-white/5 rounded-md px-3 py-2 hover:bg-white/10 transition gap-3"
             >
               <span
-                className={`font-[OktaNeue] tracking-wide ${
+                className={`font-[OktaNeue] tracking-wide translate-y-[-2px] ${
                   HIGHLIGHTED.has(title)
                     ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]"
                     : "text-white"
@@ -51,7 +51,7 @@ export function HallOfFame() {
               >
                 {title}
               </span>
-              <span className="text-gray-400 text-xs whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              <span className="text-gray-300/90 text-xs whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                 {date}
               </span>
             </Wrapper>

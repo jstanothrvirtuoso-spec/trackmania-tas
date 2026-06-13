@@ -174,7 +174,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
                   x={PADDING_X - 8}
                   y={y + 4}
                   textAnchor="end"
-                  className="fill-slate-400 text-[12px]"
+                  className="fill-slate-400 text-[13px]"
                 >
                   {tick}
                 </text>
@@ -202,7 +202,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
                   x={x}
                   y={HEIGHT - PADDING_Y + 16}
                   textAnchor="middle"
-                  className="fill-slate-400 text-[11px]"
+                  className="fill-slate-400 text-[12px]"
                 >
                   {year}
                 </text>
@@ -228,7 +228,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
       
       {/* Legend */}
       <div className="mt-4 flex justify-center">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[80%] text-[10px]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-center max-w-[90%]">
           {paths.map(({ set, colour }) => {
             const active = visibleSets[set];
 
@@ -241,12 +241,12 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
                 }`}
               >
                 <div
-                  className="h-1.5 w-1.5 rounded-full"
+                  className="h-1 w-1 rounded-full sm:h-1.5 sm:w-1.5"
                   style={{ backgroundColor: colour }}
                 />
 
                 <span
-                  className={active ? "text-slate-300" : "text-slate-600"}
+                  className={`text-[8px] sm:text-[10px] ${active ? "text-slate-300" : "text-slate-600"}`}
                 >
                   {set}
                 </span>

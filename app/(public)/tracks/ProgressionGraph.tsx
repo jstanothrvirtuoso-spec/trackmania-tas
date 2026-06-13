@@ -132,7 +132,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
                 x={x}
                 y={HEIGHT - PADDING_Y + 16}
                 textAnchor="middle"
-                className="fill-slate-400 text-[11px]"
+                className="fill-slate-400 text-[12px]"
               >
                 {year}
               </text>
@@ -159,8 +159,8 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
                   textAnchor="end"
                   className={
                     tick === yTicks[0]
-                      ? "fill-emerald-400 text-[12px] cursor-pointer hover:fill-slate-200"
-                      : "fill-slate-400 text-[12px]"
+                      ? "fill-emerald-400 text-[13px] cursor-pointer hover:fill-slate-200"
+                      : "fill-slate-400 text-[13px]"
                   }
                   onClick={ tick === yTicks[0] ? () => setForceZeroY(v => !v) : undefined}
                 >

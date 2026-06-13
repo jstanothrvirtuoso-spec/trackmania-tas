@@ -13,7 +13,7 @@ import { formatDate, formatTime } from "@/utils/formatting";
 import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart } from "@/components/authors/AuthorCharts";
 import ProfileCard from "@/components/profile/ProfileCard";
 
-export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string }) {
+export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }) {
 
   const router = useRouter();
   const [hideBeaten, setHideBeaten] = useState(false);
@@ -26,9 +26,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords]);
 
-  const [selectedAuthor, setSelectedAuthor] = useState<string>(() => (
-    initialAuthor ?? KEY_AUTHORS[Math.floor(Math.random() * KEY_AUTHORS.length)]
-  ));
+  const [selectedAuthor, setSelectedAuthor] = useState<string>(initialAuthor);
 
   const authorOptions = useMemo(() => {
     const authorCount: Record<string, number> = {};
@@ -133,7 +131,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor?: string 
         <button
           onClick={() => setHideBeaten((v) => !v)}
           className={`
-            rounded-md px-4 py-1.5 text-sm font-semibold transition-all duration-150 border cursor-pointer
+            rounded-md px-4 py-1.5 text-sm font-semibold transition-all duration-150 border cursor-pointer whitespace-nowrap
             ${hideBeaten ? "border-slate-600 bg-emerald-300/15 text-emerald-300 hover:bg-emerald-500/25"
                 : "border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700"}`}
         >

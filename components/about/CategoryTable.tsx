@@ -17,7 +17,7 @@ export function CategoryTable() {
     <div className="z-20 flex justify-center">
       <div
         className="
-          w-[420px]
+          w-auto text-[10px] sm:w-[420px] sm:text-xs
           relative overflow-hidden
 
           rounded-2xl
@@ -28,11 +28,11 @@ export function CategoryTable() {
           border border-pink-200/10
           shadow-[0_0_60px_rgba(255,182,193,0.12)]
 
-          text-xs font-mono text-pink-100
+          font-mono text-pink-100
         "
       >
 
-        {/* soft sakura glow overlay */}
+        {/* Soft sakura glow overlay */}
         <div className="
           absolute inset-0
           pointer-events-none
@@ -40,7 +40,7 @@ export function CategoryTable() {
           bg-[radial-gradient(circle_at_top,rgba(255,192,203,0.15),transparent_60%)]
         " />
 
-        {/* floating petals feel (very subtle noise layer) */}
+        {/* Floating petals feel (very subtle noise layer) */}
         <div className="
           absolute inset-0
           pointer-events-none
@@ -52,7 +52,7 @@ export function CategoryTable() {
         <div className="
           relative text-center py-3
           tracking-[0.5em]
-          text-pink-100/90
+          text-pink-100/90 text-xs
 
           border-b border-pink-200/10
 
@@ -67,9 +67,9 @@ export function CategoryTable() {
             <div
               key={category}
               className="
-                relative grid grid-cols-2 grid-cols-[100px_1fr] items-center text-center
-                py-2.5
-
+                relative items-center text-center
+                py-1.5 px-2 sm:py-2.5
+                grid grid-cols-2 grid-cols-[55px_1fr] gap-x-2 sm:grid-cols-[100px_1fr]
                 transition-all duration-300 ease-out
 
                 hover:bg-white/5
@@ -85,13 +85,13 @@ export function CategoryTable() {
                 bg-[radial-gradient(circle_at_center,rgba(255,182,193,0.08),transparent_60%)]
               " />
 
-              {/* CONTRIBUTION */}
+              {/* Category title */}
               <div className="text-pink-100/80 tabular-nums">
                 {category}
               </div>
 
-              {/* CONTRIBUTION */}
-              <div className="text-pink-100/80 tabular-nums">
+              {/* Category info */}
+              <div className="text-pink-100/80 tabular-nums whitespace-nowrap">
                 {info.map((block, i) => (
                   <div key={i}>{block}</div>
                 ))}
@@ -101,7 +101,7 @@ export function CategoryTable() {
           ))}
         </div>
 
-        {/* bottom ambient glow */}
+        {/* Bottom ambient glow */}
         <div className="
           absolute -bottom-20 left-1/2 -translate-x-1/2
           w-[300px] h-[200px]
