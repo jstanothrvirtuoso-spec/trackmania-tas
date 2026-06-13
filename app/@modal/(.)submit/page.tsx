@@ -1,18 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import SubmitForm from "@/components/SubmitForm";
 
 export default function SubmitPage() {
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const forceFull = searchParams.get("mode") === "page";
 
-  useEffect(() => {
-    if (window.matchMedia("(hover: none)").matches) {
-      router.replace("/submit");
-    }
-  }, []);
+  if (forceFull) return null;
 
   return (
     

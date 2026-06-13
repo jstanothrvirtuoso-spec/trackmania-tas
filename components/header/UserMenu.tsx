@@ -10,7 +10,7 @@ import { PROFILE_AVATARS, PROFILE_COLOURS, CURSOR } from "@/utils/constants"
 import { ProfilePublic } from "@/lib/Profiles";
 
 const USER_LINKS = [
-  { href: "/submit", label: "Submit TAS" },
+  { href: "/submit", label: "Submit TAS", modal: true },
   { href: "/profile", label: "Profile" },
 ];
 const ADMIN_LINKS = [
@@ -84,7 +84,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
 
           {USER_LINKS.map((link) => (
             <Link
-              key={link.href}
+              key={(link.modal && isTouch) ? `${link.href}?mode=page` : link.href }
               href={link.href}
               className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
               onClick={userMenu.closeNow}
