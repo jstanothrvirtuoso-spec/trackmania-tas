@@ -70,7 +70,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get((trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track) ?? null,
       }));
-  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory, selectedEnvironment]);
+  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory]);
 
   const selectedAuthorCheck = useMemo(() => {
     if (!selectedAuthor) return "";

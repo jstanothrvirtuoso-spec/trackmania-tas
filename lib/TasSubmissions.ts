@@ -25,7 +25,7 @@ export function usePendingSubmissions() {
   });
 }
 
-export function fetchUserSubmissions(userId?: string) {
+export function useFetchUserSubmissions(userId?: string) {
   return useQuery<SubmitForm[]>({
     queryKey: ["my_tas_submissions"],
     enabled: !!userId,

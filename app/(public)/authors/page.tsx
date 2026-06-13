@@ -1,4 +1,5 @@
 
+import crypto from "crypto";
 import { use } from "react";
 import AuthorsPage from "./AuthorsPage"
 import { KEY_AUTHORS } from "@/utils/constants";
@@ -10,7 +11,7 @@ export default function Authors({
 }) {
 
   const { author } = use(searchParams);
-  const initialAuthor = author ?? KEY_AUTHORS[Math.floor(Math.random() * KEY_AUTHORS.length)]
+  const initialAuthor = author ?? KEY_AUTHORS[crypto.randomInt(KEY_AUTHORS.length)];
 
   return(
     <AuthorsPage initialAuthor={initialAuthor} />

@@ -122,14 +122,15 @@ export default function InputsPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="relative z-10 mx-auto max-w-7xl p-6 space-y-10">
+      <div className="relative z-10 mx-auto max-w-7xl p-6 space-y-10 flex flex-col items-center justify-center">
 
         {/* HEADER */}
         <div className="relative -translate-x-1">
-          <img
+          <Image
             src="/inputs/inputstxt.png"
             alt="Inputs"
-            className="mx-auto h-40 w-auto"
+            width={250}
+            height={150}
           />
         </div>
 

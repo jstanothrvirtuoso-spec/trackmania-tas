@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { ProfilePrivate } from "@/lib/Profiles";
 import { formatDate, formatTime, timeAgo } from "@/utils/formatting";
-import { fetchUserSubmissions } from "@/lib/TasSubmissions";
+import { useFetchUserSubmissions } from "@/lib/TasSubmissions";
 
 const STATUS_COLOUR = {
   "pending": ["bg-[#3230af]/30", "bg-[#3230af]/40"],
@@ -12,7 +12,7 @@ const STATUS_COLOUR = {
 
 export default function ProfileSubmission({ profilePrivate }: { profilePrivate: ProfilePrivate }) {
   
-  const { data: tasSubmissions } = fetchUserSubmissions(profilePrivate?.id ?? "");
+  const { data: tasSubmissions } = useFetchUserSubmissions(profilePrivate?.id ?? "");
 
   const recentSubmissions = useMemo(() => {
     if (!tasSubmissions) return [];

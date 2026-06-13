@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TasEntry, RecordRow } from "@/utils/typing";
-import { CATEGORY_FILTERS, KEY_AUTHORS } from "@/utils/constants";
+import { CATEGORY_FILTERS } from "@/utils/constants";
 import { useProfilePublic } from "@/lib/Profiles";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";

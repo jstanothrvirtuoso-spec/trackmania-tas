@@ -123,7 +123,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
       const result = String(aVal).localeCompare(String(bVal));
       return sortOrder === "asc" ? result : -result;
     });
-  }, [currentRecords, sortField, sortOrder]);
+  }, [currentRecords, sortField, sortOrder, categoryIndexes]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

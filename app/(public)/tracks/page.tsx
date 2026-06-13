@@ -1,4 +1,5 @@
 
+import crypto from "crypto";
 import { use } from "react";
 import TracksPage from "./TracksPage"
 import { Game } from "@/utils/typing";
@@ -12,7 +13,7 @@ export default function Tracks({
 
   const { game, track } = use(searchParams);
   const initialGame = game ?? "TMNF";
-  const initialTrack = track ?? tracksByGame[initialGame][Math.floor(Math.random() * tracksByGame[initialGame].length)];
+  const initialTrack = track ?? tracksByGame[initialGame][crypto.randomInt(tracksByGame[initialGame].length)];
 
   return(
     <TracksPage 
