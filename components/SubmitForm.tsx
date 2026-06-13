@@ -7,7 +7,7 @@ import { TimeState, Category } from "@/utils/typing";
 import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constants";
 import { useAlert } from "@/components/AlertProvider";
 import AuthorSelector from "@/components/AuthorSelector";
-import { trackIds } from "@/lib/TrackId"
+import { trackIds } from "@/lib/TrackId";
 import { useProfilePublicMe } from "@/lib/Profiles";
 import { trackList } from "@/lib/TrackList";
 
@@ -28,10 +28,10 @@ type GBXData = {
 };
 
 type ReplayState = {
-  file: File | null,
+  file: File | null;
   track: string;
   time: TimeState;
-}
+};
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -158,10 +158,10 @@ export default function SubmitForm() {
     if (!parsed.uid) {
       showAlert("Invalid replay file");
       return;
-    };
+    }
 
     setReplay({
-      file: file,
+      file,
       track: trackIds[parsed.uid] ?? trackIds[`${parsed.uid}-${parsed.version}`] ?? "",
       time: parsed.bestTime && parsed.validable ? timeMsToState(parsed.bestTime) : timeMsToState(0),
     });
@@ -170,6 +170,7 @@ export default function SubmitForm() {
   async function submit() {
 
     if (loading) return;
+
     setLoading(true);
     setWarning("");
 
@@ -231,9 +232,7 @@ export default function SubmitForm() {
 
       if (error) {
         setWarning(`Submission error: ${error.message}`);
-        await supabase.storage
-          .from("replays")
-          .remove([filePath]);
+        await supabase.storage.from("replays").remove([filePath]);
         return;
       }
 
@@ -243,255 +242,216 @@ export default function SubmitForm() {
       setLoading(false);
       const audio = new Audio("/sounds/stary.mp3");
 
-audio.addEventListener("error", (e) => {
-  console.error("Audio error:", e);
-});
+      audio.addEventListener("error", (e) => {
+        console.error("Audio error:", e);
+      });
 
-audio.play().catch((err) => {
-  console.error("Play failed:", err);
-});
+      audio.play().catch((err) => {
+        console.error("Play failed:", err);
+      });
     }
   }
 
   return (
-    <div className="relative z-10 w-full max-w-3xl rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
-      
-      {/* HEADER */}
-      <div className="flex items-start justify-between">
-        <h1 className="text-3xl font-bold">
-          Submit TAS
-        </h1>
+    <div className="relative z-10 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl">
+      <div className="flex max-h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-2xl shadow-2xl">
+        <div className="overflow-y-auto p-6 md:p-8">
 
-        <button 
-          type="button"
-          onClick={resetForm}
-          disabled={loading}
-          title="Clear the form"
-          className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 cursor-pointer"
-        >
-          Reset
-        </button>
-      </div>
-      <div className="my-3 border-b border-slate-700" />
+          {/* HEADER */}
+          <div className="flex items-start justify-between">
+            <h1 className="text-3xl font-bold">
+              Submit TAS
+            </h1>
+            <button 
+              type="button"
+              onClick={resetForm}
+              disabled={loading}
+              title="Clear the form"
+              className="rounded-md bg-slate-800 px-3 py-1 text-sm text-slate-300 transition hover:bg-slate-700 cursor-pointer"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="my-3 border-b border-slate-700" />
 
-      <div className="flex flex-col gap-2">
-        {/* REPLAY */}
-        <div>
-          <div className={labelClass}>Replay (.gbx)</div>
+          <div className="flex flex-col gap-2">
 
-          <label
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragging(true);
-            }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={(e) => {
-              e.preventDefault();
-              setDragging(false);
+            {/* REPLAY */}
+            <div>
+              <div className={labelClass}>Replay (.gbx)</div>
 
-              const file = e.dataTransfer.files?.[0];
-              onFileSelect(file);
-            }}
-            className={`
-              flex h-26 cursor-pointer flex-col items-center justify-center
-              rounded-xl border-2 border-dashed transition
-              ${
-                dragging
-                  ? "border-emerald-400 bg-emerald-500/10"
-                  : "border-slate-700 bg-slate-800 hover:border-slate-500"
-              }
-            `}
-          >
-            <input
-              hidden
-              type="file"
-              accept=".gbx"
-              onChange={(e) =>
-                onFileSelect(e.target.files?.[0])
-              }
-            />
+              <label
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragging(false);
+                  const file = e.dataTransfer.files?.[0];
+                  onFileSelect(file);
+                }}
+                className={`
+                  flex h-26 cursor-pointer flex-col items-center justify-center
+                  rounded-xl border-2 border-dashed transition
+                  ${
+                    dragging
+                      ? "border-emerald-400 bg-emerald-500/10"
+                      : "border-slate-700 bg-slate-800 hover:border-slate-500"
+                  }
+                `}
+              >
+                <input
+                  hidden
+                  type="file"
+                  accept=".gbx"
+                  onChange={(e) => onFileSelect(e.target.files?.[0])}
+                />
 
-            <div className="text-lg font-medium">
-              Drop replay here
-            </div>
+                <div className="text-lg font-medium">Drop replay here</div>
+                <div className="mt-1 text-sm text-slate-400">or click to browse</div>
 
-            <div className="mt-1 text-sm text-slate-400">
-              or click to browse
-            </div>
-
-            {replay.file && (
-              <div className={`mt-3 text-xs ${replay.track ? "text-emerald-400" : "text-red-400"}`}>
-                {replay.file.name} ({(replay.file.size / 1024 / 1024).toFixed(2)} MB)
-              </div>
-            )}
-          </label>
-        </div>
-
-        {/* TRACK AND TIME */}
-        {replay.file && (
-          <div className="rounded-lg bg-slate-800/60 px-4 py-3 text-sm">
-            {replay.track ? (
-              <>
-                <div>
-                  Track:
-                  <span className="ml-2 font-medium text-emerald-400">
-                    {replay.track}
-                  </span>
-                </div>
-              
-                {timeMs > 0 ? (
-                  <>
-                    <div className="mt-1">
-                      Time:
-                      <span className="ml-2 font-medium text-emerald-400">
-                        {`${replay.time.minutes > 0 ? String(replay.time.minutes) + ":" : ""}`}
-                        {String(replay.time.seconds).padStart(2,"0")}.
-                        {String(replay.time.hundredths).padStart(2,"0")}
-                        {`${trackList[replay.track].game === "TM2" ? replay.time.thousandth : ""}`}
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="mt-1 font-medium text-red-400">
-                    This replay may be unfinished. Please check before submitting.
+                {replay.file && (
+                  <div className={`mt-3 text-xs ${replay.track ? "text-emerald-400" : "text-red-400"}`}>
+                    {replay.file.name} ({(replay.file.size / 1024 / 1024).toFixed(2)} MB)
                   </div>
                 )}
-              </>
-            ) : (
-              <div className="font-medium text-red-400">
-                This replay does not seem to be from a nadeo track. Please check before submitting.
+              </label>
+            </div>
+
+            {/* TRACK AND TIME */}
+            {replay.file && (
+              <div className="rounded-lg bg-slate-800/60 px-4 py-3 text-sm">
+                {replay.track ? (
+                  <>
+                    <div>
+                      Track:
+                      <span className="ml-2 font-medium text-emerald-400">{replay.track}</span>
+                    </div>
+                    {timeMs > 0 ? (
+                      <div className="mt-1">
+                        Time:
+                        <span className="ml-2 font-medium text-emerald-400">
+                          {`${replay.time.minutes > 0 ? String(replay.time.minutes) + ":" : ""}`}
+                          {String(replay.time.seconds).padStart(2, "0")}.
+                          {String(replay.time.hundredths).padStart(2, "0")}
+                          {`${trackList[replay.track].game === "TM2" ? replay.time.thousandth : ""}`}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="mt-1 font-medium text-red-400">
+                        This replay may be unfinished. Please check before submitting.
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="font-medium text-red-400">
+                    This replay does not seem to be from a nadeo track. Please check before submitting.
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {/* AUTHORS */}
-        <AuthorSelector
-          authors={form.authors}
-          onChange={(next) => update("authors", next)}
-        />
+            {/* AUTHORS */}
+            <AuthorSelector authors={form.authors} onChange={(next) => update("authors", next)} />
 
-        {/* VIDEO */}
-        <div>
-          <div className="flex items-center w-full">
-            <div className={labelClass}>Video (recommended)</div>
+            {/* VIDEO */}
+            <div>
+              <div className="flex items-center w-full">
+                <div className={labelClass}>Video (recommended)</div>
+                <div className="group relative ml-auto cursor-help px-1 py-0.5">
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">?</span>
+                  <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                    Provide a video URL for your TAS. YouTube is preferred (even if unlisted), but Streamable or Discord videos will be accepted. You must provide a video for your TAS to be eligible for TAS of the Day.
+                  </div>
+                </div>
+              </div>
+              <input
+                value={form.video}
+                onChange={(e) => update("video", e.target.value)}
+                className={`${inputClass} placeholder:text-slate-500`}
+                placeholder="https://..."
+              />
+            </div>
 
-            <div className="group relative ml-auto cursor-help px-1 py-0.5">
-              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">
-                ?
-              </span>
+            {/* DATE */}
+            <div>
+              <div className={labelClass}>Date</div>
+              <input
+                type="date"
+                value={form.date}
+                onChange={(e) => update("date", e.target.value)}
+                className={`${CURSOR} ${inputClass} [&::-webkit-calendar-picker-indicator]:opacity-70 hover:[&::-webkit-calendar-picker-indicator]:opacity-100`}
+              />
+            </div>
 
-              <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
-                Provide a video URL for your TAS. YouTube is preferred (even if unlisted), but Streamable or Discord videos will be accepted. You must provide a video for your TAS to be eligible for TAS of the Day.
+            {/* CATEGORY */}
+            <div>
+              <div className="flex items-center w-full">
+                <div className={labelClass}>Category (optional)</div>
+                <div className="group relative ml-auto cursor-help px-1 py-0.5">
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">?</span>
+                  <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                    You may indicate the target category for your TAS. Note, this may be updated by the moderators at any time. Please see the About page for more info on TAS categories.
+                  </div>
+                </div>
+              </div>
+              <select
+                value={form.category}
+                onChange={(e) => update("category", e.target.value as Category)}
+                className={`${inputClass} cursor-pointer`}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+                <option value="Unsure">Unsure</option>
+              </select>
+            </div>
+
+            {/* NOTES */}
+            <div>
+              <div className="flex items-center w-full">
+                <div className={labelClass}>Notes (optional)</div>
+                <div className="group relative ml-auto cursor-help px-1 py-0.5">
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">?</span>
+                  <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-58 -translate-x-50 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
+                    These notes are visible only to the moderators. Write any information that may be needed to process the TAS.
+                  </div>
+                </div>
+              </div>
+              <textarea
+                rows={2}
+                value={form.user_notes}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val.length <= MAX_NOTES) {
+                    update("user_notes", val);
+                  }
+                }}
+                onPaste={(e) => {
+                  const text = e.clipboardData.getData("text");
+                  const current = form.user_notes;
+                  const next = (current + text).slice(0, MAX_NOTES);
+                  e.preventDefault();
+                  update("user_notes", next);
+                }}
+                placeholder="Comments..."
+                className={`${inputClass} placeholder:text-slate-500 resize-none`}
+              />
+              <div className="mt-1 flex justify-end text-xs">
+                <span className={form.user_notes.length > MAX_NOTES * 0.9 ? "text-amber-400" : "text-slate-400"}>
+                  {MAX_NOTES - form.user_notes.length} characters remaining
+                </span>
               </div>
             </div>
-          </div>
-
-          <input
-            value={form.video}
-            onChange={(e) => update("video", e.target.value)}
-            className={`${inputClass} placeholder:text-slate-500`}
-            placeholder="https://..."
-          />
-        </div>
-
-        {/* DATE */}
-        <div>
-          <div className={labelClass}>Date</div>
-          <input
-            type="date"
-            value={form.date}
-            onChange={(e) => update("date", e.target.value)}
-            className={`${CURSOR} ${inputClass}
-              [&::-webkit-calendar-picker-indicator]:opacity-70
-              hover:[&::-webkit-calendar-picker-indicator]:opacity-100
-            `}
-          />
-        </div>
-
-        {/* CATEGORY */}
-        <div>
-          <div className="flex items-center w-full">
-            <div className={labelClass}>Category (optional)</div>
-
-            <div className="group relative ml-auto cursor-help px-1 py-0.5">
-              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">
-                ?
-              </span>
-
-              <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
-                You may indicate the target category for your TAS. Note, this may be updated by the moderators at any time. Please see the About page for more info on TAS categories.
-              </div>
-            </div>
-          </div>
-          
-          <select
-            value={form.category}
-            onChange={(e) => update("category", e.target.value as Category)}
-            className={`${inputClass} cursor-pointer`}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-            <option value="Unsure">
-              Unsure
-            </option>
-          </select>
-        </div>
-
-        {/* NOTES */}
-        <div>
-          <div className="flex items-center w-full">
-            <div className={labelClass}>Notes (optional)</div>
-
-            <div className="group relative ml-auto cursor-help px-1 py-0.5">
-              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">
-                ?
-              </span>
-
-              <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-58 -translate-x-50 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
-                These notes are visible only to the moderators. Write any information that may be needed to process the TAS.
-              </div>
-            </div>
-          </div>
-          
-          <textarea
-            rows={2}
-            value={form.user_notes}
-            onChange={(e) => {
-              const val = e.target.value;
-
-              if (val.length <= MAX_NOTES) {
-                update("user_notes", val);
-              }
-            }}
-            onPaste={(e) => {
-              const text = e.clipboardData.getData("text");
-              const current = form.user_notes;
-              const next = (current + text).slice(0, MAX_NOTES);
-              e.preventDefault();
-              update("user_notes", next);
-            }}
-            placeholder="Comments..."
-            className={`${inputClass} placeholder:text-slate-500 resize-none`}
-          />
-          <div className="mt-1 flex justify-end text-xs">
-            <span
-              className={
-                form.user_notes.length > MAX_NOTES * 0.9
-                  ? "text-amber-400"
-                  : "text-slate-400"
-              }
-            >
-              {MAX_NOTES - form.user_notes.length} characters remaining
-            </span>
           </div>
         </div>
 
         {/* SUBMIT */}
-        <div className="py-2">
+        <div className="border-t border-slate-700 bg-slate-950/50 px-6 py-4">
           {warning && (
             <div className="mb-3 rounded-md border border-red-500/40 bg-red-950/40 px-3 py-2 text-sm text-red-300">
               {warning}
@@ -500,7 +460,9 @@ audio.play().catch((err) => {
 
           <button
             onClick={submit}
-            disabled={loading || !replay.file || form.authors.filter((a) => a.trim() !== "").length === 0}
+            disabled={
+              loading || !replay.file || form.authors.filter((a) => a.trim() !== "").length === 0
+            }
             className={`w-full rounded-md bg-emerald-600 px-4 py-2 font-medium disabled:opacity-50 ${
               loading || !replay.file || form.authors.filter((a) => a.trim() !== "").length === 0 ? "cursor-not-allowed" : "hover:bg-emerald-500 cursor-pointer"
             }`}
@@ -509,7 +471,10 @@ audio.play().catch((err) => {
           </button>
         </div>
       </div>
-
+      
+      {loading && (
+        <div className="fixed inset-0 z-[9999] cursor-wait" />
+      )}
     </div>
   );
 }

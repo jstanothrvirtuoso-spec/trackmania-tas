@@ -56,9 +56,10 @@ export default function HeaderOptions({
   }, [currentRecords]);
 
   return (
-    <div className="mb-0 flex items-center justify-end gap-3">
+    <div className="flex w-full flex-wrap justify-center items-center gap-3 px-4">
 
-      {game !== "TMNF No Cut" && (
+      {/* Categories */}
+      {game === "TMNF" || true && (
         <select
           value={selectedCategory}
           onChange={(e) => onCategoryChange(e.target.value as Category)}
@@ -71,6 +72,8 @@ export default function HeaderOptions({
           ))}
         </select>
       )}
+
+      {/* Author */}
       <select
         value={selectedAuthor}
         onChange={(e) => onAuthorChange(e.target.value)}
@@ -84,6 +87,7 @@ export default function HeaderOptions({
         ))}
       </select>
 
+      {/* Environment */}
       {environmentOptions.length > 1 && (
         <select
           value={selectedEnvironment}

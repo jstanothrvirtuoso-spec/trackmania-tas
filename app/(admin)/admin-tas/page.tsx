@@ -379,7 +379,7 @@ export default function AdminTas() {
     <div className="flex justify-center px-6 pt-20 pb-10 text-white">
       <div className="grid gap-4 lg:grid-cols-[460px_1fr] items-start">
 
-        {/* TAS FORM */}
+        {/* TAS submission form */}
         <div className={`rounded-2xl border border-slate-700 p-4 shadow-xl ${selectedSubmission ? "bg-sky-400/10" : "bg-slate-900"}`}>
           <div className="mb-3 border-b border-slate-700 pb-4">
             <div className="flex items-start justify-between">
@@ -627,9 +627,9 @@ export default function AdminTas() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 items-start">
+        <div className="flex flex-col gap-4 items-center lg:items-start">
 
-          {/* PENDING TABLE */}
+          {/* Pending records */}
           <PendingRecords
             submissions={pendingSubmissions}
             isStunt={isStunt}

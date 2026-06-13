@@ -11,21 +11,6 @@ Fix visitor counter
 
 On /tracks authors graph, No Uber, virtuoso+Kimura go slightly negative!?!
 
-Work on mobile viewing:
- - Tracks [DONE]
- - Header [DONE]
- - Home [DONE]
- - Highlight [DONE]
- - Inputs [DONE]
- - Authors [DONE]
- - TMNF Stats [DONE]
- - About [DONE]
- - Game pages
- - Profile [DONE]
- - Submit form
- - Admin?
- - Click outside of header should close all menus
-
 
 
 //////////////////////////////////////////////////////////////////////////

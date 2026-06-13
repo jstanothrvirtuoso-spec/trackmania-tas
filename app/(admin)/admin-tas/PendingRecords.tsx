@@ -25,7 +25,7 @@ export default function PendingRecords({
 }: PendingRecordsProps) {
 
   return (
-    <div className="rounded-2xl border border-yellow-500/20 bg-slate-900 p-6">
+    <div className="rounded-2xl border border-yellow-500/20 bg-slate-900 p-4 sm:p-6">
       <h2 className="mb-4 text-xl font-semibold text-yellow-300">
         Pending Submissions
       </h2>
@@ -37,12 +37,12 @@ export default function PendingRecords({
               <th className="px-2 py-2">Action</th>
               <th className="px-2 py-2">Submitted</th>
               <th className="px-2 py-2">Track</th>
-              <th className="px-2 py-2">Category</th>
               <th className="px-2 py-2">Time</th>
-              <th className="px-2 py-2">Authors</th>
-              <th className="px-2 py-2">Date</th>
-              <th className="px-2 py-2">Links</th>
-              <th className="px-2 py-2">Notes</th>
+              <th className="px-2 py-2 hidden sm:table-cell">Authors</th>
+              <th className="px-2 py-2 hidden sm:table-cell">Date</th>
+              <th className="px-2 py-2 hidden sm:table-cell">Category</th>
+              <th className="px-2 py-2 hidden sm:table-cell">Links</th>
+              <th className="px-2 py-2 hidden sm:table-cell">Notes</th>
             </tr>
           </thead>
 
@@ -82,19 +82,23 @@ export default function PendingRecords({
                     {s.track ?? "-"}
                   </td>
 
-                  <td className="px-2 py-2 whitespace-nowrap">
-                    {s.category}
-                  </td>
-
                   <td className="px-2 py-2">
                     {s.time_ms ? formatTime(s.time_ms, isStunt, s.game === "TM2") : "-"}
                   </td>
-                  <td className="px-2 py-2">
+
+                  <td className="px-2 py-2 hidden sm:table-cell">
                     {Array.isArray(s.authors) ? s.authors.join(", ") : ""}
                   </td>
-                  <td className="px-2 py-2">{formatDate(s.date)}</td>
 
-                  <td className="px-2 py-2 text-center">
+                  <td className="px-2 py-2 hidden sm:table-cell">
+                    {formatDate(s.date)}
+                  </td>
+
+                  <td className="px-2 py-2 whitespace-nowrap hidden sm:table-cell">
+                    {s.category}
+                  </td>
+
+                  <td className="px-2 py-2 text-center hidden sm:table-cell">
                     
                     <div className="flex items-center justify-center gap-1">
                       <div className="w-5 h-5 flex items-center justify-center">
@@ -121,7 +125,7 @@ export default function PendingRecords({
                     </div>
                   </td>
 
-                  <td className="px-2 py-2 max-w-[28rem] break-words whitespace-pre-wrap">
+                  <td className="px-2 py-2 max-w-[28rem] break-words whitespace-pre-wrap hidden sm:table-cell">
                     {s.user_notes ?? "-"}
                   </td>
                 </tr>

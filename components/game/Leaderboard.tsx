@@ -112,92 +112,85 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
   };
 
   return (
-    <aside className="pl-5 pb-4">
-      <div className="rounded-lg border border-slate-800 text-sm overflow-hidden">
-        <table className="table-fixed text-center divide-y text-sm">
-          <thead className="bg-slate-900/90 text-slate-400">
-            <tr>
+    <div className="rounded-lg border border-slate-800 overflow-hidden text-xs sm:text-sm">
+      <table className="table-fixed text-center divide-y">
+        <thead className="bg-slate-900/90 text-slate-400">
+          <tr>
+            <th
+              onClick={() => handleSort("author")}
+              className="px-2 py-1 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+            >
+              <div className="flex items-center justify-center gap-1">
+                <span>Author</span>
+                <SortIndicator active={sortField === "author"} order={sortOrder} />
+              </div>
+            </th>
 
-              <th
-                onClick={() => handleSort("author")}
-                className="px-2 py-1 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+            <th
+              onClick={() => handleSort("tases")}
+              className="px-2 py-1 border-l border-slate-800 font-normal tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+            >
+              <div className="flex items-center uppercase justify-center gap-1">
+                <span>TAS</span>
+                <SortIndicator active={sortField === "tases"} order={sortOrder} />
+              </div>
+            </th>
+
+            <th
+              onClick={() => handleSort("contributions")}
+              className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+            >
+              <div className="flex items-center justify-center gap-1">
+                <span>Cont.</span>
+                <SortIndicator active={sortField === "contributions"} order={sortOrder} />
+              </div>
+            </th>
+
+            <th
+              onClick={() => handleSort("timeSaved")}
+              className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+            >
+              <div className="flex items-center justify-center gap-1">
+                <span>Saved</span>
+                <SortIndicator active={sortField === "timeSaved"} order={sortOrder} />
+              </div>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody className="font-sans divide-y divide-slate-800">
+          {sortedRows.map((row) => {
+            return (
+              <tr
+                key={`${row.author}-${row.timeSavedMs}`}
+                className="border-b border-slate-800 last:border-b-0
+                  hover:bg-blue-900/20 transition-colors odd:bg-violet-600/20 even:bg-violet-800/10"
               >
-                <div className="flex items-center justify-center gap-1">
-                  <span>Author</span>
-                  <SortIndicator active={sortField === "author"} order={sortOrder} />
-                </div>
-              </th>
+                <td className="px-2 py-1 font-medium text-slate-200">
+                  <Link
+                    href={`/authors?author=${encodeURIComponent(row.author)}`}
+                    className="hover:text-emerald-500 whitespace-nowrap transition"
+                  >
+                    {row.author}
+                  </Link>
+                </td>
 
-              <th
-                onClick={() => handleSort("tases")}
-                className="px-2 py-1 border-l border-slate-800 font-normal tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center uppercase justify-center gap-1">
-                  <span>TAS</span>
-                  <SortIndicator active={sortField === "tases"} order={sortOrder} />
-                </div>
-              </th>
+                <td className="px-3 py-1 border-l border-slate-800">
+                  {row.tasCount}
+                </td>
 
-              <th
-                onClick={() => handleSort("contributions")}
-                className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>Cont.</span>
-                  <SortIndicator active={sortField === "contributions"} order={sortOrder} />
-                </div>
-              </th>
+                <td className="px-3 py-1 border-l border-slate-800">
+                  {row.contributions.toFixed(2)}
+                </td>
 
-              <th
-                onClick={() => handleSort("timeSaved")}
-                className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>Saved</span>
-                  <SortIndicator active={sortField === "timeSaved"} order={sortOrder} />
-                </div>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody className="font-sans divide-y divide-slate-800">
-            {sortedRows.map((row) => {
-              return (
-                <tr
-                  key={`${row.author}-${row.timeSavedMs}`}
-                  className="
-                    border-b border-slate-800 last:border-b-0
-                    hover:bg-blue-900/20 transition-colors
-                    odd:bg-violet-600/20
-                    even:bg-violet-800/10
-                  "
-                >
-                  <td className="px-2 py-[4px] font-medium text-slate-200">
-                    <Link
-                      href={`/authors?author=${encodeURIComponent(row.author)}`}
-                      className="hover:text-white underline-offset-2 hover:underline whitespace-nowrap"
-                    >
-                      {row.author}
-                    </Link>
-                  </td>
-
-                  <td className="px-3 py-[4px] border-l border-slate-800">
-                    {row.tasCount}
-                  </td>
-
-                  <td className="px-3 py-[4px] border-l border-slate-800">
-                    {row.contributions.toFixed(2)}
-                  </td>
-
-                  <td className="px-3 py-[4px] border-l border-slate-800">
-                    {(row.timeSavedMs / 1000).toFixed(2)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </aside>
+                <td className="px-3 py-1 border-l border-slate-800">
+                  {(row.timeSavedMs / 1000).toFixed(2)}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -13,7 +13,6 @@ type TrackRecordsProps = {
   deleteTas: (t: TasEntry) => Promise<void>;
 };
 
-
 export default function TrackRecords({ 
   track, 
   category, 
@@ -24,7 +23,7 @@ export default function TrackRecords({
 }: TrackRecordsProps) {
 
   return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-xl">
+    <div className="rounded-2xl border border-slate-700 bg-slate-900 shadow-xl p-4 sm:p-6">
       <h2 className="mb-4 text-xl font-semibold">
         {track ? `Existing Records for ${track}` : "Choose a track"}
       </h2>
@@ -33,13 +32,13 @@ export default function TrackRecords({
         <table className="w-full text-left text-sm">
           <thead className="text-slate-400">
             <tr className="border-b border-slate-700">
-              <th className="py-2 px-2">Category</th>
+              <th className="py-2 px-2 hidden sm:table-cell">Category</th>
               <th className="py-2 px-2">
                 {`${isStunt ? "Points" : "Time"}`}
               </th>
               <th className="py-2 px-2">Authors</th>
-              <th className="py-2 px-2">Date</th>
-              <th className="py-2 px-2 text-center">Video</th>
+              <th className="py-2 px-2 hidden sm:table-cell">Date</th>
+              <th className="py-2 px-2 text-center hidden sm:table-cell">Video</th>
               <th className="py-2 px-2 text-center">Copy</th>
               <th className="py-2 px-2 text-center">Delete</th>
             </tr>
@@ -63,7 +62,7 @@ export default function TrackRecords({
                       isMatch ? "bg-emerald-500/20 italic" : ""
                     }`}
                   >
-                    <td className="py-2 px-2">
+                    <td className="py-2 px-2 hidden sm:table-cell">
                       {t.category}
                     </td>
 
@@ -71,21 +70,21 @@ export default function TrackRecords({
                       {formatTime(t.time_ms, isStunt, t.game === "TM2")}
                     </td>
 
-                    <td className="py-1 px-2 max-w-80">
+                    <td className="py-1 px-1 max-w-80">
                       {t.authors.join(", ")}
                     </td>
 
-                    <td className="py-2 px-2 whitespace-nowrap">
+                    <td className="py-2 px-2 whitespace-nowrap hidden sm:table-cell">
                       {formatDate(t.date)}
                     </td>
                     
-                    <td className="py-2 px-2 text-center align-middle">
+                    <td className="py-2 px-2 text-center align-middle hidden sm:table-cell">
                       <div className="flex justify-center">
                         {t.video && (<VideoIcon video_url={t.video}/>)}
                       </div>
                     </td>
 
-                    <td className="px-2 py-1 text-center">
+                    <td className="px-1 py-1 text-center">
                       <button
                         onClick={() => copyTasToForm(t)}
                         title="Copy to form"

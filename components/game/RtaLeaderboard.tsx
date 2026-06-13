@@ -73,56 +73,54 @@ export default function RtaTable({
   };
 
   return (
-    <aside className="pl-4 pb-4">
-      <div className="rounded-lg border border-slate-800 text-sm overflow-hidden">
-        <table className="table-fixed text-center divide-y text-sm">
-          <thead className="bg-slate-900/90 text-slate-400">
-            <tr>
-              <th
-                onClick={() => handleSort("player")}
-                className="px-2 py-1 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>Player</span>
-                  <SortIndicator active={sortField === "player"} order={sortOrder} />
-                </div>
-              </th>
+    <div className="rounded-lg border border-slate-800 overflow-hidden text-xs sm:text-sm">
+      <table className="table-fixed text-center divide-y">
+        <thead className="bg-slate-900/90 text-slate-400">
+          <tr>
+            <th
+              onClick={() => handleSort("player")}
+              className="px-2 py-1 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+            >
+              <div className="flex items-center justify-center gap-1">
+                <span>Player</span>
+                <SortIndicator active={sortField === "player"} order={sortOrder} />
+              </div>
+            </th>
 
-              <th
-                onClick={() => handleSort("wrs")}
-                className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>WRs</span>
-                  <SortIndicator active={sortField === "wrs"} order={sortOrder} />
-                </div>
-              </th>
+            <th
+              onClick={() => handleSort("wrs")}
+              className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em] cursor-pointer hover:text-slate-300 transition whitespace-nowrap"
+            >
+              <div className="flex items-center justify-center gap-1">
+                <span>WRs</span>
+                <SortIndicator active={sortField === "wrs"} order={sortOrder} />
+              </div>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody className="font-sans divide-y divide-slate-800">
+          {sortedRows.map((row) => (
+            <tr
+              key={row.player}
+              className="
+                border-b border-slate-800 last:border-b-0
+                hover:bg-blue-900/20 transition-colors
+                odd:bg-cyan-600/10
+                even:bg-cyan-900/10
+              "
+            >
+              <td className="px-2 py-[4px] font-medium text-slate-200 whitespace-nowrap">
+                {row.player}
+              </td>
+
+              <td className="px-3 py-[4px] border-l border-slate-800">
+                {row.wrCount}
+              </td>
             </tr>
-          </thead>
-
-          <tbody className="font-sans divide-y divide-slate-800">
-            {sortedRows.map((row) => (
-              <tr
-                key={row.player}
-                className="
-                  border-b border-slate-800 last:border-b-0
-                  hover:bg-blue-900/20 transition-colors
-                  odd:bg-cyan-600/10
-                  even:bg-cyan-900/10
-                "
-              >
-                <td className="px-2 py-[4px] font-medium text-slate-200 whitespace-nowrap">
-                  {row.player}
-                </td>
-
-                <td className="px-3 py-[4px] border-l border-slate-800">
-                  {row.wrCount}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </aside>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

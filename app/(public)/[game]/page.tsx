@@ -18,10 +18,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
 
   const { game } = use(params);
   const gameName = GAME_SLUGS[game];
-
-  if (!gameName) {
-    notFound();
-  }
+  if (!gameName) { notFound() }
   
   const [selectedAuthor, setSelectedAuthor] = useState<string>("All Authors");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
@@ -101,7 +98,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   }
 
  return (
-  <div className="relative pt-16 min-h-screen min-w-screen overflow-hidden">
+  <div className="relative pt-20 min-h-screen overflow-hidden">
 
     {/* Blurred wallpaper layer */}
     <div
@@ -110,37 +107,38 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
     />
 
     {/* Dark overlay */}
-    <div className="absolute inset-0 bg-black/80" />
+    <div className="absolute inset-0 bg-black/85" />
 
     {/* Content */}
     <div className="relative z-10">
 
-      <div className="flex justify-center py-3">
-        <HeaderOptions
-          game={gameName}
-          currentRecords={currentRecords}
-          selectedAuthor={selectedAuthorCheck}
-          selectedCategory={selectedCategory}
-          selectedEnvironment={selectedEnvironment}
-          onAuthorChange={setSelectedAuthor}
-          onCategoryChange={setSelectedCategory}
-          onEnvironmentChange={setSelectedEnvironment}
-        />
-      </div>
+      <HeaderOptions
+        game={gameName}
+        currentRecords={currentRecords}
+        selectedAuthor={selectedAuthorCheck}
+        selectedCategory={selectedCategory}
+        selectedEnvironment={selectedEnvironment}
+        onAuthorChange={setSelectedAuthor}
+        onCategoryChange={setSelectedCategory}
+        onEnvironmentChange={setSelectedEnvironment}
+      />
 
-      <div className="lg:flex justify-center">
-        <RecordTable 
-          game={gameName}
-          show_rta={show_rta}
-          show_recent={show_recent}
-          currentRecords={filteredRows}
-          selectedCategory={selectedCategory}
+      <div className="p-3 gap-4 justify-center flex flex-col xl:flex-row">
+        
+        <div className="overflow-x-auto">
+          <RecordTable 
+            game={gameName}
+            showRta={show_rta}
+            showRecent={show_recent}
+            currentRecords={filteredRows}
+            selectedCategory={selectedCategory}
         />
+        </div>
 
-        <div className="flex flex-col items-start gap-1">
+        <div className="items-start gap-4 flex flex-col">
           {show_time_saved && (<TimeSaved currentRecords={filteredRows} />)}
 
-          <div className="flex flex-row items-start gap-1">
+          <div className="items-start gap-4 flex flex-col xl:flex-row">
             {show_leaderboard && (<Leaderboard currentRecords={filteredRows} />)}
             {show_rta_leaderboard && (<RtaTable currentRecords={filteredRows} />)}
           </div>

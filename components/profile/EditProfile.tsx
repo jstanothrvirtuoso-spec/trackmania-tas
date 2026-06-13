@@ -1,6 +1,6 @@
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProfileDraft } from "@/utils/typing";
 import { ProfilePrivate, ProfilePublic, useUpdateProfilePrivate, useUpdateProfilePublic } from "@/lib/Profiles";
 import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS, DISPLAY_SETTINGS } from "@/utils/constants";
@@ -21,6 +21,15 @@ export default function EditProfile({ profilePrivate, profilePublicMe, isSaving,
   const updateProfilePrivate = useUpdateProfilePrivate();
   const [editMode, setEditMode] = useState<EditMode>(null);
   const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   const [draft, setDraft] = useState<ProfileDraft>(() => ({
     display_name: profilePublicMe.display_name,
@@ -87,11 +96,11 @@ export default function EditProfile({ profilePrivate, profilePublicMe, isSaving,
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50"
+      className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto bg-black/70 mt-5 px-4 py-6 md:px-6"
       onClick={() => setIsEditingProfile(false)}
     >
       <div
-        className="bg-slate-900 rounded-2xl w-full max-w-4xl p-4 md:p-8"
+        className="mx-auto flex max-h-[calc(85vh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-slate-900 p-4 md:p-8"
         onClick={(e) => e.stopPropagation()}
       >
 
@@ -99,10 +108,10 @@ export default function EditProfile({ profilePrivate, profilePublicMe, isSaving,
           Edit Profile
         </h2>
 
-        <div className="flex flex-col gap-6 items-center md:flex-row md:items-start">
+        <div className="flex max-h-[calc(100vh-16rem)] flex-col gap-6 overflow-y-auto md:flex-row md:items-start">
 
           {/* BANNER */}
-          <div className="hidden md:block md:w-80">
+          <div className="justify-center flex w-full md:w-80">
             {editMode !== "banner" ? (
               <button
                 type="button"
@@ -120,7 +129,7 @@ export default function EditProfile({ profilePrivate, profilePublicMe, isSaving,
                 </div>
               </button>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-5 gap-2 w-[300px] md:grid-cols-2 md:w-auto">
                 {Object.entries(PROFILE_BANNERS).map(([key, src]) => {
                   const id = Number(key);
 
@@ -171,7 +180,7 @@ export default function EditProfile({ profilePrivate, profilePublicMe, isSaving,
               </button>
             ) : (
               <>
-                <div className="grid grid-cols-5 gap-2 w-[380px]">
+                <div className="grid grid-cols-5 gap-2 w-[300px]">
                   {Object.entries(PROFILE_AVATARS).map(([key, src]) => {
                     const id = Number(key);
 
@@ -205,7 +214,7 @@ export default function EditProfile({ profilePrivate, profilePublicMe, isSaving,
                   })}
                 </div>
 
-                <div className="grid grid-cols-5 gap-2 w-[380px]">
+                <div className="grid grid-cols-5 gap-2 w-[300px]">
                   {Object.entries(PROFILE_COLOURS).map(([key, colour]) => {
                     const id = Number(key);
 

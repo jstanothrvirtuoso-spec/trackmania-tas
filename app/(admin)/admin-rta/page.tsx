@@ -379,8 +379,8 @@ export default function AdminRta() {
                     {`${isStunt ? "Points" : "Time"}`}
                   </th>
                   <th className="py-2 px-2">Player</th>
-                  <th className="py-2 px-2">Date</th>
-                  <th className="py-2 px-2 text-center">Video</th>
+                  <th className="py-2 px-2 hidden sm:table-cell">Date</th>
+                  <th className="py-2 px-2 text-center hidden sm:table-cell">Video</th>
                   <th className="py-2 px-2 text-center">Copy</th>
                   <th className="py-2 px-2 text-center">Delete</th>
                 </tr>
@@ -408,11 +408,11 @@ export default function AdminRta() {
                           {t.player}
                         </td>
 
-                        <td className="py-2 px-2 whitespace-nowrap">
+                        <td className="py-2 px-2 whitespace-nowrap hidden sm:table-cell">
                           {formatDate(t.date)}
                         </td>
                         
-                        <td className="py-2 px-2 text-center align-middle">
+                        <td className="py-2 px-2 text-center align-middle hidden sm:table-cell">
                           <div className="flex justify-center">
                             {t.video && (<VideoIcon video_url={t.video}/>)}
                           </div>
@@ -448,6 +448,10 @@ export default function AdminRta() {
         </div>
 
       </div>
+      
+      {loading && (
+        <div className="fixed inset-0 z-[9999] cursor-wait" />
+      )}
     </div>
   );
 }
