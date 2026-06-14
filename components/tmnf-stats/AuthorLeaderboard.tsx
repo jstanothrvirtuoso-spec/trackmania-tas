@@ -82,7 +82,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
         if (graphType === "TASes") {
           pointsOff = 1;
         } else if (graphType === "TimeSaved") {
-          pointsOff = (OVERRIDE[existing.track]?.[existing.time_ms] ?? ((rta.time_ms - existing.time_ms) / 1000)) / existing.authors.length;
+          pointsOff = (OVERRIDE[existing.track]?.[existing.time_ms] ?? Math.max(0, (rta.time_ms - existing.time_ms) / 1000)) / existing.authors.length;
         } else {
           pointsOff = 1 / existing.authors.length;
         }
@@ -98,7 +98,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
       if (graphType === "TASes") {
         pointsOn = 1;
       } else if (graphType === "TimeSaved") {
-        pointsOn = (OVERRIDE[tas.track]?.[tas.time_ms] ?? ((rta.time_ms - tas.time_ms) / 1000)) / tas.authors.length;
+        pointsOn = (OVERRIDE[tas.track]?.[tas.time_ms] ?? Math.max(0, (rta.time_ms - tas.time_ms) / 1000)) / tas.authors.length;
       } else {
         pointsOn = 1 / tas.authors.length;
       }
@@ -123,6 +123,8 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
       authorMax,
     };
   }, [filteredTasRecords, authors, bestRtaByTrack, graphType]);
+
+  console.log(series["Kimura"])
 
   const topAuthors = useMemo(() => {
     return [...authorMax.entries()]
@@ -331,22 +333,23 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
               if (d === "") {
                 if (p.value === 0) continue;
                 if (selectedYear && selectedYear !== 2021 && x !== PADDING_X && i === 0) {
-                  d += `M ${PADDING_X} ${y} V ${y}`;
+                  d += `M ${PADDING_X} ${y}`;
                 } else {
-                  d += `M ${x} ${yScale(0)} V ${y}`;
+                  d += `M ${x} ${HEIGHT - PADDING_B} V ${y}`;
                 }
-                
               } else {
-                if (p.value > 0) {
-                  d += ` H ${x}`
-                };
-                d += ` V ${y}`;
+                d += ` H ${x} V ${y}`
               }
             }
             if (selectedYear === years[years.length - 1]) {
               d += ` H ${xScale(new Date(nowDate).toDateString())}`
             } else {
               d += ` H ${WIDTH - PADDING_X / 2}`
+            }
+
+            if (author === "Virtuoso") {
+              console.log(d)
+              console.log(points)
             }
             
             return (

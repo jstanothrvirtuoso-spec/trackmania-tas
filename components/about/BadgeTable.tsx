@@ -7,7 +7,7 @@ export function BadgeTable() {
     <div className="z-20 flex justify-center">
       <div
         className="
-          w-auto text-[10px] sm:w-[420px] sm:text-xs
+          w-full max-w-[420px] text-[10px] sm:text-xs
           relative overflow-hidden
 
           rounded-2xl

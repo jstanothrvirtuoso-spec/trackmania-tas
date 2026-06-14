@@ -65,23 +65,39 @@ export default function Header() {
           />
 
           {/* HOME */}
-          <div className="mt-[2px] px-3 hidden sm:block">
-            <Link
-              href="/"
-              style={{ fontFamily: "DOSVGA" }}
-              className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
-            >
-              NadeoTAS
-            </Link>
+          <div className="mt-[2px] px-3 hidden sm:block w-30">
+            <span className="inline-flex overflow-hidden px-1 rounded-xl">
+              <Link
+                href="/"
+                style={{ fontFamily: "DOSVGA" }}
+                className="
+                  text-2xl text-white whitespace-nowrap font-dosvga transition-transform duration-200 ease-out 
+                  [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] 
+                  hover:tracking-[0.02em] hover:scale-[1.04] hover:text-transparent 
+                  hover:bg-gradient-to-r hover:from-cyan-300 hover:via-blue-200 hover:to-violet-300 
+                  hover:bg-clip-text hover:[text-shadow:0_0_20px_rgba(56,189,248,0.7)]
+                "
+              >
+                TAS-Nadeo
+              </Link>
+            </span>
           </div>
           <div className="mt-[2px] px-3 block sm:hidden">
-            <Link
-              href="/"
-              style={{ fontFamily: "DOSVGA" }}
-              className="text-2xl text-white whitespace-nowrap font-dosvga [text-shadow:0_2px_4px_rgba(0,0,0,0.9)]"
-            >
-              TAS
-            </Link>
+            <span className="inline-flex overflow-hidden px-1 rounded-xl">
+              <Link
+                href="/"
+                style={{ fontFamily: "DOSVGA" }}
+                className="
+                  text-2xl text-white whitespace-nowrap font-dosvga transition-transform duration-200 ease-out 
+                  [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] 
+                  hover:tracking-[0.02em] hover:scale-[1.04] hover:text-transparent 
+                  hover:bg-gradient-to-r hover:from-cyan-300 hover:via-blue-200 hover:to-violet-300 
+                  hover:bg-clip-text hover:[text-shadow:0_0_20px_rgba(56,189,248,0.7)]
+                "
+              >
+                TAS
+              </Link>
+            </span>
           </div>
           
           {/* GAMES */}

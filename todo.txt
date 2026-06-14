@@ -8,8 +8,7 @@ Admin panel:
  - Connecting accounts with authors
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
-
-On /tracks authors graph, No Uber, virtuoso+Kimura go slightly negative!?!
+Add "allow sounds" option
 
 
 

@@ -83,7 +83,7 @@ const tricks: Record<Environment, Trick[]> = {
     { src: "/inputs/coast3.m4v", button: ["Inputs 3"], notes: ["Bruteforce if the skip gear isn't working"]},
   ],
   "SNOW": [ { src: "/inputs/snowvideo.m4v", button: ["Inputs"], notes: ["No bruteforce needed!"]} ],
-  "BAY": [ { src: "/inputs/bayvideo.m4v", button: ["Inputs"], notes: [ "I recommend you make your own start before using the trick", "Every start is different, so you cannot achieve the optimum result every time!"]} ],
+  "BAY": [ { src: "/inputs/bayvideo.mp4", button: ["Inputs"], notes: [ "I recommend you make your own start before using the trick", "Every start is different, so you cannot achieve the optimum result every time!"]} ],
 };
 
 const btnClass = `sakura-font relative px-4 py-2 text-xs uppercase text-sky-100 tracking-[0.12em] leading-none
@@ -94,9 +94,6 @@ const btnClass = `sakura-font relative px-4 py-2 text-xs uppercase text-sky-100 
   hover:bg-gradient-to-br hover:from-pink-500/10 hover:via-gray-500/10 hover:to-transparent
   text-sm md:text-[15px] tracking-[0.14em] uppercase font-medium
   hover:shadow-[0_0_18px_rgba(236,72,153,0.25)]`;
-
-
-
 
 export function CursorTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -193,7 +190,6 @@ export function CursorTrail() {
   );
 }
 
-  
 export default function InputsPage() {
   
   const [activeEnv, setActiveEnv] = useState<Environment>("STADIUM");
@@ -204,7 +200,6 @@ export default function InputsPage() {
     setCopied(`${env}-${i}`);
     setTimeout(() => setCopied(null), 700);
   };
-
   
   return (
     <div className="min-h-screen pt-16 relative overflow-hidden">
@@ -276,6 +271,7 @@ export default function InputsPage() {
                 src={`/inputs/${activeEnv.toLowerCase()}.png`}
                 alt={`${activeEnv} background`}
                 fill
+                sizes="80vw"
                 priority
               />
               <div className="absolute inset-0 opacity-95 bg-gradient-to-r from-[#000404] via-[#070816dd] to-transparent"/>
@@ -326,12 +322,14 @@ export default function InputsPage() {
                 <div className="relative z-10 flex-col items-center hidden md:flex">
                   {activeEnv === "STADIUM" && (
                     <div className="overflow-hidden rounded-lg hidden md:flex">
-                    <Image
-                      src="/inputs/stadiumtrick.png"
-                      alt="Stadium trick instructions"
-                      width={650}
-                      height={400}
-                    />
+                      <Image
+                        src="/inputs/stadiumtrick.png"
+                        alt="Stadium trick instructions"
+                        width={620}
+                        height={400}
+                        className="max-w-full w-auto h-auto"
+                        style={{ width: "auto", height: "auto" }}
+                      />
                     </div>
                   )}
                   <div

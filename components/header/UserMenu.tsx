@@ -47,46 +47,51 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
         onMouseEnter={!isTouch ? userMenu.openNow : undefined}
         onMouseLeave={!isTouch ? userMenu.closeLater : undefined}
         onClick={userMenu.toggle}
-        className={`flex items-center gap-2 rounded-full border border-slate-500 bg-slate-800/70 px-3 py-2 text-sm text-slate-200 transition hover:bg-slate-700 ${CURSOR}`}
+        className={`
+          flex items-center gap-3 rounded-full border border-cyan-400/20 
+          bg-slate-950/90 px-4 py-0.5 text-sm text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.18)] 
+          transition duration-200 hover:border-cyan-300/50 hover:bg-slate-900/95 ${CURSOR}`}
         aria-label="User menu"
       >
         <div 
-          className="h-6 w-6 p-0.5 rounded-full bg-sky-500/70 text-sm font-semibold text-black flex items-center justify-center border border-white/30"
-          style={{ backgroundColor: PROFILE_COLOURS[profilePublicMe.colour] ?? PROFILE_COLOURS[0]}}
+          className="h-6 w-6 rounded-full p-0.5 text-black flex items-center justify-center border border-cyan-400/20 shadow-[0_0_16px_rgba(34,211,238,0.24)]"
+          style={{ backgroundColor: PROFILE_COLOURS[profilePublicMe.colour] ?? PROFILE_COLOURS[0] }}
         >
           <Image
             src={PROFILE_AVATARS[profilePublicMe.avatar] ?? PROFILE_AVATARS[0]}
             alt="Avatar"
             width={24}
             height={24}
-            className="object-cover"
+            className="object-cover rounded-full"
           />
         </div>
 
-        <span className="text-[17px]">
-          {profilePublicMe.display_name.length > 15 ? `${profilePublicMe.display_name.slice(0, 15)}...` : profilePublicMe.display_name}
-        </span>
+        <div className="flex flex-col items-start leading-tight py-2">
+          <span className="text-[15px] font-semibold text-slate-100">
+            {profilePublicMe.display_name.length > 15 ? `${profilePublicMe.display_name.slice(0, 15)}...` : profilePublicMe.display_name}
+          </span>
+        </div>
       </button>
 
       <div
         onMouseEnter={!isTouch ? userMenu.openNow : undefined}
         onMouseLeave={!isTouch ? userMenu.closeLater : undefined}
         className={`
-          absolute right-0 top-full w-38 pt-1
-          transition-all duration-200 origin-top
+          absolute right-0 top-full mt-1 min-w-[120px] w-34
+          transition-all duration-200 origin-top-right
           ${userMenu.open
             ? "opacity-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 -translate-y-2 pointer-events-none"
+            : "opacity-0 -translate-y-3 pointer-events-none"
           }
         `}
       >
-        <div className="rounded-md border border-slate-700 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
+        <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_60px_rgba(14,116,144,0.24)] backdrop-blur-xl p-2 flex flex-col gap-1">
 
           {USER_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+              className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
               onClick={userMenu.closeNow}
             >
               {link.label}
@@ -100,31 +105,30 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
               onMouseLeave={!isTouch ? adminMenu.closeLater : undefined}
             >
               <div
-                className="flex items-center justify-between px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded cursor-pointer"
+                className="flex items-center justify-between rounded-xl px-3 text-sm text-cyan-100 hover:bg-cyan-500/10 transition cursor-pointer"
                 onClick={adminMenu.toggle}
               >
-                <span>Admin</span>
-                <span className="text-slate-400">▶</span>
+                <span className="py-2">Admin</span>
+                <span className="text-cyan-300 text-2xl">▸</span>
               </div>
 
               <div
                 className={`
-                  absolute left-full top-0 w-40
+                  absolute left-full top-0 -ml-2 w-40
                   transition-all duration-150
                   ${
                     adminMenu.open
-                      ? "opacity-100 pointer-events-auto"
-                      : "opacity-0 pointer-events-none"
+                      ? "opacity-100 translate-x-0 pointer-events-auto"
+                      : "opacity-0 -translate-x-2 pointer-events-none"
                   }
                 `}
               >
-                
-                <div className="rounded-md border border-slate-700 bg-slate-800 shadow-lg p-2 flex flex-col gap-1">
+                <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_40px_rgba(14,116,144,0.18)] backdrop-blur-xl p-2 flex flex-col gap-1">
                   {ADMIN_LINKS.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 rounded"
+                      className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
                       onClick={() => {
                         adminMenu.closeNow();
                         userMenu.closeNow();
@@ -140,7 +144,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
 
           <button
             onClick={signOut}
-            className="px-3 py-2 text-sm text-red-400 hover:bg-slate-700 rounded text-left cursor-pointer"
+            className="rounded-xl px-3 py-2 text-sm text-rose-300 hover:bg-rose-500/10 transition text-left"
           >
             Logout
           </button>

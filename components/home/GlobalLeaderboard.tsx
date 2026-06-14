@@ -300,7 +300,7 @@ export default function GlobalLeaderboard() {
 
       {/* TABLE */}
       <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950/90 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
-        <div className="block xl:hidden">
+        <div className="block lg:hidden">
           <Leaderboard 
             data={mobileAuthors}
             isLoading={isLoading}
@@ -310,7 +310,7 @@ export default function GlobalLeaderboard() {
           />
         </div>
 
-        <div className="hidden xl:block">
+        <div className="hidden lg:block">
           <Leaderboard 
             data={desktopAuthors}
             isLoading={isLoading}

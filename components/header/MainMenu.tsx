@@ -36,7 +36,10 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
     >
       <button
         onClick={menu.toggle}
-        className={`flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg border border-slate-500 bg-slate-700 transition hover:bg-slate-700 shadow-lg ${CURSOR}`}
+        className={`
+          flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-lg 
+          transition duration-200 hover:border-cyan-300/50 hover:bg-slate-800/95 
+          border border-slate-500 bg-slate-700 shadow-lg ${CURSOR}`}
         aria-label="Open menu"
       >
         <span className="h-0.5 w-5 rounded bg-slate-100" />

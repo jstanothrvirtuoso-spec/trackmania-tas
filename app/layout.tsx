@@ -5,6 +5,41 @@ import Header from "@/components/header/Header";
 import Providers from "./providers";
 // import VisitorCounter from "@/components/VisitorCounter";
 
+export const metadata = {
+  title: {
+    default: "TAS Nadeo",
+    template: "%s | TAS Nadeo",
+  },
+
+  description: "TAS Nadeo is a Trackmania TAS leaderboard and community site for nadeo records, inputs, and various stats.",
+
+  openGraph: {
+    title: "TAS Nadeo",
+    description: "Trackmania TAS leaderboards, tracks, author stats, and input resources for the community.",
+    url: "https://www.tas-nadeo.com",
+    siteName: "TAS Nadeo",
+    type: "website",
+    images: [
+      {
+        url: "/tas-nadeo.png",
+        width: 32,
+        height: 32,
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "TAS Nadeo",
+    description: "Trackmania TAS leaderboards, tracks, author stats, and input resources for the community.",
+    images: ["/tas-nadeo.png"],
+  },
+
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
 export default function RootLayout({
   children,
   modal,

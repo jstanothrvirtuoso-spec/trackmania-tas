@@ -21,7 +21,7 @@ const HIGHLIGHTED = new Set([
 export function HallOfFame() {
 
   return (
-    <div className="relative w-auto p-4 hall-frame sm:w-[390px]
+    <div className="relative w-auto p-4 hall-frame sm:w-[400px]
       bg-black/50 backdrop-blur-md
       shadow-[0_0_18px_rgba(0,0,0,0.6),inset_0_0_25px_rgba(255,255,255,0.03)]">
           
@@ -43,10 +43,10 @@ export function HallOfFame() {
               className="flex justify-between items-center border border-white/10 bg-white/5 rounded-md px-3 py-2 hover:bg-white/10 transition gap-3"
             >
               <span
-                className={`tracking-wide translate-y-[-2px] ${
+                className={`inline-flex items-center ${
                   HIGHLIGHTED.has(title) ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]" : "text-white"
                 }`}
-                style={{ fontFamily: "OktaNeue" }}
+                style={{ fontFamily: "Sakura" }}
               >
                 {title}
               </span>

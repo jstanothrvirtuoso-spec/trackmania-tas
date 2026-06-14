@@ -70,6 +70,22 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
     >
       <button
         onClick={() => setOpen((prev) => !prev)}
+        onKeyDown={(event) => {
+          const key = event.key;
+          if (key.length === 1 && !event.shiftKey && !event.altKey && !event.ctrlKey && !event.metaKey) {
+            const searchChar = key.toLowerCase();
+            const startIndex = Math.max(0, allOptions.findIndex((option) => option.value === value)) + 1;
+            const nextOption = Array.from({ length: allOptions.length }, (_, i) => allOptions[(startIndex + i) % allOptions.length]).find(
+              (option) => option.label.trim().charAt(0).toLowerCase() === searchChar,
+            );
+
+            if (nextOption) {
+              setValue(nextOption.value);
+              onChange?.(nextOption.value);
+              event.preventDefault();
+            }
+          }
+        }}
         className="
           relative inline-flex w-full items-center justify-between rounded-lg 
           border border-slate-700 bg-slate-800 px-3 py-1.5 pr-10 text-left text-slate-100 
@@ -92,7 +108,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
         style={{ width: 0, height: 0, overflow: "hidden" }}
       >
         {allOptions.map((option) => (
-          <span key={option.value} className="inline-block px-2 py-1 text-xs font-sans">
+          <span key={option.value} className="inline-block px-2 py-1 font-sans text-sm sm:text-md">
             {option.label}
           </span>
         ))}
@@ -101,7 +117,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
       {open && (
         <div
           ref={listRef}
-          className="absolute left-0 z-20 mt-0.5 w-full max-h-56 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm"
+          className="absolute left-0 z-20 mt-0.5 w-full max-h-120 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm text-sm sm:text-md"
           onScroll={(event) => {
             scrollTopRef.current = (event.target as HTMLDivElement).scrollTop;
           }}
@@ -119,7 +135,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
                   onChange?.(option.value);
                   setOpen(false);
                 }}
-                className={`w-full rounded-md px-2 py-1 text-left text-xs transition cursor-pointer ${
+                className={`w-full rounded-md px-2 py-1 text-left transition cursor-pointer ${
                   isSelected
                     ? "bg-sky-800"
                     : index % 2 === 0
