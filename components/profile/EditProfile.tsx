@@ -1,33 +1,49 @@
-
 import Image from "next/image";
 import { useState } from "react";
 import { ProfileDraft } from "@/utils/typing";
-import { ProfilePrivate, ProfilePublic, useUpdateProfilePrivate, useUpdateProfilePublic } from "@/lib/Profiles";
-import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS, DISPLAY_SETTINGS } from "@/utils/constants";
-
+import {
+  ProfilePrivate,
+  ProfilePublic,
+  useUpdateProfilePrivate,
+  useUpdateProfilePublic,
+} from "@/lib/Profiles";
+import {
+  PROFILE_AVATARS,
+  PROFILE_BANNERS,
+  DISPLAY_SETTINGS,
+} from "@/utils/constants";
 
 type EditMode = "avatar" | "banner" | null;
 
-const DISPLAY_NAME_REGEX = /^(?! )[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*(?<! )$/;
+const DISPLAY_NAME_REGEX =
+  /^(?! )[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*(?<! )$/;
 
-export default function EditProfile({ profilePrivate, profilePublicMe, isSaving, setIsSaving, setIsEditingProfile }: { 
-  profilePrivate: ProfilePrivate, 
-  profilePublicMe: ProfilePublic,
-  isSaving: boolean,
-  setIsSaving: (setting: boolean) => void,
-  setIsEditingProfile: (setting: boolean) => void,
+export default function EditProfile({
+  profilePrivate,
+  profilePublicMe,
+  isSaving,
+  setIsSaving,
+  setIsEditingProfile,
+}: {
+  profilePrivate: ProfilePrivate;
+  profilePublicMe: ProfilePublic;
+  isSaving: boolean;
+  setIsSaving: (setting: boolean) => void;
+  setIsEditingProfile: (setting: boolean) => void;
 }) {
-  
   const updateProfilePublic = useUpdateProfilePublic();
   const updateProfilePrivate = useUpdateProfilePrivate();
+
   const [editMode, setEditMode] = useState<EditMode>(null);
-  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
+  const [displayNameError, setDisplayNameError] = useState<string | null>(
+    null
+  );
 
   const [draft, setDraft] = useState<ProfileDraft>(() => ({
     display_name: profilePublicMe.display_name,
     bio: profilePublicMe.bio ?? "",
-    avatar: profilePublicMe.avatar ?? "",
-banner: profilePublicMe.banner ?? "",
+    avatar: profilePublicMe.avatar ?? 0,
+    banner: profilePublicMe.banner ?? 0,
     colour: profilePublicMe.colour,
 
     show_rta: profilePrivate.show_rta,
@@ -38,12 +54,15 @@ banner: profilePublicMe.banner ?? "",
     show_visitor_counter: false,
   }));
 
-  function updateDraft<K extends keyof ProfileDraft>(key: K, value: ProfileDraft[K]) {
-    setDraft(prev => prev ? { ...prev, [key]: value } : prev);
+  function updateDraft<K extends keyof ProfileDraft>(
+    key: K,
+    value: ProfileDraft[K]
+  ) {
+    setDraft((prev) => ({ ...prev, [key]: value }));
   }
 
   function handleSaveProfile() {
-    if (!draft?.display_name || displayNameError) return;
+    if (!draft.display_name || displayNameError) return;
 
     setIsSaving(true);
 
@@ -53,17 +72,18 @@ banner: profilePublicMe.banner ?? "",
       avatar: draft.avatar,
       banner: draft.banner,
       colour: draft.colour,
-    }
+    };
 
-    updateProfilePublic.mutate({ user: profilePublicMe, profileUpdate: publicDraft }, {
-      onSuccess: () => {
-        setIsSaving(false);
-        setIsEditingProfile(false);
-      },
-      onError: () => {
-        setIsSaving(false);
-      },
-    });
+    updateProfilePublic.mutate(
+      { user: profilePublicMe, profileUpdate: publicDraft },
+      {
+        onSuccess: () => {
+          setIsSaving(false);
+          setIsEditingProfile(false);
+        },
+        onError: () => setIsSaving(false),
+      }
+    );
 
     const privateDraft = {
       show_rta: draft.show_rta,
@@ -72,19 +92,16 @@ banner: profilePublicMe.banner ?? "",
       show_rta_leaderboard: draft.show_rta_leaderboard,
       show_recent: draft.show_recent,
       show_visitor_counter: false,
-      // show_visitor_counter: draft.show_visitor_counter,
-    }
+    };
 
     updateProfilePrivate.mutate(privateDraft, {
       onSuccess: () => {
         setIsSaving(false);
         setIsEditingProfile(false);
       },
-      onError: () => {
-        setIsSaving(false);
-      },
+      onError: () => setIsSaving(false),
     });
-  };
+  }
 
   return (
     <div
@@ -155,79 +172,92 @@ banner: profilePublicMe.banner ?? "",
           <div className="flex flex-col space-y-4 items-center w-full justify-center">
 
             {/* AVATAR */}
-            {editMode !== "avatar" ? (
-              <button
-                type="button"
-                onClick={() => setEditMode("avatar")}
-                className="w-[120px] h-[120px] rounded-full overflow-hidden hover:bg-slate-800 cursor-pointer flex justify-center items-center hover:scale-105 transition"
-                style={{ backgroundColor: PROFILE_COLOURS[draft?.colour ?? 0]}}
-              >
-                <Image
-                  src={PROFILE_AVATARS[draft?.avatar ?? 0]}
-                  alt="Avatar"
-                  width={100}
-                  height={100}
-                  className="object-cover"
-                />
-              </button>
-            ) : (
-              <>
-                <div className="grid grid-cols-5 gap-2 w-[380px]">
-                  {Object.entries(PROFILE_AVATARS).map(([key, src]) => {
-                    const id = Number(key);
+{editMode !== "avatar" ? (
+  <button
+    type="button"
+    onClick={() => setEditMode("avatar")}
+    className="w-[120px] h-[120px] rounded-full overflow-hidden hover:bg-slate-800 cursor-pointer flex justify-center items-center hover:scale-105 transition"
+    style={{
+      backgroundColor: `hsl(${draft?.colour ?? 200}, 80%, 60%)`,
+    }}
+  >
+    <Image
+      src={PROFILE_AVATARS[draft?.avatar ?? 0]}
+      alt="Avatar"
+      width={100}
+      height={100}
+      className="object-cover"
+    />
+  </button>
+) : (
+  <div className="flex flex-col items-center gap-3">
+    
+    {/* AVATAR GRID */}
+    <div className="grid grid-cols-5 gap-2 w-[380px]">
+      {Object.entries(PROFILE_AVATARS).map(([key, src]) => {
+        const id = Number(key);
 
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => {
-                          updateDraft("avatar", id);
-                          setEditMode(null);
-                        }}
-                        className={`h-16 rounded overflow-hidden border cursor-pointer ${
-                          draft?.avatar === id
-                            ? "border-emerald-500"
-                            : "border-transparent"
-                        }`}
-                      >
-                        <div className="flex justify-center">
-                          <Image
-                            src={src}
-                            alt="Avatar"
-                            width={50}
-                            height={50}
-                            className={`object-cover hover:opacity-100 transition ${
-                              draft?.avatar === id ? "opacity-100" : "opacity-50"}`}
-                          />
-                        </div>
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => {
+              updateDraft("avatar", id);
+              setEditMode(null);
+            }}
+            className={`h-16 rounded overflow-hidden border cursor-pointer ${
+              draft?.avatar === id
+                ? "border-emerald-500"
+                : "border-transparent"
+            }`}
+          >
+            <div className="flex justify-center">
+              <Image
+                src={src}
+                alt="Avatar"
+                width={50}
+                height={50}
+                className={`object-cover transition ${
+                  draft?.avatar === id ? "opacity-100" : "opacity-50"
+                }`}
+              />
+            </div>
+          </button>
+        );
+      })}
+    </div>
 
-                      </button>
-                    );
-                  })}
-                </div>
+    {/* HUE PICKER */}
+    <div className="w-[380px] flex flex-col gap-2">
+      <input
+        type="range"
+        min="0"
+        max="360"
+        value={draft?.colour ?? 200}
+        onChange={(e) => updateDraft("colour", Number(e.target.value))}
+        className="w-full cursor-pointer"
+      />
 
-                <div className="grid grid-cols-5 gap-2 w-[380px]">
-                  {Object.entries(PROFILE_COLOURS).map(([key, colour]) => {
-                    const id = Number(key);
+      <div
+        className="h-4 rounded-lg"
+        style={{
+          background: `linear-gradient(
+            to right,
+            hsl(0, 80%, 60%),
+            hsl(60, 80%, 60%),
+            hsl(120, 80%, 60%),
+            hsl(180, 80%, 60%),
+            hsl(240, 80%, 60%),
+            hsl(300, 80%, 60%),
+            hsl(360, 80%, 60%)
+          )`,
+        }}
+      />
+    </div>
 
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => {
-                          updateDraft("colour", id);
-                          setEditMode(null);
-                        }}
-                        className={`h-7 rounded overflow-hidden border hover:opacity-100 cursor-pointer ${
-                          draft?.colour === id ? "border-emerald-500" : "border-transparent opacity-50"}`}
-                        style={{ backgroundColor: colour }}
-                      >
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+  </div>
+)}
+     
 
             {/* DISPLAY NAME */}
             <input
@@ -304,7 +334,8 @@ banner: profilePublicMe.banner ?? "",
               ))}
             </div>
           </div>
-        </div>
+ 
+
         
         {/* ACTIONS */}
         <div className="flex justify-end gap-3 pt-2">
@@ -324,7 +355,9 @@ banner: profilePublicMe.banner ?? "",
           </button>
         </div>
 
-      </div>
+</div>
+</div>
     </div>
+    
   )
 }
