@@ -10,6 +10,10 @@ Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 Add "allow sounds" option
 
+Fix tas-nadeo.png
+  - Missing headline in imageog:image (No clear headline detected. Images with a headline get higher engagement.)
+  - Missing call-to-actionog:image (No CTA found in the image. Adding one can significantly boost click-through rate.)
+
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -6,8 +6,10 @@ import Providers from "./providers";
 // import VisitorCounter from "@/components/VisitorCounter";
 
 export const metadata = {
+  metadataBase: new URL("https://tas-nadeo.com"),
+
   title: {
-    default: "TAS Nadeo",
+    default: "TAS Nadeo - Tool assisted speedruns for nadeo tracks in Trackmania",
     template: "%s | TAS Nadeo",
   },
 
@@ -22,8 +24,8 @@ export const metadata = {
     images: [
       {
         url: "/tas-nadeo.png",
-        width: 32,
-        height: 32,
+        width: 1200,
+        height: 630,
       },
     ],
   },
