@@ -1,14 +1,18 @@
+
+import { useState } from "react"
 import { BadgeIcon } from "@/components/Icons"
 import { BADGE_IMAGES, BADGE_RANKS } from "@/utils/constants"
 
 export function BadgeTable() {
 
+  const [showHelp, setShowHelp] = useState(false)
+
   return (
     <div className="z-20 flex justify-center">
       <div
         className="
-          w-full max-w-[420px] text-[10px] sm:text-xs
-          relative overflow-hidden
+          w-full max-w-[450px] text-[10px] sm:text-xs
+          relative
 
           rounded-2xl
           backdrop-blur-2xl
@@ -85,7 +89,7 @@ export function BadgeTable() {
               "
             >
 
-              {/* soft sakura “petal glow” on hover */}
+              {/* Soft sakura “petal glow” on hover */}
               <div className="
                 absolute inset-0
                 opacity-0 hover:opacity-100
@@ -125,20 +129,72 @@ export function BadgeTable() {
         </div>
 
         {/* FOOTER */}
-        <div className="
-          relative text-center py-3
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowHelp(v => !v)}
+            className="
+              w-full
+              text-center py-3
+              tracking-[0.45em]
+              text-pink-200/80
+              border-t border-pink-200/10
+              bg-white/5
+              cursor-pointer
+            "
+          >
+            HOW TO CLAIM BADGES
+          </button>
 
-          tracking-[0.45em]
-          text-pink-200/80
+          <div
+            className={`
+              absolute bottom-full left-1/2 -translate-x-1/2 mb-3
+              w-[340px]
+              rounded-xl
+              border border-pink-200/10
+              bg-[#120b10]/95
+              backdrop-blur-xl
+              p-4 text-left
+              z-50
+              transition-all duration-200
+              ${
+                showHelp
+                  ? "opacity-100 visible"
+                  : "opacity-0 invisible pointer-events-none"
+              }
+            `}
+          >
+            <div className="space-y-3 tracking-normal leading-relaxed text-pink-100/80">
+              <p>
+                These badges are awarded to those who make consistent progress and
+                represent their dedication to the community.
+              </p>
 
-          border-t border-pink-200/10
+              <div className="h-px bg-pink-200/10" />
 
-          bg-white/5
-        ">
-          HOW TO CLAIM BADGES
+              <p>
+                We want these badges to remain prestigious, so earning them is intended
+                to be a challenge.
+              </p>
+
+              <div className="h-px bg-pink-200/10" />
+
+              <p>
+                Badges are allocated based on your average achievement across the three
+                categories.
+              </p>
+
+              <p className="text-pink-200/60 text-[11px]">
+                Example: 12 TASes, 4.2 Contributions, and 2.5 minutes saved correspond
+                to ranks 3, 2, and 6. The average rank is 3.66, which rounds to 4,
+                awarding the <span className="text-pink-100">Expert TASer</span> rank
+                and the diamond badge.
+              </p>
+            </div>
+          </div>
         </div>
-
-        {/* bottom ambient glow */}
+        
+        {/* Bottom ambient glow */}
         <div className="
           absolute -bottom-20 left-1/2 -translate-x-1/2
           w-[300px] h-[200px]

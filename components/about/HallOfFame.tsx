@@ -1,7 +1,7 @@
 
 const FAME_CONTENTS: Record<string, Record<string, string>> = {
   "TMI Released": { date: "30/05/2021", link: "" },
-  "Noseboost Discovery": {date: "03/09/2021", link: "" },
+  "Noseboost Discovery": {date: "03/09/2021", link: "https://www.youtube.com/watch?v=9w_PrEOeMjw" },
   "Stadium Start Trick Discovery": { date: "03/02/2022", link: "https://www.youtube.com/watch?v=7KLnucE2rdw&list=RD7KLnucE2rdw&start_radio=1&t=1s" },
   "Island/Coast Start Trick Discovery": { date: "27/01/2023", link: "https://youtu.be/cASmgd3lQTM?si=agM-1h9dp3SssNP0" },
   "TMNF Sub 60 Minutes Campaign": { date: "04/06/2023", link: "https://www.youtube.com/watch?v=9maXH1a9vzk" },
@@ -11,12 +11,6 @@ const FAME_CONTENTS: Record<string, Record<string, string>> = {
   "TMNF Sub 45 Minutes Campaign": { date: "???", link: "" },
   "United Aftermovie": { date: "???", link: "" },
 }
-
-const HIGHLIGHTED = new Set([
-  "TMNF Sub 60 Minutes Campaign",
-  "Island/Coast Start Trick Discovery",
-  "Stadium Start Trick Discovery",
-]);
 
 export function HallOfFame() {
 
@@ -44,7 +38,7 @@ export function HallOfFame() {
             >
               <span
                 className={`inline-flex items-center ${
-                  HIGHLIGHTED.has(title) ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]" : "text-white"
+                  link ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]" : "text-white"
                 }`}
                 style={{ fontFamily: "Sakura" }}
               >

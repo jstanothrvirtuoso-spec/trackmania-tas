@@ -130,11 +130,11 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               className="hover:bg-emerald-800/40 transition-colors odd:bg-slate-800/90"
             >
               {/* Track */}
-              <td className="bg-purple-800/5">
+              <td className="bg-purple-800/5 px-1 py-0.5 sm:px-2 sm:py-1.5">
                 <Link
                   key={row.track}
                   href={`/tracks?track=${encodeURIComponent(row.track)}`}
-                  className="px-1 py-1.5 text-slate-300 whitespace-nowrap hover:text-emerald-300 text-[8px] sm:text-xs sm:px-2"
+                  className="text-slate-300 whitespace-nowrap hover:text-emerald-300 text-[8px] sm:text-xs"
                 >
                   {row.track}
                 </Link>
@@ -144,7 +144,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               {row.columns.toReversed().map((c, i) => (
                 <td
                   key={i}
-                  className={`px-1.5 py-1 tabular-nums sm:px-2 sm:py-1.5 ${CATEGORY_COLOURS[c.colourIndex]}`}
+                  className={`px-1.5 py-0.5 tabular-nums sm:px-2 sm:py-1.5 ${CATEGORY_COLOURS[c.colourIndex]}`}
                 >
                   {c.entry ? (
                     <span className="text-slate-300">
@@ -157,7 +157,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               ))}
 
               {/* RTA */}
-              <td className="px-1.5 py-1 tabular-nums sm:px-2 sm:py-1.5">
+              <td className="px-1.5 py-0.5 tabular-nums sm:px-2 sm:py-1.5">
                 {row.rta ? (
                   <span className="text-slate-300">
                     { formatTime(row.rta) }

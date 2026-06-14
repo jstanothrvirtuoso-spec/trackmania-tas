@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image";
+// import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
@@ -54,7 +54,7 @@ export default function TmnfHistory() {
       </div>
 
       {/* TMNF side panel */}
-      <div className="hidden xl:block fixed left-0 top-0 bottom-50 w-full -z-5 overflow-hidden opacity-30">
+      {/* <div className="hidden xl:block fixed left-0 top-0 bottom-50 w-full -z-5 overflow-hidden opacity-30">
         <Image
           src="/wallpapers/tmnf-stats-side.png"
           alt=""
@@ -62,7 +62,7 @@ export default function TmnfHistory() {
           className="object-contain object-left"
           priority
         />
-      </div>
+      </div> */}
         
       <div className="flex flex-col justify-center items-center pt-20 pb-5 xl:flex-row xl:items-start">
         
