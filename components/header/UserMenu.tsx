@@ -49,12 +49,12 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
         onClick={userMenu.toggle}
         className={`
           flex items-center gap-3 rounded-full border border-cyan-400/20 
-          bg-slate-950/90 px-4 py-0.5 text-sm text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.18)] 
+          bg-slate-950/90 px-3 py-0.5 text-sm text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.18)] 
           transition duration-200 hover:border-cyan-300/50 hover:bg-slate-900/95 ${CURSOR}`}
         aria-label="User menu"
       >
         <div 
-          className="h-6 w-6 rounded-full p-0.5 text-black flex items-center justify-center border border-cyan-400/20 shadow-[0_0_16px_rgba(34,211,238,0.24)]"
+          className="h-6 w-6 rounded-full text-black flex items-center justify-center border border-cyan-400/20 shadow-[0_0_16px_rgba(34,211,238,0.24)]"
           style={{ backgroundColor: PROFILE_COLOURS[profilePublicMe.colour] ?? PROFILE_COLOURS[0] }}
         >
           <Image

@@ -5,7 +5,7 @@ import { GraphCategory, ProgressionGraphPoint } from "./TracksPage";
 
 const WIDTH = 720;
 const HEIGHT = 405;
-const PADDING_X = 35;
+const PADDING_X = 40;
 const PADDING_Y = 20;
 const INITIAL_VISIBLE = Object.fromEntries(
   GRAPH_CATEGORIES.map(c => [c, true])
@@ -32,6 +32,9 @@ function generateYAxisTicks(min: number, max: number) {
     niceStep = 10;
   }
   niceStep *= magnitude;
+  if (max > 100) {
+    niceStep = Math.max(0.1, niceStep)
+  }
 
   const tickMin = Math.floor(min / niceStep) * niceStep;
   const tickMax = Math.ceil(max / niceStep) * niceStep;
@@ -41,7 +44,7 @@ function generateYAxisTicks(min: number, max: number) {
     ticks.push(t);
   }
 
-  return ticks.map((t) => Math.round(t * 1e6) / 1e6);
+  return { step: niceStep, yTicks: ticks.map((t) => Math.round(t * 1e6) / 1e6) };
 }
 
 export function RecordProgressionGraph({ progression, useMinutes, isStunt, currentRecord, minDate, maxDate }: {
@@ -73,8 +76,8 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   const paddingSeconds = Math.max((rawMaxTime - rawMinTime) * 0.08, Math.max(0.001 * rawMinTime, 0.025));
   const minTime = forceZeroY ? 0 : Math.max(0, rawMinTime - paddingSeconds);
   const maxTime = rawMaxTime + paddingSeconds;
-  const yTicks = generateYAxisTicks(minTime, maxTime);
-  const yTickDecimals = maxTime - minTime <= 0.5 ? 2 : maxTime - minTime <= 5 ? 1 : 0
+  const { step, yTicks } = generateYAxisTicks(minTime, maxTime);
+  const yTickDecimals = step < 0.1 ? 2 : step < 1 ? 1 : 0
 
   const xScale = (date: string) => {
     const t = new Date(date).getTime();
