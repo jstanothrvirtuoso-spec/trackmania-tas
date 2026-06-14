@@ -43,11 +43,10 @@ export function HallOfFame() {
               className="flex justify-between items-center border border-white/10 bg-white/5 rounded-md px-3 py-2 hover:bg-white/10 transition gap-3"
             >
               <span
-                className={`font-[OktaNeue] tracking-wide translate-y-[-2px] ${
-                  HIGHLIGHTED.has(title)
-                    ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]"
-                    : "text-white"
+                className={`tracking-wide translate-y-[-2px] ${
+                  HIGHLIGHTED.has(title) ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]" : "text-white"
                 }`}
+                style={{ fontFamily: "OktaNeue" }}
               >
                 {title}
               </span>
@@ -61,5 +60,3 @@ export function HallOfFame() {
     </div>
   )
 }
-
-

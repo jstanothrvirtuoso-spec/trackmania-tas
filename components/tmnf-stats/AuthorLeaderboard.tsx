@@ -4,6 +4,7 @@ import { OVERRIDE } from "@/utils/constants";
 import { RtaEntry, TasEntry } from "@/utils/typing";
 import { generateGraphColours } from "@/utils/common";
 import { trackList } from "@/lib/TrackList";
+import { DropSelect } from "@/components/DropSelect";
 
 type GraphType = "TASes" | "Contributions" | "TimeSaved"
 
@@ -17,6 +18,7 @@ const PADDING_T = 10;
 const PADDING_B = 35;
 const NUM_AUTHORS = 6;
 const COLOURS = generateGraphColours(NUM_AUTHORS);
+const GRAPH_TYPES = {"TASes": "TASes", "Contributions": "Contributions", "TimeSaved": "Time Saved (sec)"}
 
 export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords, authors } : { 
   bestRtaByTrack: Map<string, RtaEntry>,
@@ -201,15 +203,14 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
           WR History
         </h2>
 
-        <select
-          value={graphType}
-          onChange={(e) => setGraphType(e.target.value as GraphType)}
-          className="text-[13px] bg-slate-800 text-slate-300 border border-slate-700 rounded px-2 py-1 cursor-pointer"
-        >
-          <option value="TASes">TASes</option>
-          <option value="Contributions">Contributions</option>
-          <option value="TimeSaved">Time Saved (sec)</option>
-        </select>
+        <DropSelect
+          initialValue={graphType}
+          options={Object.entries(GRAPH_TYPES).map(([value, label]) => ({
+            value: value,
+            label: label,
+          }))}
+          onChange={(value) => setGraphType(value as GraphType)}
+        />
       </div>
 
       <div className="w-full aspect-[16/9]">
@@ -393,6 +394,18 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
             );
           })}
 
+          {/* <DropSelect
+            initialValue={extraAuthor}
+            options={extraAuthorOptions
+              .filter((a) => !topAuthors.includes(a))
+              .map((author) => ({
+                value: author,
+                label: `${author} (Max: ${Math.round((authorMax.get(author) ?? 0) * 100) / 100})`,
+              }))
+            }
+            onChange={(value) => setExtraAuthorRaw(value)}
+            defaultOption={{ value: "", label: "Add author..." }}
+          /> */}
           <select
             value={extraAuthor}
             onMouseEnter={() => setHoverAuthor(extraAuthor)}

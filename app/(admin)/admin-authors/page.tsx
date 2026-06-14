@@ -5,15 +5,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { AuthorInfo } from "@/utils/typing";
 import { useAlert } from "@/components/AlertProvider";
+import { useConfirm } from "@/components/ConfirmProvider";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import AuthorSelector from "@/components/AuthorSelector";
+import { DropSelect } from "@/components/DropSelect";
 
 const supabase = createClient();
 
 export default function AdminAuthors() {
 
   const { showAlert } = useAlert();
+  const confirm = useConfirm();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [existingAuthor, setExistingAuthor] = useState<AuthorInfo>({id: "", author: "", profile_id: ""});
@@ -86,7 +89,7 @@ export default function AdminAuthors() {
         return
       };
 
-      const confirmed = window.confirm(`
+      const confirmed = await confirm(`
         Are you sure you want to delete ${existingAuthor.author}?
         This cannot be undone!`
       );
@@ -173,22 +176,15 @@ export default function AdminAuthors() {
 
             {/* EXISTING AUTHOR */}
             <div className="mb-3 flex flex-row gap-2">
-              <select
-                value={existingAuthor.author}
-                onChange={(e) => e.target.value ? setExistingAuthor(authorOptions[e.target.value].data) : setExistingAuthor({id: "", author: "", profile_id: ""})}
-                className="rounded-md border border-slate-700 bg-slate-800 pl-2 pr-6 py-2 text-sm text-slate-100 focus:border-slate-500 focus:outline-none cursor-pointer"
-              >
-                  <option value="">Select Author</option>
-                {Object.entries(authorOptions).map(([author, info]) => (
-                  <option
-                    key={info.data.id}
-                    value={author}
-                    className={author === existingAuthor.author ? "italic text-red-400" : ""}
-                  >
-                    {author} ({info.count})
-                  </option>
-                ))}
-              </select>
+              <DropSelect
+                initialValue={existingAuthor.author}
+                options={Object.entries(authorOptions).map(([author]) => ({
+                  value: author,
+                  label: author,
+                }))}
+                onChange={(value) => value ? setExistingAuthor(authorOptions[value].data) : setExistingAuthor({id: "", author: "", profile_id: ""})}
+                defaultOption={{ value: "", label: "Select Author" }}
+              />
             </div>
 
             {/* DELETE */}

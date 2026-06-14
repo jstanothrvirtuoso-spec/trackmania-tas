@@ -8,10 +8,12 @@ import { CATEGORIES, GAME_LIST } from "@/utils/constants";
 import { SubmitForm, TimeState, Game, Category, TasEntry } from "@/utils/typing";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { useAlert } from "@/components/AlertProvider";
+import { useConfirm } from "@/components/ConfirmProvider";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { usePendingSubmissions } from "@/lib/TasSubmissions";
 import { trackList, tracksByGame } from "@/lib/TrackList";
+import { DropSelect } from "@/components/DropSelect";
 import AuthorSelector from "@/components/AuthorSelector";
 import TrackRecords from "./TrackRecords";
 import PendingRecords from "./PendingRecords";
@@ -42,6 +44,7 @@ const URL_FIELDS = [
 export default function AdminTas() {
 
   const { showAlert } = useAlert();
+  const confirm = useConfirm();
   const queryClient = useQueryClient();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
@@ -254,7 +257,7 @@ export default function AdminTas() {
 
     setLoading(true);
     try {
-      const confirmed = window.confirm(`
+      const confirmed = await confirm(`
         Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
           Time (ms): ${t.time_ms}
           Formatted Time: ${formatTime(t.time_ms, trackList[t.track].category === "Stunt", t.game === "TM2")}\n
@@ -408,52 +411,44 @@ export default function AdminTas() {
             {/* GAME */}
             <div>
               <div className={labelClass}>Game</div>
-              <select
-                value={form.game}
-                onChange={(e) => update("game", e.target.value as Game)}
-                className={`cursor-pointer ${inputClass}`}
-              >
-                {GAME_LIST.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
+              <DropSelect
+                initialValue={form.game}
+                options={GAME_LIST.map((game) => ({
+                  value: game,
+                  label: game,
+                }))}
+                onChange={(value) => update("game", value as Game)}
+                fullWidth={true}
+              />
             </div>
 
             {/* TRACK */}
             <div>
               <div className={labelClass}>Track</div>
-              <select
-                value={form.track}
-                onChange={(e) => update("track", e.target.value)}
-                className={`cursor-pointer ${inputClass}`}
-              >
-                <option value="">Select track</option>
-                {trackOptions.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+              <DropSelect
+                initialValue={form.track}
+                options={trackOptions.map((track) => ({
+                  value: track,
+                  label: track,
+                }))}
+                onChange={(value) => update("track", value)}
+                defaultOption={{ value: "", label: "Select Track" }}
+                fullWidth={true}
+              />
             </div>
 
             {/* CATEGORY */}
             <div>
               <div className={labelClass}>Category</div>
-              <select
-                value={form.category}
-                onChange={(e) =>
-                  update("category", e.target.value as Category)
-                }
-                className={`cursor-pointer ${inputClass}`}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+              <DropSelect
+                initialValue={form.category}
+                options={CATEGORIES.map((category) => ({
+                  value: category,
+                  label: category,
+                }))}
+                onChange={(value) => update("category", value as Category)}
+                fullWidth={true}
+              />
             </div>
 
             {/* TIME */}

@@ -17,7 +17,7 @@ export const CURSOR = "cursor-[url('/cursor.png')_0_0,_auto]";
 
 export const GAME_LIST = ["TMNF", "TMNF No Cut", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "TM2"] as const;
 
-export const ENVIRONMENT = ["All", "Stadium", "Island", "Desert", "Rally", "Bay", "Coast", "Snow", "Canyon", "Stadium²", "Valley", "Lagoon"] as const;
+export const ENVIRONMENT = ["Stadium", "Island", "Desert", "Rally", "Bay", "Coast", "Snow", "Canyon", "Stadium²", "Valley", "Lagoon"] as const;
 
 export const CATEGORIES = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "Low Input"] as const;
 export const CATEGORY_ORDER = Object.fromEntries(CATEGORIES.map((c, i) => [c, i]));

@@ -22,7 +22,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   
   const [selectedAuthor, setSelectedAuthor] = useState<string>("All Authors");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
-  const [selectedEnvironment, setSelectedEnvironment] = useState<Environment>("All");
+  const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | "All Envs">("All Envs");
   const allowedCategories = CATEGORY_FILTERS[selectedCategory]
 
   const { data: profilePrivate, isLoading } = useProfilePrivate();
@@ -88,7 +88,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   const filteredRows = useMemo(() => {
     return currentRecords.filter((row) => {
       const matchesAuthor = !selectedAuthorCheck || selectedAuthorCheck === "All Authors" || row.tas?.authors.includes(selectedAuthorCheck)
-      const matchesEnvironment = selectedEnvironment === "All" || row.trackInfo.environment === selectedEnvironment
+      const matchesEnvironment = selectedEnvironment === "All Envs" || row.trackInfo.environment === selectedEnvironment
       return matchesEnvironment && matchesAuthor;
     })
   }, [currentRecords, selectedAuthorCheck, selectedEnvironment]);

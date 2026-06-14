@@ -6,6 +6,7 @@ import { Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useAuthors } from "@/lib/Authors";
+import { DropSelect } from "@/components/DropSelect";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import TotalTimeSaved from "@/components/tmnf-stats/TotalTimeSaved"
 import PercentSavedTmnf from "@/components/tmnf-stats/PercentSavedTmnf";
@@ -73,17 +74,14 @@ export default function TmnfHistory() {
         <div className="flex flex-col flex-1 items-center gap-3 px-2 max-w-180 py-3">
 
           <div className="flex w-full justify-end">
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as Category)}
-              className="rounded bg-slate-800 px-2 py-1 text-sm cursor-pointer"
-            >
-              {CATEGORIES.filter((r) => (r != "Low Input")).map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+            <DropSelect
+              initialValue={category}
+              options={CATEGORIES.filter((r) => (r != "Low Input")).map((category) => ({
+                value: category,
+                label: category,
+              }))}
+              onChange={(value) => setCategory(value as Category)}
+            />
           </div>
           
           {authors.length > 0 && bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (

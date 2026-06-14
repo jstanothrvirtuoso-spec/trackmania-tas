@@ -4,6 +4,7 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { STALE_TIME } from "@/utils/constants";
 import { AlertProvider } from "@/components/AlertProvider";
+import { ConfirmProvider } from "@/components/ConfirmProvider";
 
 export default function Providers({
   children,
@@ -24,7 +25,9 @@ export default function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AlertProvider>{children}</AlertProvider>
+      <ConfirmProvider>
+        <AlertProvider>{children}</AlertProvider>
+      </ConfirmProvider>
     </QueryClientProvider>
   );
 }

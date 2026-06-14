@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { TasEntry, Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
 import { trackList } from "@/lib/TrackList";
+import { DropSelect } from "@/components/DropSelect";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 
@@ -94,17 +95,14 @@ export default function PercentSavedLeaderboard() {
   return (
     <div className="flex flex-col">
       <div className="flex justify-end py-2">
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value as Category)}
-          className="rounded bg-slate-800 px-2 py-1 text-sm"
-        >
-          {CATEGORIES.filter((r) => (r != "Low Input")).map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+        <DropSelect
+          initialValue={category}
+          options={CATEGORIES.filter((c) => (c != "Low Input")).map((category) => ({
+            value: category,
+            label: category,
+          }))}
+          onChange={(value) => setCategory(value as Category)}
+        />
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">

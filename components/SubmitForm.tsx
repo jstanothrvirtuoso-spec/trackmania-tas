@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { TimeState, Category } from "@/utils/typing";
 import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constants";
+import { DropSelect } from "@/components/DropSelect";
 import { useAlert } from "@/components/AlertProvider";
 import AuthorSelector from "@/components/AuthorSelector";
 import { trackIds } from "@/lib/TrackId";
@@ -397,18 +398,16 @@ export default function SubmitForm() {
                   </div>
                 </div>
               </div>
-              <select
-                value={form.category}
-                onChange={(e) => update("category", e.target.value as Category)}
-                className={`${inputClass} cursor-pointer`}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-                <option value="Unsure">Unsure</option>
-              </select>
+              
+              <DropSelect
+                initialValue={form.category}
+                options={[...CATEGORIES, "Unsure"].map((category) => ({
+                  value: category,
+                  label: category,
+                }))}
+                onChange={(value) => update("category", value as Category | "Unsure")}
+                fullWidth={true}
+              />
             </div>
 
             {/* NOTES */}

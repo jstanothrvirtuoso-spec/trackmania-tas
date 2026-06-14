@@ -9,6 +9,7 @@ import { useTasRecords } from "@/lib/TasRecords";
 import { RecordProgressionGraph } from "./ProgressionGraph";
 import { useRtaRecords } from "@/lib/RtaRecords";
 import { trackList, tracksByGame } from "@/lib/TrackList";
+import { DropSelect } from "@/components/DropSelect";
 import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
 
 export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
@@ -163,33 +164,23 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
       {/* Options */}
       <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
-        <select
-          value={game}
-          onChange={(e) => {
-            updateGame(e.target.value as Game)
-          }}
-          className="w-40 rounded-md bg-slate-800 px-3 py-2"
-        >
-          {GAME_LIST.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={track}
-          onChange={(e) => { 
-            updateTrack(e.target.value)
-          }}
-          className="min-w-60 rounded-md bg-slate-800 px-3 py-2"
-        >
-          {trackOptions.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
+        <DropSelect
+          initialValue={game}
+          options={GAME_LIST.map((game) => ({
+            value: game,
+            label: game,
+          }))}
+          onChange={(value) => updateGame(value as Game)}
+        />
+        
+        <DropSelect
+          initialValue={track}
+          options={trackOptions.map((track) => ({
+            value: track,
+            label: track,
+          }))}
+          onChange={(value) => updateTrack(value)}
+        />
       </div>
 
       {/* Title/RTA */}

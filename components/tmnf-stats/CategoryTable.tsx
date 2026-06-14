@@ -97,8 +97,8 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
   return (
     <div className="mx-2 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60 text-center">
       <table className="w-full text-xs">
-        <thead className="bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] transition whitespace-nowrap text-[8px] sm:text-sm">
-          <tr className="">
+        <thead className="bg-slate-800/20 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] transition whitespace-nowrap text-[8px] sm:text-sm">
+          <tr>
             <th className="px-1 py-1.5 sm:px-3">
               Track
             </th>
@@ -117,13 +117,17 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               RTA
             </th>
           </tr>
+          <tr>
+            <th colSpan={7} className="border border-slate-400"/>
+          </tr>
+
         </thead>
 
-        <tbody className="divide-y divide-slate-800/60 text-[9px] sm:text-xs">
+        <tbody className="divide-y divide-slate-800/30 text-[9px] sm:text-xs">
           {rows.map((row) => (
             <tr
               key={row.track}
-              className="hover:bg-emerald-800/40 transition-colors odd:bg-slate-800/10"
+              className="hover:bg-emerald-800/40 transition-colors odd:bg-slate-800/90"
             >
               {/* Track */}
               <td className="bg-purple-800/5">

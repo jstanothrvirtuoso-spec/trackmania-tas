@@ -14,7 +14,7 @@ const SHORT_GAMES = {
   "TMO": "TMO",
   "Demo/Beta": "Demo",
   "TM2": "TM²",
-}
+};
 
 const SHORT_ENVIRONMENTS = {
   "Stadium": "Stad.", 
@@ -28,7 +28,7 @@ const SHORT_ENVIRONMENTS = {
   "Stadium²": "Stad²", 
   "Valley": "Valley", 
   "Lagoon": "Lagoon"
-}
+};
 
 export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
 
@@ -163,25 +163,19 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
   );
 }
 
-export function AuthorEnvironmentChart({ rows }: { rows: RecordRow[];}) {
+export function AuthorEnvironmentChart({ rows }: { rows: RecordRow[] }) {
 
   const environmentCounts = useMemo(() => {
     const counts = new Map<string, number>();
 
     rows.forEach((row) => {
       const env = row.trackInfo.environment;
-
-      if (!env || env === "All") return;
-
+      if (!env) return;
       counts.set(env, (counts.get(env) || 0) + 1);
     });
 
     return ENVIRONMENT
-      .filter((env) => env !== "All")
-      .map((env) => [
-        env,
-        counts.get(env) || 0,
-      ] as const)
+      .map((env) => [env, counts.get(env) || 0] as const)
       .filter(([, count]) => count > 0);
   }, [rows]);
 
