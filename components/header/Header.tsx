@@ -5,7 +5,7 @@ import { FaDiscord } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useProfilePublicMe } from "@/lib/Profiles";
-import { GAME_SLUGS } from "@/utils/constants"
+import { GAME_SLUGS, CURSOR } from "@/utils/constants"
 import { UserMenu } from "./UserMenu";
 import { MainMenu } from "./MainMenu";
 
@@ -127,11 +127,29 @@ export default function Header() {
           <div className="flex justify-end items-center gap-2 whitespace-nowrap">
             
             {/* USER MENU */}
-            {!isLoading && profilePublicMe?.display_name && (
+            {!isLoading && profilePublicMe?.display_name ? (
               <UserMenu 
                 isTouch={isTouch}
                 profilePublicMe={profilePublicMe}
               />
+            ) : (
+              <Link
+                href="/login"
+                className={`
+                  flex items-center gap-3 rounded-full border border-cyan-400/20 cursor-pointer
+                  bg-slate-800/90 px-3 py-0.5 text-sm text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.18)] 
+                  transition duration-200 hover:border-cyan-300/50 hover:bg-slate-900/95
+                `}
+                aria-label="Login"
+              >
+                <div className="h-6 w-6 rounded-full text-black flex items-center justify-center border border-cyan-400/20 shadow-[0_0_16px_rgba(34,211,238,0.24)] bg-slate-700">
+                  <span className="text-[12px] font-semibold text-cyan-100">↪</span>
+                </div>
+
+                <div className="flex flex-col items-start leading-tight py-2">
+                  <span className="text-[15px] font-semibold text-slate-100">Login</span>
+                </div>
+              </Link>
             )}
 
             {/* DISCORD */}

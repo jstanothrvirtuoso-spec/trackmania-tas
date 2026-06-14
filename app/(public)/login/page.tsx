@@ -110,6 +110,29 @@ export default function LoginPage() {
     }
   }
 
+  async function sendResetPassword() {
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      if (!email) {
+        setErrorMessage("Enter your email to reset your password");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      showAlert("If an account exists for that email, a password reset link has been sent.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <div className="w-full max-w-sm rounded-3xl border border-slate-800 bg-slate-900/80 p-7 shadow-2xl backdrop-blur">
@@ -137,15 +160,20 @@ export default function LoginPage() {
             placeholder="Password"
             className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
           />
-
           {mode === "signup" && (
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm password"
-              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
-            />
+            <>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm password"
+                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-slate-500 focus:outline-none"
+              />
+
+              <div className="text-sm text-slate-400">
+                Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a symbol.
+              </div>
+            </>
           )}
 
           {errorMessage && (
@@ -169,6 +197,17 @@ export default function LoginPage() {
           >
             {mode === "login" ? "Create new account" : "Already have an account?"}
           </button>
+
+          {mode === "login" && (
+            <button
+              onClick={sendResetPassword}
+              disabled={loading}
+              className="w-full cursor-pointer text-sm text-red-400 hover:text-red-300"
+            >
+              Forgot password?
+            </button>
+          )}
+
         </div>
       </div>
       

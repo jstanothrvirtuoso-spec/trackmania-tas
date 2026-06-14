@@ -28,6 +28,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   }, [rtaRecords]);
 
   const [selectedAuthor, setSelectedAuthor] = useState<string>(initialAuthor);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
   const authorOptions = useMemo(() => {
     const authorCount: Record<string, number> = {};
@@ -103,10 +104,20 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
 
   const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
+  const filteredRows = useMemo(() => {
+    if (!selectedYear) return visibleRows;
+    return visibleRows.filter((row) => row.tas && new Date(row.tas.date).getFullYear() === selectedYear);
+  }, [selectedYear, visibleRows]);
+
   function updateAuthor(author: string) {
     setSelectedAuthor(author)
+    setSelectedYear(null);
     router.replace(`/authors?${new URLSearchParams({author: author})}`);
   };
+
+  function updateYear(year: number | null) {
+    setSelectedYear(year);
+  }
 
   return (
     <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-20 pb-8 text-slate-100">
@@ -174,13 +185,13 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
                   </th>
 
                   <th className="px-2 py-1.5 font-normal hidden sm:table-cell">
-                    Saved
+                    Diff
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {visibleRows.map((row, index) => {
+                {filteredRows.map((row, index) => {
                   if (!row.tas) return null;
                   const isStunt = row.trackInfo.category === "Stunt"
                   const tasGame = row.tas.game === "TMNF" && row.tas.category === "No Cut" ? "TMNF No Cut" : row.tas.game
@@ -227,9 +238,13 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
 
           {/* Stats charts */}
           <div className="flex flex-col items-center gap-4 lg:items-start">
-            <AuthorYearChart rows={visibleRows} />
-            <AuthorGameChart rows={visibleRows} />
-            <AuthorEnvironmentChart rows={visibleRows} />
+            <AuthorYearChart
+              rows={visibleRows}
+              selectedYear={selectedYear}
+              onSelectYear={updateYear}
+            />
+            <AuthorGameChart rows={filteredRows} />
+            <AuthorEnvironmentChart rows={filteredRows} />
           </div>
         </div>
       )}

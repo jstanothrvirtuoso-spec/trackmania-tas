@@ -30,7 +30,11 @@ const SHORT_ENVIRONMENTS = {
   "Lagoon": "Lagoon"
 };
 
-export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
+export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
+  rows: RecordRow[]; 
+  selectedYear: number | null; 
+  onSelectYear: (year: number | null) => void 
+}) {
 
   const yearlyCounts = useMemo(() => {
     const counts = new Map<number, number>();
@@ -68,6 +72,7 @@ export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
       <div className="flex items-end justify-center gap-2 h-40">
         {yearlyCounts.map(([year, count]) => {
           const height = (count / maxCount) * 120;
+          const isSelected = selectedYear === year;
 
           return (
             <div
@@ -78,8 +83,10 @@ export function AuthorYearChart({ rows }: { rows: RecordRow[] }) {
                 {count}
               </div>
 
-              <div
-                className="w-10 rounded-t bg-violet-400/70 hover:bg-violet-300 transition"
+              <button
+                type="button"
+                onClick={() => onSelectYear(isSelected ? null : year)}
+                className={`w-10 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-violet-300 ring-2 ring-violet-400" : "bg-violet-400/70 hover:bg-violet-300"}`}
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
 import { SortOrder, Game, RecordRow, Category } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting";
@@ -21,7 +22,7 @@ const HEADER_BASE = "px-2 py-1 bg-slate-900/90 tracking-[0.18em] uppercase trans
 const HEADER_CLICKABLE = `${HEADER_BASE} border-y border-slate-800 font-normal cursor-pointer hover:text-slate-300`;
 const HEADER_STATIC = `${HEADER_BASE} border border-slate-800 font-normal`;
 const HEADER_ROW = "flex items-center justify-center gap-1";
-const BODY_BASE = "text-slate-100 border-b border-slate-800 group-hover:bg-emerald-400/20 transition-colors";
+const BODY_BASE = "border-b border-slate-800 group-hover:bg-emerald-400/20 transition-colors";
 
 function classNames(...classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -208,7 +209,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               <td className={rowCommon(classNames("px-1", "border-l", isLastRow ? "rounded-bl-lg" : ""))}>
                 <EnvironmentIcon environment={row.trackInfo.environment} />
               </td>
-              <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap")}> 
+              <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap text-slate-100")}> 
                 {tmxLink ? (
                   <a href={tmxLink} target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition">
                     {row.track}
@@ -220,32 +221,54 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
 
               {lowInputCategory ? (
                 <>
-                  <td className={rowCommon("px-1.5 border-l")}>{entry?.num_inputs ?? "-"}</td>
-                  <td className={rowCommon("px-3 py-1")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-1.5 border-l text-slate-100")}>{entry?.num_inputs ?? "-"}</td>
+                  <td className={rowCommon("px-3 py-1 text-slate-100")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
                 </>
               ) : (
                 <>
-                  <td className={rowCommon("px-1.5 border-l")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
-                  <td
-                    className={classNames(BODY_BASE, "px-1.5 py-1 border-slate-800 italic", bgColour,
-                      entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt)) ? "text-red-300" : "text-slate-100"
-                    )}
-                    style={{
-                      fontFamily: "DOSVGA, monospace",
-                      letterSpacing: "0.05em",
-                      textShadow: `0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)`,
-                    }}
-                  >
-                    {entry && row.rta ? `${formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)}s` : "-"}
-                  </td>
-                  <td className={rowCommon("px-1.5")}>{entry && row.rta ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt) : "-"}</td>
+                  <td className={rowCommon("px-1.5 border-l text-slate-100")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
+                  {(() => {
+                    const isBadDiff = entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt));
+                    const isEqual = entry && row.rta && entry.time_ms === row.rta.time_ms;
+                    return (
+                      <td
+                        className={classNames(BODY_BASE, "px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-100")}
+                        style={{
+                          fontFamily: "DOSVGA, monospace",
+                          letterSpacing: "0.05em",
+                          textShadow: isBadDiff
+                            ? "0 0 4px #000000, 0 0 10px #000000, 0 0 18px rgba(248, 113, 113, 0.55), 1px 1px 0 rgba(248, 113, 113, 0.35)"
+                            : "0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)",
+                        }}
+                      >
+                        {entry && row.rta ? `${formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)}` : "-"}
+                      </td>
+                    );
+                  })()}
+                  <td className={rowCommon("px-1.5 text-slate-100")}>{entry && row.rta ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt) : "-"}</td>
                 </>
               )}
 
-              <td className={rowCommon("px-1.5 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal")}>{entry ? entry.authors.join(", ") : "-"}</td>
-              <td className={rowCommon("px-3 border-l whitespace-nowrap")}>{entry ? formatDate(entry.date) : "-"}</td>
-              <td className={rowCommon("px-3 whitespace-nowrap")}>{entry ? entry.category : "-"}</td>
-              <td className={rowCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""))}>
+              <td className={rowCommon("px-1.5 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal text-slate-100")}>
+                {entry ? (
+                  <div className="flex flex-wrap items-center justify-center gap-1">
+                    {entry.authors.map((author, i) => (
+                      <span key={`${author}-${i}`} className="whitespace-nowrap">
+                        <Link
+                          href={`/authors?author=${encodeURIComponent(author)}`}
+                          className="hover:text-emerald-500 whitespace-nowrap transition"
+                        >
+                          {author}
+                        </Link>
+                        {i < entry.authors.length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                  </div>
+                ) : "-"}
+              </td>
+              <td className={rowCommon("px-3 border-l whitespace-nowrap text-slate-100")}>{entry ? formatDate(entry.date) : "-"}</td>
+              <td className={rowCommon("px-3 whitespace-nowrap text-slate-100")}>{entry ? entry.category : "-"}</td>
+              <td className={rowCommon(classNames("px-2 border-x text-slate-100", isLastRow ? "rounded-br-lg" : ""))}>
                 {entry ? (
                   <div className="flex items-center justify-center gap-1">
                     <div className="w-5 h-5 flex items-center justify-center">{entry.video && <VideoIcon video_url={entry.video} />}</div>
@@ -261,9 +284,9 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {showRta && (
                 <>
                   <td className="pl-3" />
-                  <td className={rowCommon(classNames("px-2 border-l", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}</td>
-                  <td className={rowCommon("px-2 border-l whitespace-nowrap", rtaColour)}>{row.rta?.player ?? "-"}</td>
-                  <td className={rowCommon("px-2 border-l whitespace-nowrap", rtaColour)}>{row.rta ? formatDate(row.rta.date) : "-"}</td>
+                  <td className={rowCommon(classNames("px-2 border-l text-slate-100", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-2 border-l whitespace-nowrap text-slate-100", rtaColour)}>{row.rta?.player ?? "-"}</td>
+                  <td className={rowCommon("px-2 border-l whitespace-nowrap text-slate-100", rtaColour)}>{row.rta ? formatDate(row.rta.date) : "-"}</td>
                   <td className={rowCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""), rtaColour)}>
                     {row.rta ? (
                       <div className="flex items-center justify-center gap-1">

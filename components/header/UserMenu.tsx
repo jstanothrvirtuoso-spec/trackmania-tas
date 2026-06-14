@@ -144,7 +144,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
 
           <button
             onClick={signOut}
-            className="rounded-xl px-3 py-2 text-sm text-rose-300 hover:bg-rose-500/10 transition text-left"
+            className="rounded-xl px-3 py-2 text-sm text-rose-300 hover:bg-rose-500/10 transition text-left cursor-pointer"
           >
             Logout
           </button>
