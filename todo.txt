@@ -29,10 +29,14 @@ Go through PageSpeed efficiency and security issues
 Overall:
 Reworking the design/placement/looking in the Main page (as well for others pages maybe) (mostly when the final main page will be done by Virtuoso)
 Adding a glowing and slighty bouncy text "New" when a new TAS has been added
-And others cool features/project ;>
+
+Profile Edit :
+- 360 Wheel to change the color of the background PFP (when saving it doesn't work)
+- Options to change colors of : Top/Bottom bar... the main card (not just pure white, with some gradiant effect ? from TOP to BOTTOM)
+- The possibilty to change color of the text Bio,Name
+
 
 Game tables:
  - Fix table colours/alternating colours/colours based on category (add colour to TrackLists)
  - Add separation between certain categories
 
-Make the highlight page beautiful

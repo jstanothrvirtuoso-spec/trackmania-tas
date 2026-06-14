@@ -2,15 +2,17 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
 import { Role } from "@/utils/typing";
-import { PROFILE_AVATARS, PROFILE_BANNERS, PROFILE_COLOURS } from "@/utils/constants";
+import {
+  PROFILE_AVATARS,
+  PROFILE_BANNERS,
+  PROFILE_COLOURS,
+} from "@/utils/constants";
 
 const ROLE_TEXT: Record<Role, string> = {
   user: "Verified TASer",
   moderator: "Moderator",
   admin: "Admin",
 };
-
-
 
 export default function ProfileCard({
   profile,
@@ -19,313 +21,272 @@ export default function ProfileCard({
   profile: ProfilePublic;
   onEditClick?: () => void;
 }) {
+
+
+const handleMouseLeave = () => {
+  target.current.x = 0.5;
+  target.current.y = 0.5;
+};
+  const target = useRef({ x: 0.5, y: 0.5 });
+  const current = useRef({ x: 0.5, y: 0.5 });
+
+const velocity = useRef({ x: 0, y: 0 });
+const rainbowRef = useRef<HTMLDivElement>(null);
+const beamRef = useRef<HTMLDivElement>(null);
+
+  const parallaxRef = useRef<HTMLDivElement>(null);
   const shineRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
-  const rafRef = useRef<number | null>(null);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<any[]>([]);
+  const rafRef = useRef<number | null>(null);
   const rafParticles = useRef<number | null>(null);
 
-const wallsRef = useRef<any[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particlesRef = useRef<any[]>([]); // FIX: use real ref
+
   const bannerRef = useRef<HTMLDivElement>(null);
   const topBarRef = useRef<HTMLDivElement>(null);
-const bottomBarRef = useRef<HTMLDivElement>(null);
-const bannerRectRef = useRef<DOMRect | null>(null);
+  const bottomBarRef = useRef<HTMLDivElement>(null);
 
   const avatar = PROFILE_AVATARS[profile.avatar] ?? PROFILE_AVATARS[0];
-  const banner = PROFILE_BANNERS[profile.banner] ?? PROFILE_BANNERS[0];
+  const banner =
+    PROFILE_BANNERS[profile.banner] ?? PROFILE_BANNERS[0];
   const avatar_colour =
     PROFILE_COLOURS[profile.colour] ?? PROFILE_COLOURS[0];
 
   /* =========================
-     PARTICLE SYSTEM
+     PARTICLES (FIXED)
   ========================= */
-
-  const getLocalBannerRect = () => {
-  const banner = bannerRef.current;
-  const card = cardRef.current;
-  if (!banner || !card) return null;
-
-  const b = banner.getBoundingClientRect();
-  const c = card.getBoundingClientRect();
-
-  return {
-    left: b.left - c.left,
-    right: b.right - c.left,
-    top: b.top - c.top,
-    bottom: b.bottom - c.top,
-  };
-};
-
   useEffect(() => {
-  const canvas = canvasRef.current;
-  const card = cardRef.current;
-  if (!canvas || !card) return;
+    const canvas = canvasRef.current;
+    const card = cardRef.current;
+    if (!canvas || !card) return;
 
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-  const particlesRef = { current: [] as any[] };
+    const isInside = (x: number, y: number, w: any) =>
+      w && x > w.left && x < w.right && y > w.top && y < w.bottom;
 
-  const isInsideAnyWall = (x: number, y: number, walls: any[]) => {
-    for (const w of walls) {
-      if (!w) continue;
-      if (x > w.left && x < w.right && y > w.top && y < w.bottom) {
-        return true;
-      }
-    }
-    return false;
-  };
+    const getRect = (el: HTMLElement | null) => {
+      if (!el) return null;
+      const c = card.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
 
-  const getLocalRect = (el: HTMLElement | null) => {
-    const c = card.getBoundingClientRect();
-    if (!el) return null;
-
-    const r = el.getBoundingClientRect();
-
-    const scaleX = canvas.width / c.width;
-    const scaleY = canvas.height / c.height;
-
-    return {
-      left: (r.left - c.left) * scaleX,
-      right: (r.right - c.left) * scaleX,
-      top: (r.top - c.top) * scaleY,
-      bottom: (r.bottom - c.top) * scaleY,
-    };
-  };
-
-  const resize = () => {
-    canvas.width = card.clientWidth;
-    canvas.height = card.clientHeight;
-
-    const walls = [
-      getLocalRect(bannerRef.current),
-      getLocalRect(topBarRef.current),
-      getLocalRect(bottomBarRef.current),
-    ];
-
-    particlesRef.current = Array.from({ length: 18 }).map(() => {
-      const speed = Math.random() * 0.6 + 0.1;
-
-      const padding = 2;
-
-      let x = 0;
-      let y = 0;
-
-      do {
-        x = padding + Math.random() * (canvas.width - padding * 2);
-        y = padding + Math.random() * (canvas.height - padding * 2);
-      } while (isInsideAnyWall(x, y, walls));
+      const sx = canvas.width / c.width;
+      const sy = canvas.height / c.height;
 
       return {
-  x,
-  y,
-  r: Math.random() * 2.8 + 0.6,
+        left: (r.left - c.left) * sx,
+        right: (r.right - c.left) * sx,
+        top: (r.top - c.top) * sy,
+        bottom: (r.bottom - c.top) * sy,
+      };
+    };
 
-  dx: (Math.random() - 0.5) * speed,
-  dy: (Math.random() - 0.5) * speed,
+    const resize = () => {
+      canvas.width = card.clientWidth;
+      canvas.height = card.clientHeight;
 
-  angle: Math.random() * Math.PI * 2,
-  spin: (Math.random() - 0.5) * 0.02,
-  alpha: Math.random() * 0.5 + 0.25,
+      const walls = [
+        getRect(bannerRef.current),
+        getRect(topBarRef.current),
+        getRect(bottomBarRef.current),
+      ];
 
-};
-    });
-  };
+      particlesRef.current = Array.from({ length: 18 }).map(() => {
+        const speed = Math.random() * 0.6 + 0.1;
 
-  const draw = () => {
-    const walls = [
-      getLocalRect(bannerRef.current),
-      getLocalRect(topBarRef.current),
-      getLocalRect(bottomBarRef.current),
-    ];
+        let x = 0,
+          y = 0;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        do {
+          x = Math.random() * canvas.width;
+          y = Math.random() * canvas.height;
+        } while (walls.some((w) => isInside(x, y, w)));
 
-    const time = Date.now() * 0.001;
+        return {
+          x,
+          y,
+          r: Math.random() * 2.8 + 0.6,
+          dx: (Math.random() - 0.5) * speed,
+          dy: (Math.random() - 0.5) * speed,
+          angle: Math.random() * Math.PI * 2,
+          spin: (Math.random() - 0.5) * 0.02,
+          alpha: Math.random() * 0.5 + 0.25,
+        };
+      });
+    };
 
-    for (const p of particlesRef.current) {
-      p.x += p.dx;
-      p.y += p.dy;
+    const draw = () => {
+      const walls = [
+        getRect(bannerRef.current),
+        getRect(topBarRef.current),
+        getRect(bottomBarRef.current),
+      ];
 
-      p.angle += p.spin;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      p.x += Math.cos(p.angle + time) * 0.15;
-      p.y += Math.sin(p.angle + time) * 0.15;
+      const time = Date.now() * 0.001;
 
-      p.x += Math.sin(time + p.y * 0.01) * 0.1;
+      for (const p of particlesRef.current) {
+        p.x += p.dx;
+        p.y += p.dy;
 
-      // wrap edges
-      if (p.x < 0) p.x = canvas.width;
-      if (p.x > canvas.width) p.x = 0;
-      if (p.y < 0) p.y = canvas.height;
-      if (p.y > canvas.height) p.y = 0;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
 
-      // wall collisions
-      for (const w of walls) {
-        if (!w) continue;
-
-        const inX = p.x > w.left && p.x < w.right;
-        const inY = p.y > w.top && p.y < w.bottom;
-
-        if (inX && inY) {
-          const dL = Math.abs(p.x - w.left);
-          const dR = Math.abs(p.x - w.right);
-          const dT = Math.abs(p.y - w.top);
-          const dB = Math.abs(p.y - w.bottom);
-
-          const min = Math.min(dL, dR, dT, dB);
-
-          if (min === dL) {
-            p.x = w.left;
+        for (const w of walls) {
+          if (!w) continue;
+          if (p.x > w.left && p.x < w.right && p.y > w.top && p.y < w.bottom) {
             p.dx *= -1;
-          } else if (min === dR) {
-            p.x = w.right;
-            p.dx *= -1;
-          } else if (min === dT) {
-            p.y = w.top;
-            p.dy *= -1;
-          } else {
-            p.y = w.bottom;
             p.dy *= -1;
           }
         }
+
+        const alpha =
+          p.alpha + Math.sin(time + p.x * 0.01) * 0.15;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,180,220,${Math.max(0, alpha)})`;
+        ctx.fill();
       }
 
-      const alpha =
-        p.alpha + Math.sin(time * 2 + p.x * 0.01) * 0.15;
+      rafParticles.current = requestAnimationFrame(draw);
+    };
 
-      const size =
-        p.r + Math.sin(time + p.y * 0.01) * 0.3;
+    resize();
+    draw();
 
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 60, 60, ${Math.max(0, alpha)})`;
-      ctx.fill();
+    window.addEventListener("resize", resize);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      if (rafParticles.current) cancelAnimationFrame(rafParticles.current);
+    };
+  }, []);
+
+
+
+  
+  /* =========================
+     SMOOTH HOVER (FIXED)
+  ========================= */
+  useEffect(() => {
+  let raf: number;
+  let alive = true;
+
+  const animate = () => {
+    if (!alive) return;
+
+    current.current.x += (target.current.x - current.current.x) * 0.12;
+    current.current.y += (target.current.y - current.current.y) * 0.12;
+
+    const x = current.current.x;
+    const y = current.current.y;
+
+    const intensityX = x - 0.5;
+    const intensityY = y - 0.5;
+
+    const strength = Math.min(
+      1,
+      Math.sqrt(intensityX * intensityX + intensityY * intensityY)
+    );
+
+    const moveX = intensityX * 90;
+    const moveY = intensityY * 60;
+    const rotate = intensityX * 18;
+
+    if (rainbowRef.current) {
+      rainbowRef.current.style.transform = `
+        translate3d(${moveX}px, ${moveY}px, 0)
+        rotate(${rotate}deg)
+        scale(${1.1 + strength * 0.18})
+      `;
+      rainbowRef.current.style.opacity = `${0.25 + strength * 0.65}`;
     }
 
-    rafParticles.current = requestAnimationFrame(draw);
+    if (beamRef.current) {
+      beamRef.current.style.transform = `
+        translate3d(${moveX * 1.5}px, ${moveY * 1.1}px, 0)
+        rotate(${rotate * 0.5}deg)
+        skewX(${intensityX * 14}deg)
+      `;
+      beamRef.current.style.opacity = `${0.1 + strength * 0.8}`;
+    }
+
+    if (cardRef.current) {
+      cardRef.current.style.transform = `
+        perspective(1000px)
+        rotateX(${-intensityY * 6}deg)
+        rotateY(${intensityX * 6}deg)
+      `;
+    }
+
+    if (parallaxRef.current) {
+      parallaxRef.current.style.transform = `
+        translate3d(${intensityX * -18}px, ${intensityY * -18}px, 0)
+        scale(1.08)
+      `;
+    }
+
+    raf = requestAnimationFrame(animate);
   };
 
-  resize();
-  draw();
-
-  window.addEventListener("resize", resize);
+  animate();
 
   return () => {
-    window.removeEventListener("resize", resize);
-    if (rafParticles.current) cancelAnimationFrame(rafParticles.current);
+    alive = false;
+    cancelAnimationFrame(raf);
   };
 }, []);
 
   /* =========================
-     CARD RECT (mouse tracking)
-  ========================= */
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-
-    const updateRect = () => {
-      rectRef.current = el.getBoundingClientRect();
-    };
-
-    updateRect();
-
-    window.addEventListener("resize", updateRect);
-    window.addEventListener("scroll", updateRect, true);
-
-    return () => {
-      window.removeEventListener("resize", updateRect);
-      window.removeEventListener("scroll", updateRect, true);
-    };
-  }, [profile]);
-
-  /* =========================
-     3D HOVER
+     MOUSE (FIXED ONLY INPUT)
   ========================= */
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-  const el = cardRef.current;
- const rect = bannerRef.current?.getBoundingClientRect();
-const shine = shineRef.current;
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
 
-if (!el || !rect || !shine) return;
+    target.current.x = (e.clientX - rect.left) / rect.width;
+    target.current.y = (e.clientY - rect.top) / rect.height;
+  };
 
-  const x = (e.clientX - rect.left) / rect.width;
-const y = (e.clientY - rect.top) / rect.height;
-
-  const rotateY = (x - 0.5) * 5;
-  const rotateX = (0.5 - y) * 5;
-
-  if (rafRef.current) cancelAnimationFrame(rafRef.current);
-
-  rafRef.current = requestAnimationFrame(() => {
-    el.style.transform = `
-      perspective(1000px)
-      rotateX(${rotateX}deg)
-      rotateY(${rotateY}deg)
-    `;
-
-    // 🔥 glossy highlight movement
-    const px = x * 100;
-    const py = y * 100;
-
-    shine.style.background = `
-      radial-gradient(
-  circle at ${px}% ${py}%,
-  rgba(255,255,255,0.45),
-  rgba(255,255,255,0.12) 25%,
-  rgba(255,255,255,0) 60%
-)
-    `;
-
-    shine.style.opacity = "1";
-  });
-};  
-
-  const handleMouseLeave = () => {
-  const el = cardRef.current;
-  const shine = shineRef.current;
-
-  if (!el) return;
-
-  el.style.transition = "transform 220ms ease";
-  el.style.transform = `
-    perspective(1000px)
-    rotateX(0deg)
-    rotateY(0deg)
-  `;
-
-  if (shine) {
-    shine.style.transition = "opacity 250ms ease";
-    shine.style.opacity = "0";
-  }
-
-  setTimeout(() => {
-    if (el) el.style.transition = "";
-    if (shine) shine.style.transition = "";
-  }, 220);
-};
-
-  if (!profile) return <div className="text-white p-10">Loading...</div>;
+  /* =========================
+     RENDER
+  ========================= */
+  if (!profile) return <div>Loading...</div>;
 
   return (
-  <div
-    ref={cardRef}
-    onMouseMove={handleMouseMove}
-    onMouseLeave={handleMouseLeave}
-    className="relative w-[420px] aspect-[0.67] overflow-hidden rounded-2xl bg-white shadow-2xl flex flex-col"
-    style={{
-      transform: "perspective(1000px)",
-      willChange: "transform",
-      transformStyle: "preserve-3d",
-    }}
-  >
-    {/* =========================
-        PARTICLES LAYER
-    ========================= */}
+    
+<div
+  ref={cardRef}
+  onMouseMove={handleMouseMove}
+  onMouseLeave={handleMouseLeave}
+  className="relative w-[420px] aspect-[0.67] overflow-hidden rounded-1xl bg-white shadow-1xl flex flex-col"
+  style={{
+    transform: "perspective(1000px) translateZ(0)",
+    willChange: "transform",
+    transformStyle: "preserve-3d",
+  }}
+>
 
+  {/* Banner ON TOP OF EVERYTHING */}
+  <div className="absolute inset-0 z-0 pointer-events-none">
+  <img
+    src="/banners/bannertp.png"
+    alt="Banner"
+    className="w-full h-full object-contain"
+  />
+</div>
+
+
+
+    
 
     {/* =========================
         EDIT BUTTON
@@ -334,15 +295,11 @@ const y = (e.clientY - rect.top) / rect.height;
       <button
         onClick={onEditClick}
         className="absolute top-10 right-3 z-50 group flex items-center gap-2 px-3 py-2 
-                   bg-white/80 backdrop-blur hover:bg-white text-pink-500 
+                   bg-white/80 backdrop-blur hover:bg-black text-pink-500 
+                   
                    rounded-full shadow-lg transition-all hover:scale-105 border border-pink-100"
         aria-label="Edit profile"
       >
-        <svg className="w-4 h-4 fill-pink-500" viewBox="0 0 1000 1000">
-          <path d="M968.161,31.839c36.456,36.456,36.396,95.547,0,132.003l-43.991,43.991L792.138,75.83l43.991-43.991
-            C872.583-4.586,931.704-4.617,968.161,31.839z M308.238,559.79l-43.96,175.963l175.963-43.991l439.938-439.938L748.147,119.821
-            L308.238,559.79z M746.627,473.387v402.175H124.438V253.373h402.204l124.407-124.438H0V1000h871.064V348.918L746.627,473.387z"/>
-        </svg>
 
         <span className="text-xs font-semibold hidden sm:inline">
           Edit
@@ -363,9 +320,16 @@ const y = (e.clientY - rect.top) / rect.height;
     ========================= */}
     <div className="px-5 py-2 flex items-center gap-2 bg-white/75 backdrop-blur relative">
       <div
-        className="relative w-14 h-14 rounded-full overflow-hidden"
-        style={{ backgroundColor: avatar_colour }}
-      >
+  className="relative w-14 h-14 rounded-full overflow-hidden"
+  style={{
+    backgroundColor: avatar_colour,
+    boxShadow: `
+      0 0 5px ${avatar_colour},
+      0 0 5px ${avatar_colour}88
+    `,
+    transform: "translateZ(40px)",
+  }}
+>
         <Image
           src={avatar}
           alt="Avatar"
@@ -393,27 +357,55 @@ const y = (e.clientY - rect.top) / rect.height;
     ========================= */}
     <div
   ref={bannerRef}
-  className="flex-grow rounded-2xl border-3 border-pink-300 overflow-hidden relative z-20"
+  className="flex-grow min-h-[220px] mx-4 rounded-2xl overflow-hidden relative z-20 border"
 >
-  {/* SHINE */}
+  {/* PARALLAX LAYER (MOVES IMAGE) */}
+  <div
+    ref={parallaxRef}
+    className="absolute inset-0 will-change-transform"
+  >
+    <Image
+      src={banner}
+      alt="Banner"
+      fill
+      priority
+      className="object-cover"
+    />
+  </div>
+<div
+  ref={rainbowRef}
+  className="absolute inset-0 pointer-events-none z-20"
+  style={{
+    background:
+      "radial-gradient(circle at 50% 50%, rgba(255,0,200,0.25), transparent 60%)",
+    mixBlendMode: "screen",
+  }}
+/>
+
+<div
+  ref={beamRef}
+  className="absolute inset-0 pointer-events-none z-20"
+  style={{
+    background:
+      "linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%)",
+    mixBlendMode: "overlay",
+  }}
+/>
+
+
+
+
+
+  {/* SHINE OVERLAY */}
   <div
     ref={shineRef}
-    className="absolute inset-2 pointer-events-none z-10 overflow-hidden"
+    className="absolute inset-2 pointer-events-none z-10"
     style={{
       background:
         "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25), transparent 60%)",
       opacity: 0,
       mixBlendMode: "screen",
     }}
-  />
-
-  {/* IMAGE */}
-  <Image
-    src={banner}
-    alt="Banner"
-    fill
-    priority
-    className="object-cover z-0"
   />
 </div>
 
