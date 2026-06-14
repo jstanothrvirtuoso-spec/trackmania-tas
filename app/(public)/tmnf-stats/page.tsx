@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
@@ -37,54 +38,80 @@ export default function TmnfHistory() {
   );
 
   return (
-    <div className="flex flex-col justify-center items-center pt-20 pb-5 xl:flex-row xl:items-start">
-      
-      <CategoryTable
-        bestRtaByTrack={bestRtaByTrack} 
-        tasRecords={tasRecords}
-      />
+    <div>
+      {/* Video Background */}
+      <div className="fixed inset-0 -z-10 w-full h-full overflow-hidden">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="/videos/tmnf-stats-bg.mp4" type="video/mp4" />
+        </video>
+      </div>
 
-      <div className="flex flex-col flex-1 items-center gap-3 px-2 max-w-180 py-3">
-
-        <div className="flex w-full justify-end">
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as Category)}
-            className="rounded bg-slate-800 px-2 py-1 text-sm cursor-pointer"
-          >
-            {CATEGORIES.filter((r) => (r != "Low Input")).map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* TMNF side panel */}
+      <div className="hidden xl:block fixed left-0 top-0 bottom-50 w-full -z-5 overflow-hidden opacity-30">
+        <Image
+          src="/wallpapers/tmnf-stats-side.png"
+          alt=""
+          fill
+          className="object-contain object-left"
+          priority
+        />
+      </div>
         
-        {authors.length > 0 && bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
+      <div className="flex flex-col justify-center items-center pt-20 pb-5 xl:flex-row xl:items-start">
+        
+        <CategoryTable
+          bestRtaByTrack={bestRtaByTrack} 
+          tasRecords={tasRecords}
+        />
+
+        <div className="flex flex-col flex-1 items-center gap-3 px-2 max-w-180 py-3">
+
+          <div className="flex w-full justify-end">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as Category)}
+              className="rounded bg-slate-800 px-2 py-1 text-sm cursor-pointer"
+            >
+              {CATEGORIES.filter((r) => (r != "Low Input")).map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {authors.length > 0 && bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
+            <div className="items-start w-full">
+              <AuthorLeaderboard 
+                bestRtaByTrack={bestRtaByTrack} 
+                filteredTasRecords={filteredTasRecords}
+                authors={authors}
+              />
+            </div>
+          )}
+
           <div className="items-start w-full">
-            <AuthorLeaderboard 
-              bestRtaByTrack={bestRtaByTrack} 
-              filteredTasRecords={filteredTasRecords}
-              authors={authors}
+            {bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
+              <TotalTimeSaved
+                bestRtaByTrack={bestRtaByTrack} 
+                filteredTasRecords={filteredTasRecords}
+              />
+            )}
+          </div>
+          
+          <div className="w-full justify-center flex">
+            <PercentSavedTmnf 
+                bestRtaByTrack={bestRtaByTrack} 
+                filteredTasRecords={filteredTasRecords}
+                category={category}
             />
           </div>
-        )}
-
-        <div className="items-start w-full">
-          {bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
-            <TotalTimeSaved
-              bestRtaByTrack={bestRtaByTrack} 
-              filteredTasRecords={filteredTasRecords}
-            />
-          )}
-        </div>
-        
-        <div className="w-full justify-center flex">
-          <PercentSavedTmnf 
-              bestRtaByTrack={bestRtaByTrack} 
-              filteredTasRecords={filteredTasRecords}
-              category={category}
-          />
         </div>
       </div>
     </div>

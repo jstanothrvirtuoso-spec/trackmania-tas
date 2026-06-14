@@ -45,17 +45,17 @@ export default function Page() {
       <Rain />
 
       {/* ================= BACKGROUND ================= */}
-      <div className="absolute inset-0 -z-20">
+      <div className="absolute inset-0 -z-20 overflow-hidden">
         <Image
-          src="/wallpapers/vide2.png"
+          src="/wallpapers/about-bg.png"
           alt=""
           fill
-          className="object-cover"
+          className="object-cover scale-[1.01]"
           priority
         />
       </div>
 
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/20 via-white/5 to-black/50 backdrop-blur-md" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/20 via-white/5 to-black/50 backdrop-blur-sm" />
       <div className="window-reflection absolute inset-0 z-0 opacity-70" />
 
       <div className="absolute inset-0 pointer-events-none z-[1]">

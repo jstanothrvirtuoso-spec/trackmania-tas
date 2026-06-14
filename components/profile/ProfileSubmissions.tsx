@@ -25,13 +25,13 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
     const recentNonPending = tasSubmissions
       .filter(tas => tas.status !== "pending" && new Date(tas.created_at) >= oneMonthAgo)
       .slice(0, Math.max(0, 50 - pending.length));
-
+    
     return [...pending, ...recentNonPending].sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
   }, [tasSubmissions]);
 
-  if (!recentSubmissions) {
+  if (recentSubmissions.length === 0) {
     return null
   }
 
@@ -41,8 +41,8 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
         Recent TAS Submissions
       </h1>
 
-      <div className="overflow-x-auto">
-        <table className="border-separate border border-slate-500 rounded-lg overflow-hidden text-center text-sm">
+      <div className="overflow-x-auto bg-slate-900/80">
+        <table className="border-separate border border-slate-500 rounded-lg overflow-hidden text-center text-xs sm:text-sm">
           <thead>
             <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
               <th className="px-3 py-1.5 font-normal">

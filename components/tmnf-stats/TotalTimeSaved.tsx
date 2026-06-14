@@ -129,7 +129,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
   });
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 w-full flex-1">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 w-full flex-1">
       <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Cumulative Time Saved (Mins)
       </h2>

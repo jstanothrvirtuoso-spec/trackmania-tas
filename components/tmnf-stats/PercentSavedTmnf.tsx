@@ -78,7 +78,7 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
   if (data.length === 0) return null;
 
   return (
-    <div className="overflow-hidden w-fit rounded-xl border border-slate-800 bg-slate-900/80 shadow-xl">
+    <div className="overflow-hidden w-fit rounded-xl border border-slate-800 bg-slate-900/40 shadow-xl">
       <table className="table-fixed text-center backdrop-blur-md rounded-2xl text-xs sm:text-sm">
 
         <thead className="text-slate-300 bg-slate-950/50">

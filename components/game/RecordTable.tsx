@@ -32,10 +32,7 @@ function getTrackDifficultyTint(category: string, index: number) {
   return tint ? tint[index % 2] : "";
 }
 
-function isRecentEntry(dateStr: string, showRecent: boolean) {
-
-  if (!showRecent) return false;
-
+function isRecentEntry(dateStr: string) {
   const entryDate = new Date(dateStr);
   if (Number.isNaN(entryDate.getTime())) return false;
 
@@ -190,12 +187,11 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
       <tbody className="font-sans divide-y divide-slate-800 text-center align-middle">
         {sortedRows.map((row, index) => {
           const entry = row.tas;
-          const recent = entry ? isRecentEntry(entry.date, showRecent) : false;
-          const rtaRecent = row.rta ? isRecentEntry(row.rta.date, showRecent) : false;
+          const recent = showRecent && entry && isRecentEntry(entry.date);
           const tmxLink = getTmxLink(row.trackInfo.id, row.trackInfo.tmx ?? row.trackInfo.game);
           const difficultyClass = getTrackDifficultyTint(row.trackInfo.category, index);
           const bgColour = recent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
-          const rtaColour = rtaRecent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
+          const rtaColour = (showRecent && row.rta && isRecentEntry(row.rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
           const isStunt = row.trackInfo.category === "Stunt";
           const isLastRow = index === sortedRows.length - 1;
           const rowCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, bgColour);
@@ -204,7 +200,9 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
             <tr key={row.track} className="group h-[30px] transition-colors">
               {showRecent && (
                 <td className="px-1 text-center">
-                  <span className="animate-test text-red-500">NEW</span>
+                  {recent && (
+                    <span className="animate-test text-red-500">NEW</span>
+                  )}
                 </td>
               )}
               <td className={rowCommon(classNames("px-1", "border-l", isLastRow ? "rounded-bl-lg" : ""))}>
@@ -244,7 +242,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                 </>
               )}
 
-              <td className={rowCommon("px-1.5 border-l break-words max-w-[320px] whitespace-normal")}>{entry ? entry.authors.join(", ") : "-"}</td>
+              <td className={rowCommon("px-1.5 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal")}>{entry ? entry.authors.join(", ") : "-"}</td>
               <td className={rowCommon("px-3 border-l whitespace-nowrap")}>{entry ? formatDate(entry.date) : "-"}</td>
               <td className={rowCommon("px-3 whitespace-nowrap")}>{entry ? entry.category : "-"}</td>
               <td className={rowCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""))}>

@@ -106,8 +106,8 @@ export default function RtaTable({
               className="
                 border-b border-slate-800 last:border-b-0
                 hover:bg-blue-900/20 transition-colors
-                odd:bg-cyan-600/10
-                even:bg-cyan-900/10
+                odd:bg-cyan-600/20
+                even:bg-cyan-900/20
               "
             >
               <td className="px-2 py-[4px] font-medium text-slate-200 whitespace-nowrap">

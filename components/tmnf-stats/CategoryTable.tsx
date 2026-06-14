@@ -7,7 +7,7 @@ import { formatTime } from "@/utils/formatting";
 import { trackList } from "@/lib/TrackList";
 
 const CATEGORY_NAMES = ["No Cut", "WR Route", "No Uber", "NOseboost", "Open"] as const;
-const CATEGORY_COLOURS = ["bg-white/10", "bg-green-500/10", "bg-blue-500/10", "bg-red-500/10", "bg-black/10"] as const;
+const CATEGORY_COLOURS = ["bg-white/20", "bg-green-500/20", "bg-blue-500/20", "bg-red-500/20", "bg-black/20"] as const;
 
 function getVisibleBest(
   trackMap: Map<string, TasEntry> | undefined,
@@ -95,7 +95,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
   }, [bestByTrackAndCategory, bestRtaByTrack]);
 
   return (
-    <div className="mx-2 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/20 text-center">
+    <div className="mx-2 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60 text-center">
       <table className="w-full text-xs">
         <thead className="bg-slate-900/90 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] transition whitespace-nowrap text-[8px] sm:text-sm">
           <tr className="">
@@ -147,7 +147,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
                       { formatTime(c.entry.time_ms) }
                     </span>
                   ) : (
-                    <span className="text-slate-600">-</span>
+                    <span className="text-slate-600"></span>
                   )}
                 </td>
               ))}
@@ -159,7 +159,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
                     { formatTime(row.rta) }
                   </span>
                 ) : (
-                  <span className="text-slate-600">-</span>
+                  <span className="text-slate-600"></span>
                 )}
               </td>
             </tr>
