@@ -6,7 +6,7 @@ import Providers from "./providers";
 // import VisitorCounter from "@/components/VisitorCounter";
 
 export const metadata = {
-  metadataBase: new URL("https://tas-nadeo.com"),
+  metadataBase: new URL("https://www.tas-nadeo.com"),
 
   title: {
     default: "TAS Nadeo - Tool assisted speedruns for nadeo tracks in Trackmania",
