@@ -41,7 +41,7 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
         Recent TAS Submissions
       </h1>
 
-      <div className="overflow-x-auto bg-slate-900/80">
+      <div className="overflow-x-auto bg-slate-900/80 rounded-lg">
         <table className="border-separate border border-slate-500 rounded-lg overflow-hidden text-center text-xs sm:text-sm">
           <thead>
             <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">

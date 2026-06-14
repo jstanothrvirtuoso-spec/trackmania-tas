@@ -236,7 +236,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                       textShadow: `0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)`,
                     }}
                   >
-                    {entry && row.rta ? formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true) : "-"}
+                    {entry && row.rta ? `${formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)}s` : "-"}
                   </td>
                   <td className={rowCommon("px-1.5")}>{entry && row.rta ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt) : "-"}</td>
                 </>

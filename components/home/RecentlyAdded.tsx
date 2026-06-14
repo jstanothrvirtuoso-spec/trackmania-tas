@@ -47,7 +47,7 @@ export default function RecentlyAdded() {
               <Link
                 key={record.track}
                 href={`/tracks?track=${encodeURIComponent(record.track)}`}
-                className="text-lg font-bold text-white hover:text-emerald-300"
+                className="text-lg font-bold text-white hover:text-emerald-300 whitespace-nowrap"
               >
                 {record.track}
               </Link>
@@ -62,8 +62,8 @@ export default function RecentlyAdded() {
             </div>
 
             <div className="text-right">
-              <div className="font-mono text-xl font-bold text-emerald-400 mt-4">
-                {formatTime(record.time_ms)}
+              <div className="font-mono text-xl font-bold text-emerald-400 mt-4 whitespace-nowrap">
+                {record.category === "Low Input" ? `${record.num_inputs} inputs` : formatTime(record.time_ms)}
               </div>
 
               <div className="text-xs text-slate-500 whitespace-nowrap">
