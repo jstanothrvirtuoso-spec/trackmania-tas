@@ -5,7 +5,7 @@ import { FaDiscord } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { useProfilePublicMe } from "@/lib/Profiles";
-import { GAME_SLUGS, CURSOR } from "@/utils/constants"
+import { GAME_SLUGS } from "@/utils/constants"
 import { UserMenu } from "./UserMenu";
 import { MainMenu } from "./MainMenu";
 
@@ -18,6 +18,7 @@ export default function Header() {
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
   const isTouch = typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
+  const isResetPassword = pathname === "/reset-password";
 
   useEffect(() => {
     let ticking = false;
@@ -46,6 +47,12 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (isResetPassword) {
+    return (
+      null
+    )
+  }
 
   return (
     <header
