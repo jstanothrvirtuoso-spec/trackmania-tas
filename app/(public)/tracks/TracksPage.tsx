@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getTmxLink } from "@/utils/common";
 import { CATEGORY_COLOURS, CATEGORY_FILTERS, GAME_LIST, GRAPH_CATEGORIES } from "@/utils/constants";
 import { formatDate, formatPercentSaved, formatTime } from "@/utils/formatting"
 import { Game, Category } from "@/utils/typing";
@@ -73,6 +74,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const isStunt = track ? trackList[track].category === "Stunt" : false;
   const isTM2 = track ? trackList[track].game === "TM2" : false;
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
+  const tmxLink = getTmxLink(trackList[track].id, trackList[track].tmx ?? trackList[track].game);
 
   function updateTrack(track: string) {
     setTrack(track);
@@ -187,10 +189,15 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       <div className="mb-4 mt-6 text-center">
 
         <div className="flex flex-col items-center">
-          <div className="text-4xl font-black tracking-tight text-white [text-shadow:2px_2px_4px_rgba(0,0,0,0.6)]">
-            {track}
-          </div>
-
+          <button className="text-4xl font-black tracking-tight text-white [text-shadow:2px_2px_4px_rgba(0,0,0,0.6)]"> 
+            {tmxLink ? (
+              <a href={tmxLink} target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition">
+                {track}
+              </a>
+            ) : (
+              track
+            )}
+          </button>
           <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-xl" />
         </div>
         <div className="flex flex-col gap-1 items-center sm:flex-row sm:gap-4">

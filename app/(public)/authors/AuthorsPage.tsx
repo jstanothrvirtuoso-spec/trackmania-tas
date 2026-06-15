@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TasEntry, RecordRow } from "@/utils/typing";
+import { TasEntry, RecordRow, Game, Environment } from "@/utils/typing";
 import { CATEGORY_FILTERS } from "@/utils/constants";
 import { useProfilePublic } from "@/lib/Profiles";
 import { useAuthors } from "@/lib/Authors";
@@ -29,6 +30,8 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
 
   const [selectedAuthor, setSelectedAuthor] = useState<string>(initialAuthor);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | null>(null);
 
   const authorOptions = useMemo(() => {
     const authorCount: Record<string, number> = {};
@@ -105,9 +108,12 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
   const filteredRows = useMemo(() => {
-    if (!selectedYear) return visibleRows;
-    return visibleRows.filter((row) => row.tas && new Date(row.tas.date).getFullYear() === selectedYear);
-  }, [selectedYear, visibleRows]);
+    if (!selectedYear && !selectedGame && !selectedEnvironment) return visibleRows;
+    return visibleRows
+      .filter((row) => row.tas && (!selectedYear || new Date(row.tas.date).getFullYear() === selectedYear))
+      .filter((row) => row.tas && (!selectedGame || row.tas.game === selectedGame))
+      .filter((row) => row.tas && (!selectedEnvironment || row.trackInfo.environment === selectedEnvironment));
+  }, [selectedYear, selectedGame, selectedEnvironment, visibleRows]);
 
   function updateAuthor(author: string) {
     setSelectedAuthor(author)
@@ -119,6 +125,14 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
     setSelectedYear(year);
   }
 
+  function updateGame(game: Game | null) {
+    setSelectedGame(game);
+  }
+
+  function updateEnvironment(environment: Environment | null) {
+    setSelectedEnvironment(environment);
+  }
+
   return (
     <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-20 pb-8 text-slate-100">
       
@@ -127,10 +141,10 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
         
         <DropSelect
           initialValue={selectedAuthor}
-          options={authorOptions.map(({ author, count }) => ({
+          options={authorOptions.length > 0 ? authorOptions.map(({ author, count }) => ({
             value: author,
             label: `${author} (${count})`,
-          }))}
+          })) : [{value: "Loading", label: "Loading authors..."}]}
           onChange={(value) => updateAuthor(value)}
         />
 
@@ -160,33 +174,13 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
             <table className="border-separate border border-slate-800 rounded-lg overflow-hidden text-center text-xs sm:text-sm">
               <thead>
                 <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
-                  <th className="px-2 py-1.5 font-normal">
-                    Date
-                  </th>
-
-                  <th className="px-2 py-1.5 font-normal">
-                    Track
-                  </th>
-
-                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">
-                    Game
-                  </th>
-
-                  <th className="px-2 py-1.5 font-normal">
-                    Cat.
-                  </th>
-
-                  <th className="px-2 py-1.5 font-normal">
-                    TAS
-                  </th>
-
-                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">
-                    RTA
-                  </th>
-
-                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">
-                    Diff
-                  </th>
+                  <th className="px-2 py-1.5 font-normal">Date</th>
+                  <th className="px-2 py-1.5 font-normal">Track</th>
+                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">Game</th>
+                  <th className="px-2 py-1.5 font-normal">Cat.</th>
+                  <th className="px-2 py-1.5 font-normal">TAS</th>
+                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">RTA</th>
+                  <th className="px-2 py-1.5 font-normal hidden sm:table-cell">Diff</th>
                 </tr>
               </thead>
 
@@ -206,8 +200,14 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
                         { formatDate(row.tas.date) }
                       </td>
 
-                      <td className="px-1 py-1.5">
-                        {row.track}
+                      <td className="px-2 py-1.5">
+                        <Link
+                          key={row.track}
+                          href={`/tracks?track=${encodeURIComponent(row.track)}`}
+                          className="hover:text-emerald-300"
+                        >
+                          {row.track}
+                        </Link>
                       </td>
 
                       <td className="px-2 py-1.5 hidden sm:table-cell">
@@ -243,8 +243,16 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
               selectedYear={selectedYear}
               onSelectYear={updateYear}
             />
-            <AuthorGameChart rows={filteredRows} />
-            <AuthorEnvironmentChart rows={filteredRows} />
+            <AuthorGameChart
+              rows={visibleRows}
+              selectedGame={selectedGame}
+              onSelectGame={updateGame}
+            />
+            <AuthorEnvironmentChart
+              rows={visibleRows}
+              selectedEnvironment={selectedEnvironment}
+              onSelectEnvironment={updateEnvironment}
+            />
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
-import { TimeState } from "./typing";
+import { TimeState, Game } from "./typing";
 
 export function timeMsToState(time_ms: number): TimeState {
   return {
@@ -99,4 +99,22 @@ export function useOnClickOutside(
       document.removeEventListener("touchstart", handle);
     };
   }, [ref, handler, enabled]);
+}
+
+export function getTmxLink(id: number, game: Game) {
+  if (id === 0) return "";
+
+  if (game === "TMNF" || game === "TMNF No Cut") {
+    return `https://tmnf.exchange/trackshow/${id}`;
+  }
+
+  if (game === "TM2") {
+    return `https://tm.mania.exchange/mapshow/${id}`;
+  }
+
+  if (game === "ESWC") {
+    return `https://nations.tm-exchange.com/trackshow/${id}`;
+  }
+
+  return `https://tmuf.exchange/trackshow/${id}`;
 }

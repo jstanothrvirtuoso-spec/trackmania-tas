@@ -5,7 +5,6 @@ import { useTasRecords } from "@/lib/TasRecords";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { CATEGORY_COLOURS } from "@/utils/constants";
 
-
 export default function RecentlyAdded() {
 
   const { data: tasRecords = [] } = useTasRecords();

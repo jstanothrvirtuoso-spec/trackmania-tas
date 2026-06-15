@@ -93,7 +93,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
         type="button"
       >
         <span className="truncate">
-          {allOptions.find((option) => option.value === value)?.label ?? defaultOption?.label ?? options[0].label}
+          {allOptions.find((option) => option.value === value)?.label ?? defaultOption?.label ?? initialValue}
         </span>
         <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-5 w-5 items-center justify-center">
           <svg viewBox="0 0 20 20" className="h-5 w-5 fill-current text-slate-100">

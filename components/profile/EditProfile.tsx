@@ -109,7 +109,7 @@ export default function EditProfile({
       onClick={() => setIsEditingProfile(false)}
     >
       <div
-        className="bg-slate-900 rounded-2xl w-full max-w-4xl p-4 md:p-8"
+        className="text-slate-200 bg-slate-900 rounded-2xl w-full max-w-4xl p-4 md:p-8"
         onClick={(e) => e.stopPropagation()}
       >
 
@@ -172,93 +172,92 @@ export default function EditProfile({
           <div className="flex flex-col space-y-4 items-center w-full justify-center">
 
             {/* AVATAR */}
-{editMode !== "avatar" ? (
-  <button
-    type="button"
-    onClick={() => setEditMode("avatar")}
-    className="w-[120px] h-[120px] rounded-full overflow-hidden hover:bg-slate-800 cursor-pointer flex justify-center items-center hover:scale-105 transition"
-    style={{
-      backgroundColor: `hsl(${draft?.colour ?? 200}, 80%, 60%)`,
-    }}
-  >
-    <Image
-      src={PROFILE_AVATARS[draft?.avatar ?? 0]}
-      alt="Avatar"
-      width={100}
-      height={100}
-      className="object-cover"
-    />
-  </button>
-) : (
-  <div className="flex flex-col items-center gap-3">
-    
-    {/* AVATAR GRID */}
-    <div className="grid grid-cols-5 gap-2 w-[380px]">
-      {Object.entries(PROFILE_AVATARS).map(([key, src]) => {
-        const id = Number(key);
+            {editMode !== "avatar" ? (
+              <button
+                type="button"
+                onClick={() => setEditMode("avatar")}
+                className="w-[120px] h-[120px] rounded-full overflow-hidden hover:bg-slate-800 cursor-pointer flex justify-center items-center hover:scale-105 transition"
+                style={{
+                  backgroundColor: `hsl(${draft?.colour ?? 200}, 80%, 60%)`,
+                }}
+              >
+                <Image
+                  src={PROFILE_AVATARS[draft?.avatar ?? 0]}
+                  alt="Avatar"
+                  width={100}
+                  height={100}
+                  className="object-cover"
+                />
+              </button>
+            ) : (
+              <div className="flex flex-col items-center gap-3">
+                
+                {/* AVATAR GRID */}
+                <div className="grid grid-cols-5 gap-2 w-[380px]">
+                  {Object.entries(PROFILE_AVATARS).map(([key, src]) => {
+                    const id = Number(key);
 
-        return (
-          <button
-            key={key}
-            type="button"
-            onClick={() => {
-              updateDraft("avatar", id);
-              setEditMode(null);
-            }}
-            className={`h-16 rounded overflow-hidden border cursor-pointer ${
-              draft?.avatar === id
-                ? "border-emerald-500"
-                : "border-transparent"
-            }`}
-          >
-            <div className="flex justify-center">
-              <Image
-                src={src}
-                alt="Avatar"
-                width={50}
-                height={50}
-                className={`object-cover transition ${
-                  draft?.avatar === id ? "opacity-100" : "opacity-50"
-                }`}
-              />
-            </div>
-          </button>
-        );
-      })}
-    </div>
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => {
+                          updateDraft("avatar", id);
+                          setEditMode(null);
+                        }}
+                        className={`h-16 rounded overflow-hidden border cursor-pointer ${
+                          draft?.avatar === id
+                            ? "border-emerald-500"
+                            : "border-transparent"
+                        }`}
+                      >
+                        <div className="flex justify-center">
+                          <Image
+                            src={src}
+                            alt="Avatar"
+                            width={50}
+                            height={50}
+                            className={`object-cover transition ${
+                              draft?.avatar === id ? "opacity-100" : "opacity-50"
+                            }`}
+                          />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
 
-    {/* HUE PICKER */}
-    <div className="w-[380px] flex flex-col gap-2">
-      <input
-        type="range"
-        min="0"
-        max="360"
-        value={draft?.colour ?? 200}
-        onChange={(e) => updateDraft("colour", Number(e.target.value))}
-        className="w-full cursor-pointer"
-      />
+                {/* HUE PICKER */}
+                <div className="w-[380px] flex flex-col gap-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max="360"
+                    value={draft?.colour ?? 200}
+                    onChange={(e) => updateDraft("colour", Number(e.target.value))}
+                    className="w-full cursor-pointer"
+                  />
 
-      <div
-        className="h-4 rounded-lg"
-        style={{
-          background: `linear-gradient(
-            to right,
-            hsl(0, 80%, 60%),
-            hsl(60, 80%, 60%),
-            hsl(120, 80%, 60%),
-            hsl(180, 80%, 60%),
-            hsl(240, 80%, 60%),
-            hsl(300, 80%, 60%),
-            hsl(360, 80%, 60%)
-          )`,
-        }}
-      />
-    </div>
+                  <div
+                    className="h-4 rounded-lg"
+                    style={{
+                      background: `linear-gradient(
+                        to right,
+                        hsl(0, 80%, 60%),
+                        hsl(60, 80%, 60%),
+                        hsl(120, 80%, 60%),
+                        hsl(180, 80%, 60%),
+                        hsl(240, 80%, 60%),
+                        hsl(300, 80%, 60%),
+                        hsl(360, 80%, 60%)
+                      )`,
+                    }}
+                  />
+                </div>
 
-  </div>
-)}
-     
-
+              </div>
+            )}
+            
             {/* DISPLAY NAME */}
             <input
               value={draft?.display_name ?? ""}
@@ -335,8 +334,8 @@ export default function EditProfile({
             </div>
           </div>
  
+        </div>
 
-        
         {/* ACTIONS */}
         <div className="flex justify-end gap-3 pt-2">
           <button
@@ -354,10 +353,7 @@ export default function EditProfile({
             {isSaving ? "Saving..." : "Save Profile"}
           </button>
         </div>
-
-</div>
-</div>
+      </div>
     </div>
-    
   )
 }

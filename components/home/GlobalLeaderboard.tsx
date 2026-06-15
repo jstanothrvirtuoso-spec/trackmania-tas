@@ -131,10 +131,8 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
 
                 <td className="px-0 py-1.5 text-slate-100">
                   <Link
-                    href={`/authors?author=${encodeURIComponent(
-                      a.author
-                    )}`}
-                    className="hover:text-white underline-offset-2 hover:underline"
+                    href={`/authors?author=${encodeURIComponent(a.author)}`}
+                    className="hover:text-emerald-400"
                   >
                     {a.author}
                   </Link>

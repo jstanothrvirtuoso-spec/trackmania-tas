@@ -1,6 +1,6 @@
 
 import { useMemo } from "react";
-import { RecordRow } from "@/utils/typing";
+import { RecordRow, Game, Environment } from "@/utils/typing";
 import { GAME_LIST, ENVIRONMENT } from "@/utils/constants";
 
 const SHORT_GAMES = {
@@ -105,7 +105,11 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
   );
 }
 
-export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
+export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
+  rows: RecordRow[]; 
+  selectedGame: Game | null; 
+  onSelectGame: (game: Game | null) => void 
+}) {
 
   const gameCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -140,6 +144,7 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
       <div className="flex items-end justify-center gap-1.5 h-40">
         {gameCounts.map(([game, count]) => {
           const height = (count / maxCount) * 120;
+          const isSelected = selectedGame === game;
 
           return (
             <div
@@ -150,8 +155,10 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
                 {count}
               </div>
 
-              <div
-                className="w-7 rounded-t bg-cyan-400/70 hover:bg-cyan-300 transition"
+              <button
+                type="button"
+                onClick={() => onSelectGame(isSelected ? null : game)}
+                className={`w-7 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-cyan-300 ring-2 hover:bg-cyan-400" : "bg-cyan-400/70 hover:bg-cyan-300"}`}
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",
@@ -170,7 +177,11 @@ export function AuthorGameChart({ rows }: { rows: RecordRow[] }) {
   );
 }
 
-export function AuthorEnvironmentChart({ rows }: { rows: RecordRow[] }) {
+export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvironment }: {
+  rows: RecordRow[]; 
+  selectedEnvironment: Environment | null; 
+  onSelectEnvironment: (environment: Environment | null) => void 
+}) {
 
   const environmentCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -195,29 +206,32 @@ export function AuthorEnvironmentChart({ rows }: { rows: RecordRow[] }) {
       </h2>
 
       <div className="flex h-40 items-end justify-center gap-1.5">
-        {environmentCounts.map(([env, count]) => {
+        {environmentCounts.map(([environment, count]) => {
           const height = (count / maxCount) * 120;
+          const isSelected = selectedEnvironment === environment;
 
           return (
             <div
-              key={env}
+              key={environment}
               className="flex flex-col items-center gap-1"
             >
               <div className="text-xs text-slate-400">
                 {count}
               </div>
 
-              <div
-                className="w-7 rounded-t bg-emerald-400/70 transition hover:bg-emerald-300"
+              <button
+                type="button"
+                onClick={() => onSelectEnvironment(isSelected ? null : environment)}
+                className={`w-7 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-emerald-300 ring-2 hover:bg-emerald-400" : "bg-emerald-400/70 hover:bg-emerald-300"}`}
                 style={{
                   height: `${height}px`,
-                  minHeight: "2px",
+                  minHeight: "3px",
                 }}
-                title={`${env}: ${count}`}
+                title={`${environment}: ${count}`}
               />
-
+              
               <div className="text-[9px] text-slate-400">
-                {SHORT_ENVIRONMENTS[env]}
+                {SHORT_ENVIRONMENTS[environment]}
               </div>
             </div>
           );

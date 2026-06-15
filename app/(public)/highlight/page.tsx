@@ -51,7 +51,7 @@ export default function HighlightPage() {
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords]);
 
-  const { undoneTracks, topTasList, topAuthors } = useMemo(() => {
+  const { undoneTracks, topTasVideos, topAuthors } = useMemo(() => {
 
     const bestByTrackAndCategory = new Map<string, Map<Category, TasEntry>>();
     const authorCounts = new Map<string, number>();
@@ -91,18 +91,18 @@ export default function HighlightPage() {
           bestTimeSoFar = tas.time_ms;
 
           for (const author of tas.authors) {
-            authorCounts.set(author, (authorCounts.get(author) ?? 0) + 1
-          );
+            authorCounts.set(author, (authorCounts.get(author) ?? 0) + 1);
           }
         }
       }
     }
 
+    const topTasVideos = topTasList.filter((tas) => tas.video)
     const topAuthors = Array.from(authorCounts.entries())
       .filter(([, count]) => count >= 5)
       .map(([author]) => author);
 
-    return { undoneTracks, topTasList, topAuthors };
+    return { undoneTracks, topTasVideos, topAuthors };
   }, [tasRecords]);
 
   const { tasOfTheDay, undoneTasOfTheDay, authorOfTheDay } = useMemo(() => {
@@ -114,14 +114,14 @@ export default function HighlightPage() {
     }
 
     return {
-      tasOfTheDay: topTasList[dailyIndex(topTasList.length)] ?? null,
+      tasOfTheDay: topTasVideos[dailyIndex(topTasVideos.length)] ?? null,
       undoneTasOfTheDay: undoneTracks[dailyIndex(undoneTracks.length)] ?? null,
       authorOfTheDay: topAuthors[dailyIndex(topAuthors.length)] ?? null,
     };
-  }, [topTasList, undoneTracks, topAuthors]);
+  }, [topTasVideos, undoneTracks, topAuthors]);
 
   const videoId1 = getYouTubeId(tasOfTheDay?.video);
-  const videoId2 = getYouTubeId(bestRtaByTrack.get(undoneTasOfTheDay)?.video)
+  const videoId2 = undoneTasOfTheDay ? getYouTubeId(bestRtaByTrack.get(undoneTasOfTheDay)?.video) : null;
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 pt-20">

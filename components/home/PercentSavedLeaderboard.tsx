@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TasEntry, Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
@@ -135,7 +136,13 @@ export default function PercentSavedLeaderboard() {
                   style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
                 >
                   <td className="px-3 py-1 text-slate-100 lg:whitespace-nowrap">
-                    {row.track}
+                    <Link
+                      key={row.track}
+                      href={`/tracks?track=${encodeURIComponent(row.track)}`}
+                      className="hover:text-emerald-400"
+                    >
+                      {row.track}
+                    </Link>
                   </td>
                   <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
                     {row.pcSaved.toPrecision(3)}

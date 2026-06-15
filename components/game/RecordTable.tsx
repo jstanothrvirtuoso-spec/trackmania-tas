@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import Link from "next/link";
+import { useState, useMemo } from "react";
 import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
 import { SortOrder, Game, RecordRow, Category } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting";
@@ -40,24 +40,6 @@ function isRecentEntry(dateStr: string) {
   const diff = Date.now() - entryDate.getTime();
   const oneMonth = 30 * 24 * 60 * 60 * 1000;
   return diff >= 0 && diff <= oneMonth;
-}
-
-function getTmxLink(id: number, game: Game) {
-  if (id === 0) return "";
-
-  if (game === "TMNF" || game === "TMNF No Cut") {
-    return `https://tmnf.exchange/trackshow/${id}`;
-  }
-
-  if (game === "TM2") {
-    return `https://tm.mania.exchange/mapshow/${id}`;
-  }
-
-  if (game === "ESWC") {
-    return `https://nations.tm-exchange.com/trackshow/${id}`;
-  }
-
-  return `https://tmuf.exchange/trackshow/${id}`;
 }
 
 function getSortValue(row: RecordRow, field: SortField, categoryIndexes: Map<string, number>): string | number {
@@ -189,7 +171,6 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
         {sortedRows.map((row, index) => {
           const entry = row.tas;
           const recent = showRecent && entry && isRecentEntry(entry.date);
-          const tmxLink = getTmxLink(row.trackInfo.id, row.trackInfo.tmx ?? row.trackInfo.game);
           const difficultyClass = getTrackDifficultyTint(row.trackInfo.category, index);
           const bgColour = recent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
           const rtaColour = (showRecent && row.rta && isRecentEntry(row.rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
@@ -209,14 +190,15 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               <td className={rowCommon(classNames("px-1", "border-l", isLastRow ? "rounded-bl-lg" : ""))}>
                 <EnvironmentIcon environment={row.trackInfo.environment} />
               </td>
+              
               <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap text-slate-100")}> 
-                {tmxLink ? (
-                  <a href={tmxLink} target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition">
-                    {row.track}
-                  </a>
-                ) : (
-                  row.track
-                )}
+                <Link
+                  key={row.track}
+                  href={`/tracks?track=${encodeURIComponent(row.track)}`}
+                  className="hover:text-emerald-500 transition"
+                >
+                  {row.track}
+                </Link>
               </td>
 
               {lowInputCategory ? (
