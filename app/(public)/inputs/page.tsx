@@ -186,7 +186,7 @@ export default function InputsPage() {
       {/* WALLPAPER */}
       <div
         className="fixed inset-0 bg-center bg-no-repeat bg-cover -z-20"
-        style={{ backgroundImage: "url('/wallpapers/WP1.jpg')" }}
+        style={{ backgroundImage: "url('/wallpapers/inputs-bg.webp')" }}
       />
 
       {/* DARKEN LAYER */}
