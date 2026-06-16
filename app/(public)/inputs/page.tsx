@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { soundManager } from "@/lib/SoundManager";
 import { useState, useEffect, useRef } from "react";
 
 const ENVIRONMENTS = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
@@ -9,30 +10,6 @@ type Trick = {
   src: string;
   button: string[];
   notes: string[];
-};
-
-const getClickAudio = (() => {
-  let audio: HTMLAudioElement | null = null;
-
-  return () => {
-    if (!audio && typeof window !== "undefined") {
-      audio = new Audio("/inputs/click.mp3");
-      audio.preload = "auto";
-    }
-
-    return audio;
-  };
-})();
-
-const playClick = () => {
-  const audio = getClickAudio();
-  if (!audio) return;
-
-  try {
-    audio.currentTime = 0;
-    audio.volume = 0.4;
-    audio.play().catch(() => {});
-  } catch {}
 };
 
 const copyInputs = async (env: Environment, index: number) => {
@@ -66,7 +43,8 @@ const copyInputs = async (env: Environment, index: number) => {
   const res = await fetch(path);
   const text = await res.text();
   await navigator.clipboard.writeText(text);
-  playClick();
+  
+  soundManager.play("click");
 };
 
 const tricks: Record<Environment, Trick[]> = {

@@ -1,5 +1,6 @@
 "use client";
 
+import { soundManager } from "@/lib/SoundManager";
 import { useEffect, useRef, useState } from "react";
 
 type Drop = {
@@ -9,9 +10,6 @@ type Drop = {
   opacity: number;
 };
 
-/**
- * Deterministic RNG (seeded)
- */
 function mulberry32(seed: number) {
   return function () {
     let t = (seed += 0x6d2b79f5);
@@ -22,12 +20,9 @@ function mulberry32(seed: number) {
 }
 
 export default function Rain() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const startedRef = useRef(false);
 
-  // ✅ deterministic generator (same rain every load)
   const [drops] = useState<Drop[]>(() => {
-    const rand = mulberry32(123456); // fixed seed
+    const rand = mulberry32(123456);
 
     return Array.from({ length: 60 }, () => ({
       left: rand() * 100,
@@ -38,34 +33,22 @@ export default function Rain() {
   });
 
   useEffect(() => {
-    const audio = new Audio("/sounds/rainLight1.mp3");
-    audio.loop = true;
-    audio.volume = 0;
+    const targetRain = 0.4;
+    const targetNature = 0.3;
+    let volumeRain = 0;
+    let volumeNature = 0;
 
-    audioRef.current = audio;
-
-    const fadeInterval = window.setInterval(() => {
-      const a = audioRef.current;
-      if (!a) return;
-
-      if (!startedRef.current) {
-        a.play()
-          .then(() => {
-            startedRef.current = true;
-          })
-          .catch(() => {});
-      }
-
-      if (startedRef.current && a.volume < 0.4) {
-        a.volume = Math.min(a.volume + 0.02, 0.4);
-      }
+    const interval = window.setInterval(() => {
+      volumeRain = Math.min(volumeRain + targetRain / 20, targetRain);
+      volumeNature = Math.min(volumeNature + targetNature / 20, targetNature);
+      soundManager.setVolume("rain", volumeRain);
+      soundManager.setVolume("nature", volumeNature);
     }, 100);
 
     return () => {
-      clearInterval(fadeInterval);
-      audio.pause();
-      audio.src = "";
-      audioRef.current = null;
+      clearInterval(interval);
+      soundManager.pause("rain");
+      soundManager.pause("nature");
     };
   }, []);
 
@@ -106,7 +89,3 @@ export default function Rain() {
     </div>
   );
 }
-
-
-
-

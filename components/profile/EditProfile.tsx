@@ -1,22 +1,13 @@
+
 import Image from "next/image";
 import { useState } from "react";
 import { ProfileDraft } from "@/utils/typing";
-import {
-  ProfilePrivate,
-  ProfilePublic,
-  useUpdateProfilePrivate,
-  useUpdateProfilePublic,
-} from "@/lib/Profiles";
-import {
-  PROFILE_AVATARS,
-  PROFILE_BANNERS,
-  DISPLAY_SETTINGS,
-} from "@/utils/constants";
+import { ProfilePrivate, ProfilePublic, useUpdateProfilePrivate, useUpdateProfilePublic } from "@/lib/Profiles";
+import { PROFILE_AVATARS, PROFILE_BANNERS, DISPLAY_SETTINGS,} from "@/utils/constants";
 
 type EditMode = "avatar" | "banner" | null;
 
-const DISPLAY_NAME_REGEX =
-  /^(?! )[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*(?<! )$/;
+const DISPLAY_NAME_REGEX = /^(?! )[a-zA-Z0-9_-]+( [a-zA-Z0-9_-]+)*(?<! )$/;
 
 export default function EditProfile({
   profilePrivate,
@@ -35,9 +26,7 @@ export default function EditProfile({
   const updateProfilePrivate = useUpdateProfilePrivate();
 
   const [editMode, setEditMode] = useState<EditMode>(null);
-  const [displayNameError, setDisplayNameError] = useState<string | null>(
-    null
-  );
+  const [displayNameError, setDisplayNameError] = useState<string | null>(null);
 
   const [draft, setDraft] = useState<ProfileDraft>(() => ({
     display_name: profilePublicMe.display_name,
@@ -52,12 +41,10 @@ export default function EditProfile({
     show_rta_leaderboard: profilePrivate.show_rta_leaderboard,
     show_recent: profilePrivate.show_recent,
     show_visitor_counter: false,
+    allow_sounds: profilePrivate.allow_sounds,
   }));
 
-  function updateDraft<K extends keyof ProfileDraft>(
-    key: K,
-    value: ProfileDraft[K]
-  ) {
+  function updateDraft<K extends keyof ProfileDraft>(key: K, value: ProfileDraft[K]) {
     setDraft((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -92,6 +79,7 @@ export default function EditProfile({
       show_rta_leaderboard: draft.show_rta_leaderboard,
       show_recent: draft.show_recent,
       show_visitor_counter: false,
+      allow_sounds: draft.allow_sounds,
     };
 
     updateProfilePrivate.mutate(privateDraft, {
@@ -234,7 +222,7 @@ export default function EditProfile({
                     min="0"
                     max="360"
                     value={draft?.colour ?? 200}
-                    onChange={(e) => updateDraft("colour", Number(e.target.value))}
+                    onChange={(e) => updateDraft("colour", Math.max(0, Math.min(360, Number(e.target.value))))}
                     className="w-full cursor-pointer"
                   />
 
@@ -302,7 +290,7 @@ export default function EditProfile({
             />
           </div>
 
-          {/* SETTINGS PANEL */}
+          {/* DISPLAY SETTINGS */}
           <div className="rounded-3xl bg-slate-900/70 p-1">
             <h2 className="text-xl font-semibold mb-2">
               Display Settings

@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useHoverDropdown, useOnClickOutside } from "@/utils/common";
-import { PROFILE_AVATARS, PROFILE_COLOURS, CURSOR } from "@/utils/constants"
+import { PROFILE_AVATARS, CURSOR } from "@/utils/constants"
 import { ProfilePublic } from "@/lib/Profiles";
 
 const USER_LINKS = [
@@ -55,7 +55,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
       >
         <div 
           className="h-6 w-6 rounded-full text-black flex items-center justify-center border border-cyan-400/20 shadow-[0_0_16px_rgba(34,211,238,0.24)]"
-          style={{ backgroundColor: PROFILE_COLOURS[profilePublicMe.colour] ?? PROFILE_COLOURS[0] }}
+          style={{ backgroundColor: `hsl(${profilePublicMe.colour ?? 0}, 80%, 60%)`}}
         >
           <Image
             src={PROFILE_AVATARS[profilePublicMe.avatar] ?? PROFILE_AVATARS[0]}

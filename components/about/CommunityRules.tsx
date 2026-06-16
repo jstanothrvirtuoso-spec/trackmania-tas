@@ -1,15 +1,37 @@
 
+import { soundManager } from "@/lib/SoundManager";
 import { useState, useRef, useEffect } from "react";
 
-const text = `Players who break rules 1, 2 or 5 will have their records removed!`;
-const chars = text.split("");
+const chars = `Players who break rules 1, 2 or 5 will have their records removed!`.split("");
 
 export function CommunityRules() {
 
   const [fadedIndices, setFadedIndices] = useState<number[]>([]);
   const containerRef = useRef<HTMLHeadingElement | null>(null);
-  const hoverAudioRef = useRef<HTMLAudioElement | null>(null);
-  const proximityAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const el = containerRef.current;
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      const closestX = Math.max(rect.left, Math.min(e.clientX, rect.right));
+      const closestY = Math.max(rect.top, Math.min(e.clientY, rect.bottom));
+      const dx = e.clientX - closestX;
+      const dy = e.clientY - closestY;
+      const dist = Math.hypot(dx, dy);
+      const maxDistance = 50;
+
+      let volume = 1 - dist / maxDistance;
+      volume = Math.max(0, Math.min(1, volume)) * 0.6;
+
+      soundManager.play("electricHum");
+      soundManager.setVolume("electricHum", volume);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -27,76 +49,13 @@ export function CommunityRules() {
     return () => clearInterval(interval);
   }, []);
   
-  useEffect(() => {
-    const audio = new Audio("/sounds/load.mp3");
-    audio.volume = 0.6;
-
-    hoverAudioRef.current = audio;
-
-    return () => {
-      audio.pause();
-      hoverAudioRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    const audio = new Audio("/sounds/ElectHum.mp3");
-    audio.loop = true;
-    audio.volume = 0;
-
-    proximityAudioRef.current = audio;
-
-    return () => {
-      audio.pause();
-      proximityAudioRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const el = containerRef.current;
-      const audio = proximityAudioRef.current;
-      if (!el || !audio) return;
-
-      const rect = el.getBoundingClientRect();
-
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      const maxDistance = 400;
-
-      let volume = 1 - dist / maxDistance;
-      volume = Math.max(0, Math.min(1, volume));
-
-      audio.volume = volume;
-
-      if (volume > 0 && audio.paused) {
-        audio.play().catch(() => {});
-      }
-
-      if (volume === 0 && !audio.paused) {
-        audio.pause();
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
   return (
     <div>
 
       <div
         className="relative group"
         onMouseEnter={() => {
-          if (!hoverAudioRef.current) return;
-          hoverAudioRef.current.currentTime = 0;
-          hoverAudioRef.current.play().catch(() => {});
+          soundManager.play("load");
         }}
       >
         {/* Main text */}

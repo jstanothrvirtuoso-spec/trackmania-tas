@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { STALE_TIME } from "@/utils/constants";
-import { AlertProvider } from "@/components/AlertProvider";
-import { ConfirmProvider } from "@/components/ConfirmProvider";
+import { AlertProvider } from "@/components/providers/AlertProvider";
+import { ConfirmProvider } from "@/components/providers/ConfirmProvider";
+import { SoundProvider } from "@/components/providers/SoundProvider";
 
 export default function Providers({
   children,
@@ -25,9 +26,13 @@ export default function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfirmProvider>
-        <AlertProvider>{children}</AlertProvider>
-      </ConfirmProvider>
+      <SoundProvider>
+        <ConfirmProvider>
+          <AlertProvider>
+            {children}
+          </AlertProvider>
+        </ConfirmProvider>
+      </SoundProvider>
     </QueryClientProvider>
   );
 }

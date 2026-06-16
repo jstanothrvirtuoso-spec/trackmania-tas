@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAlert } from "@/components/AlertProvider";
+import { useAlert } from "@/components/providers/AlertProvider";
 
 const supabase = createClient();
 

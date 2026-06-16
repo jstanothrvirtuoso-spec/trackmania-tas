@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Rain from "@/components/about/rain";
-import { useEffect, useRef } from "react";
 import { HallOfFame } from "@/components/about/HallOfFame";
 import { BadgeTable } from "@/components/about/BadgeTable";
 import { Maintainers } from "@/components/about/Maintainers";
@@ -11,34 +10,6 @@ import { CategoryTable } from "@/components/about/CategoryTable";
 
 export default function Page() {
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    const audio = new Audio("/sounds/Nature.mp3");
-    audio.loop = true;
-    audio.volume = 0.25;
-    audioRef.current = audio;
-
-    let unlocked = false;
-
-    const unlock = async () => {
-      if (unlocked) return;
-      unlocked = true;
-      try {
-        await audio.play();
-      } catch {}
-      window.removeEventListener("pointerdown", unlock);
-    };
-
-    audio.play().catch(() => {});
-    window.addEventListener("pointerdown", unlock);
-
-    return () => {
-      audio.pause();
-      window.removeEventListener("pointerdown", unlock);
-    };
-  }, []);
-  
   return (
     <main className="relative flex min-h-screen flex-col items-center overflow-hidden">
 

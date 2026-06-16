@@ -6,11 +6,12 @@ import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { TimeState, Category } from "@/utils/typing";
 import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constants";
 import { DropSelect } from "@/components/DropSelect";
-import { useAlert } from "@/components/AlertProvider";
+import { useAlert } from "@/components/providers/AlertProvider";
 import AuthorSelector from "@/components/AuthorSelector";
 import { trackIds } from "@/lib/TrackId";
 import { useProfilePublicMe } from "@/lib/Profiles";
 import { trackList } from "@/lib/TrackList";
+import { soundManager } from "@/lib/SoundManager";
 
 type FormState = {
   authors: string[];
@@ -241,15 +242,8 @@ export default function SubmitForm() {
       resetForm();
     } finally {
       setLoading(false);
-      const audio = new Audio("/sounds/stary.mp3");
 
-      audio.addEventListener("error", (e) => {
-        console.error("Audio error:", e);
-      });
-
-      audio.play().catch((err) => {
-        console.error("Play failed:", err);
-      });
+      soundManager.play("send")
     }
   }
 

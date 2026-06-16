@@ -108,5 +108,6 @@ export type ProfileDraft = {
   show_rta_leaderboard: boolean;
   show_recent: boolean;
   show_visitor_counter: boolean;
+  allow_sounds: boolean;
 };
 

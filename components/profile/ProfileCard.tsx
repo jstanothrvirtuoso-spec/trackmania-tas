@@ -2,11 +2,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
 import { Role } from "@/utils/typing";
-import {
-  PROFILE_AVATARS,
-  PROFILE_BANNERS,
-  PROFILE_COLOURS,
-} from "@/utils/constants";
+import { PROFILE_AVATARS, PROFILE_BANNERS } from "@/utils/constants";
 
 const ROLE_TEXT: Record<Role, string> = {
   user: "Verified TASer",
@@ -50,10 +46,8 @@ const beamRef = useRef<HTMLDivElement>(null);
   const bottomBarRef = useRef<HTMLDivElement>(null);
 
   const avatar = PROFILE_AVATARS[profile.avatar] ?? PROFILE_AVATARS[0];
-  const banner =
-    PROFILE_BANNERS[profile.banner] ?? PROFILE_BANNERS[0];
-  const avatar_colour =
-    PROFILE_COLOURS[profile.colour] ?? PROFILE_COLOURS[0];
+  const banner = PROFILE_BANNERS[profile.banner] ?? PROFILE_BANNERS[0];
+  const avatar_colour = `hsl(${profile.colour}, 80%, 60%)`
 
   /* =========================
      PARTICLES (FIXED)
@@ -295,7 +289,7 @@ const beamRef = useRef<HTMLDivElement>(null);
       <button
         onClick={onEditClick}
         className="absolute top-10 right-3 z-50 group flex items-center gap-2 px-3 py-2 
-                   bg-white/80 backdrop-blur hover:bg-black text-pink-500 
+                   bg-white/80 backdrop-blur hover:bg-black text-pink-500 cursor-pointer
                    
                    rounded-full shadow-lg transition-all hover:scale-105 border border-pink-100"
         aria-label="Edit profile"

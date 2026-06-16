@@ -125,19 +125,6 @@ export const PROFILE_AVATARS: Record<number, string> = {
   10: "/avatars/kim.webp",
 };
 
-export const PROFILE_COLOURS: Record<number, string> = {
-  0: "#64748b",
-  1: "#ffffff",
-  2: "#ef4444",
-  3: "#f97316",
-  4: "#eab308",
-  5: "#22c55e",
-  6: "#06b6d4",
-  7: "#3b82f6",
-  8: "#8b5cf6",
-  9: "#ec4899",
-};
-
 export const DISPLAY_SETTINGS = [
   { key: "show_rta", label: "RTA Records", desc: "Show RTA record table" },
   { key: "show_time_saved", label: "Time Saved", desc: "Display time saved table"},
@@ -145,6 +132,7 @@ export const DISPLAY_SETTINGS = [
   { key: "show_rta_leaderboard", label: "RTA Leaderboard", desc: "Show RTA leaderboard rankings"},
   { key: "show_recent", label: "Highlight Recent", desc: "Highlight recently added TASes" },
   // { key: "show_visitor_counter", label: "Visitor Counter", desc: "Display visitor count" },
+  { key: "allow_sounds", label: "Allow Sounds", desc: "Allow/mute all website sounds/music" },
 ] as const;
 
 export const CATEGORY_COLOURS: Record<string, [string, string, string]> = {
