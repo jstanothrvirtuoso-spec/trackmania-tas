@@ -10,9 +10,9 @@ class SoundManager {
     this.enabled = value;
 
     if (!value) {
-      this.sounds.forEach(s => {
-        s.pause();
-        s.currentTime = 0;
+      this.sounds.forEach(sound => {
+        sound.pause();
+        sound.currentTime = 0;
       });
     }
   }
@@ -28,7 +28,6 @@ class SoundManager {
 
     {/* Continuous */}
     this.register("electricHum", "/sounds/electricHum.mp3", true, 0);
-    this.register("nature", "/sounds/nature.mp3", true, 0);
     this.register("rain", "/sounds/rain.mp3", true, 0);
   }
 
@@ -40,14 +39,14 @@ class SoundManager {
     audio.volume = volume;
 
     this.sounds.set(key, audio);
-  }
+  } 
 
   get(key: string) {
     return this.sounds.get(key);
   }
 
   play(key: string) {
-    if (!this.enabled) return;
+    if (!this.enabled || !this.unlocked) return;
 
     const audio = this.sounds.get(key);
     if (!audio) return;
@@ -60,8 +59,9 @@ class SoundManager {
   unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
+    if (!this.enabled) return;
 
-    ["rain", "nature", "electricHum"].forEach((key) => {
+    ["rain", "electricHum"].forEach((key) => {
       const audio = this.sounds.get(key);
       audio?.play().catch(() => {});
     });

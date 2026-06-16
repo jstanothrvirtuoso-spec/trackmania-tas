@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { useAlert } from "@/components/providers/AlertProvider";
 
@@ -28,6 +29,7 @@ function validatePassword(password: string) {
 export default function ResetPasswordPage() {
   
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { showAlert } = useAlert();
 
   const [password, setPassword] = useState("");
@@ -61,6 +63,8 @@ export default function ResetPasswordPage() {
       }
 
       await supabase.auth.signOut();
+      queryClient.removeQueries({ queryKey: ["profile_public_me"] });
+      queryClient.removeQueries({ queryKey: ["profile_private"] });
 
       showAlert("Password updated successfully. Redirecting to login...");
 

@@ -8,7 +8,6 @@ Admin panel:
  - Connecting accounts with authors
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
-Add "allow sounds" option
 
 Fix tas-nadeo.png
   - Missing headline in imageog:image (No clear headline detected. Images with a headline get higher engagement.)

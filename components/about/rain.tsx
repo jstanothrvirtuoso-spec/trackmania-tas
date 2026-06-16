@@ -33,22 +33,20 @@ export default function Rain() {
   });
 
   useEffect(() => {
-    const targetRain = 0.4;
-    const targetNature = 0.3;
-    let volumeRain = 0;
-    let volumeNature = 0;
 
+    soundManager.setVolume("rain", 0)
+    soundManager.play("rain")
+    const targetRain = 0.4;
+
+    let volumeRain = 0;
     const interval = window.setInterval(() => {
       volumeRain = Math.min(volumeRain + targetRain / 20, targetRain);
-      volumeNature = Math.min(volumeNature + targetNature / 20, targetNature);
       soundManager.setVolume("rain", volumeRain);
-      soundManager.setVolume("nature", volumeNature);
     }, 100);
 
     return () => {
       clearInterval(interval);
       soundManager.pause("rain");
-      soundManager.pause("nature");
     };
   }, []);
 
