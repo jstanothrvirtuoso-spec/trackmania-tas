@@ -23,7 +23,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/tas-nadeo.png",
+        url: "/tas-nadeo.webp",
         width: 1200,
         height: 630,
       },
@@ -34,7 +34,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "TAS Nadeo",
     description: "TAS Nadeo is a Trackmania TAS leaderboard and community site for nadeo TAS records, inputs, and various stats.",
-    images: ["/tas-nadeo.png"],
+    images: ["/tas-nadeo.webp"],
   },
 
   icons: {

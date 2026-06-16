@@ -18,7 +18,7 @@ export default function Page() {
       {/* ================= BACKGROUND ================= */}
       <div className="absolute inset-0 -z-20 overflow-hidden">
         <Image
-          src="/wallpapers/about-bg.png"
+          src="/wallpapers/about-bg.webp"
           alt=""
           fill
           className="object-cover scale-[1.01]"

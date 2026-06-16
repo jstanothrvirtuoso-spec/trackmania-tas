@@ -56,7 +56,7 @@ export default function TmnfHistory() {
       {/* TMNF side panel */}
       {/* <div className="hidden xl:block fixed left-0 top-0 bottom-50 w-full -z-5 overflow-hidden opacity-30">
         <Image
-          src="/wallpapers/tmnf-stats-side.png"
+          src="/wallpapers/tmnf-stats-side.webp"
           alt=""
           fill
           className="object-contain object-left"

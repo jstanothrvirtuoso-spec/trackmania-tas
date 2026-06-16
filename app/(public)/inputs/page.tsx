@@ -15,13 +15,13 @@ type Trick = {
 const copyInputs = async (env: Environment, index: number) => {
   const fileMap = {
     STADIUM: {
-      left: "/inputs/Stadium-Left.txt",
-      right: "/inputs/Stadium-Right.txt",
+      left: "/inputs/inputs/stadiumleft.txt",
+      right: "/inputs/inputs/stadiumright.txt",
     },
-    COAST: (i: number) => `/inputs/coasttrick${i}.txt`,
-    ISLAND: (i: number) => `/inputs/islandtrick${i}.txt`,
-    SNOW: () => `/inputs/snowtrick.txt`,
-    BAY: () => `/inputs/baytrick.txt`,
+    COAST: (i: number) => `/inputs/inputs/coasttrick${i}.txt`,
+    ISLAND: (i: number) => `/inputs/inputs/islandtrick${i}.txt`,
+    SNOW: `/inputs/inputs/snowtrick.txt`,
+    BAY: `/inputs/inputs/baytrick.txt`,
   };
 
   let path = "";
@@ -33,9 +33,9 @@ const copyInputs = async (env: Environment, index: number) => {
   } else if (env === "ISLAND") {
     path = fileMap.ISLAND(index + 1);
   } else if (env === "SNOW") {
-    path = fileMap.SNOW();
+    path = fileMap.SNOW;
   } else if (env === "BAY") {
-    path = fileMap.BAY();
+    path = fileMap.BAY;
   }
 
   if (!path) return;
@@ -48,20 +48,20 @@ const copyInputs = async (env: Environment, index: number) => {
 };
 
 const tricks: Record<Environment, Trick[]> = {
-  "STADIUM": [ { src: "/inputs/stadiumvideo.m4v", button: ["Left", "Right"], notes: ["Bruteforce using the settings above until you reach 208 km/h"]} ],
+  "STADIUM": [ { src: "/inputs/videos/stadiumvideo.webm", button: ["Left", "Right"], notes: ["Bruteforce using the settings above until you reach 208 km/h"]} ],
   "ISLAND": [
-    { src: "/inputs/island1.m4v", button: ["Inputs 1"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/island2.m4v", button: ["Inputs 2"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/island3.m4v", button: ["Inputs 3"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/island4.m4v", button: ["Inputs 4"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island1.webm", button: ["Inputs 1"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island2.webm", button: ["Inputs 2"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island3.webm", button: ["Inputs 3"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island4.webm", button: ["Inputs 4"], notes: ["Bruteforce if the skip gear isn't working"]},
   ],
   "COAST": [
-    { src: "/inputs/coast1.m4v", button: ["Inputs 1"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/coast2.m4v", button: ["Inputs 2"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/coast3.m4v", button: ["Inputs 3"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/coast1.webm", button: ["Inputs 1"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/coast2.webm", button: ["Inputs 2"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/coast3.webm", button: ["Inputs 3"], notes: ["Bruteforce if the skip gear isn't working"]},
   ],
-  "SNOW": [ { src: "/inputs/snowvideo.m4v", button: ["Inputs"], notes: ["No bruteforce needed!"]} ],
-  "BAY": [ { src: "/inputs/bayvideo.mp4", button: ["Inputs"], notes: [ "I recommend you make your own start before using the trick", "Every start is different, so you cannot achieve the optimum result every time!"]} ],
+  "SNOW": [ { src: "/inputs/videos/snowvideo.webm", button: ["Inputs"], notes: ["No bruteforce needed!"]} ],
+  "BAY": [ { src: "/inputs/videos/bayvideo.webm", button: ["Inputs"], notes: [ "I recommend you make your own start before using the trick", "Every start is different, so you cannot achieve the optimum result every time!"]} ],
 };
 
 const btnClass = `sakura-font relative px-4 py-2 text-xs uppercase text-sky-100 tracking-[0.12em] leading-none
@@ -246,7 +246,7 @@ export default function InputsPage() {
             >
               {/* BACKGROUND */}
               <Image
-                src={`/inputs/${activeEnv.toLowerCase()}.png`}
+                src={`/inputs/backgrounds/${activeEnv.toLowerCase()}.webp`}
                 alt={`${activeEnv} background`}
                 fill
                 sizes="80vw"
@@ -301,7 +301,7 @@ export default function InputsPage() {
                   {activeEnv === "STADIUM" && (
                     <div className="overflow-hidden rounded-lg hidden md:flex">
                       <Image
-                        src="/inputs/stadiumtrick.png"
+                        src="/inputs/stadiumtrick.webp"
                         alt="Stadium trick instructions"
                         width={620}
                         height={400}

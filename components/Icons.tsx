@@ -177,6 +177,10 @@ export function EnvironmentIcon({ environment }: { environment: Environment }) {
         sizes="10vw"
         className="object-contain"
       />
+
+      {/* <div className="absolute bottom-full mb-1 hidden group-hover:block whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white shadow">
+        {environment}
+      </div> */}
     </div>
   )
 };
