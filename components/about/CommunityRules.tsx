@@ -128,7 +128,7 @@ export function CommunityRules() {
       <style>{`
         @font-face {
           font-family: "DOSVGA";
-          src: url("/fonts/DOSVGA.ttf") format("truetype");
+          src: url("/fonts/DOSVGA.woff2") format("woff2");
         }
 
         .vga-text {

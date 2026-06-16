@@ -2,12 +2,10 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { TasEntry, Category } from "@/utils/typing";
+import { TasEntry, RtaEntry, Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
 import { trackList } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
-import { useTasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 
 const TIER_COLOURS = [
   ["bg-emerald-700/30", "bg-emerald-700/40"],
@@ -24,16 +22,12 @@ const TIERS: Record<Category, number[]> = {
   "Low Input": [0, 1, 2],
 }
 
-export default function PercentSavedLeaderboard() {
+export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }: {
+  tasRecords: TasEntry[], 
+  bestRtaByTrack: Map<string, RtaEntry>
+}) {
 
-  const { data: rtaRecords = [] } = useRtaRecords();
-  const { data: tasRecords = [] } = useTasRecords();
   const [category, setCategory] = useState<Category>("Open");
-
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords])
 
   const filteredTasRecords = useMemo(() => {
     if (category === "Open") return tasRecords;
@@ -106,7 +100,7 @@ export default function PercentSavedLeaderboard() {
         />
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
+      <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-xs sm:text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
         <table className="table-fixed w-auto text-center backdrop-blur-md rounded-2xl">
           <thead className="text-slate-300 bg-slate-950/50">
             <tr>

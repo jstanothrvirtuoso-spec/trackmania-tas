@@ -108,7 +108,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
         style={{ width: 0, height: 0, overflow: "hidden" }}
       >
         {allOptions.map((option) => (
-          <span key={option.value} className="inline-block px-2 py-1 font-sans text-sm sm:text-md">
+          <span key={option.value} className="inline-block px-2 py-1 font-sans text-sm sm:text-base">
             {option.label}
           </span>
         ))}
@@ -117,7 +117,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
       {open && (
         <div
           ref={listRef}
-          className="absolute left-0 z-20 mt-0.5 w-full max-h-120 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm text-sm sm:text-md"
+          className="absolute left-0 z-20 mt-0.5 w-full max-h-120 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm text-sm sm:text-base"
           onScroll={(event) => {
             scrollTopRef.current = (event.target as HTMLDivElement).scrollTop;
           }}

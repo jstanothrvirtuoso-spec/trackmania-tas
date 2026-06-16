@@ -7,6 +7,9 @@ export default function VideoBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobile) return;
+
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -32,6 +35,7 @@ export default function VideoBackground() {
           muted
           loop
           playsInline
+          aria-hidden="true"
           className="w-full h-full object-cover"
         >
           <source src="/videos/wallpaper.webm" type="video/webm" />

@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { SortOrder, TasEntry } from "@/utils/typing";
+import { RtaEntry, SortOrder, TasEntry } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
 import { BADGE_IMAGES, BADGE_RANKS, OVERRIDE } from "@/utils/constants";
-import { useTasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import SortIndicator from "@/components/SortIndicator"
 import { BadgeIcon } from "@/components/Icons";
 
@@ -42,7 +40,7 @@ function getRankIndex(value: number, thresholds: readonly number[]) {
 
 function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: LeaderboardProps) {
   return (
-    <table className="min-w-full divide-y divide-slate-800 text-center text-xs backdrop-blur-md sm:text-sm">
+    <table className="min-w-full table-fixed divide-y divide-slate-800 text-center text-xs backdrop-blur-md sm:text-sm">
       <thead className="bg-slate-900/90 text-slate-300">
         <tr>
           <th
@@ -102,10 +100,10 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
           ? Array.from({ length: 25 }).map((_, i) => (
             <tr key={i} className={`${i % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10"}`}>
               <td className="py-2"><div className="h-4 w-7 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-              <td className="py-2"><div className="h-4 w-29 bg-slate-700 animate-pulse rounded" /></td>
-              <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-              <td className="py-2"><div className="h-4 w-10 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-              <td className="py-2"><div className="h-4 w-16 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+              <td className="py-2"><div className="h-4 w-25 bg-slate-700 animate-pulse rounded" /></td>
+              <td className="py-2"><div className="h-4 w-12 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+              <td className="py-2"><div className="h-4 w-12 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+              <td className="py-2"><div className="h-4 w-15 bg-slate-700 animate-pulse mx-auto rounded" /></td>
             </tr> 
             )) 
           : data.map((a, index) => {
@@ -158,18 +156,13 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
   )
 }
 
-export default function GlobalLeaderboard() {
+export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
+  tasRecords: TasEntry[], 
+  bestRtaByTrack: Map<string, RtaEntry>
+}) {
 
   const [sortField, setSortField] = useState<SortField>("tases");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-
-  const { data: rtaRecords = [] } = useRtaRecords();
-  const { data: tasRecords = [] } = useTasRecords();
-
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords);
-  }, [rtaRecords]);
 
   const authorStats = useMemo(() => {
     const authorMap = new Map<string, AuthorStat>();
@@ -288,8 +281,7 @@ export default function GlobalLeaderboard() {
     }
   };
 
-  const isLoading = sortedAuthorStats.length === 0 && (tasRecords.length === 0 || rtaRecords.length === 0);
-
+  const isLoading = sortedAuthorStats.length === 0 && (tasRecords.length === 0 || !bestRtaByTrack);
   const mobileAuthors = sortedAuthorStats.filter(a => a.tases >= 15);
   const desktopAuthors = sortedAuthorStats.filter(a => a.tases >= 3);
 

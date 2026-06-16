@@ -49,7 +49,7 @@ export default function TmnfHistory() {
           playsInline
           className="w-full h-full object-cover"
         >
-          <source src="/videos/tmnf-stats-bg.mp4" type="video/mp4" />
+          <source src="/videos/tmnf-stats-bg.webm" type="video/webm" />
         </video>
       </div>
 

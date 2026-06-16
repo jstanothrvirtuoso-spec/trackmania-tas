@@ -1,27 +1,22 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { useTasRecords } from "@/lib/TasRecords";
+import { TasEntry } from "@/utils/typing";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { CATEGORY_COLOURS } from "@/utils/constants";
 
-export default function RecentlyAdded() {
-
-  const { data: tasRecords = [] } = useTasRecords();
+export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) {
 
   const records = useMemo(() => {
-    
     return tasRecords
       .toSorted((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, 5);
-
   }, [tasRecords]);
   
-
   return (
     <div className="flex flex-col gap-3">
       <div className="mt-2 flex w-full justify-center">
-        <h1 className="text-sm font-semibold tracking-[0.25em] text-slate-300 uppercase [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
+        <h1 className="px-10 text-sm font-semibold tracking-[0.25em] text-slate-300 uppercase [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
           Recently Added
         </h1>
       </div>
