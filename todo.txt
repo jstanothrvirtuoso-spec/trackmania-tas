@@ -9,9 +9,6 @@ Admin panel:
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 
-Go through PageSpeed efficiency and security issues
-
-
 
 //////////////////////////////////////////////////////////////////////////
 // Kimura

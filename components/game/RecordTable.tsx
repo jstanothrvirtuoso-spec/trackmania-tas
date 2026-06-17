@@ -191,7 +191,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                 <EnvironmentIcon environment={row.trackInfo.environment} />
               </td>
               
-              <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap text-slate-100")}> 
+              <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap text-slate-100")}>
                 <Link
                   key={row.track}
                   href={`/tracks?track=${encodeURIComponent(row.track)}`}
