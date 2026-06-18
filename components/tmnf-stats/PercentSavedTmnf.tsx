@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { TasEntry, Category, RtaEntry } from "@/utils/typing";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 
 const TIER_COLOURS = [
   ["bg-emerald-700/30", "bg-emerald-700/40"],
@@ -49,7 +49,7 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
   const data = useMemo(() => {
     const result = [];
 
-    for (const track of Object.keys(trackList)) {
+    for (const track of Object.keys(TRACKS)) {
       const tas = bestTasByTrack.get(track);
       const rta = bestRtaByTrack.get(track);
 

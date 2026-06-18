@@ -10,7 +10,7 @@ import { useAlert } from "@/components/providers/AlertProvider";
 import AuthorSelector from "@/components/AuthorSelector";
 import { trackIds } from "@/lib/TrackId";
 import { useProfilePublicMe } from "@/lib/Profiles";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 import { soundManager } from "@/lib/SoundManager";
 
 type FormState = {
@@ -200,7 +200,7 @@ export default function SubmitForm() {
         return;
       }
 
-      const game = trackList[replay.track]?.game;
+      const game = TRACKS[replay.track]?.game;
       const filePath = `pending/${profilePublicMe.id}/${crypto?.randomUUID?.() ?? Date.now()}.gbx`;
 
       const { error: uploadError } = await supabase.storage
@@ -331,7 +331,7 @@ export default function SubmitForm() {
                           {`${replay.time.minutes > 0 ? String(replay.time.minutes) + ":" : ""}`}
                           {String(replay.time.seconds).padStart(2, "0")}.
                           {String(replay.time.hundredths).padStart(2, "0")}
-                          {`${trackList[replay.track].game === "TM2" ? replay.time.thousandth : ""}`}
+                          {`${TRACKS[replay.track].game === "TM2" ? replay.time.thousandth : ""}`}
                         </span>
                       </div>
                     ) : (

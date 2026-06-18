@@ -12,7 +12,7 @@ import { useConfirm } from "@/components/providers/ConfirmProvider";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { usePendingSubmissions } from "@/lib/TasSubmissions";
-import { trackList, tracksByGame } from "@/lib/TrackList";
+import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 import AuthorSelector from "@/components/AuthorSelector";
 import TrackRecords from "./TrackRecords";
@@ -73,7 +73,7 @@ export default function AdminTas() {
     thousandth: 0,
   });
 
-  const isStunt = form.track ? trackList[form.track]?.category === "Stunt" : false;
+  const isStunt = form.track ? TRACKS[form.track]?.category === "Stunt" : false;
   const timeMs = timeStateToMs(time);
   const trackOptions = tracksByGame[form.game]
 
@@ -260,7 +260,7 @@ export default function AdminTas() {
       const confirmed = await confirm(`
         Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
           Time (ms): ${t.time_ms}
-          Formatted Time: ${formatTime(t.time_ms, trackList[t.track].category === "Stunt", t.game === "TM2")}\n
+          Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].category === "Stunt", t.game === "TM2")}\n
         This cannot be undone!`
       );
 

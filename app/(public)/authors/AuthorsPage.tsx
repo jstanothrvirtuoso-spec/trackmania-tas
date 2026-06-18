@@ -9,7 +9,7 @@ import { useProfilePublic } from "@/lib/Profiles";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { DropSelect } from "@/components/DropSelect";
 import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart } from "@/components/authors/AuthorCharts";
@@ -94,7 +94,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
 
         return {
           track: tas.track,
-          trackInfo: trackList[tas.track],
+          trackInfo: TRACKS[tas.track],
           tas,
           rta: bestRtaByTrack.get(tas.track) ?? null,
           isCurrentBestTas: currentBest === tas,
@@ -135,7 +135,53 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
 
   return (
     <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-20 pb-8 text-slate-100">
-      
+      {/* Background */}
+{/* Background */}
+<div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+
+  {/* base */}
+  <div className="absolute inset-0 bg-[#070A12]" />
+
+  {/* large neon grid */}
+  <div
+    className="
+      absolute inset-0
+      opacity-[0.22]
+      [background-image:
+        linear-gradient(to_right,rgba(34,211,238,0.25)_1px,transparent_1px),
+        linear-gradient(to_bottom,rgba(168,85,247,0.25)_1px,transparent_1px)
+      ]
+      [background-size:64px_64px]
+    "
+  />
+
+  {/* secondary diagonal neon mesh */}
+  <div
+    className="
+      absolute inset-0
+      opacity-[0.10]
+      [background-image:repeating-linear-gradient(135deg,rgba(236,72,153,0.25),rgba(236,72,153,0.25)_1px,transparent_1px,transparent_18px)]
+    "
+  />
+
+  {/* scanlines */}
+  <div
+    className="
+      absolute inset-0
+      opacity-[0.08]
+      [background-image:repeating-linear-gradient(to_bottom,transparent,transparent_3px,rgba(255,255,255,0.04)_4px)]
+    "
+  />
+
+  {/* big angular shapes */}
+  <div className="absolute -top-40 left-[-120px] h-[500px] w-[500px] rotate-12 bg-cyan-500/10 blur-[0px] border border-cyan-400/20" />
+  <div className="absolute top-1/3 right-[-180px] h-[600px] w-[600px] -rotate-6 bg-fuchsia-500/10 border border-fuchsia-400/20" />
+  <div className="absolute bottom-[-200px] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rotate-3 bg-emerald-500/10 border border-emerald-400/20" />
+
+  {/* vignette */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.2)_40%,rgba(0,0,0,0.9)_100%)]" />
+
+</div>
       {/* Options */}
       <div className="mb-3 flex flex-row gap-2 px-4">
         

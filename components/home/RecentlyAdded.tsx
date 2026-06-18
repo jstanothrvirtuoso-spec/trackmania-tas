@@ -15,10 +15,16 @@ export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) 
   
   return (
     <div className="flex flex-col gap-3">
-      <div className="mt-2 flex w-full justify-center">
-        <h1 className="px-10 text-sm font-semibold tracking-[0.25em] text-slate-300 uppercase [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
-          Recently Added
-        </h1>
+      <div className="mt-2 flex justify-center">
+        <div className="relative overflow-hidden rounded-xl border border-indigo-500/40 bg-slate-900 px-8 py-3 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 via-transparent to-indigo-500/30" />
+          <div className="absolute left-0 top-0 h-full w-1 bg-indigo-400" />
+          <div className="absolute right-0 top-0 h-full w-1 bg-indigo-400" />
+
+          <h1 className="relative text-sm font-bold uppercase tracking-[0.4em] text-white whitespace-nowrap">
+            Recently Added
+          </h1>
+        </div>
       </div>
 
       {records.map((record) => (

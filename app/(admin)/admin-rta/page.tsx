@@ -10,7 +10,7 @@ import { GAME_LIST } from "@/utils/constants";
 import { useAlert } from "@/components/providers/AlertProvider";
 import { useConfirm } from "@/components/providers/ConfirmProvider";
 import { useRtaRecords } from "@/lib/RtaRecords";
-import { trackList, tracksByGame } from "@/lib/TrackList";
+import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { VideoIcon } from "@/components/Icons";
 import { DropSelect } from "@/components/DropSelect";
 
@@ -57,7 +57,7 @@ export default function AdminRta() {
     thousandth: 0,
   });
 
-  const isStunt = form.track ? trackList[form.track]?.category === "Stunt" : false;
+  const isStunt = form.track ? TRACKS[form.track]?.category === "Stunt" : false;
   const timeMs = timeStateToMs(time);
   const trackOptions = tracksByGame[form.game]
 
@@ -157,7 +157,7 @@ export default function AdminRta() {
     const confirmed = await confirm(`
       Delete ${t.track} for ${t.player}?
         Time (ms): ${t.time_ms}
-        Formatted Time: ${formatTime(t.time_ms, trackList[t.track].category === "Stunt", t.game === "TM2")}\n
+        Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].category === "Stunt", t.game === "TM2")}\n
       This cannot be undone!`
     );
 

@@ -16,7 +16,6 @@ export type Game = (typeof GAME_LIST)[number];
 export type Environment = (typeof ENVIRONMENT)[number];
 export type Category = (typeof CATEGORIES)[number];
 
-
 export type SubmitForm = {
   id: string;
   game: Game | null;

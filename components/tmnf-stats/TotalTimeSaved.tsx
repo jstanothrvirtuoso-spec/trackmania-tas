@@ -1,7 +1,7 @@
 
 import { useState, useMemo } from "react";
 import { RtaEntry, TasEntry } from "@/utils/typing";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 
 type TrackSets = "Overall" | "White" | "Green" | "Blue" | "Red" | "Black"
 
@@ -54,14 +54,14 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
     };
 
     for (const tas of tmnfRecords) {
-      const track = trackList[tas.track].baseTrack ?? tas.track
+      const track = TRACKS[tas.track].baseTrack ?? tas.track
       const rta = bestRtaByTrack.get(track)!;
       const currentBest = bestTasByTrack.get(track) ?? rta.time_ms;
 
       if (tas.time_ms < currentBest) {
 
         const improvement = currentBest - tas.time_ms;
-        const category = trackList[track].category as TrackSets;
+        const category = TRACKS[track].category as TrackSets;
 
         cumulativeSaved[category] += improvement;
         cumulativeSaved["Overall"] += improvement;

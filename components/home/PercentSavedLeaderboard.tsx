@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TasEntry, RtaEntry, Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 
 const TIER_COLOURS = [
@@ -59,7 +59,7 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
   const data = useMemo(() => {
     const result = [];
 
-    for (const track of Object.keys(trackList)) {
+    for (const track of Object.keys(TRACKS)) {
       const tas = bestTasByTrack.get(track);
       const rta = bestRtaByTrack.get(track);
 

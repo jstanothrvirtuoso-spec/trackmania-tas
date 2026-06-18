@@ -1,9 +1,9 @@
 
 import { useMemo } from "react";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 import { TasEntry } from "@/utils/typing";
 
-const TRACK_ARRAY = Object.values(trackList);
+const TRACK_ARRAY = Object.values(TRACKS);
 const TOTAL_BY_GAME = (() => {
   const map = new Map<string, number>();
 
@@ -21,7 +21,7 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
     
     const completedByGame = new Map<string, Set<string>>();
     for (const tas of tasRecords) {
-      const game = trackList[tas.track]?.game;
+      const game = TRACKS[tas.track]?.game;
 
       if (!game) continue;
       if (!completedByGame.has(game)) {

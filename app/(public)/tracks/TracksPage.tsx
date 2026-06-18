@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getTmxLink } from "@/utils/common";
@@ -9,7 +10,7 @@ import { Game, Category } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
 import { RecordProgressionGraph } from "./ProgressionGraph";
 import { useRtaRecords } from "@/lib/RtaRecords";
-import { trackList, tracksByGame } from "@/lib/TrackList";
+import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
 
@@ -34,6 +35,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
   const [game, setGame] = useState<Game>(initialGame);
   const [track, setTrack] = useState<string>(initialTrack);
+  const [imageOpen, setImageOpen] = useState(false);
 
   const { records, rta, minDate } = useMemo(() => {
     if (!track || !rtaRecords || !tasRecords) return { 
@@ -71,10 +73,10 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   }, [track, tasRecords, rtaRecords, nowDate]);
 
   const trackOptions = tracksByGame[game];
-  const isStunt = track ? trackList[track].category === "Stunt" : false;
-  const isTM2 = track ? trackList[track].game === "TM2" : false;
+  const isStunt = track ? TRACKS[track].category === "Stunt" : false;
+  const isTM2 = track ? TRACKS[track].game === "TM2" : false;
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
-  const tmxLink = getTmxLink(trackList[track].id, trackList[track].tmx ?? trackList[track].game);
+  const tmxLink = getTmxLink(TRACKS[track].id, TRACKS[track].tmx ?? TRACKS[track].game);
 
   function updateTrack(track: string) {
     setTrack(track);
@@ -155,7 +157,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   }, [records, useMinutes, isStunt]);
 
   return (
-    <div className="flex w-full pt-20 flex-col items-center px-4 py-8 text-slate-100">
+    <div className="flex pt-20 flex-col items-center justify-center px-4 py-8 text-slate-100">
 
       {/* Wallpaper */}
       <div
@@ -164,99 +166,124 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       />
       <div className="fixed inset-0 -z-10 bg-slate-950/70 pointer-events-none" />
 
-      {/* Options */}
-      <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
-        <DropSelect
-          initialValue={game}
-          options={GAME_LIST.map((game) => ({
-            value: game,
-            label: game,
-          }))}
-          onChange={(value) => updateGame(value as Game)}
-        />
-        
-        <DropSelect
-          initialValue={track}
-          options={trackOptions.map((track) => ({
-            value: track,
-            label: track,
-          }))}
-          onChange={(value) => updateTrack(value)}
-        />
-      </div>
+      <div className="flex flex-row w-full max-w-7xl items-center justify-center">
+        <div className="flex flex-col w-full items-center justify-center">
 
-      {/* Title/RTA */}
-      <div className="mb-4 mt-6 text-center">
+          {/* Options */}
+          <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
+            <DropSelect
+              initialValue={game}
+              options={GAME_LIST.map((game) => ({
+                value: game,
+                label: game,
+              }))}
+              onChange={(value) => updateGame(value as Game)}
+            />
+            
+            <DropSelect
+              initialValue={track}
+              options={trackOptions.map((track) => ({
+                value: track,
+                label: track,
+              }))}
+              onChange={(value) => updateTrack(value)}
+            />
+          </div>
 
-        <div className="flex flex-col items-center">
-          <button className="text-4xl font-black tracking-tight text-white [text-shadow:2px_2px_4px_rgba(0,0,0,0.6)]"> 
-            {tmxLink ? (
-              <a href={tmxLink} target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition">
-                {track}
-              </a>
-            ) : (
-              track
-            )}
-          </button>
-          <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-xl" />
-        </div>
-        <div className="flex flex-col gap-1 items-center sm:flex-row sm:gap-4">
-          {records.length > 0 && (
-            <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
-              <div className="text-left translate-y-[2px]">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                  TAS Record
-                </div>
-
-                <div className="font-mono text-lg font-semibold text-emerald-400">
-                  {formatTime(records[0].time_ms, isStunt, isTM2)}
-                  <span className="text-xs text-blue-300">{` (-${rta ? formatPercentSaved(records[0].time_ms, rta.time_ms, 3) : ""}%)`}</span>
-                </div>
-              </div>
-
-              <div className="h-8 w-px bg-slate-700" />
-
-              <div className="text-left">
-                <div className="text-slate-200 italic text-sm sm:text-lg">
-                  {records[0].authors.length > 2 ? `${records[0].authors[0]} + ${records[0].authors.length - 1} authors` : records[0].authors.join(', ')}
-                </div>
-
-                <div className="text-xs text-slate-400">
-                  {formatDate(records[0].date)}
-                </div>
-              </div>
+          {/* Title/RTA */}
+          <div className="mb-4 mt-6 text-center">
+            <div className="flex flex-col items-center">
+              <button className="text-4xl font-black tracking-tight text-white [text-shadow:2px_2px_4px_rgba(0,0,0,0.6)]"> 
+                {tmxLink ? (
+                  <a href={tmxLink} target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition">
+                    {track}
+                  </a>
+                ) : (
+                  track
+                )}
+              </button>
+              <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-xl" />
             </div>
-          )}
-          {rta && (
-            <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
-              <div className="text-left translate-y-[2px]">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                  RTA Record
-                </div>
+            <div className="flex flex-col gap-1 items-center sm:flex-row sm:gap-4">
+              {records.length > 0 && (
+                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
+                  <div className="text-left translate-y-[2px]">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                      TAS Record
+                    </div>
 
-                <div className="font-mono text-lg font-semibold text-emerald-400">
-                  {formatTime(rta.time_ms, isStunt, isTM2)}
-                </div>
-              </div>
+                    <div className="font-mono text-lg font-semibold text-emerald-400">
+                      {formatTime(records[0].time_ms, isStunt, isTM2)}
+                      <span className="text-xs text-blue-300">{` (-${rta ? formatPercentSaved(records[0].time_ms, rta.time_ms, 3) : ""}%)`}</span>
+                    </div>
+                  </div>
 
-              <div className="h-8 w-px bg-slate-700" />
+                  <div className="h-8 w-px bg-slate-700" />
 
-              <div className="text-left">
-                <div className="text-slate-200 italic text-sm sm:text-lg">
-                  {rta.player}
-                </div>
+                  <div className="text-left">
+                    <div className="text-slate-200 italic text-sm sm:text-lg">
+                      {records[0].authors.length > 2 ? `${records[0].authors[0]} + ${records[0].authors.length - 1} authors` : records[0].authors.join(', ')}
+                    </div>
 
-                <div className="text-xs text-slate-400">
-                  {formatDate(rta.date)}
+                    <div className="text-xs text-slate-400">
+                      {formatDate(records[0].date)}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+              {rta && (
+                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
+                  <div className="text-left translate-y-[2px]">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                      RTA Record
+                    </div>
+
+                    <div className="font-mono text-lg font-semibold text-emerald-400">
+                      {formatTime(rta.time_ms, isStunt, isTM2)}
+                    </div>
+                  </div>
+
+                  <div className="h-8 w-px bg-slate-700" />
+
+                  <div className="text-left">
+                    <div className="text-slate-200 italic text-sm sm:text-lg">
+                      {rta.player}
+                    </div>
+
+                    <div className="text-xs text-slate-400">
+                      {formatDate(rta.date)}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
+
+        {/* Track image */}
+        {track && (
+          <div className="hidden lg:block shrink-0">
+            <button
+              onClick={() => setImageOpen(true)}
+              className="relative overflow-hidden rounded-xl border border-slate-800 shadow-xl cursor-zoom-in"
+            >
+              <Image
+                src={`https://tmnf.exchange/trackshow/${TRACKS[track].id}/image/1`}
+                alt={track}
+                width={320}
+                height={240}
+                loading="eager"
+                className="h-44 w-66 object-cover"
+              />
+
+              <div className="absolute inset-0 bg-black/10 hover:bg-black/0 transition" />
+            </button>
+          </div>
+        )}
       </div>
 
       {track && (
-        <div className="w-full flex-1 flex flex-col justify-center items-center gap-4 lg:flex-row lg:items-start">
+        <div className="w-full max-w-7xl flex-1 flex flex-col justify-center items-center gap-4 lg:flex-row lg:items-start">
 
           {/* Record table */}
           <div className="overflow-hidden rounded-xl border border-slate-800 shadow-xl w-full max-w-160">
@@ -338,6 +365,25 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
             />
           </div>
 
+        </div>
+      )}
+
+      {imageOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md"
+          onClick={() => setImageOpen(false)}
+        >
+          <div className="relative max-w-2xl w-full px-4">
+            <div className="relative w-full">
+              <Image
+                src={`https://tmnf.exchange/trackshow/${TRACKS[track].id}/image/1`}
+                alt={track}
+                width={320}
+                height={240}
+                className="w-full h-auto rounded-xl shadow-2xl"
+              />
+            </div>
+          </div>
         </div>
       )}
 

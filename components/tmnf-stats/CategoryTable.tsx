@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { CATEGORY_FILTERS } from "@/utils/constants";
 import { RtaEntry, TasEntry, Category } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 
 const CATEGORY_NAMES = ["No Cut", "WR Route", "No Uber", "NOseboost", "Open"] as const;
 const CATEGORY_COLOURS = ["bg-white/20", "bg-green-500/20", "bg-blue-500/20", "bg-red-500/20", "bg-black/20"] as const;
@@ -41,7 +41,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
     for (const entry of tasRecords as TasEntry[]) {
       if ((entry.game !== "TMNF" && entry.game !== "TMNF No Cut") || entry.category == "Low Input") continue;
 
-      const trackName = trackList[entry.track].baseTrack ?? entry.track
+      const trackName = TRACKS[entry.track].baseTrack ?? entry.track
       const trackMap = map.get(trackName) ?? new Map();
       const existing = trackMap.get(entry.category);
 
@@ -55,7 +55,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
   }, [tasRecords]);
 
   const rows = useMemo(() => {
-    return Object.entries(trackList)
+    return Object.entries(TRACKS)
       .filter(([, info]) => info.game === "TMNF")
       .map(([track]) => {
         const trackMap = bestByTrackAndCategory.get(track);

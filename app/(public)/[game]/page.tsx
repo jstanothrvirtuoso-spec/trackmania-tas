@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { use, useState, useMemo } from "react";
 import { CATEGORY_FILTERS, GAME_SLUGS } from "@/utils/constants";
 import { Environment, Category, TasEntry } from "@/utils/typing";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfilePrivate } from "@/lib/Profiles";
@@ -47,8 +47,8 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
     for (const entry of Object.values(tasRecords)) {
       if (!allowedCategories.has(entry.category)) continue;
 
-      const baseTrack = trackList[entry.track].baseTrack ?? entry.track
-      const tasGame = trackList[baseTrack].game
+      const baseTrack = TRACKS[entry.track].baseTrack ?? entry.track
+      const tasGame = TRACKS[baseTrack].game
 
       if (tasGame !== gameName) continue;
 
@@ -62,11 +62,11 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
       }
     }
 
-    return Object.entries(trackList)
+    return Object.entries(TRACKS)
       .filter(([, info]) => info.game === gameName)
       .map(([track, trackInfo]) => ({
         track: (trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track,
-        trackInfo: (trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackList[trackInfo.noCutTrack] : trackInfo,
+        trackInfo: (trackInfo.noCutTrack && selectedCategory === "No Cut") ? TRACKS[trackInfo.noCutTrack] : trackInfo,
         tas: bestTasByTrack.get(track) ?? null,
         rta: bestRtaByTrack.get((trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track) ?? null,
       }));

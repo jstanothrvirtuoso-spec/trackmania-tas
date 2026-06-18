@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Game } from "@/utils/typing";
 import { Environment } from "@/utils/typing";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 
 const GAME_CONVERT: Record<string, Game> = {
   "TMNF": "TMNF",
@@ -108,7 +108,7 @@ export function GbxIcon({ replay_url, track }: { replay_url: string, track: stri
   if (id) {
     gbx_url = `https://3d.gbx.tools/view/replay?gd=${id}`;
   } else {
-    const trackInfo = trackList[track]
+    const trackInfo = TRACKS[track]
     const game = GAME_CONVERT[trackInfo.tmx ?? trackInfo.game];
     const mapId = trackInfo.id;
     const replayId = replay_url.split("/").pop();

@@ -2,7 +2,7 @@
 import { GAME_LIST } from "@/utils/constants";
 import { TrackInfo, Game } from "@/utils/typing";
 
-export const trackList: Record<string, TrackInfo> = {
+export const TRACKS: Record<string, TrackInfo> = {
 
   // TMNF
   "A01-Race": { game: "TMNF", id: 2233, category: "White", environment: "Stadium" },
@@ -1557,7 +1557,7 @@ export const trackList: Record<string, TrackInfo> = {
 
 };
 
-export const tracksByGame = Object.entries(trackList).reduce(
+export const tracksByGame = Object.entries(TRACKS).reduce(
   (acc, [trackName, info]) => {
     acc[info.game].push(trackName);
     return acc;

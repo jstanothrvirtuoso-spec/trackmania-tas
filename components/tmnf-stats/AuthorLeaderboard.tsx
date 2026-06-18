@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { OVERRIDE } from "@/utils/constants";
 import { RtaEntry, TasEntry } from "@/utils/typing";
 import { generateGraphColours } from "@/utils/common";
-import { trackList } from "@/lib/TrackList";
+import { TRACKS } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 
 type GraphType = "TASes" | "Contributions" | "TimeSaved"
@@ -68,7 +68,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
 
       lastDay = day;
 
-      const track = trackList[tas.track].baseTrack ?? tas.track
+      const track = TRACKS[tas.track].baseTrack ?? tas.track
 
       const existing = currentWR.get(track);
       const rta = bestRtaByTrack.get(tas.track)!;
