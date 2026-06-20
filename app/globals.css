@@ -9,6 +9,20 @@
 }
 
 @font-face {
+  font-family: "Niku";
+  src: url("/fonts/Niku.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kiwi";
+  src: url("/fonts/KiwiMaru.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "DOSVGA";
   src: url("/fonts/DOSVGA.woff2") format("woff2");
   font-weight: 400;

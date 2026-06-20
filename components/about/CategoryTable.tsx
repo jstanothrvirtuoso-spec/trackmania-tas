@@ -32,14 +32,6 @@ export function CategoryTable() {
         "
       >
 
-        {/* Soft sakura glow overlay */}
-        <div className="
-          absolute inset-0
-          pointer-events-none
-          opacity-40
-          bg-[radial-gradient(circle_at_top,rgba(255,192,203,0.15),transparent_60%)]
-        " />
-
         {/* Floating petals feel (very subtle noise layer) */}
         <div className="
           absolute inset-0
