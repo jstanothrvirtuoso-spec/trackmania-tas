@@ -108,7 +108,7 @@ export default function EditProfile({
         <div className="flex flex-col gap-6 items-center md:flex-row md:items-start">
 
           {/* BANNER */}
-          <div className="hidden md:block md:w-80">
+          <div className="hidden md:block md:w-70">
             {editMode !== "banner" ? (
               <button
                 type="button"
@@ -138,14 +138,15 @@ export default function EditProfile({
                         updateDraft("banner", id);
                         setEditMode(null);
                       }}
-                      className={`h-16 rounded overflow-hidden border cursor-pointer ${
+                      className={`h-16 rounded-xl overflow-hidden border cursor-pointer flex justify-center ${
                         draft?.banner === id ? "border-emerald-500" : "border-transparent"}`}
                     >
                       <Image
                         src={src}
                         alt="Banner"
-                        width={100}
-                        height={50}
+                        width={60}
+                        height={60}
+                        style={{ width: "auto"} }
                         className={`object-cover hover:opacity-100 transition ${
                           draft?.banner === id ? "opacity-100" : "opacity-50"}`}
                       />
@@ -193,11 +194,11 @@ export default function EditProfile({
                           updateDraft("avatar", id);
                           setEditMode(null);
                         }}
-                        className={`h-16 rounded overflow-hidden border cursor-pointer ${
-                          draft?.avatar === id
-                            ? "border-emerald-500"
-                            : "border-transparent"
-                        }`}
+                        className={`h-16 rounded-xl overflow-hidden border cursor-pointer ${
+                          draft?.avatar === id ? "border-emerald-500" : "border-transparent"}`}
+                        style={{
+                          backgroundColor: draft?.avatar === id ? `hsl(${draft?.colour ?? 200}, 80%, 60%)` : "",
+                        }}
                       >
                         <div className="flex justify-center">
                           <Image
@@ -205,9 +206,8 @@ export default function EditProfile({
                             alt="Avatar"
                             width={50}
                             height={50}
-                            className={`object-cover transition ${
-                              draft?.avatar === id ? "opacity-100" : "opacity-50"
-                            }`}
+                            className={`object-cover hover:opacity-100 transition ${
+                              draft?.avatar === id ? "opacity-100" : "opacity-50"}`}
                           />
                         </div>
                       </button>
@@ -216,33 +216,30 @@ export default function EditProfile({
                 </div>
 
                 {/* HUE PICKER */}
-                <div className="w-[380px] flex flex-col gap-2">
+                <div className="w-[380px]">
                   <input
                     type="range"
                     min="0"
                     max="360"
                     value={draft?.colour ?? 200}
-                    onChange={(e) => updateDraft("colour", Math.max(0, Math.min(360, Number(e.target.value))))}
-                    className="w-full cursor-pointer"
-                  />
+                    onChange={(e) =>
+                      updateDraft(
+                        "colour",
+                        Math.max(0, Math.min(360, Number(e.target.value)))
+                      )
+                    }
+                    className="h-4 w-full cursor-pointer appearance-none rounded-lg
+                      bg-[linear-gradient(to_right,hsl(0,80%,60%),hsl(60,80%,60%),hsl(120,80%,60%),hsl(180,80%,60%),hsl(240,80%,60%),hsl(300,80%,60%),hsl(360,80%,60%))]
 
-                  <div
-                    className="h-4 rounded-lg"
-                    style={{
-                      background: `linear-gradient(
-                        to right,
-                        hsl(0, 80%, 60%),
-                        hsl(60, 80%, 60%),
-                        hsl(120, 80%, 60%),
-                        hsl(180, 80%, 60%),
-                        hsl(240, 80%, 60%),
-                        hsl(300, 80%, 60%),
-                        hsl(360, 80%, 60%)
-                      )`,
-                    }}
+                      [&::-moz-range-thumb]:h-5
+                      [&::-moz-range-thumb]:w-2
+                      [&::-moz-range-thumb]:rounded-full
+                      [&::-moz-range-thumb]:border-2
+                      [&::-moz-range-thumb]:border-white
+                      [&::-moz-range-thumb]:bg-slate-600
+                    "
                   />
                 </div>
-
               </div>
             )}
             

@@ -118,3 +118,35 @@ export function getTmxLink(id: number, game: Game) {
 
   return `https://tmuf.exchange/trackshow/${id}`;
 }
+
+export function getYouTubeId(input?: string | null): string | null {
+  if (!input) return null;
+
+  try {
+    const url = new URL(input);
+
+    // youtu.be/<id>
+    if (url.hostname === "youtu.be") {
+      return url.pathname.slice(1).split("/")[0] || null;
+    }
+
+    // youtube.com/watch?v=<id>
+    const v = url.searchParams.get("v");
+    if (v) return v;
+
+    // youtube.com/embed/<id>
+    // youtube.com/shorts/<id>
+    // youtube.com/live/<id>
+    const match = url.pathname.match(
+      /^\/(embed|shorts|live)\/([^/?]+)/,
+    );
+
+    if (match) {
+      return match[2];
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}

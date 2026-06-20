@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { FaDiscord } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
@@ -72,6 +73,21 @@ export default function Header() {
           />
 
           {/* HOME */}
+          <div className="px-3 block sm:hidden">
+            <Link
+              href="/"
+              className="block border border-white-100 rounded-lg transition-all duration-100 hover:brightness-110 hover:border-cyan-500"
+            >
+              <Image
+                src="/header.webp"
+                alt="TAS-Nadeo"
+                width={60}
+                height={36}
+                priority
+                className="h-9 w-auto rounded-md drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
+              />
+            </Link>
+          </div>
           <div className="mt-[2px] px-3 hidden sm:block w-30">
             <span className="inline-flex overflow-hidden px-1 rounded-xl">
               <Link
@@ -86,23 +102,6 @@ export default function Header() {
                 "
               >
                 TAS-Nadeo
-              </Link>
-            </span>
-          </div>
-          <div className="mt-[2px] px-3 block sm:hidden">
-            <span className="inline-flex overflow-hidden px-1 rounded-xl">
-              <Link
-                href="/"
-                style={{ fontFamily: "DOSVGA" }}
-                className="
-                  text-2xl text-white whitespace-nowrap font-dosvga transition-transform duration-200 ease-out 
-                  [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] 
-                  hover:tracking-[0.02em] hover:scale-[1.04] hover:text-transparent 
-                  hover:bg-gradient-to-r hover:from-cyan-300 hover:via-blue-200 hover:to-violet-300 
-                  hover:bg-clip-text hover:[text-shadow:0_0_20px_rgba(56,189,248,0.7)]
-                "
-              >
-                TAS
               </Link>
             </span>
           </div>

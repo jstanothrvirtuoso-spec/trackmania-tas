@@ -64,8 +64,8 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
   const maxCount = Math.max(...yearlyCounts.map(([, c]) => c), 1);
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-slate-900/50 p-3">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-gradient-to-br from-violet-500/10 via-slate-900/60 to-violet-500/10 p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+      <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Year
       </h2>
 
@@ -136,8 +136,8 @@ export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
   );
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-slate-900/50 p-3">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-cyan-500/10 p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+      <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Game
       </h2>
 
@@ -200,8 +200,8 @@ export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvi
   const maxCount = Math.max(...environmentCounts.map(([, c]) => c), 1);
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/50 items-center p-3">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+    <div className="rounded-lg border border-slate-800 bg-gradient-to-br from-emerald-500/10 via-slate-900/60 to-emerald-500/10 items-center p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+      <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Environment
       </h2>
 

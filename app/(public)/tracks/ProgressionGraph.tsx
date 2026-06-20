@@ -96,7 +96,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   })() : null;
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 w-full flex-1 backdrop-blur-sm shadow-xl">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 w-full flex-1 backdrop-blur-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
       <h2 className="mb-1 uppercase tracking-[0.18em] text-slate-300 text-xs lg:text-sm lg:font-semibold">
         Record Progression ({isStunt ? "pts" : useMinutes ? "min" : "sec"})
       </h2>

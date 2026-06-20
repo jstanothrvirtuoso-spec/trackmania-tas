@@ -117,7 +117,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
       {open && (
         <div
           ref={listRef}
-          className="absolute left-0 z-20 mt-0.5 w-full max-h-120 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm text-sm sm:text-base"
+          className="absolute left-0 z-20 mt-0.5 w-full max-h-160 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm text-sm sm:text-[14px]"
           onScroll={(event) => {
             scrollTopRef.current = (event.target as HTMLDivElement).scrollTop;
           }}
@@ -135,7 +135,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
                   onChange?.(option.value);
                   setOpen(false);
                 }}
-                className={`w-full rounded-md px-2 py-1 text-left transition cursor-pointer ${
+                className={`w-full rounded-md px-2 py-1.5 text-left transition cursor-pointer ${
                   isSelected
                     ? "bg-sky-800"
                     : index % 2 === 0

@@ -36,6 +36,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const [game, setGame] = useState<Game>(initialGame);
   const [track, setTrack] = useState<string>(initialTrack);
   const [imageOpen, setImageOpen] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const { records, rta, minDate } = useMemo(() => {
     if (!track || !rtaRecords || !tasRecords) return { 
@@ -81,6 +82,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   function updateTrack(track: string) {
     setTrack(track);
     updateURL(game, track);
+    setImageLoaded(false);
   };
 
   function updateGame(game: Game) {
@@ -88,6 +90,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
     setGame(game);
     setTrack(newTrack);
     updateURL(game, newTrack);
+    setImageLoaded(false);
   };
 
   function updateURL(gameId: string, trackId: string) {
@@ -157,7 +160,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   }, [records, useMinutes, isStunt]);
 
   return (
-    <div className="flex pt-20 flex-col items-center justify-center px-4 py-8 text-slate-100">
+    <div className="flex pt-20 pb-5 px-5 flex-col items-center justify-center text-slate-100">
 
       {/* Wallpaper */}
       <div
@@ -166,7 +169,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       />
       <div className="fixed inset-0 -z-10 bg-slate-950/70 pointer-events-none" />
 
-      <div className="flex flex-row w-full max-w-7xl items-center justify-center">
+      <div className="flex flex-row w-full max-w-7xl items-start justify-center">
         <div className="flex flex-col w-full items-center justify-center">
 
           {/* Options */}
@@ -202,11 +205,11 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                   track
                 )}
               </button>
-              <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-xl" />
+              <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-[0_5px_20px_rgba(0,0,0,0.6)]" />
             </div>
             <div className="flex flex-col gap-1 items-center sm:flex-row sm:gap-4">
               {records.length > 0 && (
-                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
+                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
                   <div className="text-left translate-y-[2px]">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
                       TAS Record
@@ -232,7 +235,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                 </div>
               )}
               {rta && (
-                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-xl">
+                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
                   <div className="text-left translate-y-[2px]">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
                       RTA Record
@@ -265,18 +268,25 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
           <div className="hidden lg:block shrink-0">
             <button
               onClick={() => setImageOpen(true)}
-              className="relative overflow-hidden rounded-xl border border-slate-800 shadow-xl cursor-zoom-in"
+              className="relative overflow-hidden rounded-xl border border-slate-800 shadow-[0_5px_20px_rgba(0,0,0,0.6)] cursor-zoom-in"
             >
+              {!imageLoaded && (
+                <div className="absolute inset-0 animate-pulse bg-slate-800" />
+              )}
+
               <Image
-                src={`https://tmnf.exchange/trackshow/${TRACKS[track].id}/image/1`}
+                src={`${tmxLink}/image/1`}
                 alt={track}
                 width={320}
                 height={240}
                 loading="eager"
-                className="h-44 w-66 object-cover"
+                onLoad={() => setImageLoaded(true)}
+                className={`h-46 w-69 object-cover transition-opacity duration-300 ${
+                  imageLoaded ? "opacity-100" : "opacity-0"
+                }`}
               />
 
-              <div className="absolute inset-0 bg-black/10 hover:bg-black/0 transition" />
+              <div className="absolute inset-0 bg-black/15 hover:bg-black/0 transition" />
             </button>
           </div>
         )}
@@ -286,7 +296,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         <div className="w-full max-w-7xl flex-1 flex flex-col justify-center items-center gap-4 lg:flex-row lg:items-start">
 
           {/* Record table */}
-          <div className="overflow-hidden rounded-xl border border-slate-800 shadow-xl w-full max-w-160">
+          <div className="overflow-hidden rounded-xl border border-slate-800 shadow-[0_5px_20px_rgba(0,0,0,0.6)] w-full max-w-160">
             <table className="min-w-full table-auto bg-slate-800/90 text-xs sm:text-sm">
               <thead>
                 <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/40 ">
@@ -375,8 +385,13 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         >
           <div className="relative max-w-2xl w-full px-4">
             <div className="relative w-full">
+              
+              {!imageLoaded && (
+                <div className="absolute inset-0 animate-pulse bg-slate-800 rounded-xl" />
+              )}
+
               <Image
-                src={`https://tmnf.exchange/trackshow/${TRACKS[track].id}/image/1`}
+                src={`${tmxLink}/image/1`}
                 alt={track}
                 width={320}
                 height={240}

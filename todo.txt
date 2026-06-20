@@ -10,8 +10,6 @@ Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 
 Fix rules
-Finish /authors background
-Finish TASer of the day highlights (add some stuff??)
 Add some banner images
 
 

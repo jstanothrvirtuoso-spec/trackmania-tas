@@ -2,7 +2,7 @@
 import { soundManager } from "@/lib/SoundManager";
 import { useState, useRef, useEffect } from "react";
 
-const chars = `Players who break rules 1, 2 or 5 will have their records removed!`.split("");
+const chars = `Users who break site rules may have their records removed!`.split("");
 
 export function CommunityRules() {
 
@@ -51,7 +51,6 @@ export function CommunityRules() {
   
   return (
     <div>
-
       <div
         className="relative group"
         onMouseEnter={() => {
@@ -80,45 +79,98 @@ export function CommunityRules() {
         <div
           className="pointer-events-none absolute left-1/2 bottom-full mb-6 -translate-x-1/2
           opacity-0 translate-y-2 transition-all duration-150
-          group-hover:opacity-100 group-hover:translate-y-0 z-20"
+          group-hover:opacity-100 z-20"
         >
           <div
-          className="px-4 py-3 text-xs text-pink-100 max-w-md relative overflow-hidden
-          bg-gradient-to-br from-[#0b0508] via-[#160a12] to-[#070308]
-          border border-pink-200/20
-          shadow-[0_0_30px_rgba(255,182,193,0.10),inset_0_0_25px_rgba(255,182,193,0.05)]
-          backdrop-blur-md"
+            className="px-4 py-3 text-xs text-pink-100 max-w-lg relative overflow-hidden
+            bg-gradient-to-br from-[#0b0508] via-[#160a12] to-[#070308]
+            border border-pink-200/20
+            shadow-[0_0_30px_rgba(255,182,193,0.10),inset_0_0_25px_rgba(255,182,193,0.05)]
+            backdrop-blur-md"
           >
-            <div className="relative z-10 space-y-2">
+            {/* Header bar */}
+            <div className="flex items-center justify-center border-b border-pink-200/10 pb-2 mb-2">
+              <span className="text-[10px] tracking-[0.3em] text-pink-200/80 uppercase text-center">
+                Site rules
+              </span>
+            </div>
 
-              {/* Header bar */}
-              <div className="flex items-center justify-center border-b border-pink-200/10 pb-2 mb-2">
-                <span className="text-[10px] tracking-[0.3em] text-pink-200/80 uppercase text-center">
-                  Community rules
-                </span>
+            {/* Sakura particles layer */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="sakura-flake" />
+              <div className="sakura-flake delay-1" />
+              <div className="sakura-flake delay-2" />
+            </div>
+
+            {/* Rules */}
+            <div className="relative z-10">
+              <div className="italic text-pink-200 text-[11px]">
+                In addition to the following rules, all rules from the official discord page (TrackMania Tool Assisted) also apply here.
+                Some are repeated here for clarity and emphasis.
               </div>
 
-              {/* Sakura particles layer */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="sakura-flake" />
-                <div className="sakura-flake delay-1" />
-                <div className="sakura-flake delay-2" />
-              </div>
+              <ol className="mt-2 list-decimal space-y-2 pl-3 text-pink-100">
+                <li>
+                  We take cheating very seriously. 
+                  Users who intentionally attempt to represent tool-assisted runs as legitimate or upload them to sites such as TMX 
+                  will be immediately banned from this site and have all their records permanently removed.
+                </li>
 
-              {/* Rules */}
-              <div className="relative z-10">
-                <div>
-                  <strong>1.</strong> Stay civil and sane while discussing any topic. Do not overhype.
-                </div>
+                <li>
+                  Respect everyone and do not attack each other for their opinions. 
+                  This is not a place for resolving personal matters. Impersonating, trolling, harassing, 
+                  insulting, threatening, doxing, or attacking other users is strictly forbidden.
+                </li>
 
-                <div className="mt-2">
-                  <strong>2.</strong> Respect everyone in this server and do not attack each other for their opinions. This server is not a place for resolving personal matters.
-                </div>
+                <li>
+                  All content (including replays) uploaded to this site must be appropriate. 
+                  It must not contain NSFW, offensive, hateful, intentionally misleading, or illegal content. 
+                  It must not contain links to inappropriate sites. 
+                  Never provide personal details or information (phone numbers, addresses, etc.).
+                </li>
+                
+                <li>
+                  Moderators reserve the right to decide the category of each TAS
+                  and whether a sufficient level of contribution qualifies for authorship status.
+                  However, if any TAS record contains incorrect or outdated information, 
+                  we encourage you to report it via the official Discord (link in the header).
+                </li>
 
-                <div className="mt-2">
-                  <strong>5.</strong> We do not condone any forms of unfair play or cheating. Players who attempt to pass tool-assisted runs as legitimate or upload them to sites such as TMX will be immediately banned from the server.
-                </div>
-              </div>
+                <li>
+                    Replay Rules:
+                  <ul className="mt-1 ml-3 list-disc space-y-1 text-pink-200">
+                    <li>
+                      Incomplete replays will not be accepted (or at least one lap for multilap tracks).
+                    </li>
+
+                    <li>
+                      When uploading a TAS from another author, you must have their permission.
+                    </li>
+
+                    <li>
+                      Replays must be driven on the genuine, unmodified version of the track.
+                    </li>
+
+                    <li>
+                      Replays must be validable. Physics hacks, over-steering, 
+                      modified game behaviour, etc. are not permitted.
+                    </li>
+
+                    <li>
+                      Replay submissions must not contain intentionally falsified information.
+                    </li>
+
+                    <li>
+                      Moderators can request additional evidence to verify submission details.
+                    </li>
+                  </ul>
+                </li>
+
+                <li>
+                  Moderators reserve the right to retroactively enforce rules where necessary.
+                </li>
+                
+              </ol>
             </div>
           </div>
         </div>

@@ -18,6 +18,21 @@ const nextConfig: NextConfig = {
         hostname: "tmnf.exchange",
         pathname: "/trackshow/**",
       },
+      {
+        protocol: "https",
+        hostname: "tmuf.exchange",
+        pathname: "/trackshow/**",
+      },
+      {
+        protocol: "https",
+        hostname: "tm.mania.exchange",
+        pathname: "/mapshow/**",
+      },
+      {
+        protocol: "https",
+        hostname: "nations.tm-exchange.com",
+        pathname: "/trackshow/**",
+      },
     ],
   },
 };
