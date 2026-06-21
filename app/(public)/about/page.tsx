@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Rain from "@/components/about/Rain";
+import Rain from "@/components/about/Rain1";
 import { HallOfFame } from "@/components/about/HallOfFame";
 import { BadgeTable } from "@/components/about/BadgeTable";
 import { Maintainers } from "@/components/about/Maintainers";
