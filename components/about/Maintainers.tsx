@@ -2,17 +2,14 @@ import Image from "next/image"
 
 export function Maintainers() {
   return (
-    <div className="relative inline-flex flex-col h-fit w-fit p-3 aquarium-frame overflow-hidden rounded-[18px] shadow-2xl shadow-black/60">
+    <div className="relative inline-flex flex-col h-fit w-fit p-3 overflow-hidden rounded-[18px] shadow-2xl shadow-black/60">
 
-      {/* 🧊 GLASS BORDER (TOP FRAME LAYER) */}
-      <div className="aquarium-glass-border pointer-events-none absolute inset-0" />
 
       {/* 🌊 WATER SYSTEM */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 z-0">
 
         <div className="aquarium-water aquarium-water-1" />
-        <div className="aquarium-water aquarium-water-2" />
-
+        {/* <div className="aquarium-water aquarium-water-2" /> */}
         <div className="water-surface" />
 
         {/* 🫧 BUBBLES */}
@@ -26,11 +23,14 @@ export function Maintainers() {
         <span className="bubble b8" />
       </div>
 
+      {/* 🧊 GLASS BORDER (TOP FRAME LAYER) */}
+      <div className="aquarium-glass-border pointer-events-none absolute inset-0 z-10" />
+
       <p className="relative mb-3 px-2 text-sm tracking-[0.25em] text-center font-sakura pink-white-gradient">
         Hosted and maintained by
       </p>
 
-      <div className="relative flex items-start justify-center gap-10 w-full">
+      <div className="relative z-20 flex items-start justify-center gap-10 w-full">
 
         {/* PERSON 1 */}
         <div className="flex flex-col items-center">

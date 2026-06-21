@@ -10,7 +10,8 @@ Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 Ideas zone for partial TASes
 
-Add some banner images
+Continue cleaning globals.css
+Linting
 
 
 //////////////////////////////////////////////////////////////////////////
