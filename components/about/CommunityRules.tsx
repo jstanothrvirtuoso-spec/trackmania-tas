@@ -60,7 +60,7 @@ export function CommunityRules() {
         {/* Main text */}
         <h1
           ref={containerRef}
-          className="vga-text select-none text-center text-2xl font-black uppercase tracking-[0.2em]"
+          className="vga-text font-vga select-none text-center text-2xl font-black uppercase tracking-[0.2em]"
         >
           {chars.map((char, i) => (
             <span
@@ -140,10 +140,6 @@ export function CommunityRules() {
                     Replay Rules:
                   <ul className="mt-1 ml-3 list-disc space-y-1 text-pink-200">
                     <li>
-                      Incomplete replays will not be accepted (or at least one lap for multilap tracks).
-                    </li>
-
-                    <li>
                       When uploading a TAS from another author, you must have their permission.
                     </li>
 
@@ -161,15 +157,14 @@ export function CommunityRules() {
                     </li>
 
                     <li>
+                      Do not spam submissions.
+                    </li>
+
+                    <li>
                       Moderators can request additional evidence to verify submission details.
                     </li>
                   </ul>
                 </li>
-
-                <li>
-                  Moderators reserve the right to retroactively enforce rules where necessary.
-                </li>
-                
               </ol>
             </div>
           </div>
@@ -178,13 +173,7 @@ export function CommunityRules() {
 
       {/* ================= STYLE ================= */}
       <style>{`
-        @font-face {
-          font-family: "DOSVGA";
-          src: url("/fonts/DOSVGA.woff2") format("woff2");
-        }
-
         .vga-text {
-          font-family: "DOSVGA", monospace;
           color: rgb(220, 30, 30);
           text-shadow:
             0 0 6px rgba(120, 0, 0, 0.9),
@@ -196,12 +185,10 @@ export function CommunityRules() {
 
         @keyframes electricFlicker {
           0% { opacity: 1; }
-          50% { opacity: 0.8; }
+          50% { opacity: 0.85; }
           100% { opacity: 1; }
         }
       `}</style>
-
-      <div className="crt-overlay" />
     </div>
   )
 }

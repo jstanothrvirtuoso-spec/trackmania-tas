@@ -12,6 +12,7 @@ const MENU_LINKS = [
   { href: "/authors", label: "Authors" },
   { href: "/tracks", label: "Tracks" },
   { href: "/tmnf-stats", label: "TMNF Stats" },
+  { href: "/ideas", label: "Ideas Zone" },
   { href: "/about", label: "About" },
 ];
 
@@ -62,8 +63,7 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
           {!profilePublicMe?.display_name && (
             <Link
               href={`/login?next=${encodeURIComponent(pathname)}`}
-              style={{ fontFamily: "DOSVGA" }}
-              className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvga"
+              className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-vga"
               onClick={menu.closeNow}
             >
               Login/Register
@@ -76,8 +76,7 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
             onMouseLeave={!isTouch ? gamesMenu.closeLater : undefined}
           >
             <div
-              className="flex items-center justify-between cursor-pointer px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvg"
-              style={{ fontFamily: "DOSVGA" }}
+              className="flex items-center justify-between cursor-pointer px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-vga"
               onClick={gamesMenu.toggle}
             >
               <span>Games</span>
@@ -93,8 +92,7 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
                   <Link
                     key={slug}
                     href={`/${slug}`}
-                    className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30"
-                    style={{ fontFamily: "DOSVGA" }}
+                    className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 font-vga"
                     onClick={() => {
                       gamesMenu.closeNow();
                       menu.closeNow();
@@ -111,8 +109,7 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
             <Link
               key={link.href}
               href={link.href}
-              style={{ fontFamily: "DOSVGA" }}
-              className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-dosvga"
+              className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-vga"
               onClick={menu.closeNow}
             >
               {link.label}

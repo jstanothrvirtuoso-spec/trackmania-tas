@@ -52,6 +52,7 @@ export default function TmnfHistory() {
           <source src="/videos/tmnf-stats-bg.webm" type="video/webm" />
         </video>
       </div>
+      <div className="fixed inset-0 -z-10 bg-slate-950/20 pointer-events-none" />
 
       {/* TMNF side panel */}
       {/* <div className="hidden xl:block fixed left-0 top-0 bottom-50 w-full -z-5 overflow-hidden opacity-30">
@@ -64,7 +65,7 @@ export default function TmnfHistory() {
         />
       </div> */}
         
-      <div className="flex flex-col justify-center items-center pt-20 pb-5 xl:flex-row xl:items-start">
+      <div className="flex flex-col justify-center items-center pt-20 pb-5 xl:flex-row xl:items-start z-99">
         
         <CategoryTable
           bestRtaByTrack={bestRtaByTrack} 

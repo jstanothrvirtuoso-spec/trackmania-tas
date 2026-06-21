@@ -397,18 +397,6 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
             );
           })}
 
-          {/* <DropSelect
-            initialValue={extraAuthor}
-            options={extraAuthorOptions
-              .filter((a) => !topAuthors.includes(a))
-              .map((author) => ({
-                value: author,
-                label: `${author} (Max: ${Math.round((authorMax.get(author) ?? 0) * 100) / 100})`,
-              }))
-            }
-            onChange={(value) => setExtraAuthorRaw(value)}
-            defaultOption={{ value: "", label: "Add author..." }}
-          /> */}
           <select
             value={extraAuthor}
             onMouseEnter={() => setHoverAuthor(extraAuthor)}

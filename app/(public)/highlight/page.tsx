@@ -113,8 +113,7 @@ export default function HighlightPage() {
             </div>
 
             <h1
-              className="mt-3 text-4xl text-white sm:text-6xl"
-              style={{ fontFamily: "OktaNeue" }}
+              className="mt-3 text-4xl text-white sm:text-6xl font-okta"
             >
               TAS Highlights
             </h1>

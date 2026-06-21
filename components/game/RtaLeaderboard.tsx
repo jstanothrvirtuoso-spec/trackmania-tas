@@ -104,7 +104,7 @@ export default function RtaTable({
             <tr
               key={row.player}
               className="
-                border-b border-slate-800 last:border-b-0
+                border-b border-slate-800 last:border-b-0 text-slate-300
                 hover:bg-blue-900/20 transition-colors
                 odd:bg-cyan-600/20
                 even:bg-cyan-900/20

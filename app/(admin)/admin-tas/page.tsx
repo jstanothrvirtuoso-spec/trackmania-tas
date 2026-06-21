@@ -379,7 +379,7 @@ export default function AdminTas() {
   };
   
   return (
-    <div className="flex justify-center px-6 pt-20 pb-10 text-white">
+    <div className="flex justify-center px-6 pt-20 pb-10 text-white bg-slate-950">
       <div className="grid gap-4 lg:grid-cols-[460px_1fr] items-start">
 
         {/* TAS submission form */}

@@ -19,7 +19,7 @@ export function BadgeTable() {
   const [showHelp, setShowHelp] = useState(false)
 
   return (
-  <div className="z-20 flex justify-center mt-23">
+  <div className="z-20 flex justify-center">
     <div
       className="
         w-full max-w-[450px] text-[10px] sm:text-xs
@@ -57,13 +57,12 @@ export function BadgeTable() {
 <div
   className="
     relative text-center py-3
-    tracking-[0.5em]
+    tracking-[0.4em] font-kiwi
     text-pink-100/90
 
     border-b border-pink-200/10
     bg-white/5
   "
-  style={{ fontFamily: "Niku" }}
 >
   ACHIEVEMENT SPECIAL ROLES
 </div>
@@ -185,7 +184,7 @@ export function BadgeTable() {
   >
     
   {/* text */}
-<span className="relative" style={{ fontFamily: "Kiwi" }}>
+<span className="relative font-kiwi">
   HOW TO CLAIM BADGES
 
   {/* subtle pulse underline */}

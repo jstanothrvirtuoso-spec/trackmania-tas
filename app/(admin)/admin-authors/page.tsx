@@ -118,8 +118,8 @@ export default function AdminAuthors() {
   }
 
   return (
-    <div className="mx-auto max-w-lg px-6 pt-20 pb-10 text-white">
-      <div className="grid gap-6 flex flex-col items-start">
+    <div className="mx-auto flex justify-center items-start min-h-screen px-6 pt-20 pb-10 text-white bg-slate-950">
+      <div className="grid gap-6 flex items-start max-w-md">
 
         <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-xl">
           

@@ -22,7 +22,7 @@ export function HallOfFame() {
       {/* Subtle paper glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_60%)] pointer-events-none" />
     
-      <p className="relative text-xl uppercase tracking-[0.4em] text-yellow-300 text-center mb-3 sakura-font">
+      <p className="relative text-xl uppercase tracking-[0.2em] text-yellow-300 text-center mb-3 font-sakura">
         Hall of Fame
       </p>
 
@@ -37,10 +37,9 @@ export function HallOfFame() {
               className="flex justify-between items-center border border-white/10 bg-white/5 rounded-md px-3 py-2 hover:bg-white/10 transition gap-3"
             >
               <span
-                className={`inline-flex items-center ${
+                className={`inline-flex items-center font-sakura ${
                   link ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(255,215,0,0.35)]" : "text-white"
                 }`}
-                style={{ fontFamily: "Sakura" }}
               >
                 {title}
               </span>

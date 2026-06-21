@@ -25,6 +25,7 @@ export type ProfilePrivate = {
   show_recent: boolean;
   show_visitor_counter: boolean;
   allow_sounds: boolean;
+  submit_permission: boolean;
 };
 
 /* =========================================================

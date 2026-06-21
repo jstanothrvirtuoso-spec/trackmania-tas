@@ -98,16 +98,16 @@ export const OVERRIDE: Record<string, Record<number, number>> = {
 //////////////////////////////////////////////////////////////
 
 export const PROFILE_BANNERS: Record<number, string> = {
-  0: "/banners/tmi-console.webp",
-  1: "/banners/canyon.webp",
-  2: "/banners/coast.webp",
-  3: "/banners/desert.webp",
-  4: "/banners/island.webp",
-  5: "/banners/lagoon.webp",
-  6: "/banners/rally.webp",
-  7: "/banners/snow.webp",
-  8: "/banners/stadium.webp",
-  9: "/banners/valley.webp",
+  0: "/banners/noseboost1.webp",
+  1: "/banners/noseboost2.webp",
+  2: "/banners/noseboost3.webp",
+  3: "/banners/coast1.webp",
+  4: "/banners/island1.webp",
+  5: "/banners/island2.webp",
+  6: "/banners/rings.webp",
+  7: "/banners/snow1.webp",
+  8: "/banners/stadium1.webp",
+  9: "/banners/tmi-console.webp",
 };
 
 export const PROFILE_AVATARS: Record<number, string> = {

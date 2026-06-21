@@ -182,7 +182,7 @@ export default function AdminRta() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 pt-20 pb-10 text-white">
+    <div className="mx-auto flex justify-center min-h-screen px-6 pt-20 pb-10 text-white bg-slate-950">
       <div className="grid gap-6 lg:grid-cols-[660px_1fr] items-start">
 
         <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-xl">

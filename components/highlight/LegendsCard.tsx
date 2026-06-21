@@ -60,7 +60,7 @@ export function LegendsCard() {
                     <div className="h-2 w-2 shrink-0 rounded-full bg-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.8)]" />
                     <Link
                       href={`/tracks?track=${encodeURIComponent(track)}`}
-                      className="truncate hover:text-sky-500 transition text-xs sm:text-sm"
+                      className="truncate hover:text-sky-500 transition text-slate-300 text-xs sm:text-sm"
                     >
                       {track}
                     </Link>

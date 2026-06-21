@@ -92,9 +92,8 @@ export default function Header() {
             <span className="inline-flex overflow-hidden px-1 rounded-xl">
               <Link
                 href="/"
-                style={{ fontFamily: "DOSVGA" }}
                 className="
-                  text-2xl text-white whitespace-nowrap font-dosvga transition-transform duration-200 ease-out 
+                  font-vga text-2xl text-white whitespace-nowrap transition-transform duration-200 ease-out 
                   [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] 
                   hover:tracking-[0.02em] hover:scale-[1.04] hover:text-transparent 
                   hover:bg-gradient-to-r hover:from-cyan-300 hover:via-blue-200 hover:to-violet-300 

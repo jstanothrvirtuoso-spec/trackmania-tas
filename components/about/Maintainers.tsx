@@ -26,7 +26,7 @@ export function Maintainers() {
         <span className="bubble b8" />
       </div>
 
-      <p className="relative mb-3 px-2 text-sm tracking-[0.35em] text-center sakura-font pink-white-gradient">
+      <p className="relative mb-3 px-2 text-sm tracking-[0.25em] text-center font-sakura pink-white-gradient">
         Hosted and maintained by
       </p>
 
@@ -42,12 +42,13 @@ export function Maintainers() {
                 alt="Virtuoso"
                 fill
                 sizes="80px"
+                loading="eager"
                 className="object-cover"
               />
             </div>
           </div>
 
-          <p className="mt-2 text-base tracking-[0.25em] sakura-font swing-name text-white/90"
+          <p className="mt-2 text-base tracking-[0.2em] font-sakura swing-name text-white/90"
             style={{
               textShadow: `
                 2px 2px 0 rgba(180, 40, 90, 0.85),
@@ -69,6 +70,7 @@ export function Maintainers() {
                 alt="Kimura"
                 fill
                 sizes="80px"
+                loading="eager"
                 className="object-cover"
               />
             </div>
@@ -79,11 +81,12 @@ export function Maintainers() {
               width={64}
               height={64}
               unoptimized
+              loading="eager"
               className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 scale-150"
             />
           </div>
 
-          <p className="mt-2 text-base tracking-[0.25em] sakura-font swing-name text-white/90"
+          <p className="mt-2 text-base tracking-[0.2em] font-sakura swing-name text-white/90"
             style={{
               textShadow: `
                 2px 2px 0 hsla(187, 64%, 43%, 0.85),

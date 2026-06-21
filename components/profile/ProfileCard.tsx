@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
@@ -10,32 +11,24 @@ const ROLE_TEXT: Record<Role, string> = {
   admin: "Admin",
 };
 
-export default function ProfileCard({
-  profile,
-  onEditClick,
-}: {
+export default function ProfileCard({ profile, onEditClick }: {
   profile: ProfilePublic;
   onEditClick?: () => void;
 }) {
 
-
-const handleMouseLeave = () => {
-  target.current.x = 0.5;
-  target.current.y = 0.5;
-};
+  const handleMouseLeave = () => {
+    target.current.x = 0.5;
+    target.current.y = 0.5;
+  };
   const target = useRef({ x: 0.5, y: 0.5 });
   const current = useRef({ x: 0.5, y: 0.5 });
 
-const velocity = useRef({ x: 0, y: 0 });
-const rainbowRef = useRef<HTMLDivElement>(null);
-const beamRef = useRef<HTMLDivElement>(null);
+  const rainbowRef = useRef<HTMLDivElement>(null);
+  const beamRef = useRef<HTMLDivElement>(null);
 
   const parallaxRef = useRef<HTMLDivElement>(null);
   const shineRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const rectRef = useRef<DOMRect | null>(null);
-
-  const rafRef = useRef<number | null>(null);
   const rafParticles = useRef<number | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,9 +42,6 @@ const beamRef = useRef<HTMLDivElement>(null);
   const banner = PROFILE_BANNERS[profile.banner] ?? PROFILE_BANNERS[0];
   const avatar_colour = `hsl(${profile.colour}, 80%, 60%)`
 
-  /* =========================
-     PARTICLES (FIXED)
-  ========================= */
   useEffect(() => {
     const canvas = canvasRef.current;
     const card = cardRef.current;
@@ -164,84 +154,71 @@ const beamRef = useRef<HTMLDivElement>(null);
     };
   }, []);
 
-
-
-  
-  /* =========================
-     SMOOTH HOVER (FIXED)
-  ========================= */
   useEffect(() => {
-  let raf: number;
-  let alive = true;
+    let raf: number;
+    let alive = true;
 
-  const animate = () => {
-    if (!alive) return;
+    const animate = () => {
+      if (!alive) return;
 
-    current.current.x += (target.current.x - current.current.x) * 0.12;
-    current.current.y += (target.current.y - current.current.y) * 0.12;
+      current.current.x += (target.current.x - current.current.x) * 0.12;
+      current.current.y += (target.current.y - current.current.y) * 0.12;
 
-    const x = current.current.x;
-    const y = current.current.y;
+      const x = current.current.x;
+      const y = current.current.y;
 
-    const intensityX = x - 0.5;
-    const intensityY = y - 0.5;
+      const intensityX = x - 0.5;
+      const intensityY = y - 0.5;
 
-    const strength = Math.min(
-      1,
-      Math.sqrt(intensityX * intensityX + intensityY * intensityY)
-    );
+      const strength = Math.min(1, Math.sqrt(intensityX * intensityX + intensityY * intensityY));
+      const moveX = intensityX * 90;
+      const moveY = intensityY * 60;
+      const rotate = intensityX * 18;
 
-    const moveX = intensityX * 90;
-    const moveY = intensityY * 60;
-    const rotate = intensityX * 18;
+      if (rainbowRef.current) {
+        rainbowRef.current.style.transform = `
+          translate3d(${moveX}px, ${moveY}px, 0)
+          rotate(${rotate}deg)
+          scale(${1.1 + strength * 0.18})
+        `;
+        rainbowRef.current.style.opacity = `${0.25 + strength * 0.65}`;
+      }
 
-    if (rainbowRef.current) {
-      rainbowRef.current.style.transform = `
-        translate3d(${moveX}px, ${moveY}px, 0)
-        rotate(${rotate}deg)
-        scale(${1.1 + strength * 0.18})
-      `;
-      rainbowRef.current.style.opacity = `${0.25 + strength * 0.65}`;
-    }
+      if (beamRef.current) {
+        beamRef.current.style.transform = `
+          translate3d(${moveX * 1.5}px, ${moveY * 1.1}px, 0)
+          rotate(${rotate * 0.5}deg)
+          skewX(${intensityX * 14}deg)
+        `;
+        beamRef.current.style.opacity = `${0.1 + strength * 1.3}`;
+      }
 
-    if (beamRef.current) {
-      beamRef.current.style.transform = `
-        translate3d(${moveX * 1.5}px, ${moveY * 1.1}px, 0)
-        rotate(${rotate * 0.5}deg)
-        skewX(${intensityX * 14}deg)
-      `;
-      beamRef.current.style.opacity = `${0.1 + strength * 0.8}`;
-    }
+      if (cardRef.current) {
+        cardRef.current.style.transform = `
+          perspective(1000px)
+          rotateX(${-intensityY * 6}deg)
+          rotateY(${intensityX * 6}deg)
+        `;
+      }
 
-    if (cardRef.current) {
-      cardRef.current.style.transform = `
-        perspective(1000px)
-        rotateX(${-intensityY * 6}deg)
-        rotateY(${intensityX * 6}deg)
-      `;
-    }
+      if (parallaxRef.current) {
+        parallaxRef.current.style.transform = `
+          translate3d(${intensityX * -18}px, ${intensityY * -18}px, 0)
+          scale(1.08)
+        `;
+      }
 
-    if (parallaxRef.current) {
-      parallaxRef.current.style.transform = `
-        translate3d(${intensityX * -18}px, ${intensityY * -18}px, 0)
-        scale(1.08)
-      `;
-    }
+      raf = requestAnimationFrame(animate);
+    };
 
-    raf = requestAnimationFrame(animate);
-  };
+    animate();
 
-  animate();
+    return () => {
+      alive = false;
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
-  return () => {
-    alive = false;
-    cancelAnimationFrame(raf);
-  };
-}, []);
-
-  /* =========================
-     MOUSE (FIXED ONLY INPUT)
-  ========================= */
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -250,190 +227,152 @@ const beamRef = useRef<HTMLDivElement>(null);
     target.current.y = (e.clientY - rect.top) / rect.height;
   };
 
-  /* =========================
-     RENDER
-  ========================= */
   if (!profile) return <div>Loading...</div>;
 
   return (
-    
-<div
-  ref={cardRef}
-  onMouseMove={handleMouseMove}
-  onMouseLeave={handleMouseLeave}
-  className="relative w-[420px] aspect-[0.67] overflow-hidden rounded-1xl bg-white shadow-1xl flex flex-col"
-  style={{
-    transform: "perspective(1000px) translateZ(0)",
-    willChange: "transform",
-    transformStyle: "preserve-3d",
-  }}
->
-
-  {/* Banner ON TOP OF EVERYTHING */}
-  <div className="absolute inset-0 z-0 pointer-events-none">
-  <img
-    src="/banners/bannertp.png"
-    alt="Banner"
-    className="w-full h-full object-contain"
-  />
-</div>
-
-
-
-    
-
-    {/* =========================
-        EDIT BUTTON
-    ========================= */}
-    {onEditClick && (
-      <button
-        onClick={onEditClick}
-        className="absolute top-10 right-3 z-50 group flex items-center gap-2 px-3 py-2 
-                   bg-white/80 backdrop-blur hover:bg-black text-pink-500 cursor-pointer
-                   
-                   rounded-full shadow-lg transition-all hover:scale-105 border border-pink-100"
-        aria-label="Edit profile"
-      >
-
-        <span className="text-xs font-semibold hidden sm:inline">
-          Edit
-        </span>
-      </button>
-    )}
-
-    {/* =========================
-        TOP BANNER
-    ========================= */}
     <div
-  ref={topBarRef}
-  className="h-5 bg-gradient-to-r from-teal-300/80 via-cyan-300/80 to-emerald-300/80"
-/>
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative w-[320px] aspect-[0.67] overflow-hidden rounded-1xl bg-white shadow-1xl flex flex-col"
+      style={{
+        transform: "perspective(1000px) translateZ(0)",
+        willChange: "transform",
+        transformStyle: "preserve-3d",
+      }}
+    >
+      {/* Edit button */}
+      {onEditClick && (
+        <button
+          onClick={onEditClick}
+          className="absolute top-10 right-3 z-50 group flex items-center gap-2 px-3 py-2 
+                    bg-white/80 backdrop-blur hover:bg-black text-pink-500 cursor-pointer
+                    rounded-full shadow-lg transition-all hover:scale-105 border border-pink-100"
+          aria-label="Edit profile"
+        >
+          <span className="text-xs font-semibold hidden sm:inline">
+            Edit
+          </span>
+        </button>
+      )}
 
-    {/* =========================
-        PROFILE HEADER
-    ========================= */}
-    <div className="px-5 py-2 flex items-center gap-2 bg-white/75 backdrop-blur relative">
+      {/* Upper section */}
       <div
-  className="relative w-14 h-14 rounded-full overflow-hidden"
-  style={{
-    backgroundColor: avatar_colour,
-    boxShadow: `
-      0 0 5px ${avatar_colour},
-      0 0 5px ${avatar_colour}88
-    `,
-    transform: "translateZ(40px)",
-  }}
->
-        <Image
-          src={avatar}
-          alt="Avatar"
-          fill
-          className="object-contain"
+        ref={topBarRef}
+        className="h-5 bg-gradient-to-r from-teal-300/80 via-cyan-300/80 to-emerald-300/80"
+      />
+      <div className="px-5 py-2 flex items-center gap-2 bg-white/75 backdrop-blur relative">
+        <div
+          className="relative w-14 h-14 rounded-full overflow-hidden"
+          style={{
+            backgroundColor: avatar_colour,
+            boxShadow: `
+              0 0 5px ${avatar_colour},
+              0 0 5px ${avatar_colour}88
+            `,
+            transform: "translateZ(40px)",
+          }}
+        >
+          <Image
+            src={avatar}
+            alt="Avatar"
+            fill
+            sizes="50vw"
+            className="object-contain p-0.5"
+          />
+        </div>
+
+        <div className="text-left">
+          <div
+            className="font-bold text-black text-2xl leading-tight font-sakura tracking-[0.5px]"
+            style={{ textShadow: "0 1px 8px rgba(0, 0, 0, 0.15)" }}
+          >
+            {profile.display_name}
+          </div>
+        </div>
+      </div>
+
+      {/* Banner */}
+      <div
+        ref={bannerRef}
+        className="flex-grow min-h-[150px] mx-6 rounded-2xl overflow-hidden relative z-20 border"
+      >
+        <div
+          ref={parallaxRef}
+          className="absolute inset-0 will-change-transform m-0.5"
+        >
+          <Image
+            src={banner}
+            alt="Banner"
+            fill
+            sizes="(max-width: 768px) 100vw, 420px"
+            priority
+            className="object-fill"
+          />
+        </div>
+        <div
+          ref={rainbowRef}
+          className="absolute inset-0 pointer-events-none z-20"
+          style={{
+            background: "radial-gradient(circle at 50% 50%, rgba(255,0,200,0.25), transparent 60%)",
+            mixBlendMode: "screen",
+          }}
+        />
+        <div
+          ref={beamRef}
+          className="absolute pointer-events-none z-20"
+          style={{
+            inset: "-20%",
+            background: "linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%)",
+            mixBlendMode: "overlay",
+          }}
+        />
+        <div
+          ref={shineRef}
+          className="absolute inset-2 pointer-events-none z-10"
+          style={{
+            background: "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25), transparent 60%)",
+            opacity: 0,
+            mixBlendMode: "screen",
+          }}
         />
       </div>
 
-      <div className="text-left">
-  <div
-    className="font-bold text-black text-2xl leading-tight"
-    style={{
-      fontFamily: "Sakura",
-      textShadow: "0 1px 8px rgba(0, 0, 0, 0.15)",
-      letterSpacing: "0.5px",
-    }}
-  >
-    {profile.display_name}
-  </div>
-</div>
-</div>
+      {/* Lower section */}
+      <div className="px-2 py-2 text-center">
+        <h2
+          className="text-2xl text-pink-400 font-bold italic leading-tight"
+          style={{ fontFamily: "serif" }}
+        >
+          {profile.bio ? `❝ ${profile.bio} ❞` : "❝ bio ❞"}
+        </h2>
 
-    {/* =========================
-        MAIN BANNER AREA
-    ========================= */}
-    <div
-  ref={bannerRef}
-  className="flex-grow min-h-[220px] mx-4 rounded-2xl overflow-hidden relative z-20 border"
->
-  {/* PARALLAX LAYER (MOVES IMAGE) */}
-  <div
-    ref={parallaxRef}
-    className="absolute inset-0 will-change-transform"
-  >
-    <Image
-      src={banner}
-      alt="Banner"
-      fill
-      priority
-      className="object-cover"
-    />
-  </div>
-<div
-  ref={rainbowRef}
-  className="absolute inset-0 pointer-events-none z-20"
-  style={{
-    background:
-      "radial-gradient(circle at 50% 50%, rgba(255,0,200,0.25), transparent 60%)",
-    mixBlendMode: "screen",
-  }}
-/>
-
-<div
-  ref={beamRef}
-  className="absolute inset-0 pointer-events-none z-20"
-  style={{
-    background:
-      "linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.6) 50%, transparent 60%)",
-    mixBlendMode: "overlay",
-  }}
-/>
-
-
-
-
-
-  {/* SHINE OVERLAY */}
-  <div
-    ref={shineRef}
-    className="absolute inset-2 pointer-events-none z-10"
-    style={{
-      background:
-        "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25), transparent 60%)",
-      opacity: 0,
-      mixBlendMode: "screen",
-    }}
-  />
-</div>
-
-    {/* =========================
-        BOTTOM SECTION
-    ========================= */}
-    <div className="px-2 py-2 text-center bg-white/75 backdrop-blur">
-      <h2
-        className="text-2xl text-pink-400 font-bold italic leading-tight"
-        style={{ fontFamily: "serif" }}
-      >
-        {profile.bio ? `❝ ${profile.bio} ❞` : "❝bio❞"}
-      </h2>
-
-      <div className="flex items-center justify-center gap-3 mt-1">
-        <div className="flex-1 border-t-2 border-dashed border-pink-200" />
-        <p className="text-pink-300 tracking-widest text-xs font-semibold uppercase whitespace-nowrap">
-          {ROLE_TEXT[profile.role]}
-        </p>
-        <div className="flex-1 border-t-2 border-dashed border-pink-200" />
+        <div className="flex items-center justify-center gap-3 mt-1">
+          <div className="flex-1 border-t-2 border-dashed border-pink-500" />
+          <p className="text-pink-400 tracking-widest text-xs font-semibold uppercase whitespace-nowrap">
+            {ROLE_TEXT[profile.role]}
+          </p>
+          <div className="flex-1 border-t-2 border-dashed border-pink-500" />
+        </div>
       </div>
+      <div
+        ref={bottomBarRef}
+        className="h-5 bg-gradient-to-r from-teal-300/80 via-cyan-300/80 to-emerald-300/80"
+      />
+      
+      {/* Card frame and particles */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <img
+          src="/banners/bannertp.png"
+          alt="Banner"
+          className="w-full h-full object-contain"
+        />
+      </div>
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+      />
+
     </div>
-  
- <canvas
-  ref={canvasRef}
-  className="absolute inset-0 w-full h-full pointer-events-none z-0"
-/>
-    {/* =========================
-        BOTTOM BORDER
-    ========================= */}
-    <div
-  ref={bottomBarRef}
-  className="h-5 bg-gradient-to-r from-teal-300/80 via-cyan-300/80 to-emerald-300/80"
-/>
-  </div>
-);
+  );
 }

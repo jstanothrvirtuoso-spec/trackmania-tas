@@ -96,7 +96,7 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
           })}
 
           <tr className="text-center border-t border-slate-800 bg-gradient-to-bl from-red-800/90 to-blue-800/90">
-            <td colSpan={3} className="py-0.5 text-xl text-slate-100 [text-shadow:0_2px_4px_rgba(0,0,0,0.8)] font-bold italic" style={{ fontFamily: "Sakura" }}>
+            <td colSpan={3} className="py-0.5 text-xl text-slate-100 [text-shadow:0_2px_4px_rgba(0,0,0,0.8)] font-sakura font-bold italic">
               {`Completion: ${percentComplete}%`}
             </td>
           </tr>

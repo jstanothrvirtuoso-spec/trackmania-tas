@@ -102,23 +102,22 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
             return (
               <tr
                 key={category.category}
-                className="border-b border-slate-800 last:border-b-0 hover:bg-blue-900/20 transition-colors odd:bg-green-600/20 even:bg-green-800/20"
+                className="border-b border-slate-800 last:border-b-0 hover:bg-blue-900/20 text-slate-300 transition-colors odd:bg-green-600/20 even:bg-green-800/20"
               >
                 <td className="px-2 py-1 font-medium text-slate-200">
                   {category.category}
                 </td>
 
-                <td className="px-2 py-1 border-l border-slate-800 text-slate-300">
+                <td className="px-2 py-1 border-l border-slate-800">
                   {formatTime(category.tasMs, isStunt)}
                 </td>
 
-                <td className="px-2 py-1 text-slate-300">
+                <td className="px-2 py-1">
                   {hasRta ? formatTime(category.rtaMs, isStunt) : "-"}
                 </td>
 
                 <td
-                  className="px-2 py-1 border-l border-slate-800 italic text-cyan-300"
-                  style={{ fontFamily: "DOSVGA, monospace", letterSpacing: "0.04em" }}
+                  className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]"
                 >
                   {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, false, true) : "-"}
                 </td>
@@ -130,7 +129,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
             );
           })}
 
-          <tr className="border-t-2 border-slate-600 font-semibold text-slate-100 hover:bg-blue-900/20 transition-colors bg-blue-700/20">
+          <tr className="border-t-2 border-slate-600 font-semibold text-slate-200 hover:bg-blue-900/20 transition-colors bg-blue-700/20">
             <td className="px-2 py-1">Total</td>
 
             <td className="px-2 py-1 border-l border-slate-800 text-slate-300">
@@ -142,8 +141,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
             </td>
 
             <td
-              className="px-2 py-1 border-l border-slate-800 italic text-cyan-300"
-              style={{ fontFamily: "DOSVGA, monospace", letterSpacing: "0.04em" }}
+              className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]"
             >
               {total.rtaMs > 0 ? formatTime(total.tasMs - total.rtaMs, false, false, true) : "-"}
             </td>

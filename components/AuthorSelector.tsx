@@ -116,7 +116,7 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
             return (
               <div
                 key={author}
-                className="flex items-center gap-0.5 rounded-full border border-slate-600 bg-slate-700/80 pl-3 pr-1 py-1 text-sm"
+                className="flex items-center gap-0.5 rounded-full border border-slate-600 bg-slate-700/80 pl-3 pr-1 py-1 text-sm text-slate-200"
               >
                 <span>{author}</span>
 
@@ -142,7 +142,7 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
             value={authorQuery}
             disabled={authors.length >= 20}
             placeholder={authors.length >= 20 ? "Max authors reached!" : authors.length ? "Add another author..." : "Type an author..."}
-            className="min-w-[180px] flex-1 bg-transparent outline-none placeholder:text-slate-500"
+            className="min-w-[180px] flex-1 bg-transparent outline-none text-slate-300 placeholder:text-slate-500"
             onChange={(e) => {
               const val = e.target.value;
               if (val.length <= MAX_LEN && /^[a-zA-Z0-9 _.'-]*$/.test(val)) {
@@ -190,7 +190,7 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
                   tabIndex={0}
                   onClick={() => addAuthor(a.author)}
                   className={`w-full px-3 py-2 text-left text-sm transition cursor-pointer
-                    ${i === selectedSuggestion ? "bg-emerald-600/40 text-emerald-100" : "hover:bg-slate-700/50"}`}
+                    ${i === selectedSuggestion ? "bg-emerald-600/40 text-emerald-100" : "hover:bg-slate-700/50 text-slate-400"}`}
                 >
                   {isCreate ? (
                     <>

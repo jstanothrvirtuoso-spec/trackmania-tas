@@ -238,7 +238,7 @@ export default function SubmitForm() {
         return;
       }
 
-      showAlert("Your TAS was submitted successfully! A moderator will review your submission soon. You will be notified when it has been processed.");
+      showAlert("Your TAS was submitted successfully! A moderator will review your submission soon. Check your profile to track your submissions status.");
       resetForm();
     } finally {
       setLoading(false);
@@ -248,13 +248,13 @@ export default function SubmitForm() {
   }
 
   return (
-    <div className="relative z-10 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl">
+    <div className="relative w-3xl z-10 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl">
       <div className="flex max-h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-2xl shadow-2xl">
         <div className="overflow-y-auto p-6 md:p-8">
 
           {/* HEADER */}
           <div className="flex items-start justify-between">
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-3xl font-bold text-slate-200">
               Submit TAS
             </h1>
             <button 
@@ -304,7 +304,7 @@ export default function SubmitForm() {
                   onChange={(e) => onFileSelect(e.target.files?.[0])}
                 />
 
-                <div className="text-lg font-medium">Drop replay here</div>
+                <div className="text-lg font-medium text-slate-200">Drop replay here</div>
                 <div className="mt-1 text-sm text-slate-400">or click to browse</div>
 
                 {replay.file && (
@@ -320,12 +320,12 @@ export default function SubmitForm() {
               <div className="rounded-lg bg-slate-800/60 px-4 py-3 text-sm">
                 {replay.track ? (
                   <>
-                    <div>
+                    <div className="text-slate-300">
                       Track:
                       <span className="ml-2 font-medium text-emerald-400">{replay.track}</span>
                     </div>
                     {timeMs > 0 ? (
-                      <div className="mt-1">
+                      <div className="mt-1 text-slate-300">
                         Time:
                         <span className="ml-2 font-medium text-emerald-400">
                           {`${replay.time.minutes > 0 ? String(replay.time.minutes) + ":" : ""}`}
@@ -356,7 +356,7 @@ export default function SubmitForm() {
               <div className="flex items-center w-full">
                 <div className={labelClass}>Video (recommended)</div>
                 <div className="group relative ml-auto cursor-help px-1 py-0.5">
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">?</span>
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-slate-400 text-[10px]">?</span>
                   <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                     Provide a video URL for your TAS. YouTube is preferred (even if unlisted), but Streamable or Discord videos will be accepted. You must provide a video for your TAS to be eligible for TAS of the Day.
                   </div>
@@ -386,7 +386,7 @@ export default function SubmitForm() {
               <div className="flex items-center w-full">
                 <div className={labelClass}>Category (optional)</div>
                 <div className="group relative ml-auto cursor-help px-1 py-0.5">
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">?</span>
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-slate-400 text-[10px]">?</span>
                   <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                     You may indicate the target category for your TAS. Note, this may be updated by the moderators at any time. Please see the About page for more info on TAS categories.
                   </div>
@@ -409,7 +409,7 @@ export default function SubmitForm() {
               <div className="flex items-center w-full">
                 <div className={labelClass}>Notes (optional)</div>
                 <div className="group relative ml-auto cursor-help px-1 py-0.5">
-                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px]">?</span>
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-slate-400 text-[10px]">?</span>
                   <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-58 -translate-x-50 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                     These notes are visible only to the moderators. Write any information that may be needed to process the TAS.
                   </div>
@@ -456,7 +456,7 @@ export default function SubmitForm() {
             disabled={
               loading || !replay.file || form.authors.filter((a) => a.trim() !== "").length === 0
             }
-            className={`w-full rounded-md bg-emerald-600 px-4 py-2 font-medium disabled:opacity-50 ${
+            className={`w-full rounded-lg bg-emerald-600 px-4 py-1.5 font-medium disabled:opacity-50 text-xl text-slate-100 ${
               loading || !replay.file || form.authors.filter((a) => a.trim() !== "").length === 0 ? "cursor-not-allowed" : "hover:bg-emerald-500 cursor-pointer"
             }`}
           >

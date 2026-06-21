@@ -7,12 +7,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useHoverDropdown, useOnClickOutside } from "@/utils/common";
 import { PROFILE_AVATARS, CURSOR } from "@/utils/constants"
-import { ProfilePublic } from "@/lib/Profiles";
+import { ProfilePublic, useProfilePrivate } from "@/lib/Profiles";
 
-const USER_LINKS = [
-  { href: "/submit", label: "Submit TAS" },
-  { href: "/profile", label: "Profile" },
-];
 const ADMIN_LINKS = [
   { href: "/admin-tas", label: "TAS" },
   { href: "/admin-rta", label: "RTA" },
@@ -25,6 +21,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
 
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: profilePrivate } = useProfilePrivate();
   
   const userMenu = useHoverDropdown();
   const adminMenu = useHoverDropdown();
@@ -86,17 +83,26 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
         `}
       >
         <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_60px_rgba(14,116,144,0.24)] backdrop-blur-xl p-2 flex flex-col gap-1">
-
-          {USER_LINKS.map((link) => (
+          
+          {profilePrivate && profilePrivate.submit_permission && (
             <Link
-              key={link.href}
-              href={link.href}
+              key="/submit"
+              href="/submit"
               className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
               onClick={userMenu.closeNow}
             >
-              {link.label}
+              Submit TAS
             </Link>
-          ))}
+          )}
+        
+          <Link
+            key="/profile"
+            href="/profile"
+            className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
+            onClick={userMenu.closeNow}
+          >
+            Profile
+          </Link>
         
           {profilePublicMe?.role === "admin" && (
             <div

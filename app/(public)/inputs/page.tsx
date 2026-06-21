@@ -64,7 +64,7 @@ const tricks: Record<Environment, Trick[]> = {
   "BAY": [ { src: "/inputs/videos/bayvideo.webm", button: ["Inputs"], notes: [ "I recommend you make your own start before using the trick", "Every start is different, so you cannot achieve the optimum result every time!"]} ],
 };
 
-const btnClass = `sakura-font relative px-4 py-2 text-xs uppercase text-sky-100 tracking-[0.12em] leading-none
+const btnClass = `font-sakura relative px-4 py-2 text-xs uppercase text-sky-100 tracking-[0.12em] leading-none
   rounded-xl border border-white/10 bg-white/5 backdrop-blur-md 
   transition-all duration-300 cursor-pointer
   shadow-[0_0_10px_rgba(56,189,248,0.12)]
@@ -311,10 +311,9 @@ export default function InputsPage() {
                     </div>
                   )}
                   <div
-                    className={`italic tracking-wide teko-font text-slate-200 py-2 text-center [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)] ${
+                    className={`font-teko italic tracking-wide text-slate-200 py-2 text-center [text-shadow:2px_2px_4px_rgba(0,0,0,0.8)] ${
                       activeEnv === "BAY" ? "text-2xl" : "text-3xl"
                     }`}
-                    style={{ fontFamily: "Teko" }}
                   >
                     {trick.notes.map((note) => (
                       <div key={note}>

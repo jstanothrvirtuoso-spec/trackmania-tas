@@ -115,7 +115,7 @@ export default function EditProfile({
                 onClick={() => setEditMode("banner")}
                 className="w-full max-w-[160px] aspect-[9/16] rounded-xl overflow-hidden hover:bg-slate-800 transition cursor-pointer"
               >
-                <div className="relative w-full h-full banner-frame">
+                <div className="relative w-full h-full">
                   <Image
                     src={PROFILE_BANNERS[draft?.banner ?? 0]}
                     alt="Banner"

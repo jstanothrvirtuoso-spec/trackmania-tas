@@ -8,8 +8,8 @@ Admin panel:
  - Connecting accounts with authors
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
+Ideas zone for partial TASes
 
-Fix rules
 Add some banner images
 
 

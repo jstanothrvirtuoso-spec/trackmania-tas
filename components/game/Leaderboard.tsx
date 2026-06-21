@@ -163,7 +163,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
             return (
               <tr
                 key={`${row.author}-${row.timeSavedMs}`}
-                className="border-b border-slate-800 last:border-b-0
+                className="border-b border-slate-800 last:border-b-0 text-slate-300
                   hover:bg-blue-900/20 transition-colors odd:bg-violet-600/20 even:bg-violet-800/10"
               >
                 <td className="px-2 py-1 font-medium text-slate-200">

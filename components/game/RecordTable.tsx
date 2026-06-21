@@ -214,9 +214,8 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                     const isEqual = entry && row.rta && entry.time_ms === row.rta.time_ms;
                     return (
                       <td
-                        className={classNames(BODY_BASE, "px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-100")}
+                        className={classNames(BODY_BASE, "font-vga px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-100")}
                         style={{
-                          fontFamily: "DOSVGA, monospace",
                           letterSpacing: "0.05em",
                           textShadow: isBadDiff
                             ? "0 0 4px #000000, 0 0 10px #000000, 0 0 18px rgba(248, 113, 113, 0.55), 1px 1px 0 rgba(248, 113, 113, 0.35)"

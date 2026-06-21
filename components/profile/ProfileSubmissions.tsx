@@ -84,7 +84,7 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
               return (
                 <tr
                   key={ index }
-                  className={`border-b border-slate-800 ${rowColour}`}
+                  className={`border-b border-slate-800 text-slate-200 ${rowColour}`}
                 >
                   <td className="px-3 py-1.5 whitespace-nowrap">
                     { formatDate(row.date) }
