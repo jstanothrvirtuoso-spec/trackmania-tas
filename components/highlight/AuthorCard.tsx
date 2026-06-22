@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Environment, Game, RtaEntry, TasEntry } from "@/utils/typing";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { TRACKS } from "@/lib/TrackList";
-import { CATEGORY_COLOURS, CATEGORY_FILTERS, OVERRIDE } from "@/utils/constants";
+import { OVERRIDE } from "@/utils/constants";
 
 export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: { 
   authorOfTheDay: string,  
@@ -78,7 +78,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
       favEnvironment: favEnvironment,
       favGame: favGame,
     }
-  }, [tasRecords, authorOfTheDay]);
+  }, [tasRecords, authorOfTheDay, bestRtaByTrack]);
   
   return (
     <section className="rounded-3xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/10 via-slate-900/80 to-slate-900/80 p-6 backdrop-blur-md">

@@ -12,11 +12,15 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
   const measureRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const scrollTopRef = useRef(0);
-  const allOptions = defaultOption ? [defaultOption, ...options] : options;
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(initialValue);
   const [buttonWidth, setButtonWidth] = useState<number | null>(null);
+
+  const allOptions = useMemo(
+    () => (defaultOption ? [defaultOption, ...options] : options),
+    [defaultOption, options]
+  );
 
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {

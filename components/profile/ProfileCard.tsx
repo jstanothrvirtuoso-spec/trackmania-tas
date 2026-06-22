@@ -5,6 +5,24 @@ import { ProfilePublic } from "@/lib/Profiles";
 import { Role } from "@/utils/typing";
 import { PROFILE_AVATARS, PROFILE_BANNERS } from "@/utils/constants";
 
+type Particle = {
+  x: number,
+  y: number,
+  r: number,
+  dx: number,
+  dy: number,
+  angle: number,
+  spin: number,
+  alpha: number,
+}
+
+type Rect = {
+  left: number,
+  right: number,
+  top: number,
+  bottom: number,
+}
+
 const ROLE_TEXT: Record<Role, string> = {
   user: "Verified TASer",
   moderator: "Moderator",
@@ -32,7 +50,7 @@ export default function ProfileCard({ profile, onEditClick }: {
   const rafParticles = useRef<number | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<any[]>([]); // FIX: use real ref
+  const particlesRef = useRef<Particle[]>([]); // FIX: use real ref
 
   const bannerRef = useRef<HTMLDivElement>(null);
   const topBarRef = useRef<HTMLDivElement>(null);
@@ -50,7 +68,7 @@ export default function ProfileCard({ profile, onEditClick }: {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const isInside = (x: number, y: number, w: any) =>
+    const isInside = (x: number, y: number, w: Rect | null) =>
       w && x > w.left && x < w.right && y > w.top && y < w.bottom;
 
     const getRect = (el: HTMLElement | null) => {
@@ -222,10 +240,11 @@ export default function ProfileCard({ profile, onEditClick }: {
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
-
-    target.current.x = (e.clientX - rect.left) / rect.width;
-    target.current.y = (e.clientY - rect.top) / rect.height;
-  };
+    target.current = {
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    };
+  }; 
 
   if (!profile) return <div>Loading...</div>;
 
@@ -362,9 +381,11 @@ export default function ProfileCard({ profile, onEditClick }: {
       
       {/* Card frame and particles */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <img
+        <Image
           src="/banners/bannertp.png"
           alt="Banner"
+          fill
+          sizes="50vw"
           className="w-full h-full object-contain"
         />
       </div>

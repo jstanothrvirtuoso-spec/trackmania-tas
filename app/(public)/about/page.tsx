@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Rain from "@/components/about/Rain1";
+import Rain from "@/components/about/Rain";
 import { HallOfFame } from "@/components/about/HallOfFame";
 import { BadgeTable } from "@/components/about/BadgeTable";
 import { Maintainers } from "@/components/about/Maintainers";
@@ -105,19 +105,37 @@ export default function Page() {
 
                         {/* TMI */}
                         <a href="https://donadigo.com/tminterface/" className="flex items-center gap-2 group">
-                          <img src="/icons/tmi.webp" className="w-5 h-5 group-hover:scale-110 transition" />
+                          <Image 
+                            src="/icons/tmi.webp"
+                            alt="TMI"
+                            width={170}
+                            height={171}
+                            className="w-5 h-5 group-hover:scale-110 transition" 
+                          />
                           <span className="text-[11px] text-pink-200/70">TMInterface</span>
                         </a>
 
                         {/* DRIVE */}
                         <a href="https://drive.google.com/drive/folders/1x7QYhnQ6svwAdPMW3qGxMGCcVECNCVxU" className="flex items-center gap-2 group">
-                          <img src="/icons/google-drive.webp" className="w-5 h-5 group-hover:scale-110 transition" />
+                          <Image 
+                            src="/icons/google-drive.webp"
+                            alt="Drive"
+                            width={240}
+                            height={223}
+                            className="w-5 h-5 group-hover:scale-110 transition" 
+                          />
                           <span className="text-[11px] text-white/50">Replays</span>
                         </a>
 
                         {/* DOCS */}
                         <a href="https://docs.google.com/document/d/1iXvjL-ZqHgD6Xk4_NgKsWOl-o1f-0KKsnD3NeTEqsAI/edit" className="flex items-center gap-2 group">
-                          <img src="/icons/google-docs.webp" className="w-5 h-5 group-hover:scale-110 transition" />
+                          <Image 
+                            src="/icons/google-docs.webp"
+                            alt="Docs"
+                            width={125}
+                            height={172}
+                            className="w-4 h-5 group-hover:scale-110 transition" 
+                          />
                           <span className="text-[11px] text-white/50">Tutorial</span>
                         </a>
 

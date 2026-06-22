@@ -97,9 +97,14 @@ export function CommunityRules() {
 
             {/* Sakura particles layer */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              <div className="sakura-flake" />
-              <div className="sakura-flake delay-1" />
-              <div className="sakura-flake delay-2" />
+              <div className="sakura-flake flake-1" />
+              <div className="sakura-flake flake-2" />
+              <div className="sakura-flake flake-3" />
+              <div className="sakura-flake flake-4" />
+              <div className="sakura-flake flake-5" />
+              <div className="sakura-flake flake-6" />
+              <div className="sakura-flake flake-7" />
+              <div className="sakura-flake flake-8" />
             </div>
 
             {/* Rules */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { soundManager } from "@/lib/SoundManager";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Drop = {
   left: number;

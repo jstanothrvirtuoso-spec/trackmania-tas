@@ -72,7 +72,7 @@ export default function HighlightPage() {
       .map(([author]) => author);
 
     return { undoneTracks, topTasVideos, topAuthors };
-  }, [tasRecords]);
+  }, [tasRecords, bestRtaByTrack]);
 
   const { tasOfTheDay, undoneTasOfTheDay, authorOfTheDay } = useMemo(() => {
     function dailyIndex(length: number) {

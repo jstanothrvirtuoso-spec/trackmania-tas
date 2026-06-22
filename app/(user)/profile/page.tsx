@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import ProfileCard from "@/components/profile/ProfileCard";
 import { useProfilePrivate, useProfilePublicMe } from "@/lib/Profiles";
@@ -28,9 +29,11 @@ export default function ProfilePage() {
       <div className="relative min-h-screen px-2 flex flex-col w-full items-center justify-center gap-10 pt-20">
 
         {/* Header */}
-        <img
+        <Image
           src="/wallpapers/profile.png"
           alt="Profile"
+          width={371}
+          height={74}
           className="h-12 lg:h-16 w-auto object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,0.5)]"
         />
 

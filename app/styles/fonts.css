@@ -1,0 +1,50 @@
+
+@font-face {
+  font-family: "OktaNeue";
+  src: url("/fonts/oktaneue.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kiwi";
+  src: url("/fonts/kiwimaru.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DOSVGA";
+  src: url("/fonts/DOSVGA.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sakura";
+  src: url("/fonts/sakura.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Teko";
+  src: url("/fonts/teko.woff2") format("woff2");
+  font-display: swap;
+}
+
+@theme {
+  --font-okta: "OktaNeue", sans-serif;
+}
+
+@theme {
+  --font-kiwi: "Kiwi", sans-serif;
+}
+
+@theme {
+  --font-vga: "DOSVGA", monospace;
+}
+
+@theme {
+  --font-sakura: "Sakura", sans-serif;
+}
+
+@theme {
+  --font-teko: "Teko", sans-serif;
+}

@@ -9,18 +9,18 @@ export function Maintainers() {
       <div className="pointer-events-none absolute inset-0 z-0">
 
         <div className="aquarium-water aquarium-water-1" />
-        {/* <div className="aquarium-water aquarium-water-2" /> */}
+        <div className="aquarium-water aquarium-water-2" />
         <div className="water-surface" />
 
         {/* 🫧 BUBBLES */}
-        <span className="bubble b1" />
-        <span className="bubble b2" />
-        <span className="bubble b3" />
-        <span className="bubble b4" />
-        <span className="bubble b5" />
-        <span className="bubble b6" />
-        <span className="bubble b7" />
-        <span className="bubble b8" />
+        <span className="bubble bubble-1" />
+        <span className="bubble bubble-2" />
+        <span className="bubble bubble-3" />
+        <span className="bubble bubble-4" />
+        <span className="bubble bubble-5" />
+        <span className="bubble bubble-6" />
+        <span className="bubble bubble-7" />
+        <span className="bubble bubble-8" />
       </div>
 
       {/* 🧊 GLASS BORDER (TOP FRAME LAYER) */}

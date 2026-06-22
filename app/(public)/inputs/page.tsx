@@ -200,9 +200,11 @@ export default function InputsPage() {
 
         {/* HEADER */}
         <div className="relative -translate-x-1">
-          <img
+          <Image
             src="/inputs/inputstxt.png"
             alt="Inputs"
+            width={334}
+            height={190}
             className="mx-auto h-40 w-auto"
           />
         </div>
