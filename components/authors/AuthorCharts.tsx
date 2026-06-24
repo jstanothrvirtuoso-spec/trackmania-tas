@@ -222,7 +222,7 @@ export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvi
               <button
                 type="button"
                 onClick={() => onSelectEnvironment(isSelected ? null : environment)}
-                className={`w-7 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-emerald-300 ring-2 hover:bg-emerald-400" : "bg-emerald-400/70 hover:bg-emerald-300"}`}
+                className={`w-6 sm:w-7 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-emerald-300 ring-2 hover:bg-emerald-400" : "bg-emerald-400/70 hover:bg-emerald-300"}`}
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",

@@ -85,7 +85,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
             </th>
 
             <th className="px-2 py-1 border-l border-slate-800 font-normal uppercase tracking-[0.18em]">
-              Diff
+              Diff.
             </th>
 
             <th className="px-2 py-1 font-normal uppercase tracking-[0.18em]">

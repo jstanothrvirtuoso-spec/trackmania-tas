@@ -139,7 +139,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
           ) : (
             <>
               {renderSortHeader("time", "Time")}
-              {renderSortHeader("diff", "Diff")}
+              {renderSortHeader("diff", "Diff.")}
               {renderSortHeader("percentSaved", "%", "w-[60px]")}
             </>
           )}

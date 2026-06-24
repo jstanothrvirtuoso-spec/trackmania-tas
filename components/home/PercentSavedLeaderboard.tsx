@@ -86,7 +86,7 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
   }, [bestTasByTrack, bestRtaByTrack, category]);
 
   return (
-    <div className="flex flex-col max-w-135">
+    <div className="flex flex-col max-w-135 backdrop-blur-md">
       <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
 
         {/* Banner */}
@@ -105,7 +105,7 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
           />
         </div>
 
-        <table className="table-fixed text-center backdrop-blur-md rounded-2xl text-xs sm:text-sm">
+        <table className="table-fixed text-center text-xs sm:text-sm">
           <thead className="text-slate-300 bg-slate-950/50">
             <tr>
               <th className="px-2 py-1.5 uppercase">

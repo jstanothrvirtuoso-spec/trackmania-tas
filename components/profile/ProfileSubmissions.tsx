@@ -1,10 +1,13 @@
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ProfilePrivate } from "@/lib/Profiles";
 import { formatDate, formatTime, timeAgo } from "@/utils/formatting";
 import { useFetchUserSubmissions } from "@/lib/TasSubmissions";
 import { formatAuthors, formatTrack } from "../FormatLinks";
+import { DropSelect } from "../DropSelect";
 
+const STATUS = ["All", "Pending", "Approved", "Rejected"] as const;
+const TIMESPAN = ["Past month", "Past year", "All"] as const;
 const STATUS_COLOUR = {
   "pending": ["bg-[#3230af]/30", "bg-[#3230af]/40"],
   "approved": ["bg-[#6cbe36]/30", "bg-[#6cbe36]/40"],
@@ -14,107 +17,171 @@ const STATUS_COLOUR = {
 export default function ProfileSubmission({ profilePrivate }: { profilePrivate: ProfilePrivate }) {
   
   const { data: tasSubmissions } = useFetchUserSubmissions(profilePrivate?.id ?? "");
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedTimespan, setSelectedTimespan] = useState("Past month");
 
   const recentSubmissions = useMemo(() => {
     if (!tasSubmissions) return [];
 
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    let filtered = [...tasSubmissions];
 
-    const pending = tasSubmissions.filter(tas => tas.status === "pending");
+    // Status filter
+    if (selectedStatus !== "All") {
+      filtered = filtered.filter(
+        tas => tas.status === selectedStatus.toLowerCase()
+      );
+    }
 
-    const recentNonPending = tasSubmissions
-      .filter(tas => tas.status !== "pending" && new Date(tas.created_at) >= oneMonthAgo)
-      .slice(0, Math.max(0, 50 - pending.length));
-    
-    return [...pending, ...recentNonPending].sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    // Timespan filter
+    if (selectedTimespan !== "All") {
+      const cutoff = new Date();
+
+      if (selectedTimespan === "Past month") {
+        cutoff.setMonth(cutoff.getMonth() - 1);
+      } else if (selectedTimespan === "Past year") {
+        cutoff.setFullYear(cutoff.getFullYear() - 1);
+      }
+
+      filtered = filtered.filter(
+        tas => new Date(tas.created_at) >= cutoff
+      );
+    }
+
+    return filtered.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() -
+        new Date(a.created_at).getTime()
     );
-  }, [tasSubmissions]);
-
-  if (recentSubmissions.length === 0) {
+  }, [tasSubmissions, selectedStatus, selectedTimespan]);
+  
+  if (!tasSubmissions || tasSubmissions.length === 0) {
     return null
   }
 
   return (
-    <div className="flex flex-col py-3 gap-2">
-      <h1 className="text-lg font-semibold italic justify-center flex text-slate-300">
-        Recent TAS Submissions
-      </h1>
+    <div className="flex flex-col p-2">
+      <div className="overflow-hidden rounded-2xl border border-slate-500 bg-slate-900/80 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
 
-      <div className="overflow-x-auto bg-slate-900/80 rounded-lg">
-        <table className="border-separate border border-slate-500 rounded-lg overflow-hidden text-center text-xs sm:text-sm">
-          <thead>
-            <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
-              <th className="px-3 py-1.5 font-normal">
-                Date
-              </th>
+        {/* Banner */}
+        <div className="flex items-center justify-between gap-5 border-b border-slate-800 bg-gradient-to-r from-slate-950 to-slate-800 px-3 py-1.5">
+          <h3 className="font-kiwi tracking-[0.15em] text-xs sm:text-sm font-bold uppercase text-sky-200">
+            Recent TAS Submissions
+          </h3>
 
-              <th className="px-3 py-1.5 font-normal">
-                Track
-              </th>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <DropSelect
+              initialValue={"Past month"}
+              options={TIMESPAN.map((timespan) => ({
+                value: timespan,
+                label: timespan,
+              }))}
+              onChange={(value) => setSelectedTimespan(value)}
+            />
 
-              <th className="px-3 py-1.5 font-normal">
-                Time
-              </th>
+            <DropSelect
+              initialValue={"All"}
+              options={STATUS.map((status) => ({
+                value: status,
+                label: status,
+              }))}
+              onChange={(value) => setSelectedStatus(value)}
+            />
+          </div>
+        </div>
+    
+        <div className="overflow-x-auto bg-slate-900/80 rounded-lg">
+          <table className="rounded-lg overflow-hidden text-center text-xs sm:text-sm">
+            <thead>
+              <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
+                <th className="px-3 py-1.5 font-normal">
+                  Submitted
+                </th>
 
-              <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
-                Cat.
-              </th>
+                <th className="px-3 py-1.5 font-normal whitespace-nowrap hidden sm:table-cell">
+                  TAS Date
+                </th>
 
-              <th className="px-3 py-1.5 font-normal">
-                Authors
-              </th>
+                <th className="px-3 py-1.5 font-normal w-full sm:w-auto">
+                  Track
+                </th>
 
-              <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
-                Status
-              </th>
-            </tr>
-          </thead>
+                <th className="px-3 py-1.5 font-normal">
+                  Time
+                </th>
 
-          <tbody>
-            {recentSubmissions.map((row, index) => {
-              const status = row.status === "pending" ? `Submitted ${timeAgo(row.created_at)} ago (pending)`
-                : row.status === "approved" ? "Approved"
-                : row.admin_notes ? `Submission rejected with note: ${row.admin_notes}`
-                : "Submission rejected :("
-              
-              const colourIndex = index % 2 == 0 ? 1 : 0
-              const rowColour = STATUS_COLOUR[row.status]?.[colourIndex] ?? "bg-slate-500/10"
-              
-              return (
-                <tr
-                  key={index}
-                  className={`border-b border-slate-800 text-slate-200 ${rowColour}`}
-                >
-                  <td className="px-3 py-1.5 whitespace-nowrap">
-                    {formatDate(row.date)}
-                  </td>
+                <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
+                  Cat.
+                </th>
 
-                  <td className="px-3 py-1.5 lg:whitespace-nowrap">
-                    {formatTrack(row.track ?? "")}
-                  </td>
+                <th className="px-3 py-1.5 font-normal w-full sm:w-auto">
+                  Authors
+                </th>
 
-                  <td className="px-3 py-1.5">
-                    {formatTime(row.time_ms ?? 0)}
-                  </td>
+                <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
+                  Status
+                </th>
+              </tr>
+            </thead>
 
-                  <td className="px-3 py-1.5 hidden sm:table-cell">
-                    {row.category}
-                  </td>
-
-                  <td className="px-3 py-1.5">
-                    {formatAuthors(row.authors, 6)}
-                  </td>
-
-                  <td className="px-3 py-1.5 hidden sm:table-cell">
-                    { status }
+            <tbody>
+              {recentSubmissions.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-4 py-12 text-center text-slate-400 italic"
+                  >
+                    No submissions match the selected filters.
                   </td>
                 </tr>
-              )
-            })}
-          </tbody>
-        </table>
+              ) : (
+                recentSubmissions.map((row, index) => {
+                  const status = row.status === "pending" ? `Submitted ${timeAgo(row.created_at)} ago (pending)`
+                    : row.status === "approved" ? "Approved"
+                    : row.admin_notes ? `Submission rejected with note: ${row.admin_notes}`
+                    : "Submission rejected :("
+                  
+                  const colourIndex = index % 2 == 0 ? 1 : 0
+                  const rowColour = STATUS_COLOUR[row.status]?.[colourIndex] ?? "bg-slate-500/10"
+                  
+                  return (
+                    <tr
+                      key={index}
+                      className={`border-b border-slate-800 text-slate-200 ${rowColour}`}
+                    >
+                      <td className="px-3 py-1.5 whitespace-nowrap">
+                        {formatDate(row.created_at)}
+                      </td>
+
+                      <td className="px-3 py-1.5 whitespace-nowrap hidden sm:table-cell">
+                        {formatDate(row.date)}
+                      </td>
+
+                      <td className="px-3 py-1.5 lg:whitespace-nowrap">
+                        {formatTrack(row.track ?? "")}
+                      </td>
+
+                      <td className="px-3 py-1.5">
+                        {formatTime(row.time_ms ?? 0)}
+                      </td>
+
+                      <td className="px-3 py-1.5 hidden sm:table-cell">
+                        {row.category}
+                      </td>
+
+                      <td className="px-3 py-1.5">
+                        {formatAuthors(row.authors, 6)}
+                      </td>
+
+                      <td className="px-3 py-1.5 hidden sm:table-cell max-w-60">
+                        { status }
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
