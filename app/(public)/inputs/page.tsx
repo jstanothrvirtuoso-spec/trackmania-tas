@@ -196,7 +196,7 @@ export default function InputsPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="relative z-10 mx-auto max-w-7xl p-6 space-y-10">
+      <div className="relative z-10 mx-auto max-w-7xl space-y-10 p-2 sm:p-6">
 
         {/* HEADER */}
         <div className="relative -translate-x-1">
@@ -257,7 +257,7 @@ export default function InputsPage() {
               <div className="absolute inset-0 opacity-95 bg-gradient-to-r from-[#000404] via-[#070816dd] to-transparent"/>
 
               {/* INPUTS CARD */}
-              <div className="relative z-10 grid gap-6 p-8 md:grid-cols-[420px_1fr] items-center">
+              <div className="relative z-10 grid gap-6 md:grid-cols-[420px_1fr] items-center p-4 sm:p-8">
                 <div className="space-y-2 h-full flex flex-col justify-center">
 
                   {/* VIDEO */}

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { TasEntry, Category, RtaEntry } from "@/utils/typing";
 import { TRACKS } from "@/lib/TrackList";
+import { formatAuthors, formatTrack } from "../FormatLinks";
 
 const TIER_COLOURS = [
   ["bg-emerald-700/30", "bg-emerald-700/40"],
@@ -109,13 +110,13 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
                 style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
               >
                 <td className="px-3 py-1 text-slate-300 whitespace-nowrap">
-                  {row.track}
+                  {formatTrack(row.track, "text-slate-300 hover:text-emerald-500")}
                 </td>
                 <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
                   {row.pcSaved.toPrecision(3)}
                 </td>
                 <td className="px-3 py-1 text-slate-300">
-                  {row.tas.authors.join(", ")}
+                  {formatAuthors(row.tas.authors, 6)}
                 </td>
               </tr>
             );

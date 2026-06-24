@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TasEntry, RtaEntry, Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
 import { TRACKS } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
+import { formatAuthors, formatTrack } from "../FormatLinks";
 
 const TIER_COLOURS = [
   ["bg-emerald-700/30", "bg-emerald-700/40"],
@@ -85,23 +85,27 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
     return result;
   }, [bestTasByTrack, bestRtaByTrack, category]);
 
-  if (data.length === 0) return null;
-
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-end py-2">
-        <DropSelect
-          initialValue={category}
-          options={CATEGORIES.filter((c) => (c != "Low Input")).map((category) => ({
-            value: category,
-            label: category,
-          }))}
-          onChange={(value) => setCategory(value as Category)}
-        />
-      </div>
+    <div className="flex flex-col max-w-135">
+      <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
 
-      <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80 text-xs sm:text-sm shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
-        <table className="table-fixed w-auto text-center backdrop-blur-md rounded-2xl">
+        {/* Banner */}
+        <div className="flex items-center justify-between gap-5 border-b border-slate-800 bg-gradient-to-r from-slate-950 to-slate-800 px-3 py-1.5">
+          <h3 className="font-kiwi tracking-[0.15em] text-xs sm:text-sm font-bold uppercase text-sky-200">
+            Savings Leaderboard
+          </h3>
+
+          <DropSelect
+            initialValue={category}
+            options={CATEGORIES.filter((c) => c !== "Low Input").map((category) => ({
+              value: category,
+              label: category,
+            }))}
+            onChange={(value) => setCategory(value as Category)}
+          />
+        </div>
+
+        <table className="table-fixed text-center backdrop-blur-md rounded-2xl text-xs sm:text-sm">
           <thead className="text-slate-300 bg-slate-950/50">
             <tr>
               <th className="px-2 py-1.5 uppercase">
@@ -110,43 +114,47 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
               <th className="px-2 py-1.5 uppercase whitespace-nowrap">
                 %
               </th>
-              <th className="px-2 py-1.5 uppercase">
+              <th className="px-2 py-1.5 uppercase w-full">
                 Authors
               </th>
             </tr>
           </thead>
 
           <tbody>
-            {data.map((row, index) => {
-              const nextTier = data[index + 1]?.tier ?? null;
-              const showDivider = row.tier !== nextTier && nextTier !== null;
-              const colourIndex = index % 2 == 0 ? 1 : 0
-              const rowColour = TIER_COLOURS[row.tier]?.[colourIndex] ?? "bg-slate-500/10"
-              
-              return (
-                <tr
-                  key={row.track}
-                  className={`border-t border-slate-800 ${rowColour} hover:bg-blue-900/50`}
-                  style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
-                >
-                  <td className="px-3 py-1 text-slate-100 lg:whitespace-nowrap">
-                    <Link
-                      key={row.track}
-                      href={`/tracks?track=${encodeURIComponent(row.track)}`}
-                      className="hover:text-emerald-400"
-                    >
-                      {row.track}
-                    </Link>
-                  </td>
-                  <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
-                    {row.pcSaved.toPrecision(3)}
-                  </td>
-                  <td className="px-3 py-1 text-slate-200">
-                    {row.tas.authors.join(", ")}
-                  </td>
-                </tr>
-              );
-            })}
+            {data.length === 0 
+              ? 
+              Array.from({ length: 25 }).map((_, i) => (
+                <tr key={i} className={`${i % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10"}`}>
+                  <td className="py-2 px-5"><div className="h-4 w-22 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+                  <td className="py-2 px-2"><div className="h-4 w-5 bg-slate-700 animate-pulse rounded" /></td>
+                  <td className="py-2 px-5"><div className="h-4 w-70 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+                </tr> 
+              )) 
+              : 
+              data.map((row, index) => {
+                const nextTier = data[index + 1]?.tier ?? null;
+                const showDivider = row.tier !== nextTier && nextTier !== null;
+                const colourIndex = index % 2 == 0 ? 1 : 0
+                const rowColour = TIER_COLOURS[row.tier]?.[colourIndex] ?? "bg-slate-500/10"
+                
+                return (
+                  <tr
+                    key={row.track}
+                    className={`border-t border-slate-800 ${rowColour} hover:bg-blue-900/50`}
+                    style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
+                  >
+                    <td className="px-3 py-1 text-slate-100 lg:whitespace-nowrap">
+                      {formatTrack(row.track)}
+                    </td>
+                    <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
+                      {row.pcSaved.toPrecision(3)}
+                    </td>
+                    <td className="px-3 py-1 text-slate-200">
+                      {formatAuthors(row.tas.authors, 5)}
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>

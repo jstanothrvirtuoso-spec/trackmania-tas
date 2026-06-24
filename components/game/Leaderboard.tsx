@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { OVERRIDE } from "@/utils/constants";
 import { SortOrder, RecordRow } from "@/utils/typing";
 import SortIndicator from "@/components/SortIndicator"
+import { formatAuthors } from "../FormatLinks";
 
 type SortField = "author" | "tases" | "contributions" | "timeSaved";
 type LeaderboardRows = {
@@ -167,12 +167,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
                   hover:bg-blue-900/20 transition-colors odd:bg-violet-600/20 even:bg-violet-800/10"
               >
                 <td className="px-2 py-1 font-medium text-slate-200">
-                  <Link
-                    href={`/authors?author=${encodeURIComponent(row.author)}`}
-                    className="hover:text-emerald-500 whitespace-nowrap transition"
-                  >
-                    {row.author}
-                  </Link>
+                  {formatAuthors([row.author])}
                 </td>
 
                 <td className="px-3 py-1 border-l border-slate-800">

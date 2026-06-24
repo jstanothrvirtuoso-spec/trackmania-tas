@@ -5,6 +5,7 @@ import { Environment, Game, RtaEntry, TasEntry } from "@/utils/typing";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { TRACKS } from "@/lib/TrackList";
 import { OVERRIDE } from "@/utils/constants";
+import { formatAuthors } from "../FormatLinks";
 
 export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: { 
   authorOfTheDay: string,  
@@ -12,7 +13,6 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
   bestRtaByTrack: Map<string, RtaEntry>,
 }) {
 
-  
   const { records, numTASes, numWRs, contributions, timeSaved, firstTas, lastTas, favEnvironment, favGame } = useMemo(() => {
 
     const bestTasByTrack = new Map<string, TasEntry>();
@@ -91,13 +91,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
       </div>
 
       <h2 className="mt-2 sm:mt-4 text-2xl sm:text-3xl font-semibold text-white w-fit">
-        <Link
-          key={authorOfTheDay}
-          href={`/authors?author=${encodeURIComponent(authorOfTheDay)}`}
-          className="hover:text-emerald-300 transition"
-        >
-          {authorOfTheDay}
-        </Link>
+        {formatAuthors([authorOfTheDay])}
       </h2>
 
       <div className="mt-3 h-px bg-gradient-to-r from-emerald-500/30 via-slate-700 to-transparent" />
@@ -213,7 +207,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
                 <div className="relative">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="text-xs font-medium text-slate-100 truncate group-hover:text-emerald-200 transition">
+                      <div className="text-xs font-medium text-slate-100 truncate group-hover:text-emerald-500 transition">
                         {record.track}
                       </div>
 

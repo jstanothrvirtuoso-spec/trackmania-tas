@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useMemo } from "react";
 import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
 import { SortOrder, Game, RecordRow, Category } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting";
 import SortIndicator from "@/components/SortIndicator";
 import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
+import { formatAuthors, formatTrack } from "../FormatLinks";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate" | "inputs";
 
@@ -192,13 +192,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               </td>
               
               <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap text-slate-100")}>
-                <Link
-                  key={row.track}
-                  href={`/tracks?track=${encodeURIComponent(row.track)}`}
-                  className="hover:text-emerald-500 transition"
-                >
-                  {row.track}
-                </Link>
+                {formatTrack(row.track)}
               </td>
 
               {lowInputCategory ? (
@@ -233,17 +227,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               <td className={rowCommon("px-1.5 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal text-slate-100")}>
                 {entry ? (
                   <div className="flex flex-wrap items-center justify-center gap-1">
-                    {entry.authors.map((author, i) => (
-                      <span key={`${author}-${i}`} className="whitespace-nowrap">
-                        <Link
-                          href={`/authors?author=${encodeURIComponent(author)}`}
-                          className="hover:text-emerald-500 whitespace-nowrap transition"
-                        >
-                          {author}
-                        </Link>
-                        {i < entry.authors.length - 1 ? ", " : ""}
-                      </span>
-                    ))}
+                    {formatAuthors(entry.authors, 6)}
                   </div>
                 ) : "-"}
               </td>

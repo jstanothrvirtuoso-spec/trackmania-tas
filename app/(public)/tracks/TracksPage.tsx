@@ -13,6 +13,7 @@ import { useRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
+import { formatAuthors } from "@/components/FormatLinks";
 
 export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
 export type ProgressionGraphPoint = {
@@ -160,7 +161,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   }, [records, useMinutes, isStunt]);
 
   return (
-    <div className="flex pt-20 pb-5 px-5 flex-col items-center justify-center text-slate-100">
+    <div className="flex pt-20 flex-col items-center justify-center text-slate-100 pb-3 px-3 sm:pb-5 sm:px-5">
 
       {/* Wallpaper */}
       <div
@@ -193,7 +194,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
             />
           </div>
 
-          {/* Title/RTA */}
+          {/* Title/Wrs */}
           <div className="mb-4 mt-6 text-center">
             <div className="flex flex-col items-center">
               <button className="text-4xl font-black tracking-tight text-white [text-shadow:2px_2px_4px_rgba(0,0,0,0.6)]"> 
@@ -215,7 +216,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                       TAS Record
                     </div>
 
-                    <div className="font-mono text-lg font-semibold text-emerald-400">
+                    <div className="font-mono text-lg font-semibold text-emerald-400 whitespace-nowrap">
                       {formatTime(records[0].time_ms, isStunt, isTM2)}
                       <span className="text-xs text-blue-300">{` (-${rta ? formatPercentSaved(records[0].time_ms, rta.time_ms, 3) : ""}%)`}</span>
                     </div>
@@ -225,7 +226,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
                   <div className="text-left">
                     <div className="text-slate-200 italic text-sm sm:text-lg">
-                      {records[0].authors.length > 2 ? `${records[0].authors[0]} + ${records[0].authors.length - 1} authors` : records[0].authors.join(', ')}
+                      {formatAuthors(records[0].authors, 2)}
                     </div>
 
                     <div className="text-xs text-slate-400">
@@ -330,7 +331,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                       </td>
 
                       <td className="px-2 py-1.5 text-center text-slate-200 max-w-[420px]">
-                        {tas.authors.join(", ")}
+                        {formatAuthors(tas.authors, 6)}
                       </td>
 
                       <td className="px-2 py-1.5 text-center text-slate-300 whitespace-nowrap">

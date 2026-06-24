@@ -75,7 +75,7 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
                 key={row.game}
                 className={`border-t border-slate-800 text-center ${totalRow ? "bg-blue-950/80" : oddRow ? "bg-indigo-800/30" : "bg-indigo-800/50"}`}
               >
-                <td className={`px-2 sm:px-3 whitespace-nowrap [text-shadow:0_2px_4px_rgba(0,0,0,0.4)] ${completed ? "font-bold text-red-500 italic text-sm sm:text-base" : "text-slate-200 text-xs sm:text-sm"} ${totalRow ? "py-1.5" : "py-1"}`}>
+                <td className={`px-2 sm:px-3 whitespace-nowrap [text-shadow:0_2px_4px_rgba(0,0,0,0.4)] ${completed ? "font-bold text-red-500 italic text-sm sm:text-lg" : "text-slate-200 text-xs sm:text-sm"} ${totalRow ? "py-1.5" : "py-1"}`}>
                   {row.game}
                 </td>
 

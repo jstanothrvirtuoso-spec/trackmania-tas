@@ -33,12 +33,6 @@ export function formatPercentSaved(timeMs: number, rtaMs: number, numSig: number
     return "+++"
   }
   
-  // if (isStunt) {
-  //   return `${percent <= 0 ? "" : "-"}${percent.toFixed(2)}`;
-  // } else {
-  //   return `${percent <= 0 ? "" : "+"}${percent.toFixed(2)}`;
-  // }
-  
   let str = Number(percent).toPrecision(numSig);
 
   const isNegative = str.startsWith("-");

@@ -1,10 +1,10 @@
 
-import Link from "next/link";
 import { useMemo } from "react";
 import { CATEGORY_FILTERS } from "@/utils/constants";
 import { RtaEntry, TasEntry, Category } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
 import { TRACKS } from "@/lib/TrackList";
+import { formatTrack } from "../FormatLinks";
 
 const CATEGORY_NAMES = ["No Cut", "WR Route", "No Uber", "NOseboost", "Open"] as const;
 const CATEGORY_COLOURS = ["bg-white/20", "bg-green-500/20", "bg-blue-500/20", "bg-red-500/20", "bg-black/20"] as const;
@@ -131,13 +131,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
             >
               {/* Track */}
               <td className="bg-purple-800/5 px-1 py-0.5 sm:px-2 sm:py-1.5">
-                <Link
-                  key={row.track}
-                  href={`/tracks?track=${encodeURIComponent(row.track)}`}
-                  className="text-slate-300 whitespace-nowrap hover:text-emerald-300 text-[8px] sm:text-xs"
-                >
-                  {row.track}
-                </Link>
+                {formatTrack(row.track, "text-slate-300 whitespace-nowrap hover:text-emerald-500 text-[8px] sm:text-xs")}
               </td>
 
               {/* TAS columns */}

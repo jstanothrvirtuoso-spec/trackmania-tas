@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { ProfilePrivate } from "@/lib/Profiles";
 import { formatDate, formatTime, timeAgo } from "@/utils/formatting";
 import { useFetchUserSubmissions } from "@/lib/TasSubmissions";
+import { formatAuthors, formatTrack } from "../FormatLinks";
 
 const STATUS_COLOUR = {
   "pending": ["bg-[#3230af]/30", "bg-[#3230af]/40"],
@@ -83,27 +84,27 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
               
               return (
                 <tr
-                  key={ index }
+                  key={index}
                   className={`border-b border-slate-800 text-slate-200 ${rowColour}`}
                 >
                   <td className="px-3 py-1.5 whitespace-nowrap">
-                    { formatDate(row.date) }
+                    {formatDate(row.date)}
                   </td>
 
                   <td className="px-3 py-1.5 lg:whitespace-nowrap">
-                    {row.track}
+                    {formatTrack(row.track ?? "")}
                   </td>
 
                   <td className="px-3 py-1.5">
-                    { formatTime(row.time_ms ?? 0) }
+                    {formatTime(row.time_ms ?? 0)}
                   </td>
 
                   <td className="px-3 py-1.5 hidden sm:table-cell">
-                    { row.category}
+                    {row.category}
                   </td>
 
                   <td className="px-3 py-1.5">
-                    { row.authors.join(", ") }
+                    {formatAuthors(row.authors, 6)}
                   </td>
 
                   <td className="px-3 py-1.5 hidden sm:table-cell">

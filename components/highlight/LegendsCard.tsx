@@ -1,15 +1,20 @@
 
-import Link from "next/link";
 import { formatDate } from "@/utils/formatting";
+import { formatAuthors, formatTrack } from "../FormatLinks";
 
-const LEGENDS = [
-  ["TMO RaceC6", "fabi", "27-Aug-25"],
-  ["D15-Endurance [Beta]", "fabi", "06-Sep-25"],
-  ["TMS Undulate Line", "Kimura", "26-Apr-26"],
-  ["TMO DemoStuntsRace1", "Kimura", "10-May-26"],
-  ["TMS TrialTime", "fabi", "10-May-26"],
-  ["TMO Survival16", "fabi", "16-May-26"],
-  ["TMS ClimbTheHill","fabi", "17-May-26"]
+type LegendItem = {
+  track: string,
+  authors: string[],
+  date: string,
+}
+const LEGENDS: LegendItem[] = [
+  { track: "TMO RaceC6", authors: ["fabi"], date: "27-Aug-25" },
+  { track: "D15-Endurance [Beta]", authors: ["fabi"], date: "06-Sep-25" },
+  { track: "TMS Undulate Line", authors: ["Kimura"], date: "26-Apr-26" },
+  { track: "TMO DemoStuntsRace1", authors: ["Kimura"], date: "10-May-26" },
+  { track: "TMS TrialTime", authors: ["fabi"], date: "10-May-26" },
+  { track: "TMO Survival16", authors: ["fabi"], date: "16-May-26" },
+  { track: "TMS ClimbTheHill", authors: ["fabi"], date: "17-May-26" },
 ];
 
 const AUTHOR_COLOUR: Record<string, string> = {
@@ -50,7 +55,7 @@ export function LegendsCard() {
           </thead>
 
           <tbody>
-            {LEGENDS.map(([track, author, date]) => (
+            {LEGENDS.map(({track, authors, date}) => (
               <tr
                 key={track}
                 className="group relative border-t border-slate-800/70 transition hover:bg-sky-500/10"
@@ -58,24 +63,16 @@ export function LegendsCard() {
                 <td className="px-2 py-2 sm:px-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="h-2 w-2 shrink-0 rounded-full bg-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.8)]" />
-                    <Link
-                      href={`/tracks?track=${encodeURIComponent(track)}`}
-                      className="truncate hover:text-sky-500 transition text-slate-300 text-xs sm:text-sm"
-                    >
-                      {track}
-                    </Link>
+                    {formatTrack(track, "truncate hover:text-sky-500 text-slate-300 text-xs sm:text-sm")}
                   </div>
                 </td>
 
                 <td className="px-2 py-1 sm:px-3 sm:py-2">
-                  <Link
-                    href={`/authors?author=${encodeURIComponent(author)}`}
-                    className={`inline-flex rounded-full border border-sky-500/20 px-2.5 py-1 text-xs font-medium text-sky-300 hover:text-sky-500 ${
-                      AUTHOR_COLOUR[author] ?? "bg-sky-500/10"
-                    }`}
-                  >
-                    {author}
-                  </Link>
+                  <div className={`inline-flex rounded-full border border-sky-500/20 px-2.5 py-1 text-xs font-medium ${
+                      AUTHOR_COLOUR[authors[0]] ?? "bg-sky-500/10"
+                    }`}>
+                    {formatAuthors(authors, 3, false, "text-sky-200 hover:text-sky-500")}
+                  </div>
                 </td>
 
                 <td className="px-2 py-2 font-mono text-xs text-slate-400 whitespace-nowrap sm:px-3">

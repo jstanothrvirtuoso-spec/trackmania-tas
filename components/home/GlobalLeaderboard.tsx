@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { RtaEntry, SortOrder, TasEntry } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
 import { BADGE_IMAGES, BADGE_RANKS, OVERRIDE } from "@/utils/constants";
 import SortIndicator from "@/components/SortIndicator"
 import { BadgeIcon } from "@/components/Icons";
+import { formatAuthors } from "../FormatLinks";
 
 type AuthorStat = {
   author: string;
@@ -97,7 +97,8 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
 
       <tbody className="divide-y divide-slate-800">
         {isLoading 
-          ? Array.from({ length: 25 }).map((_, i) => (
+          ? 
+          Array.from({ length: 25 }).map((_, i) => (
             <tr key={i} className={`${i % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10"}`}>
               <td className="py-2"><div className="h-4 w-7 bg-slate-700 animate-pulse mx-auto rounded" /></td>
               <td className="py-2"><div className="h-4 w-25 bg-slate-700 animate-pulse rounded" /></td>
@@ -105,8 +106,9 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
               <td className="py-2"><div className="h-4 w-12 bg-slate-700 animate-pulse mx-auto rounded" /></td>
               <td className="py-2"><div className="h-4 w-15 bg-slate-700 animate-pulse mx-auto rounded" /></td>
             </tr> 
-            )) 
-          : data.map((a, index) => {
+          )) 
+          : 
+          data.map((a, index) => {
             const rowColour = index % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10";
             const badge = Math.min(BADGE_RANKS.TAS.length - 1, a.badge)
 
@@ -128,12 +130,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
                 </td>
 
                 <td className="px-0 py-1.5 text-slate-100">
-                  <Link
-                    href={`/authors?author=${encodeURIComponent(a.author)}`}
-                    className="hover:text-emerald-400"
-                  >
-                    {a.author}
-                  </Link>
+                  {formatAuthors([a.author])}
                 </td>
 
                 <td className="px-2 py-1.5 text-slate-100">

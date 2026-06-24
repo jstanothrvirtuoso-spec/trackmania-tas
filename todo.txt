@@ -10,6 +10,9 @@ Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 Ideas zone for partial TASes
 
+Expand "recent TAS submissions" to "Show All" and filter by status
+Expand profile card colour options
+
 
 //////////////////////////////////////////////////////////////////////////
 // Kimura

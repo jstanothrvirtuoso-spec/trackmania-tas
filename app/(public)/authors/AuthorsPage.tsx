@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TasEntry, RecordRow, Game, Environment } from "@/utils/typing";
@@ -14,6 +13,7 @@ import { formatDate, formatTime } from "@/utils/formatting";
 import { DropSelect } from "@/components/DropSelect";
 import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart } from "@/components/authors/AuthorCharts";
 import ProfileCard from "@/components/profile/ProfileCard";
+import { formatTrack } from "@/components/FormatLinks";
 
 export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }) {
 
@@ -134,7 +134,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   }
 
   return (
-    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto px-4 pt-20 pb-8 text-slate-100">
+    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto pt-20 pb-8 text-slate-100 px-3 sm:px-6">
 
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
@@ -161,7 +161,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
       </div>
 
       {/* Options */}
-      <div className="mb-3 flex flex-row gap-2 px-4">
+      <div className="mb-3 flex flex-wrap sm:flex-row items-center gap-2">
         
         <DropSelect
           initialValue={selectedAuthor}
@@ -175,7 +175,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
         <button
           onClick={() => setHideBeaten((v) => !v)}
           className={`
-            rounded-md px-4 py-1.5 text-sm font-semibold transition-all duration-150 border cursor-pointer whitespace-nowrap
+            rounded-md px-4 py-1.5 text-xs sm:text-sm font-semibold transition-all duration-150 border cursor-pointer whitespace-nowrap
             ${hideBeaten ? "border-slate-600 bg-emerald-300/15 text-emerald-300 hover:bg-emerald-500/25"
                 : "border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700"}`}
         >
@@ -225,13 +225,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
                       </td>
 
                       <td className="px-2 py-1.5">
-                        <Link
-                          key={row.track}
-                          href={`/tracks?track=${encodeURIComponent(row.track)}`}
-                          className="hover:text-emerald-300"
-                        >
-                          {row.track}
-                        </Link>
+                        {formatTrack(row.track)}
                       </td>
 
                       <td className="px-2 py-1.5 hidden sm:table-cell">

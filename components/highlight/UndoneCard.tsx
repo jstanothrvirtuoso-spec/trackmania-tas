@@ -1,7 +1,7 @@
 
 import { getYouTubeId } from "@/utils/common";
 import { RtaEntry } from "@/utils/typing";
-import Link from "next/link";
+import { formatTrack } from "../FormatLinks";
 
 export function UndoneCard({ undoneTasOfTheDay, bestRtaByTrack }: { undoneTasOfTheDay: string,  bestRtaByTrack: Map<string, RtaEntry> }) {
   
@@ -18,13 +18,7 @@ export function UndoneCard({ undoneTasOfTheDay, bestRtaByTrack }: { undoneTasOfT
       </div>
 
       <h2 className="mt-2 sm:mt-4 text-2xl sm:text-3xl font-semibold text-white w-fit">
-        <Link
-          key={undoneTasOfTheDay}
-          href={`/tracks?track=${encodeURIComponent(undoneTasOfTheDay)}`}
-          className="hover:text-amber-200 transition"
-        >
-          {undoneTasOfTheDay}
-        </Link>
+        {formatTrack(undoneTasOfTheDay, "hover:text-amber-300 text-white")}
       </h2>
 
       <div className="mt-3 h-px bg-gradient-to-r from-amber-500/30 via-slate-700 to-transparent" />

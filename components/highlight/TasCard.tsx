@@ -1,44 +1,8 @@
 
-import Link from "next/link";
 import { formatDate, formatTime, formatPercentSaved, timeAgo } from "@/utils/formatting";
 import { RtaEntry, TasEntry } from "@/utils/typing";
 import { getYouTubeId } from "@/utils/common";
-
-function getAuthorDisplayParts(authors: string[]) {
-  const len = authors.length;
-
-  if (len === 0) return [];
-
-  if (len === 1) return [{ type: "text", value: "by "}, { type: "author", value: authors[0] }];
-
-  if (len === 2) {
-    return [
-      { type: "text", value: "by "},
-      { type: "author", value: authors[0] },
-      { type: "text", value: " and " },
-      { type: "author", value: authors[1] },
-    ];
-  }
-
-  if (len <= 6) {
-    const parts: { type: string; value: string }[] = [{ type: "text", value: "by "}];
-
-    authors.forEach((a, i) => {
-      parts.push({ type: "author", value: a });
-
-      if (i < len - 2) parts.push({ type: "text", value: ", " });
-      else if (i === len - 2) parts.push({ type: "text", value: ", and " });
-    });
-
-    return parts;
-  }
-
-  return [
-    { type: "text", value: "by "},
-    { type: "author", value: authors[0] },
-    { type: "text", value: ` + ${len - 1} Co-authors` },
-  ];
-}
+import { formatAuthors, formatTrack } from "../FormatLinks";
 
 export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry,  bestRtaByTrack: Map<string, RtaEntry> }) {
   
@@ -56,18 +20,12 @@ export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry
       </div>
 
       <h2 className="mt-2 sm:mt-4 text-2xl sm:text-3xl font-semibold text-white w-fit">
-        <Link
-          key={tasOfTheDay.track}
-          href={`/tracks?track=${encodeURIComponent(tasOfTheDay.track)}`}
-          className="hover:text-indigo-200 transition"
-        >
-          {tasOfTheDay.track}
-        </Link>
+        {formatTrack(tasOfTheDay.track, "hover:text-indigo-300 text-white")}
       </h2>
 
       <div className="mt-3 h-px bg-gradient-to-r from-indigo-500/30 via-slate-700 to-transparent" />
 
-      <div className="mt-2 flex w-full gap-3 text-sm flex-col sm:flex-row items-start sm:items-center">
+      <div className="mt-2 flex w-full gap-3 text-sm flex-col justify-between sm:flex-row items-start sm:items-center">
         <div className="flex flex-col mb-2">
           <div className="font-mono text-2xl font-semibold text-indigo-400 mr-15 whitespace-nowrap">
             {formatTime(tasOfTheDay.time_ms, false, tasOfTheDay.game === "TM2")}
@@ -76,36 +34,18 @@ export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry
             </span>
           </div>
           
-          <div className="mt-1 font-medium text-slate-200">
-            {getAuthorDisplayParts(tasOfTheDay.authors ?? [""]).map((part, i) => {
-              if (part.type === "author") {
-                return (
-                  <Link
-                    key={`${part.value}-${i}`}
-                    href={`/authors?author=${encodeURIComponent(part.value)}`}
-                    className="whitespace-nowrap text-slate-200 transition hover:text-indigo-300"
-                  >
-                    {part.value}
-                  </Link>
-                );
-              }
-
-              return (
-                <span key={`text-${i}`} className="whitespace-nowrap text-slate-300">
-                  {part.value}
-                </span>
-              );
-            })}
+          <div className="mt-1 font-medium">
+            {formatAuthors(tasOfTheDay.authors ?? [""], 0, true, "hover:text-indigo-400")}
           </div>
         </div>
 
-        <div className="flex gap-5 w-full px-0 sm:px-2 justify-start sm:justify-end">
+        <div className="flex gap-5 px-0 sm:px-2 justify-start sm:justify-end">
           <div>
             <div className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
               Date
             </div>
 
-            <div className="mt-1 text-sm text-slate-200">
+            <div className="mt-1 text-sm text-slate-200 whitespace-nowrap">
               {formatDate(tasOfTheDay.date ?? "")}
             </div>
           </div>
