@@ -54,7 +54,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
           <tr>
             <th
               rowSpan={2}
-              className="py-1 align-middle font-normal uppercase tracking-[0.18em] text-center px-2 sm:px-4"
+              className="align-middle font-normal uppercase tracking-[0.18em] text-center px-2 sm:px-4"
             >
               <div>Nadeo</div>
               <div>Set</div>
@@ -122,7 +122,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
                   {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, false, true) : "-"}
                 </td>
 
-                <td className="px-3 py-1 font-bold">
+                <td className="py-1 font-bold px-1.5 sm:px-3">
                   {hasRta ? formatPercentSaved(category.tasMs, category.rtaMs, 4, isStunt) : "-"}
                 </td>
               </tr>
@@ -146,7 +146,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
               {total.rtaMs > 0 ? formatTime(total.tasMs - total.rtaMs, false, false, true) : "-"}
             </td>
 
-            <td className="px-2 py-1 font-bold">
+            <td className="px-2 py-1 font-bold px-1.5 sm:px-3">
               {total.rtaMs > 0 ? formatPercentSaved(total.tasMs, total.rtaMs, 4) : "-"}
             </td>
           </tr>

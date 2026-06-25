@@ -365,7 +365,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
           </div>
 
           {/* Progression graph */}
-          <div className="w-full max-w-180">
+          <div className="w-full max-w-180 mb-2">
             <RecordProgressionGraph 
               progression={progression}
               useMinutes={useMinutes}

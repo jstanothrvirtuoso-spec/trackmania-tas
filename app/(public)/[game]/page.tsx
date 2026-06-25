@@ -135,10 +135,10 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
         />
         </div>
 
-        <div className="items-start gap-4 flex flex-col">
+        <div className="items-center justify-center gap-4 flex flex-wrap sm:items-start xl:flex-col xl:justify-start">
           {show_time_saved && (<TimeSaved currentRecords={filteredRows} />)}
 
-          <div className="items-start gap-4 flex flex-col xl:flex-row">
+          <div className="items-center gap-4 flex flex-col sm:flex-row sm:items-start">
             {show_leaderboard && (<Leaderboard currentRecords={filteredRows} />)}
             {show_rta_leaderboard && (<RtaTable currentRecords={filteredRows} />)}
           </div>

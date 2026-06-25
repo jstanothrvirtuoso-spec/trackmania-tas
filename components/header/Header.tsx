@@ -78,14 +78,24 @@ export default function Header() {
               href="/"
               className="block border border-white-100 rounded-lg transition-all duration-100 hover:brightness-110 hover:border-cyan-500"
             >
-              <Image
+              <div className="relative h-9 w-[36px]">
+                <Image
+                  src="/header.webp"
+                  alt="TAS-Nadeo"
+                  fill
+                  sizes="50vw"
+                  loading="eager"
+                  className="object-contain rounded-md drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
+                />
+              </div>
+              {/* <Image
                 src="/header.webp"
                 alt="TAS-Nadeo"
                 width={60}
                 height={36}
                 priority
                 className="h-9 w-auto rounded-md drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
-              />
+              /> */}
             </Link>
           </div>
           <div className="mt-[2px] px-3 hidden sm:block w-30">

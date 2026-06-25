@@ -59,7 +59,7 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
   }
 
   return (
-    <div className="flex flex-col p-2">
+    <div className="flex flex-col px-2 mb-4">
       <div className="overflow-hidden rounded-2xl border border-slate-500 bg-slate-900/80 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
 
         {/* Banner */}
@@ -90,10 +90,10 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
         </div>
     
         <div className="overflow-x-auto bg-slate-900/80 rounded-lg">
-          <table className="rounded-lg overflow-hidden text-center text-xs sm:text-sm">
+          <table className="rounded-lg overflow-hidden text-center text-[11px] sm:text-sm">
             <thead>
               <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
-                <th className="px-3 py-1.5 font-normal">
+                <th className="px-2 py-1.5 font-normal">
                   Submitted
                 </th>
 

@@ -1,6 +1,7 @@
+"use client"
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
 import { Role } from "@/utils/typing";
 import { PROFILE_AVATARS, PROFILE_BANNERS } from "@/utils/constants";
@@ -29,6 +30,8 @@ const ROLE_TEXT: Record<Role, string> = {
   admin: "Admin",
 };
 
+const makeColour = (h: number, l: number) => `hsl(${h}, 70%, ${l}%)`;
+
 export default function ProfileCard({ profile, onEditClick }: {
   profile: ProfilePublic;
   onEditClick?: () => void;
@@ -55,6 +58,29 @@ export default function ProfileCard({ profile, onEditClick }: {
   const avatar = PROFILE_AVATARS[profile.avatar] ?? PROFILE_AVATARS[0];
   const banner = PROFILE_BANNERS[profile.banner] ?? PROFILE_BANNERS[0];
   const avatar_colour = `hsl(${profile.colour}, 80%, 60%)`
+  
+  const hueRef = useRef(profile.theme1);
+  const [hover, setHover] = useState(false);
+  const theme1 = {
+    200: makeColour(profile.theme1, 85),
+    400: makeColour(profile.theme1, 65),
+    500: makeColour(profile.theme1, 55),
+  };
+  const theme2 = {
+    200: makeColour(profile.theme2, 75),
+    600: makeColour(profile.theme2, 45),
+  };
+  const bio = profile.bio ?? "";
+  const len = bio.length;
+  const fontSize =
+    len < 40 ? "text-2xl" :
+    len < 80 ? "text-xl" :
+    len < 140 ? "text-lg" :
+    "text-base";
+
+  useEffect(() => {
+    hueRef.current = profile.theme1;
+  }, [profile.theme1]);
 
   useEffect(() => {
 
@@ -107,7 +133,7 @@ export default function ProfileCard({ profile, onEditClick }: {
 
       const walls = wallsRef.current;
 
-      particlesRef.current = Array.from({ length: 18 }).map(() => {
+      particlesRef.current = Array.from({ length: 25 }).map(() => {
         const speed = Math.random() * 0.6 + 0.1;
 
         let x = 0;
@@ -198,10 +224,8 @@ export default function ProfileCard({ profile, onEditClick }: {
         p.x += p.dx;
         p.y += p.dy;
 
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+        if (p.x < p.r - 1) { p.x = p.r - 1; p.dx *= -1 };
+        if (p.x > canvas.width - p.r + 1) { p.x = canvas.width - p.r + 1; p.dx *= -1 };
 
         // Collision with UI zones
         for (const w of walls) {
@@ -228,16 +252,16 @@ export default function ProfileCard({ profile, onEditClick }: {
           );
 
           if (minOverlap === overlapLeft) {
-            p.x = w.left - p.r;
+            p.x = w.left - p.r + 1;
             p.dx = -Math.abs(p.dx);
           } else if (minOverlap === overlapRight) {
-            p.x = w.right + p.r;
+            p.x = w.right + p.r - 1;
             p.dx = Math.abs(p.dx);
           } else if (minOverlap === overlapTop) {
-            p.y = w.top - p.r;
+            p.y = w.top - p.r + 1;
             p.dy = -Math.abs(p.dy);
           } else {
-            p.y = w.bottom + p.r;
+            p.y = w.bottom + p.r - 1;
             p.dy = Math.abs(p.dy);
           }
         }
@@ -245,7 +269,7 @@ export default function ProfileCard({ profile, onEditClick }: {
         const alpha = p.alpha + Math.sin(time + p.x * 0.01) * 0.15;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,180,220,${Math.max(0, alpha)})`;
+        ctx.fillStyle = `hsla(${hueRef.current}, 80%, 65%, ${Math.max(0, alpha)})`;
         ctx.fill();
       }
 
@@ -278,7 +302,7 @@ export default function ProfileCard({ profile, onEditClick }: {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-[320px] aspect-[0.67] overflow-hidden rounded-1xl bg-white shadow-1xl flex flex-col"
+      className="relative w-[320px] aspect-[0.67] overflow-hidden rounded-1xl bg-white/95 shadow-1xl flex flex-col mt-[3px]"
       style={{
         transform: "perspective(1000px) translateZ(0)",
         willChange: "transform",
@@ -289,12 +313,19 @@ export default function ProfileCard({ profile, onEditClick }: {
       {onEditClick && (
         <button
           onClick={onEditClick}
-          className="absolute top-10 right-3 z-50 group flex items-center gap-2 px-3 py-2 
-                    bg-white/80 backdrop-blur hover:bg-black text-pink-500 cursor-pointer
-                    rounded-full shadow-lg transition-all hover:scale-105 border border-pink-100"
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          className="hidden sm:flex absolute top-9 right-3 z-50 group flex items-center gap-2 px-2.5 py-1.5
+                    bg-white/80 backdrop-blur cursor-pointer hover:scale-105 border
+                    rounded-full shadow-[3px_3px_10px_rgba(0,0,0,0.15)] transition-all"
           aria-label="Edit profile"
+          style={{
+            background: hover ? theme2[200] : "rgba(255,255,255,0.8)",
+            color: theme1[500],
+            borderColor: theme1[200],
+          }}
         >
-          <span className="text-xs font-semibold hidden sm:inline">
+          <span className="text-sm font-semibold [text-shadow:1px_1px_0px_rgba(0,0,0,0.1)]">
             Edit
           </span>
         </button>
@@ -303,9 +334,12 @@ export default function ProfileCard({ profile, onEditClick }: {
       {/* Upper section */}
       <div
         ref={topBarRef}
-        className="h-5 bg-gradient-to-r from-teal-300/80 via-cyan-300/80 to-emerald-300/80"
+        className="h-5"
+        style={{
+          background: `linear-gradient(to right, ${theme2[200]}, ${theme2[600]})`,
+        }}
       />
-      <div className="px-6 py-2 flex items-center gap-2 bg-white/75 backdrop-blur relative">
+      <div className="px-6 py-2 flex items-center gap-2 relative">
         <div
           className="relative w-12 h-12 rounded-full overflow-hidden z-50"
           style={{
@@ -322,9 +356,9 @@ export default function ProfileCard({ profile, onEditClick }: {
           />
         </div>
 
-        <div className="text-left">
+        <div className="text-left z-20">
           <div
-            className="font-bold text-black text-2xl leading-tight font-sakura tracking-[0.5px]"
+            className="font-bold text-black text-2xl leading-tight font-sakura tracking-[0.5px] break-words overflow-wrap-anywhere max-w-45"
             style={{ textShadow: "0 1px 8px rgba(0, 0, 0, 0.15)" }}
           >
             {profile.display_name}
@@ -372,23 +406,35 @@ export default function ProfileCard({ profile, onEditClick }: {
       {/* Lower section */}
       <div className="px-2 py-2 text-center">
         <h2
-          className="text-2xl text-pink-400 font-bold italic leading-tight"
-          style={{ fontFamily: "serif" }}
+          className={`${fontSize} font-bold italic leading-tight [text-shadow:1px_1px_0px_rgba(0,0,0,0.2)]`}
+          style={{ fontFamily: "serif", color: theme1[400] }}
         >
           {profile.bio ? `❝ ${profile.bio} ❞` : "❝ bio ❞"}
         </h2>
 
         <div className="flex items-center justify-center gap-3 mt-1">
-          <div className="flex-1 border-t-2 border-dashed border-pink-500" />
-          <p className="text-pink-400 tracking-widest text-xs font-semibold uppercase whitespace-nowrap">
+          <div 
+            className="flex-1 border-t-2 border-dashed"
+            style={{ borderColor: theme1[500] }}
+          />
+          <p 
+            className="tracking-widest text-xs font-semibold uppercase whitespace-nowrap [text-shadow:1px_1px_0px_rgba(0,0,0,0.3)]"
+            style={{ color: theme1[400] }}
+          >
             {ROLE_TEXT[profile.role]}
           </p>
-          <div className="flex-1 border-t-2 border-dashed border-pink-500" />
+          <div 
+            className="flex-1 border-t-2 border-dashed"
+            style={{ borderColor: theme1[500] }}
+          />
         </div>
       </div>
       <div
         ref={bottomBarRef}
-        className="h-5 bg-gradient-to-r from-teal-300/80 via-cyan-300/80 to-emerald-300/80"
+        className="h-5"
+        style={{
+          background: `linear-gradient(to right, ${theme2[200]}, ${theme2[600]})`,
+        }}
       />
       
       {/* Card frame and particles */}
@@ -406,7 +452,6 @@ export default function ProfileCard({ profile, onEditClick }: {
         ref={canvasRef}
         className="absolute inset-0 w-full h-full pointer-events-none z-0"
       />
-
     </div>
   );
 }

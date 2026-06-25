@@ -11,7 +11,6 @@ Fix visitor counter
 Ideas zone for partial TASes
 
 Expand moderator roles
-Expand profile card colour options
 Improvements for game RecordTable
 
 

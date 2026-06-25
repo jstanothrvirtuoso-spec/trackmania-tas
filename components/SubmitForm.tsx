@@ -248,7 +248,7 @@ export default function SubmitForm() {
   }
 
   return (
-    <div className="relative w-3xl z-10 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl">
+    <div className="relative max-w-3xl z-10 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-xl">
       <div className="flex max-h-[calc(100vh-6rem)] flex-col overflow-hidden rounded-2xl shadow-2xl">
         <div className="overflow-y-auto p-6 md:p-8">
 

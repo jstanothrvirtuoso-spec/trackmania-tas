@@ -100,6 +100,8 @@ export type ProfileDraft = {
   avatar: number;
   banner: number;
   colour: number;
+  theme1: number;
+  theme2: number;
 
   show_rta: boolean;
   show_time_saved: boolean;

@@ -52,7 +52,7 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
     : "0";
   
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950/70 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.85)] backdrop-blur-md">
+    <div className="rounded-2xl max-w-135 border border-slate-800 bg-slate-950/70 overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.85)] backdrop-blur-md">
       <table className="w-auto">
 
         <thead className="border-b text-slate-300 uppercase text-center text-xs sm:text-sm bg-slate-950/30">

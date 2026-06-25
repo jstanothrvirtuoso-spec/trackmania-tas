@@ -34,6 +34,8 @@ export default function EditProfile({
     avatar: profilePublicMe.avatar ?? 0,
     banner: profilePublicMe.banner ?? 0,
     colour: profilePublicMe.colour,
+    theme1: profilePublicMe.theme1,
+    theme2: profilePublicMe.theme2,
 
     show_rta: profilePrivate.show_rta,
     show_time_saved: profilePrivate.show_time_saved,
@@ -59,6 +61,8 @@ export default function EditProfile({
       avatar: draft.avatar,
       banner: draft.banner,
       colour: draft.colour,
+      theme1: draft.theme1,
+      theme2: draft.theme2,
     };
 
     updateProfilePublic.mutate(
@@ -158,7 +162,7 @@ export default function EditProfile({
           </div>
 
           {/* MIDDLE */}
-          <div className="flex flex-col space-y-4 items-center w-full justify-center">
+          <div className="flex flex-col space-y-2 items-center w-full justify-center">
 
             {/* AVATAR */}
             {editMode !== "avatar" ? (
@@ -215,33 +219,74 @@ export default function EditProfile({
                   })}
                 </div>
 
-                {/* HUE PICKER */}
-                <div className="w-[380px]">
-                  <input
-                    type="range"
-                    min="0"
-                    max="360"
-                    value={draft?.colour ?? 200}
-                    onChange={(e) =>
-                      updateDraft(
-                        "colour",
-                        Math.max(0, Math.min(360, Number(e.target.value)))
-                      )
-                    }
-                    className="h-4 w-full cursor-pointer appearance-none rounded-lg
-                      bg-[linear-gradient(to_right,hsl(0,80%,60%),hsl(60,80%,60%),hsl(120,80%,60%),hsl(180,80%,60%),hsl(240,80%,60%),hsl(300,80%,60%),hsl(360,80%,60%))]
-
-                      [&::-moz-range-thumb]:h-5
-                      [&::-moz-range-thumb]:w-2
-                      [&::-moz-range-thumb]:rounded-full
-                      [&::-moz-range-thumb]:border-2
-                      [&::-moz-range-thumb]:border-white
-                      [&::-moz-range-thumb]:bg-slate-600
-                    "
-                  />
-                </div>
               </div>
             )}
+            
+            {/* Avatar background */}
+            <div className="flex flex-row w-full gap-4 hidden md:block">
+              <span className="text-xs whitespace-nowrap">Avatar background</span>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={draft?.colour ?? 200}
+                onChange={(e) => updateDraft("colour", Math.max(0, Math.min(360, Number(e.target.value))))}
+                className="h-4 w-full cursor-pointer appearance-none rounded-lg
+                  bg-[linear-gradient(to_right,hsl(0,80%,60%),hsl(60,80%,60%),hsl(120,80%,60%),hsl(180,80%,60%),hsl(240,80%,60%),hsl(300,80%,60%),hsl(360,80%,60%))]
+
+                  [&::-moz-range-thumb]:h-5
+                  [&::-moz-range-thumb]:w-2
+                  [&::-moz-range-thumb]:rounded-full
+                  [&::-moz-range-thumb]:border-2
+                  [&::-moz-range-thumb]:border-white
+                  [&::-moz-range-thumb]:bg-slate-600
+                "
+              />
+            </div>
+            
+            {/* Theme 1 */}
+            <div className="flex flex-row w-full gap-4 hidden md:block">
+              <span className="text-xs whitespace-nowrap">Theme colour 1</span>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={draft?.theme1 ?? 300}
+                onChange={(e) => updateDraft("theme1", Math.max(0, Math.min(360, Number(e.target.value))))}
+                className="h-4 w-full cursor-pointer appearance-none rounded-lg
+                  bg-[linear-gradient(to_right,hsl(0,80%,60%),hsl(60,80%,60%),hsl(120,80%,60%),hsl(180,80%,60%),hsl(240,80%,60%),hsl(300,80%,60%),hsl(360,80%,60%))]
+
+                  [&::-moz-range-thumb]:h-5
+                  [&::-moz-range-thumb]:w-2
+                  [&::-moz-range-thumb]:rounded-full
+                  [&::-moz-range-thumb]:border-2
+                  [&::-moz-range-thumb]:border-white
+                  [&::-moz-range-thumb]:bg-slate-600
+                "
+              />
+            </div>
+            
+            {/* Theme 2 */}
+            <div className="flex flex-row w-full gap-4 hidden md:block">
+              <span className="text-xs whitespace-nowrap">Theme colour 2</span>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={draft?.theme2 ?? 300}
+                onChange={(e) => updateDraft("theme2", Math.max(0, Math.min(360, Number(e.target.value))))}
+                className="h-4 w-full cursor-pointer appearance-none rounded-lg
+                  bg-[linear-gradient(to_right,hsl(0,80%,60%),hsl(60,80%,60%),hsl(120,80%,60%),hsl(180,80%,60%),hsl(240,80%,60%),hsl(300,80%,60%),hsl(360,80%,60%))]
+
+                  [&::-moz-range-thumb]:h-5
+                  [&::-moz-range-thumb]:w-2
+                  [&::-moz-range-thumb]:rounded-full
+                  [&::-moz-range-thumb]:border-2
+                  [&::-moz-range-thumb]:border-white
+                  [&::-moz-range-thumb]:bg-slate-600
+                "
+              />
+            </div>
             
             {/* DISPLAY NAME */}
             <input
@@ -281,7 +326,7 @@ export default function EditProfile({
                 updateDraft("bio", e.target.value)
               }
               className="w-full p-3 bg-slate-800 rounded-xl"
-              rows={4}
+              rows={2}
               maxLength={300}
               placeholder="❝...❞"
             />

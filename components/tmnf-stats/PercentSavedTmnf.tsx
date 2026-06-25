@@ -109,13 +109,13 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
                 className={`border-t border-slate-800 text-[9px] sm:text-sm ${rowColour} hover:bg-blue-900/50`}
                 style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
               >
-                <td className="px-3 py-1 text-slate-300 whitespace-nowrap">
+                <td className="px-3 py-1 sm:py-1.5 text-slate-300 whitespace-nowrap">
                   {formatTrack(row.track, "text-slate-300 hover:text-emerald-500")}
                 </td>
-                <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
+                <td className="px-3 py-1 sm:py-1.5 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">
                   {row.pcSaved.toPrecision(3)}
                 </td>
-                <td className="px-3 py-1 text-slate-300">
+                <td className="px-3 py-1 sm:py-1.5 text-slate-300">
                   {formatAuthors(row.tas.authors, 6)}
                 </td>
               </tr>

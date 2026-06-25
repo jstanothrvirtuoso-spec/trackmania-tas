@@ -14,6 +14,8 @@ export type ProfilePublic = {
   bio: string | null;
   user_number: number;
   role: Role;
+  theme1: number;
+  theme2: number;
 };
 
 export type ProfilePrivate = {
