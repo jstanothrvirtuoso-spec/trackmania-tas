@@ -1,10 +1,14 @@
 
+import { TRACKS } from "@/lib/TrackList";
 import Link from "next/link";
 
 export function formatTrack(track: string, custom: string = "hover:text-emerald-500 text-slate-200") {
+
+  const game = TRACKS[track].game
+  
   return (
     <Link
-      href={`/tracks?track=${encodeURIComponent(track)}`}
+      href={`/tracks?game=${encodeURIComponent(game)}&track=${encodeURIComponent(track)}`}
       className={`${custom} transition`}
     >
       {track}

@@ -18,7 +18,7 @@ export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-center">
-        <div className="relative overflow-hidden rounded-xl border border-indigo-500/40 bg-slate-900 px-8 py-3 shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+        <div className="relative overflow-hidden rounded-xl border border-indigo-500/40 bg-slate-900 px-8 py-3 mb-1 shadow-[0_10px_40px_rgba(0,0,0,0.75)]">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 via-transparent to-indigo-500/30" />
           <div className="absolute left-0 top-0 w-full h-0.5 bg-indigo-400" />
           <div className="absolute left-0 bottom-0 w-full h-0.5 bg-indigo-400" />

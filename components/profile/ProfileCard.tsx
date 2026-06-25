@@ -43,15 +43,11 @@ export default function ProfileCard({ profile, onEditClick }: {
 
   const rainbowRef = useRef<HTMLDivElement>(null);
   const beamRef = useRef<HTMLDivElement>(null);
-
   const parallaxRef = useRef<HTMLDivElement>(null);
-  const shineRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
-  const rafParticles = useRef<number | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<Particle[]>([]); // FIX: use real ref
-
+  const particlesRef = useRef<Particle[]>([]);
   const bannerRef = useRef<HTMLDivElement>(null);
   const topBarRef = useRef<HTMLDivElement>(null);
   const bottomBarRef = useRef<HTMLDivElement>(null);
@@ -61,47 +57,61 @@ export default function ProfileCard({ profile, onEditClick }: {
   const avatar_colour = `hsl(${profile.colour}, 80%, 60%)`
 
   useEffect(() => {
+
     const canvas = canvasRef.current;
     const card = cardRef.current;
+
     if (!canvas || !card) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const isInside = (x: number, y: number, w: Rect | null) =>
-      w && x > w.left && x < w.right && y > w.top && y < w.bottom;
+    let raf: number;
+    const wallsRef = { current: [] as (Rect | null)[] };
 
-    const getRect = (el: HTMLElement | null) => {
-      if (!el) return null;
+    const computeWalls = () => {
       const c = card.getBoundingClientRect();
-      const r = el.getBoundingClientRect();
 
-      const sx = canvas.width / c.width;
-      const sy = canvas.height / c.height;
+      const getRect = (el: HTMLElement | null): Rect | null => {
+        if (!el) return null;
 
-      return {
-        left: (r.left - c.left) * sx,
-        right: (r.right - c.left) * sx,
-        top: (r.top - c.top) * sy,
-        bottom: (r.bottom - c.top) * sy,
+        const r = el.getBoundingClientRect();
+        const sx = canvas.width / c.width;
+        const sy = canvas.height / c.height;
+
+        return {
+          left: (r.left - c.left) * sx,
+          right: (r.right - c.left) * sx,
+          top: (r.top - c.top) * sy,
+          bottom: (r.bottom - c.top) * sy,
+        };
       };
-    };
 
-    const resize = () => {
-      canvas.width = card.clientWidth;
-      canvas.height = card.clientHeight;
-
-      const walls = [
+      wallsRef.current = [
         getRect(bannerRef.current),
         getRect(topBarRef.current),
         getRect(bottomBarRef.current),
       ];
+    };
+
+    const isInside = (x: number, y: number, w: Rect | null) => {
+      if (!w) return false;
+      return x > w.left && x < w.right && y > w.top && y < w.bottom;
+    };
+
+    const init = () => {
+      canvas.width = card.clientWidth;
+      canvas.height = card.clientHeight;
+
+      computeWalls();
+
+      const walls = wallsRef.current;
 
       particlesRef.current = Array.from({ length: 18 }).map(() => {
         const speed = Math.random() * 0.6 + 0.1;
 
-        let x = 0,
-          y = 0;
+        let x = 0;
+        let y = 0;
 
         do {
           x = Math.random() * canvas.width;
@@ -114,85 +124,37 @@ export default function ProfileCard({ profile, onEditClick }: {
           r: Math.random() * 2.8 + 0.6,
           dx: (Math.random() - 0.5) * speed,
           dy: (Math.random() - 0.5) * speed,
-          angle: Math.random() * Math.PI * 2,
-          spin: (Math.random() - 0.5) * 0.02,
+          angle: 0,
+          spin: 0,
           alpha: Math.random() * 0.5 + 0.25,
         };
       });
     };
 
-    const draw = () => {
-      const walls = [
-        getRect(bannerRef.current),
-        getRect(topBarRef.current),
-        getRect(bottomBarRef.current),
-      ];
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const time = Date.now() * 0.001;
-
-      for (const p of particlesRef.current) {
-        p.x += p.dx;
-        p.y += p.dy;
-
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
-
-        for (const w of walls) {
-          if (!w) continue;
-          if (p.x > w.left && p.x < w.right && p.y > w.top && p.y < w.bottom) {
-            p.dx *= -1;
-            p.dy *= -1;
-          }
-        }
-
-        const alpha =
-          p.alpha + Math.sin(time + p.x * 0.01) * 0.15;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,180,220,${Math.max(0, alpha)})`;
-        ctx.fill();
-      }
-
-      rafParticles.current = requestAnimationFrame(draw);
+    const resize = () => {
+      canvas.width = card.clientWidth;
+      canvas.height = card.clientHeight;
+      computeWalls();
     };
-
-    resize();
-    draw();
 
     window.addEventListener("resize", resize);
 
-    return () => {
-      window.removeEventListener("resize", resize);
-      if (rafParticles.current) cancelAnimationFrame(rafParticles.current);
-    };
-  }, []);
+    const tick = () => {
 
-  useEffect(() => {
-    let raf: number;
-    let alive = true;
-
-    const animate = () => {
-      if (!alive) return;
-
+      // Pointer easing
       current.current.x += (target.current.x - current.current.x) * 0.12;
       current.current.y += (target.current.y - current.current.y) * 0.12;
 
       const x = current.current.x;
       const y = current.current.y;
-
       const intensityX = x - 0.5;
       const intensityY = y - 0.5;
-
-      const strength = Math.min(1, Math.sqrt(intensityX * intensityX + intensityY * intensityY));
       const moveX = intensityX * 90;
       const moveY = intensityY * 60;
       const rotate = intensityX * 18;
+      const strength = Math.min(1, Math.sqrt(intensityX ** 2 + intensityY ** 2));
 
+      // DOM animations
       if (rainbowRef.current) {
         rainbowRef.current.style.transform = `
           translate3d(${moveX}px, ${moveY}px, 0)
@@ -226,14 +188,77 @@ export default function ProfileCard({ profile, onEditClick }: {
         `;
       }
 
-      raf = requestAnimationFrame(animate);
-    };
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    animate();
+      // Particles
+      const walls = wallsRef.current;
+      const time = performance.now() * 0.001;
+
+      for (const p of particlesRef.current) {
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        // Collision with UI zones
+        for (const w of walls) {
+          if (!w) continue;
+
+          const inside =
+            p.x + p.r - 1 > w.left &&
+            p.x - p.r + 1 < w.right &&
+            p.y + p.r - 1 > w.top &&
+            p.y - p.r + 1 < w.bottom;
+
+          if (!inside) continue;
+
+          const overlapLeft = Math.abs(p.x + p.r - w.left);
+          const overlapRight = Math.abs(w.right - (p.x - p.r));
+          const overlapTop = Math.abs(p.y + p.r - w.top);
+          const overlapBottom = Math.abs(w.bottom - (p.y - p.r));
+
+          const minOverlap = Math.min(
+            overlapLeft,
+            overlapRight,
+            overlapTop,
+            overlapBottom
+          );
+
+          if (minOverlap === overlapLeft) {
+            p.x = w.left - p.r;
+            p.dx = -Math.abs(p.dx);
+          } else if (minOverlap === overlapRight) {
+            p.x = w.right + p.r;
+            p.dx = Math.abs(p.dx);
+          } else if (minOverlap === overlapTop) {
+            p.y = w.top - p.r;
+            p.dy = -Math.abs(p.dy);
+          } else {
+            p.y = w.bottom + p.r;
+            p.dy = Math.abs(p.dy);
+          }
+        }
+
+        const alpha = p.alpha + Math.sin(time + p.x * 0.01) * 0.15;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,180,220,${Math.max(0, alpha)})`;
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+    
+    resize();
+    init();
+    tick();
 
     return () => {
-      alive = false;
       cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
@@ -280,16 +305,12 @@ export default function ProfileCard({ profile, onEditClick }: {
         ref={topBarRef}
         className="h-5 bg-gradient-to-r from-teal-300/80 via-cyan-300/80 to-emerald-300/80"
       />
-      <div className="px-5 py-2 flex items-center gap-2 bg-white/75 backdrop-blur relative">
+      <div className="px-6 py-2 flex items-center gap-2 bg-white/75 backdrop-blur relative">
         <div
-          className="relative w-14 h-14 rounded-full overflow-hidden"
+          className="relative w-12 h-12 rounded-full overflow-hidden z-50"
           style={{
             backgroundColor: avatar_colour,
-            boxShadow: `
-              0 0 5px ${avatar_colour},
-              0 0 5px ${avatar_colour}88
-            `,
-            transform: "translateZ(40px)",
+            boxShadow: `0 0 3px ${avatar_colour}, 0 0 3px ${avatar_colour}`
           }}
         >
           <Image
@@ -346,15 +367,6 @@ export default function ProfileCard({ profile, onEditClick }: {
             mixBlendMode: "overlay",
           }}
         />
-        <div
-          ref={shineRef}
-          className="absolute inset-2 pointer-events-none z-10"
-          style={{
-            background: "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.25), transparent 60%)",
-            opacity: 0,
-            mixBlendMode: "screen",
-          }}
-        />
       </div>
 
       {/* Lower section */}
@@ -386,6 +398,7 @@ export default function ProfileCard({ profile, onEditClick }: {
           alt="Banner"
           fill
           sizes="50vw"
+          loading="eager"
           className="w-full h-full object-contain"
         />
       </div>

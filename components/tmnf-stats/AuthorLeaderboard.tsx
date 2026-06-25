@@ -199,9 +199,9 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 w-full flex-1 shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+    <div className="rounded-xl border border-slate-800 py-2 px-4 w-full flex-1 shadow-[0_5px_20px_rgba(0,0,0,0.6)] bg-gradient-to-r from-sky-950/80 via-slate-950/80 to-slate-950/90">
       <div className="flex items-center justify-between mb-1">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
           WR History
         </h2>
 

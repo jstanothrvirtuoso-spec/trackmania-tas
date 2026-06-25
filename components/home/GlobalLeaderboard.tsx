@@ -47,7 +47,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
             onClick={() => handleSort("badge")}
             className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
           >
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-1 hover:text-slate-200">
               Badge
               <SortIndicator active={sortField === "badge"} order={sortOrder} />
             </div>
@@ -57,7 +57,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
             onClick={() => handleSort("author")}
             className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap"
           >
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-1 hover:text-slate-200">
               Author
               <SortIndicator active={sortField === "author"} order={sortOrder} />
             </div>
@@ -67,7 +67,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
             onClick={() => handleSort("tases")}
             className="cursor-pointer px-2 py-1.5 whitespace-nowrap"
           >
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-1 hover:text-slate-200">
               TASes
               <SortIndicator active={sortField === "tases"} order={sortOrder} />
             </div>
@@ -77,7 +77,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
             onClick={() => handleSort("contributions")}
             className="cursor-pointer px-2 py-1.5 uppercase whitespace-nowrap"
           >
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-1 hover:text-slate-200">
               Cont.
               <SortIndicator active={sortField === "contributions"} order={sortOrder} />
             </div>
@@ -87,7 +87,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
             onClick={() => handleSort("totalSaved")}
             className="cursor-pointer px-3 py-1.5 uppercase whitespace-nowrap"
           >
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-1 hover:text-slate-200">
               Saved
               <SortIndicator active={sortField === "totalSaved"} order={sortOrder} />
             </div>

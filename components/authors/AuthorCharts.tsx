@@ -17,7 +17,7 @@ const SHORT_GAMES = {
 };
 
 const SHORT_ENVIRONMENTS = {
-  "Stadium": "Stad.", 
+  "Stadium": "Stadium", 
   "Island": "Island", 
   "Desert": "Desert", 
   "Rally": "Rally", 
@@ -69,7 +69,13 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
         Year
       </h2>
 
-      <div className="flex items-end justify-center gap-2 h-40">
+      <div
+        className="mx-auto h-40 max-w-80 w-fit gap-1.5"
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${yearlyCounts.length}, minmax(0, 1fr))`,
+        }}
+      >
         {yearlyCounts.map(([year, count]) => {
           const height = (count / maxCount) * 120;
           const isSelected = selectedYear === year;
@@ -77,7 +83,7 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
           return (
             <div
               key={year}
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center justify-end gap-1"
             >
               <div className="text-xs text-slate-400">
                 {count}
@@ -85,13 +91,13 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
 
               <button
                 type="button"
+                disabled={count === 0}
                 onClick={() => onSelectYear(isSelected ? null : year)}
-                className={`w-10 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-violet-300 ring-2 ring-violet-400" : "bg-violet-400/70 hover:bg-violet-300"}`}
+                className={`w-full max-w-10 rounded-t transition focus:outline-none ${count > 0 ? "hover:bg-violet-300 cursor-pointer" : ""} ${isSelected ? "bg-violet-300 ring-2 ring-violet-400" : "bg-violet-400/70"}`}
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",
                 }}
-                title={`${year}: ${count}`}
               />
 
               <div className="text-xs text-slate-400">
@@ -141,7 +147,13 @@ export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
         Game
       </h2>
 
-      <div className="flex items-end justify-center gap-1.5 h-40">
+      <div
+        className="mx-auto h-40 w-fit max-w-80 gap-1.5"
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${gameCounts.length}, minmax(0, 1fr))`,
+        }}
+      >
         {gameCounts.map(([game, count]) => {
           const height = (count / maxCount) * 120;
           const isSelected = selectedGame === game;
@@ -149,7 +161,7 @@ export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
           return (
             <div
               key={game}
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center justify-end gap-1"
             >
               <div className="text-xs text-slate-400">
                 {count}
@@ -158,12 +170,11 @@ export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
               <button
                 type="button"
                 onClick={() => onSelectGame(isSelected ? null : game)}
-                className={`w-7 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-cyan-300 ring-2 hover:bg-cyan-400" : "bg-cyan-400/70 hover:bg-cyan-300"}`}
+                className={`w-full max-w-8 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-cyan-300 ring-2 hover:bg-cyan-400" : "bg-cyan-400/70 hover:bg-cyan-300"}`}
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",
                 }}
-                title={`${game}: ${count}`}
               />
 
               <div className="text-[10px] text-slate-400 whitespace-nowrap">
@@ -200,12 +211,18 @@ export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvi
   const maxCount = Math.max(...environmentCounts.map(([, c]) => c), 1);
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-gradient-to-br from-emerald-500/10 via-slate-900/60 to-emerald-500/10 items-center p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-gradient-to-br from-emerald-500/10 via-slate-900/60 to-emerald-500/10 items-center p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
       <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Environment
       </h2>
 
-      <div className="flex h-40 items-end justify-center gap-1.5">
+      <div
+        className="mx-auto h-40 w-fit max-w-80 gap-1.5"
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${environmentCounts.length}, minmax(0, 1fr))`,
+        }}
+      >
         {environmentCounts.map(([environment, count]) => {
           const height = (count / maxCount) * 120;
           const isSelected = selectedEnvironment === environment;
@@ -213,7 +230,7 @@ export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvi
           return (
             <div
               key={environment}
-              className="flex flex-col items-center gap-1"
+              className="flex flex-col items-center justify-end gap-1"
             >
               <div className="text-xs text-slate-400">
                 {count}
@@ -222,12 +239,12 @@ export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvi
               <button
                 type="button"
                 onClick={() => onSelectEnvironment(isSelected ? null : environment)}
-                className={`w-6 sm:w-7 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-emerald-300 ring-2 hover:bg-emerald-400" : "bg-emerald-400/70 hover:bg-emerald-300"}`}
+                className={`w-full max-w-8 rounded-t transition focus:outline-none cursor-pointer ${
+                  isSelected ? "bg-emerald-300 ring-2 hover:bg-emerald-400" : "bg-emerald-400/70 hover:bg-emerald-300"}`}
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",
                 }}
-                title={`${environment}: ${count}`}
               />
               
               <div className="text-[9px] text-slate-400">

@@ -265,7 +265,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         </div>
 
         {/* Track image */}
-        {track && (
+        {tmxLink && (
           <div className="hidden lg:block shrink-0">
             <button
               onClick={() => setImageOpen(true)}

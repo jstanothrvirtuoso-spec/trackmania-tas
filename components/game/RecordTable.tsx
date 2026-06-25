@@ -30,7 +30,7 @@ function classNames(...classes: Array<string | false | undefined>) {
 
 function getTrackDifficultyTint(category: string, index: number) {
   const tint = DIFFICULTY_TINTS[category];
-  return tint ? tint[index % 2] : "";
+  return tint ? tint[index % 2] : ["bg-white/10", "bg-white/15"][index % 2];
 }
 
 function isRecentEntry(dateStr: string) {

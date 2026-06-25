@@ -6,6 +6,7 @@ import { formatDate, formatTime } from "@/utils/formatting";
 import { CATEGORY_ORDER } from "@/utils/constants";
 import { useMemo, useState } from "react";
 import SortIndicator from "../SortIndicator";
+import { TRACKS } from "@/lib/TrackList";
 
 type SortField = "track" | "time" | "diff" | "game" | "date" | "category";
 
@@ -125,7 +126,7 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
           {sortedRows.map((row, index) => {
             if (!row.tas) return null;
             const isStunt = row.trackInfo.category === "Stunt"
-            const tasGame = row.tas.game === "TMNF" && row.tas.category === "No Cut" ? "TMNF No Cut" : row.tas.game  // This isn't correct, should only pick no-cut maps
+            const tasGame = row.tas.category === "No Cut" && row.trackInfo.noCutTrack ? "TMNF No Cut" : row.tas.game
             const opacity = row.isCurrentBestTas ? "opacity-100" : "opacity-40"
 
             return (

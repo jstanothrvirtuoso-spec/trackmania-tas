@@ -17,8 +17,6 @@ import { AuthorTasTable } from "@/components/authors/AuthorTasTable";
 export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }) {
 
   const router = useRouter();
-  const [hideBeaten, setHideBeaten] = useState(false);
-
   const { data: authors = [] } = useAuthors();
   const { data: rtaRecords = [] } = useRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
@@ -27,6 +25,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
     return buildBestRtaByTrack(rtaRecords)
   }, [rtaRecords]);
 
+  const [hideBeaten, setHideBeaten] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState<string>(initialAuthor);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
@@ -114,11 +113,35 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
       .filter((row) => row.tas && (!selectedEnvironment || row.trackInfo.environment === selectedEnvironment));
   }, [selectedYear, selectedGame, selectedEnvironment, visibleRows]);
 
+  function updateBeaten() {
+    if (!hideBeaten && selectedYear) {
+      const visibleRows = rows.filter((r) => r.isCurrentBestTas && r.tas && new Date(r.tas.date).getFullYear() === selectedYear);
+      if (visibleRows.length === 0) {
+        setSelectedYear(null)
+      }
+    }
+    if (!hideBeaten && selectedGame) {
+      const visibleRows = rows.filter((r) => r.isCurrentBestTas && r.tas && r.tas.game === selectedGame);
+      if (visibleRows.length === 0) {
+        setSelectedGame(null)
+      }
+    }
+    if (!hideBeaten && selectedEnvironment) {
+      const visibleRows = rows.filter((r) => r.isCurrentBestTas && r.tas && r.trackInfo.environment === selectedEnvironment);
+      if (visibleRows.length === 0) {
+        setSelectedEnvironment(null)
+      }
+    }
+    setHideBeaten((v) => !v)
+  }
+
   function updateAuthor(author: string) {
-    setSelectedAuthor(author)
+    setSelectedAuthor(author);
     setSelectedYear(null);
+    setSelectedEnvironment(null);
+    setSelectedGame(null);
     router.replace(`/authors?${new URLSearchParams({author: author})}`);
-  };
+  }
 
   function updateYear(year: number | null) {
     setSelectedYear(year);
@@ -172,7 +195,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
         />
 
         <button
-          onClick={() => setHideBeaten((v) => !v)}
+          onClick={() => updateBeaten()}
           className={`
             rounded-md px-4 py-1.5 text-xs sm:text-sm font-semibold transition-all duration-150 border cursor-pointer whitespace-nowrap
             ${hideBeaten ? "border-slate-600 bg-emerald-300/15 text-emerald-300 hover:bg-emerald-500/25"

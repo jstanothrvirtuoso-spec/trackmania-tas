@@ -95,7 +95,7 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
   }, [bestByTrackAndCategory, bestRtaByTrack]);
 
   return (
-    <div className="mx-2 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60 text-center shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+    <div className="mx-2 mb-3 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/60 text-center shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
       <table className="w-full text-xs">
         <thead className="bg-slate-800/20 border border-slate-800 font-mono rounded-tl-lg tracking-[0.02em] transition whitespace-nowrap text-slate-300 text-[8px] sm:text-sm">
           <tr>

@@ -12,10 +12,7 @@ Ideas zone for partial TASes
 
 Expand moderator roles
 Expand profile card colour options
-Sorting of all tables
-Add drop selects to table headers?
-Fix "no cut" testing in /authors table
-Author bar charts should not be clickable if there is only one, or if a bar is zero (have to be careful with releasing them when they change author/show-wrs)
+Improvements for game RecordTable
 
 
 //////////////////////////////////////////////////////////////////////////

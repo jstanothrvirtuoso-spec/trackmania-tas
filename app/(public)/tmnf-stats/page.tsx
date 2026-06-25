@@ -65,16 +65,16 @@ export default function TmnfHistory() {
         />
       </div> */}
         
-      <div className="flex flex-col justify-center items-center pt-20 pb-5 xl:flex-row xl:items-start z-99">
+      <div className="flex flex-col justify-center items-center pt-20 pb-2 xl:flex-row xl:items-start z-99">
         
         <CategoryTable
           bestRtaByTrack={bestRtaByTrack} 
           tasRecords={tasRecords}
         />
 
-        <div className="flex flex-col flex-1 items-center gap-3 px-2 max-w-180 py-3">
+        <div className="flex flex-col flex-1 items-center px-2 max-w-180">
 
-          <div className="flex w-full justify-end">
+          <div className="flex w-full justify-end mb-2">
             <DropSelect
               initialValue={category}
               options={CATEGORIES.filter((r) => (r != "Low Input")).map((category) => ({
@@ -86,7 +86,7 @@ export default function TmnfHistory() {
           </div>
           
           {authors.length > 0 && bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
-            <div className="items-start w-full">
+            <div className="items-start w-full mb-4">
               <AuthorLeaderboard 
                 bestRtaByTrack={bestRtaByTrack} 
                 filteredTasRecords={filteredTasRecords}
@@ -95,7 +95,7 @@ export default function TmnfHistory() {
             </div>
           )}
 
-          <div className="items-start w-full">
+          <div className="items-start w-full mb-4">
             {bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
               <TotalTimeSaved
                 bestRtaByTrack={bestRtaByTrack} 
@@ -104,7 +104,7 @@ export default function TmnfHistory() {
             )}
           </div>
           
-          <div className="w-full justify-center flex">
+          <div className="w-full justify-center flex mb-3">
             <PercentSavedTmnf 
                 bestRtaByTrack={bestRtaByTrack} 
                 filteredTasRecords={filteredTasRecords}
