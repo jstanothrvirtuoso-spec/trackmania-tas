@@ -30,7 +30,7 @@ export default function ProfilePage() {
 
         {/* Header */}
         <Image
-          src="/wallpapers/profile.png"
+          src="/wallpapers/profile1.webp"
           alt="Profile"
           width={371}
           height={74}

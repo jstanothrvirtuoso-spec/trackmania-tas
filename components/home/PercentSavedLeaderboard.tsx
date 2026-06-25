@@ -143,7 +143,7 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
                     className={`border-t border-slate-800 ${rowColour} hover:bg-blue-900/50`}
                     style={showDivider ? { borderBottom: `2px dashed grey` } : {}}
                   >
-                    <td className="px-3 py-1 text-slate-100 lg:whitespace-nowrap">
+                    <td className="px-3 py-1 text-slate-100 leading-tight lg:whitespace-nowrap">
                       {formatTrack(row.track)}
                     </td>
                     <td className="px-3 py-1 text-emerald-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.6)]">

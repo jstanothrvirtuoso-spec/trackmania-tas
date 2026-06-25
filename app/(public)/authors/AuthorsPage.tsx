@@ -156,7 +156,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   }
 
   return (
-    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto pt-20 pb-8 text-slate-100 px-3 sm:px-6">
+    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto pt-20 pb-5 text-slate-100">
 
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
@@ -206,7 +206,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
       </div>
 
       {selectedAuthor && (
-        <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-start">
+        <div className="flex flex-col items-center gap-4 lg:gap-2 lg:flex-row lg:items-start">
 
           {/* Profile card */}
           {profilePublic && (

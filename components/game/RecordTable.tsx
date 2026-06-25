@@ -224,9 +224,9 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                 </>
               )}
 
-              <td className={rowCommon("px-1.5 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal text-slate-100")}>
+              <td className={rowCommon("px-1.5 py-1 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal text-slate-100")}>
                 {entry ? (
-                  <div className="flex flex-wrap items-center justify-center gap-1">
+                  <div className="flex flex-wrap items-center justify-center gap-1 leading-none">
                     {formatAuthors(entry.authors, 6)}
                   </div>
                 ) : "-"}

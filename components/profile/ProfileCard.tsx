@@ -358,7 +358,7 @@ export default function ProfileCard({ profile, onEditClick }: {
 
         <div className="text-left z-20">
           <div
-            className="font-bold text-black text-2xl leading-tight font-sakura tracking-[0.5px] break-words overflow-wrap-anywhere max-w-45"
+            className={`font-bold text-black leading-tight font-sakura tracking-[0.5px] break-words overflow-wrap-anywhere max-w-45 ${profile.display_name.length > 10 ? "text-xl" : "text-2xl"}`}
             style={{ textShadow: "0 1px 8px rgba(0, 0, 0, 0.15)" }}
           >
             {profile.display_name}

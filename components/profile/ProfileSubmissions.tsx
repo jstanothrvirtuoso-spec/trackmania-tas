@@ -60,10 +60,10 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
 
   return (
     <div className="flex flex-col px-2 mb-4">
-      <div className="overflow-hidden rounded-2xl border border-slate-500 bg-slate-900/80 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
+      <div className=" rounded-2xl border border-slate-500 bg-slate-900/80 shadow-[0_10px_40px_rgba(0,0,0,0.85)]">
 
         {/* Banner */}
-        <div className="flex items-center justify-between gap-5 border-b border-slate-800 bg-gradient-to-r from-slate-950 to-slate-800 px-3 py-1.5">
+        <div className="flex items-center rounded-t-2xl justify-between gap-5 border-b border-slate-800 bg-gradient-to-r from-slate-950 to-slate-800 px-3 py-1.5">
           <h3 className="font-kiwi tracking-[0.15em] text-xs sm:text-sm font-bold uppercase text-sky-200">
             Recent TAS Submissions
           </h3>
@@ -89,8 +89,8 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
           </div>
         </div>
     
-        <div className="overflow-x-auto bg-slate-900/80 rounded-lg">
-          <table className="rounded-lg overflow-hidden text-center text-[11px] sm:text-sm">
+        <div className="overflow-x-auto bg-slate-900/80 rounded-b-2xl">
+          <table className="overflow-hidden text-center text-[11px] sm:text-sm">
             <thead>
               <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
                 <th className="px-2 py-1.5 font-normal">

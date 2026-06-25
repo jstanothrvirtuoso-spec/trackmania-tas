@@ -196,7 +196,7 @@ export default function InputsPage() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="relative z-10 mx-auto max-w-7xl space-y-10 p-2 sm:p-6">
+      <div className="relative z-10 mx-auto max-w-7xl space-y-7 sm:space-y-10 p-2 sm:p-6">
 
         {/* HEADER */}
         <div className="relative -translate-x-1">
@@ -205,7 +205,7 @@ export default function InputsPage() {
             alt="Inputs"
             width={334}
             height={190}
-            className="mx-auto h-40 w-auto"
+            className="mx-auto h-40 max-h-[20vh] w-auto"
           />
         </div>
 
