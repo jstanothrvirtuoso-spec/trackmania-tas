@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
 import { formatTime, formatDate } from "@/utils/formatting";
@@ -9,7 +9,7 @@ import { TimeState, Game, RtaEntry } from "@/utils/typing";
 import { GAME_LIST } from "@/utils/constants";
 import { useAlert } from "@/components/providers/AlertProvider";
 import { useConfirm } from "@/components/providers/ConfirmProvider";
-import { useRtaRecords } from "@/lib/RtaRecords";
+import { useTrackRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { VideoIcon } from "@/components/Icons";
 import { DropSelect } from "@/components/DropSelect";
@@ -39,7 +39,6 @@ export default function AdminRta() {
   const queryClient = useQueryClient();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
-  const { data: rtaRecords = [] } = useRtaRecords();
   
   const [form, setForm] = useState<RtaForm>({
     game: "TMNF",
@@ -57,16 +56,10 @@ export default function AdminRta() {
     thousandth: 0,
   });
 
+  const { data: trackRecords } = useTrackRtaRecords(form.track);
   const isStunt = form.track ? TRACKS[form.track]?.category === "Stunt" : false;
   const timeMs = timeStateToMs(time);
   const trackOptions = tracksByGame[form.game]
-
-  const trackRecords = useMemo(() => {
-    if (!form.track) return [];
-    return rtaRecords
-      .filter((t) => t.track === form.track)
-      .sort((a, b) => a.time_ms - b.time_ms);
-  }, [rtaRecords, form.track]);
 
   function update<K extends keyof RtaForm>(field: K, value: RtaForm[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -386,7 +379,7 @@ export default function AdminRta() {
               </thead>
 
               <tbody>
-                {trackRecords.length === 0 ? (
+                {!trackRecords || trackRecords.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-6 text-center text-slate-500">
                       Select track

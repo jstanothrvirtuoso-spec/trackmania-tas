@@ -155,13 +155,16 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
 
 export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
   tasRecords: TasEntry[], 
-  bestRtaByTrack: Map<string, RtaEntry>
+  bestRtaByTrack?: Map<string, RtaEntry>
 }) {
 
   const [sortField, setSortField] = useState<SortField>("tases");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const authorStats = useMemo(() => {
+
+    if (!bestRtaByTrack) return []
+
     const authorMap = new Map<string, AuthorStat>();
     const bestTasByTrack = new Map<string, TasEntry>();
 

@@ -7,7 +7,7 @@ import { CATEGORY_FILTERS } from "@/utils/constants";
 import { useProfilePublic } from "@/lib/Profiles";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
-import { buildBestRtaByTrack, useRtaRecords } from "@/lib/RtaRecords";
+import { useBestRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart } from "@/components/authors/AuthorCharts";
@@ -18,12 +18,8 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
 
   const router = useRouter();
   const { data: authors = [] } = useAuthors();
-  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: bestRtaByTrack } = useBestRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords]);
 
   const [hideBeaten, setHideBeaten] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState<string>(initialAuthor);
@@ -55,8 +51,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   const { data: profilePublic } = useProfilePublic(selectedProfileId ?? "");
 
   const rows = useMemo<RecordRow[]>(() => {
-    if (!selectedAuthor) return [];
-    if (!tasRecords) return [];
+    if (!selectedAuthor || !tasRecords || !bestRtaByTrack) return [];
 
     const bestTasByTrackCategory = new Map<string, TasEntry>();
 

@@ -5,7 +5,7 @@ import { use, useState, useMemo } from "react";
 import { CATEGORY_FILTERS, GAME_SLUGS } from "@/utils/constants";
 import { Environment, Category, TasEntry } from "@/utils/typing";
 import { TRACKS } from "@/lib/TrackList";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { useBestRtaRecords } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfilePrivate } from "@/lib/Profiles";
 import HeaderOptions from "@/components/game/HeaderOptions";
@@ -26,12 +26,8 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   const allowedCategories = CATEGORY_FILTERS[selectedCategory]
 
   const { data: profilePrivate, isLoading } = useProfilePrivate();
-  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: bestRtaByTrack } = useBestRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords]);
 
   const {
     show_rta = true,
@@ -42,6 +38,9 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   } = profilePrivate ?? {};
 
   const currentRecords = useMemo(() => {
+
+    if (!bestRtaByTrack) return []
+    
     const bestTasByTrack = new Map<string, TasEntry>();
 
     for (const entry of Object.values(tasRecords)) {
@@ -98,16 +97,16 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   }
 
  return (
-  <div className="relative pt-20 min-h-screen overflow-hidden">
+  <div className="relative pt-20 min-h-screen overflow-hidden bg-slate-950">
 
     {/* Blurred wallpaper layer */}
-    <div
+    {/* <div
       className="absolute inset-0 bg-cover bg-center scale-110 blur-md"
       style={{ backgroundImage: "url('/wallpapers/gamewp.webp')" }}
-    />
+    /> */}
 
     {/* Dark overlay */}
-    <div className="absolute inset-0 bg-black/85" />
+    {/* <div className="absolute inset-0 bg-black/85" /> */}
 
     {/* Content */}
     <div className="relative z-10">

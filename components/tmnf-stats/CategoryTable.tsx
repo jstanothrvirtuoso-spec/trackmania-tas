@@ -31,7 +31,7 @@ function getVisibleBest(
 }
 
 export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
-  bestRtaByTrack: Map<string, RtaEntry>, 
+  bestRtaByTrack?: Map<string, RtaEntry>, 
   tasRecords: TasEntry[] 
 } ) {
 
@@ -55,6 +55,9 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
   }, [tasRecords]);
 
   const rows = useMemo(() => {
+
+    if (!bestRtaByTrack) return [];
+
     return Object.entries(TRACKS)
       .filter(([, info]) => info.game === "TMNF")
       .map(([track]) => {

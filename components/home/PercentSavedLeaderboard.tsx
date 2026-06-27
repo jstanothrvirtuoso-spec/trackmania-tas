@@ -24,7 +24,7 @@ const TIERS: Record<Category, number[]> = {
 
 export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }: {
   tasRecords: TasEntry[], 
-  bestRtaByTrack: Map<string, RtaEntry>
+  bestRtaByTrack?: Map<string, RtaEntry>
 }) {
 
   const [category, setCategory] = useState<Category>("Open");
@@ -57,6 +57,8 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
   }, [filteredTasRecords]);
 
   const data = useMemo(() => {
+
+    if (!bestRtaByTrack) return []
     const result = [];
 
     for (const track of Object.keys(TRACKS)) {
@@ -124,7 +126,7 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
             {data.length === 0 
               ? 
               Array.from({ length: 25 }).map((_, i) => (
-                <tr key={i} className={`${i % 2 === 0 ? "bg-slate-500/20" : "bg-slate-500/10"}`}>
+                <tr key={i} className={`${i % 2 === 0 ? "bg-slate-900/50" : "bg-slate-850/80"}`}>
                   <td className="py-2 px-5"><div className="h-4 w-22 bg-slate-700 animate-pulse mx-auto rounded" /></td>
                   <td className="py-2 px-2"><div className="h-4 w-5 bg-slate-700 animate-pulse rounded" /></td>
                   <td className="py-2 px-5"><div className="h-4 w-70 bg-slate-700 animate-pulse mx-auto rounded" /></td>

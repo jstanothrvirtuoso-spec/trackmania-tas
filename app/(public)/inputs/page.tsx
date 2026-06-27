@@ -205,7 +205,7 @@ export default function InputsPage() {
             alt="Inputs"
             width={334}
             height={190}
-            className="mx-auto h-40 max-h-[20vh] w-auto"
+            className="mx-auto min-w-40 max-w-[17vw] h-auto"
           />
         </div>
 

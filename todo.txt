@@ -12,6 +12,9 @@ Ideas zone for partial TASes
 
 Expand moderator roles
 Improvements for game RecordTable
+Can we remove "TMNF No Cut" as a game in supabase?
+Collect TM2 RTA WRs
+Create viewmodel for best RTA records, would need to update /tracks
 
 
 //////////////////////////////////////////////////////////////////////////

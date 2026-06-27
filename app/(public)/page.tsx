@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
 import { useTasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { useBestRtaRecords } from "@/lib/RtaRecords";
 import VideoBackground from "@/components/home/VideoBackground";
 import CompletionTable from "@/components/home/CompletionTable";
 import GlobalLeaderboard from "@/components/home/GlobalLeaderboard";
@@ -11,13 +10,8 @@ import RecentlyAdded from "@/components/home/RecentlyAdded";
 
 export default function Home() {
 
-  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: bestRtaByTrack } = useBestRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
-
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords);
-  }, [rtaRecords]);
 
   return (
     <>

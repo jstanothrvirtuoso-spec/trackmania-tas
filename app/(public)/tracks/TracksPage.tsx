@@ -9,7 +9,7 @@ import { formatDate, formatPercentSaved, formatTime } from "@/utils/formatting"
 import { Game, Category } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
 import { RecordProgressionGraph } from "./ProgressionGraph";
-import { useRtaRecords } from "@/lib/RtaRecords";
+import { useTrackRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
@@ -31,32 +31,28 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const [nowDate] = useState<number>(() => Date.now());
   const [currentRecord, setCurrentRecord] = useState<{ category: string, id: number } | null>(null);
 
-  const { data: rtaRecords = [] } = useRtaRecords();
-  const { data: tasRecords = [] } = useTasRecords();
-
   const [game, setGame] = useState<Game>(initialGame);
   const [track, setTrack] = useState<string>(initialTrack);
   const [imageOpen, setImageOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const { data: trackRtaRecords } = useTrackRtaRecords(track ?? "");
+  const { data: tasRecords = [] } = useTasRecords();
+
   const { records, rta, minDate } = useMemo(() => {
-    if (!track || !rtaRecords || !tasRecords) return { 
+    if (!track || !trackRtaRecords || !tasRecords) return { 
       records: [], 
       rta: { time_ms: 0, player: "", date: ""},
       minDate: BASELINE_DATE,
     };
 
     const tasRows = [...tasRecords].filter((t) => t.track === track);
-    const rtaRows = [...rtaRecords]
-      .filter(r => r.track === track)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
     const firstTasDate = Math.min(BASELINE_DATE, ...tasRows.map(row => new Date(row.date).getTime()));
     const datePadding = Math.max((nowDate - firstTasDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
     const minDate = firstTasDate - datePadding;
     
-    const cutoffIndex = rtaRows.findLastIndex(r => new Date(r.date).getTime() < minDate);
-    const relevantRtaRows = rtaRows
+    const cutoffIndex = trackRtaRecords.findLastIndex(r => new Date(r.date).getTime() < minDate);
+    const relevantRtaRows = trackRtaRecords
       .slice(Math.max(0, cutoffIndex))
       .map(rta => ({
         ...rta,
@@ -69,10 +65,10 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       records: [...tasRows, ...relevantRtaRows]
         .filter((t) => t.track === track)
         .sort((a, b) => a.time_ms - b.time_ms), 
-      rta: rtaRows[rtaRows.length - 1] ?? null,
+      rta: trackRtaRecords[trackRtaRecords.length - 1] ?? null,
       minDate: minDate
     };
-  }, [track, tasRecords, rtaRecords, nowDate]);
+  }, [track, tasRecords, trackRtaRecords, nowDate]);
 
   const trackOptions = tracksByGame[game];
   const isStunt = track ? TRACKS[track].category === "Stunt" : false;
@@ -235,7 +231,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                   </div>
                 </div>
               )}
-              {rta && (
+              {rta.time_ms > 0 && (
                 <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
                   <div className="text-left translate-y-[2px]">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">

@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { CATEGORIES } from "@/utils/constants";
 import { TasEntry, Category } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { useBestRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS } from "@/lib/TrackList";
 import { TasCard } from "@/components/highlight/TasCard";
 import { AuthorCard } from "@/components/highlight/AuthorCard";
@@ -16,12 +16,7 @@ const reversedCategories = [...CATEGORIES].reverse();
 export default function HighlightPage() {
 
   const { data: tasRecords = [] } = useTasRecords();
-  const { data: rtaRecords = [] } = useRtaRecords();
-
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords)
-  }, [rtaRecords]);
+  const { data: bestRtaByTrack } = useBestRtaRecords();
 
   const { undoneTracks, topTasVideos, topAuthors } = useMemo(() => {
 
@@ -44,7 +39,7 @@ export default function HighlightPage() {
       const categoryMap = bestByTrackAndCategory.get(track);
 
       if (!categoryMap) {
-        if (trackInfo.game != "TM2" && bestRtaByTrack.get(track)?.video) {
+        if (trackInfo.game != "TM2" && bestRtaByTrack && bestRtaByTrack.get(track)?.video) {
           undoneTracks.push(track);
         }
         continue;

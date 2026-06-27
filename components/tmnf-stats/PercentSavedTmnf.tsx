@@ -21,7 +21,7 @@ const TIERS: Record<Category, number[]> = {
 }
 
 export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, category } : {
-  bestRtaByTrack: Map<string, RtaEntry>, 
+  bestRtaByTrack?: Map<string, RtaEntry>, 
   filteredTasRecords: TasEntry[],
   category: Category,
 } ) {
@@ -48,6 +48,9 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
   }, [filteredTasRecords]);
 
   const data = useMemo(() => {
+
+    if (!bestRtaByTrack) return [];
+    
     const result = [];
 
     for (const track of Object.keys(TRACKS)) {

@@ -7,7 +7,7 @@ import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useAuthors } from "@/lib/Authors";
 import { DropSelect } from "@/components/DropSelect";
-import { useRtaRecords, buildBestRtaByTrack } from "@/lib/RtaRecords";
+import { useBestRtaRecords } from "@/lib/RtaRecords";
 import TotalTimeSaved from "@/components/tmnf-stats/TotalTimeSaved"
 import PercentSavedTmnf from "@/components/tmnf-stats/PercentSavedTmnf";
 import CategoryTable from "@/components/tmnf-stats/CategoryTable";
@@ -15,16 +15,11 @@ import AuthorLeaderboard from "@/components/tmnf-stats/AuthorLeaderboard";
 
 export default function TmnfHistory() {
 
-  const { data: rtaRecords = [] } = useRtaRecords();
+  const { data: bestRtaByTrack } = useBestRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
   const { data: authorData = [] } = useAuthors();
   const [category, setCategory] = useState<Category>("Open");
 
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords.length) return new Map();
-    return buildBestRtaByTrack(rtaRecords);
-  }, [rtaRecords]);
-  
   const filteredTasRecords = useMemo(() => {
     if (category === "Open") return tasRecords;
 
@@ -85,7 +80,7 @@ export default function TmnfHistory() {
             />
           </div>
           
-          {authors.length > 0 && bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
+          {authors.length > 0 && bestRtaByTrack && filteredTasRecords.length > 0 && (
             <div className="items-start w-full mb-4">
               <AuthorLeaderboard 
                 bestRtaByTrack={bestRtaByTrack} 
@@ -96,7 +91,7 @@ export default function TmnfHistory() {
           )}
 
           <div className="items-start w-full mb-4">
-            {bestRtaByTrack.size > 0 && filteredTasRecords.length > 0 && (
+            {bestRtaByTrack && filteredTasRecords.length > 0 && (
               <TotalTimeSaved
                 bestRtaByTrack={bestRtaByTrack} 
                 filteredTasRecords={filteredTasRecords}

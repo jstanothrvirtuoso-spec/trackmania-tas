@@ -155,7 +155,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {renderSortHeader("rtaTime", "RTA", "border border-slate-800 rounded-tl-lg")}
               {renderSortHeader("rtaPlayer", "Player")}
               {renderSortHeader("rtaDate", "Date")}
-              <th className={classNames(HEADER_STATIC, "w-[80px] rounded-tr-lg")}>{"Links"}</th>
+              <th className={classNames(HEADER_STATIC, "w-[70px] rounded-tr-lg")}>{"Links"}</th>
             </>
           )}
         </tr>
@@ -177,6 +177,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
           const isStunt = row.trackInfo.category === "Stunt";
           const isLastRow = index === sortedRows.length - 1;
           const rowCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, bgColour);
+          const rowRtaCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, rtaColour);
 
           return (
             <tr key={row.track} className="group h-[30px] transition-colors">
@@ -191,24 +192,24 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                 <EnvironmentIcon environment={row.trackInfo.environment} />
               </td>
               
-              <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap text-slate-100")}>
-                {formatTrack(row.track)}
+              <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap")}>
+                {formatTrack(row.track, "hover:text-emerald-500 text-slate-200")}
               </td>
 
               {lowInputCategory ? (
                 <>
-                  <td className={rowCommon("px-1.5 border-l text-slate-100")}>{entry?.num_inputs ?? "-"}</td>
-                  <td className={rowCommon("px-3 py-1 text-slate-100")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{entry?.num_inputs ?? "-"}</td>
+                  <td className={rowCommon("px-3 py-1 text-slate-200")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
                 </>
               ) : (
                 <>
-                  <td className={rowCommon("px-1.5 border-l text-slate-100")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
                   {(() => {
                     const isBadDiff = entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt));
                     const isEqual = entry && row.rta && entry.time_ms === row.rta.time_ms;
                     return (
                       <td
-                        className={classNames(BODY_BASE, "font-vga px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-100")}
+                        className={classNames(BODY_BASE, "font-vga px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-200")}
                         style={{
                           letterSpacing: "0.05em",
                           textShadow: isBadDiff
@@ -220,20 +221,20 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                       </td>
                     );
                   })()}
-                  <td className={rowCommon("px-1.5 text-slate-100")}>{entry && row.rta ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt) : "-"}</td>
+                  <td className={rowCommon("px-1.5 text-slate-200")}>{entry && row.rta ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt) : "-"}</td>
                 </>
               )}
 
-              <td className={rowCommon("px-1.5 py-1 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal text-slate-100")}>
+              <td className={rowCommon("px-1.5 py-1 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal")}>
                 {entry ? (
                   <div className="flex flex-wrap items-center justify-center gap-1 leading-none">
                     {formatAuthors(entry.authors, 6)}
                   </div>
                 ) : "-"}
               </td>
-              <td className={rowCommon("px-3 border-l whitespace-nowrap text-slate-100")}>{entry ? formatDate(entry.date) : "-"}</td>
-              <td className={rowCommon("px-3 whitespace-nowrap text-slate-100")}>{entry ? entry.category : "-"}</td>
-              <td className={rowCommon(classNames("px-2 border-x text-slate-100", isLastRow ? "rounded-br-lg" : ""))}>
+              <td className={rowCommon("px-3 border-l whitespace-nowrap text-slate-200")}>{entry ? formatDate(entry.date) : "-"}</td>
+              <td className={rowCommon("px-3 whitespace-nowrap text-slate-200")}>{entry ? entry.category : "-"}</td>
+              <td className={rowCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""))}>
                 {entry ? (
                   <div className="flex items-center justify-center gap-1">
                     <div className="w-5 h-5 flex items-center justify-center">{entry.video && <VideoIcon video_url={entry.video} />}</div>
@@ -249,10 +250,10 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {showRta && (
                 <>
                   <td className="pl-3" />
-                  <td className={rowCommon(classNames("px-2 border-l text-slate-100", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}</td>
-                  <td className={rowCommon("px-2 border-l whitespace-nowrap text-slate-100", rtaColour)}>{row.rta?.player ?? "-"}</td>
-                  <td className={rowCommon("px-2 border-l whitespace-nowrap text-slate-100", rtaColour)}>{row.rta ? formatDate(row.rta.date) : "-"}</td>
-                  <td className={rowCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""), rtaColour)}>
+                  <td className={rowRtaCommon(classNames("px-2 border-l text-slate-200", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{row.rta?.player ?? "-"}</td>
+                  <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{row.rta ? formatDate(row.rta.date) : "-"}</td>
+                  <td className={rowRtaCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""), rtaColour)}>
                     {row.rta ? (
                       <div className="flex items-center justify-center gap-1">
                         <div className="w-5 h-5 flex items-center justify-center">{row.rta.video && <VideoIcon video_url={row.rta.video} />}</div>

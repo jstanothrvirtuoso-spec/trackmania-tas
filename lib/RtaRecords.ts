@@ -4,8 +4,11 @@ import { createClient } from "@/utils/supabase/client";
 import { STALE_TIME } from "@/utils/constants";
 import { RtaEntry } from "@/utils/typing";
 
+const supabase = createClient();
+
+// All RTA records
+
 async function getRtaRecords(): Promise<RtaEntry[]> {
-  const supabase = createClient();
 
   const pageSize = 2000;
   const allRows: RtaEntry[] = [];
@@ -39,25 +42,44 @@ export function useRtaRecords() {
   });
 }
 
-export function buildBestRtaByTrack(records: RtaEntry[]): Map<string, RtaEntry> {
-  const map = new Map<string, RtaEntry>();
+// Map of best RTA record for all tracks
 
-  for (const entry of records) {
-    const existing = map.get(entry.track);
+async function getBestRtaRecords(): Promise<Map<string, RtaEntry>> {
 
-    if (
-      !existing ||
-      entry.time_ms < existing.time_ms ||
-      (
-        entry.time_ms === existing.time_ms &&
-        new Date(entry.date).getTime() <
-          new Date(existing.date).getTime()
-      )
-    ) {
+  const { data, error } = await supabase
+    .from("best_rta_records")
+    .select("*");
 
-      map.set(entry.track, entry);
-    }
-  }
+  if (error) throw error;
 
-  return map;
+  return new Map((data as RtaEntry[]).map(r => [r.track, r]));
+}
+
+export function useBestRtaRecords() {
+  return useQuery<Map<string, RtaEntry>>({
+    queryKey: ["bestRtaRecords"],
+    queryFn: getBestRtaRecords,
+    staleTime: STALE_TIME,
+  });
+}
+
+// All RTA records from one track
+
+export function useTrackRtaRecords(track?: string) {
+  return useQuery<RtaEntry[]>({
+    queryKey: ["rtaRecords", track],
+    enabled: !!track,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rta_records")
+        .select("*")
+        .eq("track", track)
+        .order("time_ms", { ascending: false })
+        .order("date", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    staleTime: STALE_TIME,
+  });
 }
