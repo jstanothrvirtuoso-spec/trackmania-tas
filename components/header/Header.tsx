@@ -88,14 +88,6 @@ export default function Header() {
                   className="object-contain rounded-md drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
                 />
               </div>
-              {/* <Image
-                src="/header.webp"
-                alt="TAS-Nadeo"
-                width={60}
-                height={36}
-                priority
-                className="h-9 w-auto rounded-md drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
-              /> */}
             </Link>
           </div>
           <div className="mt-[2px] px-3 hidden sm:block w-30">
@@ -181,6 +173,22 @@ export default function Header() {
             >
               <FaDiscord size={22} />
             </a>
+            
+            <Link
+              href="https://tmtas.exchange/"
+              className="block border border-slate-500/80 rounded-lg transition-all duration-100 hover:brightness-110 hover:border-cyan-500 hover:scale-105"
+            >
+              <div className="relative h-8 w-[32px]">
+                <Image
+                  src="/icons/tm-tas.png"
+                  alt="TM-TAS.exchange"
+                  fill
+                  sizes="50vw"
+                  loading="eager"
+                  className="object-contain rounded-md drop-shadow-[0_2px_4px_rgba(0,0,0,0.2)]"
+                />
+              </div>
+            </Link>
           </div>
         </div>
       </div>

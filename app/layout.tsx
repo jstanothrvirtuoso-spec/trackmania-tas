@@ -9,7 +9,7 @@ export const metadata = {
   metadataBase: new URL("https://www.tas-nadeo.com"),
 
   title: {
-    default: "TAS Nadeo - Trackmania's number one TAS sharing platform",
+    default: "TAS Nadeo - A fine collection of TrackMania Nadeo TASes",
     template: "%s | TAS Nadeo",
   },
 
