@@ -133,7 +133,7 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
                 key={ index }
                 className={`border-b border-slate-800 ${index % 2 === 0 ? "bg-violet-950/20" : "bg-violet-950/40"} ${opacity}`}
               >
-                <td className="px-2 max-w-45">
+                <td className="px-2 max-w-50">
                   <span className="flex flex-row gap-2 items-center">
                     <div className="hidden sm:flex">
                       <EnvironmentIcon environment={row.trackInfo.environment} />
