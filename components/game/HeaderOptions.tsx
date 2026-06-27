@@ -59,7 +59,7 @@ export default function HeaderOptions({
     <div className="flex w-full flex-wrap justify-center items-center gap-3 px-4">
 
       {/* Categories */}
-      {game === "TMNF" && (
+      {(game === "TMNF" || game === "TMUF") && (
         <DropSelect
           initialValue={selectedCategory as Category}
           options={CATEGORIES.map((category) => ({
