@@ -61,12 +61,18 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         authors: [rta.player],
         inputs: "",
       }));
+
+    const tas = tasRows.length === 0 ? null
+      : tasRows.reduce((best, row) => { if (row.time_ms < best.time_ms) return row;
+        if (row.time_ms === best.time_ms && new Date(row.date).getTime() < new Date(best.date).getTime()) { return row }
+        return best;
+      });
     
     return { 
       records: [...tasRows, ...relevantRtaRows]
         .filter((t) => t.track === track)
         .sort((a, b) => a.time_ms - b.time_ms),
-      tas: tasRows[tasRows.length - 1] ?? null,
+      tas: tas,
       rta: trackRtaRecords[trackRtaRecords.length - 1] ?? null,
       minDate: minDate
     };

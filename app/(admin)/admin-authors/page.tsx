@@ -167,7 +167,7 @@ export default function AdminAuthors() {
               
               <div className="mt-1 text-sm text-slate-400">
                 Select an author below to change their name on all TASes (this will not affect RTA).
-                Type the new name into the Author(s) box below it (check the name doesn't exist, they must be unique!).
+                Type the new name into the Author(s) box below it (check the name does not exist, they must be unique!).
               </div>
             </div>
           </div>
