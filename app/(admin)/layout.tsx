@@ -25,7 +25,7 @@ export default async function ProtectedLayout({
     .eq("id", user.id)
     .single();
   
-  if (error || profile?.role !== "admin") {
+  if (error || (profile?.role !== "admin" && profile?.role !== "moderator")) {
     redirect("/");
   }
   
