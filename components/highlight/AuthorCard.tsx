@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { Environment, Game, RtaEntry, TasEntry } from "@/utils/typing";
-import { formatDate, formatTime } from "@/utils/formatting";
+import { formatDate, formatGame, formatTime } from "@/utils/formatting";
 import { TRACKS } from "@/lib/TrackList";
 import { OVERRIDE } from "@/utils/constants";
 import { formatAuthors } from "../FormatLinks";
@@ -48,7 +48,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
     let maxEnv = 0;
     for (const [env, count] of envCount) { if (count > maxEnv) { maxEnv = count; favEnvironment = env } }
 
-    let favGame: Game | undefined;
+    let favGame: Game = "TMNF";
     let maxGame = 0;
     for (const [game, count] of gameCount) { if (count > maxGame) { maxGame = count; favGame = game } }
     
@@ -152,7 +152,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
           </div>
 
           <div className="mt-1 text-slate-200">
-            {favGame}
+            {formatGame(favGame)}
           </div>
         </div>
 

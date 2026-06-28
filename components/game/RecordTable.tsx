@@ -42,10 +42,10 @@ function isRecentEntry(dateStr: string) {
   return diff >= 0 && diff <= oneMonth;
 }
 
-function getSortValue(row: RecordRow, field: SortField, categoryIndexes: Map<string, number>): string | number {
+function getSortValue(row: RecordRow, field: SortField, gameSetIndexes: Map<string, number>): string | number {
   switch (field) {
     case "track": {
-      const categoryIndex = categoryIndexes.get(row.trackInfo.category) ?.toString().padStart(2, "0");
+      const categoryIndex = gameSetIndexes.get(row.trackInfo.gameSet) ?.toString().padStart(2, "0");
       const order = row.trackInfo.order ? row.trackInfo.order.toString().padStart(2, "0") : row.track;
       return `${categoryIndex}-${order}`;
     }
@@ -87,14 +87,14 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
   const isTM2 = game === "TM2";
   const lowInputCategory = selectedCategory === "Low Input";
 
-  const categoryIndexes = useMemo(() => (
+  const gameSetIndexes = useMemo(() => (
     new Map(GAME_SETS[game].map((category, index) => [category, index]))
   ), [game]);
 
   const sortedRows = useMemo(() => {
     return [...currentRecords].sort((a, b) => {
-      const aVal = getSortValue(a, sortField, categoryIndexes);
-      const bVal = getSortValue(b, sortField, categoryIndexes);
+      const aVal = getSortValue(a, sortField, gameSetIndexes);
+      const bVal = getSortValue(b, sortField, gameSetIndexes);
 
       if (typeof aVal === "number" && typeof bVal === "number") {
         return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
@@ -103,7 +103,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
       const result = String(aVal).localeCompare(String(bVal));
       return sortOrder === "asc" ? result : -result;
     });
-  }, [currentRecords, sortField, sortOrder, categoryIndexes]);
+  }, [currentRecords, sortField, sortOrder, gameSetIndexes]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -147,7 +147,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
           {renderSortHeader("authors", "Authors", "border border-slate-800")}
           {renderSortHeader("date", "Date")}
           {renderSortHeader("category", "Cat.")}
-          <th className={classNames(HEADER_STATIC, "rounded-tr-lg")}>{"Links"}</th>
+          <th className={classNames(HEADER_STATIC, "rounded-tr-lg")}>{isTM2 ? "Video" : "Links"}</th>
 
           {showRta && (
             <>
@@ -171,10 +171,10 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
         {sortedRows.map((row, index) => {
           const entry = row.tas;
           const recent = showRecent && entry && isRecentEntry(entry.date);
-          const difficultyClass = getTrackDifficultyTint(row.trackInfo.category, index);
+          const difficultyClass = getTrackDifficultyTint(row.trackInfo.gameSet, index);
           const bgColour = recent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
           const rtaColour = (showRecent && row.rta && isRecentEntry(row.rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
-          const isStunt = row.trackInfo.category === "Stunt";
+          const isStunt = row.trackInfo.gameSet === "Stunt";
           const isLastRow = index === sortedRows.length - 1;
           const rowCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, bgColour);
           const rowRtaCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, rtaColour);
@@ -238,9 +238,9 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                 {entry ? (
                   <div className="flex items-center justify-center gap-1">
                     <div className="w-5 h-5 flex items-center justify-center">{entry.video && <VideoIcon video_url={entry.video} />}</div>
-                    <div className="w-5 h-5 flex items-center justify-center">{entry.replay && <ReplayIcon replay_url={entry.replay} />}</div>
-                    <div className="w-5 h-5 flex items-center justify-center">{entry.inputs && <InputsIcon inputs_url={entry.inputs} />}</div>
-                    <div className="w-5 h-5 flex items-center justify-center">{entry.replay && <GbxIcon replay_url={entry.replay} track={entry.track} />}</div>
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.replay && <ReplayIcon replay_url={entry.replay} />}</div>)}
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.inputs && <InputsIcon inputs_url={entry.inputs} />}</div>)}
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.replay && <GbxIcon replay_url={entry.replay} track={entry.track} />}</div>)}
                   </div>
                 ) : (
                   "-"

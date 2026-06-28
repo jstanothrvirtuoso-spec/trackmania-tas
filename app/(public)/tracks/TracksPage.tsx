@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getTmxLink } from "@/utils/common";
 import { CATEGORY_COLOURS, CATEGORY_FILTERS, GAME_LIST, GRAPH_CATEGORIES } from "@/utils/constants";
-import { formatDate, formatPercentSaved, formatTime } from "@/utils/formatting"
+import { formatDate, formatGame, formatPercentSaved, formatTime } from "@/utils/formatting"
 import { Game, Category } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
 import { RecordProgressionGraph } from "./ProgressionGraph";
@@ -71,7 +71,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   }, [track, tasRecords, trackRtaRecords, nowDate]);
 
   const trackOptions = tracksByGame[game];
-  const isStunt = track ? TRACKS[track].category === "Stunt" : false;
+  const isStunt = track ? TRACKS[track].gameSet === "Stunt" : false;
   const isTM2 = track ? TRACKS[track].game === "TM2" : false;
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
   const tmxLink = getTmxLink(TRACKS[track].id, TRACKS[track].tmx ?? TRACKS[track].game);
@@ -175,7 +175,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
               initialValue={game}
               options={GAME_LIST.map((game) => ({
                 value: game,
-                label: game,
+                label: formatGame(game),
               }))}
               onChange={(value) => updateGame(value as Game)}
             />

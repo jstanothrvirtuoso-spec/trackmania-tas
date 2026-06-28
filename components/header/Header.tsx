@@ -9,6 +9,7 @@ import { useProfilePublicMe } from "@/lib/Profiles";
 import { GAME_SLUGS } from "@/utils/constants"
 import { UserMenu } from "./UserMenu";
 import { MainMenu } from "./MainMenu";
+import { formatGame } from "@/utils/formatting";
 
 export default function Header() {
 
@@ -123,7 +124,7 @@ export default function Header() {
                         : "text-slate-300 hover:text-white"
                     }`}
                   >
-                    {game === "TM2" ? "TM²" : game}
+                    {formatGame(game)}
                   </Link>
                 );
               })}
@@ -176,7 +177,7 @@ export default function Header() {
             
             <Link
               href="https://tmtas.exchange/"
-              className="block border border-slate-500/80 rounded-lg transition-all duration-100 hover:brightness-110 hover:border-cyan-500 hover:scale-105"
+              className="block border border-slate-300/80 rounded-lg transition-all duration-100 hover:brightness-110 hover:border-cyan-500 hover:scale-105"
             >
               <div className="relative h-8 w-[32px]">
                 <Image

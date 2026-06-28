@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
 import { useHoverDropdown, useOnClickOutside } from "@/utils/common";
 import { GAME_SLUGS, CURSOR } from "@/utils/constants";
+import { formatGame } from "@/utils/formatting";
 
 const MENU_LINKS = [
   { href: "/", label: "Global LB" },
@@ -98,7 +99,7 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
                       menu.closeNow();
                     }}
                   >
-                    {game}
+                    {formatGame(game, "DOSVGA")}
                   </Link>
                 ))}
               </div>

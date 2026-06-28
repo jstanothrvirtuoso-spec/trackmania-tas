@@ -1,7 +1,8 @@
 
 import { Category, TasEntry } from "@/utils/typing";
 import { formatTime, formatDate } from "@/utils/formatting";
-import { VideoIcon } from "@/components/Icons";
+import { InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
+import { useProfilePublicMe } from "@/lib/Profiles";
 
 type TrackRecordsProps = {
   track: string;
@@ -22,6 +23,10 @@ export default function TrackRecords({
   deleteTas 
 }: TrackRecordsProps) {
 
+  const { data: profilePublicMe, isLoading } = useProfilePublicMe();
+
+  if (isLoading) return null
+
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900 shadow-xl p-4 sm:p-6">
       <h2 className="mb-4 text-xl font-semibold">
@@ -38,9 +43,11 @@ export default function TrackRecords({
               </th>
               <th className="py-2 px-2">Authors</th>
               <th className="py-2 px-2 hidden sm:table-cell">Date</th>
-              <th className="py-2 px-2 text-center hidden sm:table-cell">Video</th>
+              <th className="py-2 px-2 text-center hidden sm:table-cell">Links</th>
               <th className="py-2 px-2 text-center">Copy</th>
-              <th className="py-2 px-2 text-center">Delete</th>
+              {profilePublicMe && profilePublicMe.role === "admin" && (
+                <th className="py-2 px-2 text-center">Delete</th>
+              )}
             </tr>
           </thead>
 
@@ -79,8 +86,10 @@ export default function TrackRecords({
                     </td>
                     
                     <td className="py-2 px-2 text-center align-middle hidden sm:table-cell">
-                      <div className="flex justify-center">
-                        {t.video && (<VideoIcon video_url={t.video}/>)}
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="w-5 h-5 flex items-center justify-center">{t.video && <VideoIcon video_url={t.video} />}</div>
+                        <div className="w-5 h-5 flex items-center justify-center">{t.replay && <ReplayIcon replay_url={t.replay} />}</div>
+                        <div className="w-5 h-5 flex items-center justify-center">{t.inputs && <InputsIcon inputs_url={t.inputs} />}</div>
                       </div>
                     </td>
 
@@ -94,15 +103,17 @@ export default function TrackRecords({
                       </button>
                     </td>
 
-                    <td className="px-2 py-1 text-center">
-                      <button
-                        onClick={() => deleteTas(t)}
-                        title="Delete record"
-                        className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700 cursor-pointer"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    {profilePublicMe && profilePublicMe.role === "admin" && (
+                      <td className="px-2 py-1 text-center">
+                        <button
+                          onClick={() => deleteTas(t)}
+                          title="Delete record"
+                          className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700 cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    )}
 
                   </tr>
                 );

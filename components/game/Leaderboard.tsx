@@ -31,7 +31,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
         let timeSaved = 0;
         if (override) {
           timeSaved = override * 1000;
-        } else if (row.rta && row.rta.time_ms > row.tas.time_ms && row.trackInfo.category !== "Stunt") {
+        } else if (row.rta && row.rta.time_ms > row.tas.time_ms && row.trackInfo.gameSet !== "Stunt") {
           timeSaved = row.rta.time_ms - row.tas.time_ms;
         }
 

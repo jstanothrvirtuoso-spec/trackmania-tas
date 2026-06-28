@@ -61,7 +61,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
       if (tas.time_ms < currentBest) {
 
         const improvement = currentBest - tas.time_ms;
-        const category = TRACKS[track].category as TrackSets;
+        const category = TRACKS[track].gameSet as TrackSets;
 
         cumulativeSaved[category] += improvement;
         cumulativeSaved["Overall"] += improvement;

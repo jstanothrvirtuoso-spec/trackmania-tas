@@ -62,6 +62,15 @@ export function formatDate(dateStr: string) {
   }).replace(/ /g, '-')       
 }
 
+export function formatGame(gameStr: string, font?: string) {
+  if (font === "DOSVGA") {
+    if (gameStr === "TM2") return "TM\u00FD"
+    return gameStr
+  }
+  if (gameStr === "TM2") return "TM²"
+  return gameStr
+}
+
 export function timeAgo(dateStr: string) {
   
   const date = new Date(dateStr).getTime();

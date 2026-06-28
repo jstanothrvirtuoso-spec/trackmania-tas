@@ -15,6 +15,8 @@ Improvements for game RecordTable
 Can we remove "TMNF No Cut" as a game in supabase?
 Collect TM2 RTA WRs
 Authors - change name
+Add inputs script
+Help ?s on submit form don't work on mobile
 
 
 //////////////////////////////////////////////////////////////////////////

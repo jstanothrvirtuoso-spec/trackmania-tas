@@ -1,5 +1,5 @@
 
-import { formatDate, formatTime, formatPercentSaved, timeAgo } from "@/utils/formatting";
+import { formatDate, formatTime, formatPercentSaved, timeAgo, formatGame } from "@/utils/formatting";
 import { RtaEntry, TasEntry } from "@/utils/typing";
 import { getYouTubeId } from "@/utils/common";
 import { formatAuthors, formatTrack } from "../FormatLinks";
@@ -76,7 +76,7 @@ export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry
             </div>
 
             <div className="mt-1 text-sm text-slate-200">
-              {tasOfTheDay.game}
+              {formatGame(tasOfTheDay.game)}
             </div>
           </div>
         </div>

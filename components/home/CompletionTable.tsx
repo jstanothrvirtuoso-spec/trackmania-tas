@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { TRACKS } from "@/lib/TrackList";
 import { TasEntry } from "@/utils/typing";
+import { formatGame } from "@/utils/formatting";
 
 const TRACK_ARRAY = Object.values(TRACKS);
 const TOTAL_BY_GAME = (() => {
@@ -76,7 +77,7 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
                 className={`border-t border-slate-800 text-center ${totalRow ? "bg-blue-950/80" : oddRow ? "bg-indigo-800/30" : "bg-indigo-800/50"}`}
               >
                 <td className={`px-2 sm:px-3 whitespace-nowrap [text-shadow:0_2px_4px_rgba(0,0,0,0.4)] ${completed ? "font-bold text-red-500 italic text-sm sm:text-lg translate-y-[-1px]" : "text-slate-200 text-xs sm:text-sm"} ${totalRow ? "py-1.5" : "py-1"}`}>
-                  {row.game}
+                  {formatGame(row.game)}
                 </td>
 
                 <td className="w-80 px-1">

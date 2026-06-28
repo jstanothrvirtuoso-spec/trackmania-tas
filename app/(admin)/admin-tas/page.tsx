@@ -3,16 +3,16 @@
 import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
-import { formatTime } from "@/utils/formatting";
+import { formatGame, formatTime } from "@/utils/formatting";
 import { CATEGORIES, GAME_LIST } from "@/utils/constants";
-import { SubmitForm, TimeState, Game, Category, TasEntry } from "@/utils/typing";
+import { SubmitForm, TimeState, Game, Category, TasEntry, GameSet } from "@/utils/typing";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
 import { useAlert } from "@/components/providers/AlertProvider";
 import { useConfirm } from "@/components/providers/ConfirmProvider";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
 import { usePendingSubmissions } from "@/lib/TasSubmissions";
-import { TRACKS, tracksByGame } from "@/lib/TrackList";
+import { getGameSetOptions, TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 import AuthorSelector from "@/components/AuthorSelector";
 import TrackRecords from "./TrackRecords";
@@ -20,6 +20,7 @@ import PendingRecords from "./PendingRecords";
 
 export type TasForm = {
   game: Game;
+  gameSet: GameSet;
   track: string;
   category: Category;
   num_inputs: number;
@@ -56,6 +57,7 @@ export default function AdminTas() {
   
   const [form, setForm] = useState<TasForm>({
     game: "TMNF",
+    gameSet: "White",
     track: "",
     category: "Open",
     num_inputs: 0,
@@ -73,9 +75,10 @@ export default function AdminTas() {
     thousandth: 0,
   });
 
-  const isStunt = form.track ? TRACKS[form.track]?.category === "Stunt" : false;
+  const isStunt = form.track ? TRACKS[form.track]?.gameSet === "Stunt" : false;
   const timeMs = timeStateToMs(time);
-  const trackOptions = tracksByGame[form.game]
+  const gameSetOptions = getGameSetOptions(form.game);
+  const trackOptions = tracksByGame[form.game].filter((track) => TRACKS[track].gameSet === form.gameSet);
 
   const trackTases = useMemo(() => {
     if (!form.track) return [];
@@ -92,6 +95,7 @@ export default function AdminTas() {
     setSelectedSubmission(null)
     setForm({
       game: form.game,
+      gameSet: form.gameSet,
       track: form.track,
       category: "Open",
       num_inputs: 0,
@@ -116,6 +120,7 @@ export default function AdminTas() {
     setSelectedSubmission(null);
     setForm({
       game: t.game,
+      gameSet: TRACKS[t.track].gameSet,
       track: t.track,
       category: t.category,
       num_inputs: t.num_inputs ?? 0,
@@ -135,6 +140,7 @@ export default function AdminTas() {
     setSelectedSubmission(s);
     setForm({
       game: s.game ?? "TMNF",
+      gameSet: s.track ? TRACKS[s.track].gameSet : "White",
       track: s.track ?? "",
       category: category,
       num_inputs: 0,
@@ -146,6 +152,12 @@ export default function AdminTas() {
     });
 
     setTime(timeMsToState(s.time_ms ?? 0));
+  }
+
+  function updateGame(game: Game) {
+    update("game", game);
+    const gameSetOptions = getGameSetOptions(game);
+    update("gameSet", gameSetOptions[0])
   }
 
   async function submit() {
@@ -260,7 +272,7 @@ export default function AdminTas() {
       const confirmed = await confirm(`
         Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
           Time (ms): ${t.time_ms}
-          Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].category === "Stunt", t.game === "TM2")}\n
+          Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].gameSet === "Stunt", t.game === "TM2")}\n
         This cannot be undone!`
       );
 
@@ -379,7 +391,7 @@ export default function AdminTas() {
   };
   
   return (
-    <div className="flex justify-center px-6 pt-20 pb-10 text-white bg-slate-950">
+    <div className="flex justify-center px-6 pt-20 pb-10 text-white bg-slate-950 min-h-screen">
       <div className="grid gap-4 lg:grid-cols-[460px_1fr] items-start">
 
         {/* TAS submission form */}
@@ -415,9 +427,23 @@ export default function AdminTas() {
                 initialValue={form.game}
                 options={GAME_LIST.map((game) => ({
                   value: game,
-                  label: game,
+                  label: formatGame(game),
                 }))}
-                onChange={(value) => update("game", value as Game)}
+                onChange={(value) => updateGame(value)}
+                fullWidth={true}
+              />
+            </div>
+
+            {/* GAME SET */}
+            <div>
+              <div className={labelClass}>Game Set</div>
+              <DropSelect
+                initialValue={form.gameSet}
+                options={gameSetOptions.map((gameSet) => ({
+                  value: gameSet,
+                  label: gameSet,
+                }))}
+                onChange={(value) => update("gameSet", value)}
                 fullWidth={true}
               />
             </div>
@@ -576,7 +602,7 @@ export default function AdminTas() {
             {/* SUBMIT */}
             <div>
               {warning && (
-                <div className="mb-3 rounded-md border border-red-500/40 bg-red-950/40 px-3 py-2 text-sm text-red-300">
+                <div className="my-3 rounded-md border border-red-500/40 bg-red-950/40 px-3 py-2 text-sm text-red-300">
                   {warning}
                 </div>
               )}
@@ -585,7 +611,7 @@ export default function AdminTas() {
                 <button
                   onClick={submit}
                   disabled={loading}
-                  className="w-full rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50 cursor-pointer"
+                  className="w-full mt-3 rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? "Submitting..." : "Submit"}
                 </button>

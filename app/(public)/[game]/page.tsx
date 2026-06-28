@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { use, useState, useMemo } from "react";
 import { CATEGORY_FILTERS, GAME_SLUGS } from "@/utils/constants";
 import { Environment, Category, TasEntry } from "@/utils/typing";
-import { TRACKS } from "@/lib/TrackList";
+import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { useBestRtaRecords } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useProfilePrivate } from "@/lib/Profiles";
@@ -24,6 +24,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | "All Envs">("All Envs");
   const allowedCategories = CATEGORY_FILTERS[selectedCategory]
+  const trackList = tracksByGame[gameName];
 
   const { data: profilePrivate, isLoading } = useProfilePrivate();
   const { data: bestRtaByTrack } = useBestRtaRecords();
@@ -61,15 +62,13 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
       }
     }
 
-    return Object.entries(TRACKS)
-      .filter(([, info]) => info.game === gameName)
-      .map(([track, trackInfo]) => ({
-        track: (trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track,
-        trackInfo: (trackInfo.noCutTrack && selectedCategory === "No Cut") ? TRACKS[trackInfo.noCutTrack] : trackInfo,
-        tas: bestTasByTrack.get(track) ?? null,
-        rta: bestRtaByTrack.get((trackInfo.noCutTrack && selectedCategory === "No Cut") ? trackInfo.noCutTrack : track) ?? null,
-      }));
-  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory]);
+    return trackList.map((track) => ({
+      track: (TRACKS[track].noCutTrack && selectedCategory === "No Cut") ? TRACKS[track].noCutTrack : track,
+      trackInfo: (TRACKS[track].noCutTrack && selectedCategory === "No Cut") ? TRACKS[TRACKS[track].noCutTrack] : TRACKS[track],
+      tas: bestTasByTrack.get(track) ?? null,
+      rta: bestRtaByTrack.get((TRACKS[track].noCutTrack && selectedCategory === "No Cut") ? TRACKS[track].noCutTrack : track) ?? null,
+    }));
+  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory, trackList]);
 
   const selectedAuthorCheck = useMemo(() => {
     if (!selectedAuthor) return "";

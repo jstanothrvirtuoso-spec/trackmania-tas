@@ -16,7 +16,7 @@ const TIERS: Record<Category, number[]> = {
   "NOseboost": [10, 20, 30],
   "No Uber": [5, 10, 20],
   "WR Route": [2, 4, 5],
-  "No Cut": [0.5, 1, 2],
+  "No Cut": [1, 2, 4],
   "Low Input": [0, 1, 2],
 }
 
@@ -31,7 +31,7 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
 
     for (const entry of filteredTasRecords) {
 
-      if (entry.game !== "TMNF") continue;
+      if (entry.game !== "TMNF" && entry.game !== "TMNF No Cut") continue;
       const existing = map.get(entry.track);
 
       if (

@@ -2,10 +2,16 @@
 
 import { useMemo } from "react";
 import { DropSelect } from "@/components/DropSelect";
-import { CATEGORIES, ENVIRONMENT } from "@/utils/constants";
 import { Game, Environment, Category, RecordRow } from "@/utils/typing";
+import { getEnvironmentOptions } from "@/lib/TrackList";
 
 type EnvironmentFilter = Environment | "All Envs";
+
+const CATEGORY_OPTIONS: Partial<Record<Game, Category[]>> = {
+  "TMNF": ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "Low Input"],
+  "TMUF": ["Open", "No Cut"],
+};
+
 interface HeaderOptionsProps {
   game: Game,
   currentRecords: RecordRow[],
@@ -15,7 +21,7 @@ interface HeaderOptionsProps {
   onAuthorChange: (author: string) => void;
   onCategoryChange: (category: Category) => void;
   onEnvironmentChange: (environment: EnvironmentFilter) => void;
-}
+};
 
 export default function HeaderOptions({
   game,
@@ -27,6 +33,9 @@ export default function HeaderOptions({
   onCategoryChange,
   onEnvironmentChange,
 }: HeaderOptionsProps) {
+
+  const categoryOptions = CATEGORY_OPTIONS[game]
+  const environmentOptions = getEnvironmentOptions(game)
 
   const authorOptions = useMemo(() => {
     const authorCount = new Map<string, number>();
@@ -45,24 +54,14 @@ export default function HeaderOptions({
       .map(([author, count]) => ({ author, count }));
   }, [currentRecords]);
 
-  const environmentOptions: Environment[] = useMemo(() => {
-    const set = new Set<Environment>();
-    currentRecords.forEach((row) => {
-      if (row.trackInfo?.environment) {
-        set.add(row.trackInfo.environment);
-      }
-    });
-    return ENVIRONMENT.filter((env) => set.has(env));
-  }, [currentRecords]);
-
   return (
     <div className="flex w-full flex-wrap justify-center items-center gap-3 px-4">
 
       {/* Categories */}
-      {(game === "TMNF" || game === "TMUF") && (
+      {categoryOptions && (
         <DropSelect
           initialValue={selectedCategory as Category}
-          options={CATEGORIES.map((category) => ({
+          options={categoryOptions.map((category) => ({
             value: category,
             label: category,
           }))}

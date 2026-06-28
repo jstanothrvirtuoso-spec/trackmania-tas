@@ -20,7 +20,7 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
     for (const row of currentRecords) {
       if (!row.rta) continue;
 
-      const category = row.trackInfo.category;
+      const category = row.trackInfo.gameSet;
       const tas = (row.tas && row.tas.time_ms < row.rta.time_ms) ? row.tas.time_ms : row.rta.time_ms;
       const rta = row.rta.time_ms;
 

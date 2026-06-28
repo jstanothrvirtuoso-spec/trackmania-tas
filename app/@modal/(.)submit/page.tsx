@@ -18,13 +18,13 @@ export default function SubmitPage() {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto px-2 py-7">
+    <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto px-2 py-2">
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={() => router.back()}
       />
 
-      <div className="px-2 w-full flex justify-center">
+      <div className="w-full flex justify-center mb-7">
         <div 
           onClick={(e) => e.stopPropagation()} 
           className="w-full max-w-3xl"

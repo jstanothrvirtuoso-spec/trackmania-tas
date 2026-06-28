@@ -3,19 +3,21 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/utils/supabase/client";
-import { formatTime, formatDate } from "@/utils/formatting";
+import { formatTime, formatDate, formatGame } from "@/utils/formatting";
 import { timeMsToState, timeStateToMs } from "@/utils/common";
-import { TimeState, Game, RtaEntry } from "@/utils/typing";
+import { TimeState, Game, RtaEntry, GameSet } from "@/utils/typing";
 import { GAME_LIST } from "@/utils/constants";
 import { useAlert } from "@/components/providers/AlertProvider";
 import { useConfirm } from "@/components/providers/ConfirmProvider";
 import { useTrackRtaRecords } from "@/lib/RtaRecords";
-import { TRACKS, tracksByGame } from "@/lib/TrackList";
-import { VideoIcon } from "@/components/Icons";
+import { getGameSetOptions, TRACKS, tracksByGame } from "@/lib/TrackList";
+import { ReplayIcon, VideoIcon } from "@/components/Icons";
 import { DropSelect } from "@/components/DropSelect";
+import { useProfilePublicMe } from "@/lib/Profiles";
 
 type RtaForm = {
   game: Game;
+  gameSet: GameSet;
   track: string;
   player: string;
   date: string;
@@ -39,9 +41,11 @@ export default function AdminRta() {
   const queryClient = useQueryClient();
   const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
+  const { data: profilePublicMe } = useProfilePublicMe();
   
   const [form, setForm] = useState<RtaForm>({
     game: "TMNF",
+    gameSet: "White",
     track: "",
     player: "Fwo.Link",
     date: today,
@@ -57,9 +61,10 @@ export default function AdminRta() {
   });
 
   const { data: trackRecords } = useTrackRtaRecords(form.track);
-  const isStunt = form.track ? TRACKS[form.track]?.category === "Stunt" : false;
+  const isStunt = form.track ? TRACKS[form.track]?.gameSet === "Stunt" : false;
   const timeMs = timeStateToMs(time);
-  const trackOptions = tracksByGame[form.game]
+  const gameSetOptions = getGameSetOptions(form.game);
+  const trackOptions = tracksByGame[form.game].filter((track) => TRACKS[track].gameSet === form.gameSet);
 
   function update<K extends keyof RtaForm>(field: K, value: RtaForm[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -68,6 +73,7 @@ export default function AdminRta() {
   function resetForm() {
     setForm((prev) => ({
       game: prev.game,
+      gameSet: prev.gameSet,
       track: prev.track,
       player: "Fwo.Link",
       date: today,
@@ -88,6 +94,7 @@ export default function AdminRta() {
   function copyRtaToForm(t: RtaEntry) {
     setForm({
       game: t.game,
+      gameSet: TRACKS[t.track].gameSet,
       track: t.track,
       player: t.player,
       date: t.date.slice(0, 10),
@@ -96,6 +103,12 @@ export default function AdminRta() {
     });
 
     setTime(timeMsToState(t.time_ms));
+  }
+
+  function updateGame(game: Game) {
+    update("game", game);
+    const gameSetOptions = getGameSetOptions(game);
+    update("gameSet", gameSetOptions[0])
   }
 
   async function submit() {
@@ -150,7 +163,7 @@ export default function AdminRta() {
     const confirmed = await confirm(`
       Delete ${t.track} for ${t.player}?
         Time (ms): ${t.time_ms}
-        Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].category === "Stunt", t.game === "TM2")}\n
+        Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].gameSet === "Stunt", t.game === "TM2")}\n
       This cannot be undone!`
     );
 
@@ -210,9 +223,23 @@ export default function AdminRta() {
                 initialValue={form.game}
                 options={GAME_LIST.map((game) => ({
                   value: game,
-                  label: game,
+                  label: formatGame(game),
                 }))}
-                onChange={(value) => update("game", value as Game)}
+                onChange={(value) => updateGame(value)}
+                fullWidth={true}
+              />
+            </div>
+
+            {/* GAME SET */}
+            <div>
+              <div className={labelClass}>Game Set</div>
+              <DropSelect
+                initialValue={form.gameSet}
+                options={gameSetOptions.map((gameSet) => ({
+                  value: gameSet,
+                  label: gameSet,
+                }))}
+                onChange={(value) => update("gameSet", value)}
                 fullWidth={true}
               />
             </div>
@@ -372,9 +399,12 @@ export default function AdminRta() {
                   </th>
                   <th className="py-2 px-2">Player</th>
                   <th className="py-2 px-2 hidden sm:table-cell">Date</th>
-                  <th className="py-2 px-2 text-center hidden sm:table-cell">Video</th>
+                  <th className="py-2 px-2 text-center hidden sm:table-cell">Links</th>
                   <th className="py-2 px-2 text-center">Copy</th>
-                  <th className="py-2 px-2 text-center">Delete</th>
+                  
+                  {profilePublicMe && profilePublicMe.role === "admin" && (
+                    <th className="py-2 px-2 text-center">Delete</th>
+                  )}
                 </tr>
               </thead>
 
@@ -405,8 +435,9 @@ export default function AdminRta() {
                         </td>
                         
                         <td className="py-2 px-2 text-center align-middle hidden sm:table-cell">
-                          <div className="flex justify-center">
-                            {t.video && (<VideoIcon video_url={t.video}/>)}
+                          <div className="flex items-center justify-center gap-1">
+                            <div className="w-5 h-5 flex items-center justify-center">{t.video && <VideoIcon video_url={t.video} />}</div>
+                            <div className="w-5 h-5 flex items-center justify-center">{t.replay && <ReplayIcon replay_url={t.replay} />}</div>
                           </div>
                         </td>
                         
@@ -420,15 +451,17 @@ export default function AdminRta() {
                           </button>
                         </td>
 
-                        <td className="px-2 py-1 text-center">
-                          <button
-                            onClick={() => deleteRta(t)}
-                            title="Delete record"
-                            className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700 cursor-pointer"
-                          >
-                            Delete
-                          </button>
-                        </td>
+                        {profilePublicMe && profilePublicMe.role === "admin" && (
+                          <td className="px-2 py-1 text-center">
+                            <button
+                              onClick={() => deleteRta(t)}
+                              title="Delete record"
+                              className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700 cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        )}
 
                       </tr>
                     );

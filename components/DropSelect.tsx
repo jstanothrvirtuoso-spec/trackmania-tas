@@ -38,7 +38,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
         (max, child) => Math.max(max, (child as HTMLElement).getBoundingClientRect().width),
         0,
       );
-      setButtonWidth(Math.min(Math.ceil(width + 62), window.innerWidth - 32));
+      setButtonWidth(Math.min(Math.ceil(width + 52), window.innerWidth - 32));
     }
   }, [allOptions]);
 

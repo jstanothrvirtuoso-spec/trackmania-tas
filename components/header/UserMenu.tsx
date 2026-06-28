@@ -104,7 +104,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
             Profile
           </Link>
         
-          {profilePublicMe?.role === "admin" && (
+          {(profilePublicMe?.role === "admin" || profilePublicMe?.role === "moderator") && (
             <div
               className="relative"
               onMouseEnter={!isTouch ? adminMenu.openNow : undefined}

@@ -35,18 +35,19 @@ export type SubmitForm = {
   created_at: string;
 }
 
-export type SetTMNF = (typeof GAME_SETS["TMNF"])[number];
-export type SetESWC = (typeof GAME_SETS["ESWC"])[number];
-export type SetTMUF = (typeof GAME_SETS["TMUF"])[number];
-export type SetTMS = (typeof GAME_SETS["TMS"])[number];
-export type SetTMO = (typeof GAME_SETS["TMO"])[number];
-export type SetDemo = (typeof GAME_SETS["Demo/Beta"])[number];
-export type SetTM2 = (typeof GAME_SETS["TM2"])[number];
+type SetTMNF = (typeof GAME_SETS["TMNF"])[number];
+type SetESWC = (typeof GAME_SETS["ESWC"])[number];
+type SetTMUF = (typeof GAME_SETS["TMUF"])[number];
+type SetTMS = (typeof GAME_SETS["TMS"])[number];
+type SetTMO = (typeof GAME_SETS["TMO"])[number];
+type SetDemo = (typeof GAME_SETS["Demo/Beta"])[number];
+type SetTM2 = (typeof GAME_SETS["TM2"])[number];
+export type GameSet = SetTMNF | SetESWC | SetTMUF | SetTMS | SetTMO | SetDemo | SetTM2;
 
 export type TrackInfo = {
   game: Game;
   id: number;
-  category: SetTMNF | SetESWC | SetTMUF | SetTMS | SetTMO | SetDemo | SetTM2;
+  gameSet: GameSet;
   environment: Environment;
   order?: number; // Sorting non-alphabetical tracks
   baseTrack?: string;  // Reference to original track for no-cut tracks
