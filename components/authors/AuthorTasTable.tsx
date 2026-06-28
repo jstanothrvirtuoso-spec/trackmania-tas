@@ -18,7 +18,7 @@ function getSortValue(row: RecordRow, field: SortField): string | number {
     case "diff":
       return row.tas && row.rta ? row.tas.time_ms - row.rta.time_ms : Infinity;
     case "game":
-      return row.tas?.game ?? "";
+      return `${row.tas?.game ?? ""}-${row.tas?.track ?? ""}`;
     case "date":
       return row.tas?.date ?? "";
     case "category":

@@ -104,7 +104,7 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
             Profile
           </Link>
         
-          {(profilePublicMe?.role === "admin" || profilePublicMe?.role === "moderator") && (
+          {["admin", "moderator"].includes(profilePublicMe?.role ?? "") && (
             <div
               className="relative"
               onMouseEnter={!isTouch ? adminMenu.openNow : undefined}
@@ -130,19 +130,26 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
                 `}
               >
                 <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_40px_rgba(14,116,144,0.18)] backdrop-blur-xl p-2 flex flex-col gap-1">
-                  {ADMIN_LINKS.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
-                      onClick={() => {
-                        adminMenu.closeNow();
-                        userMenu.closeNow();
-                      }}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
+                  {ADMIN_LINKS
+                    .filter(link => {
+                      if (link.href === "/admin-authors") {
+                        return profilePublicMe?.role === "admin";
+                      }
+                      return true;
+                    })
+                    .map(link => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
+                        onClick={() => {
+                          adminMenu.closeNow();
+                          userMenu.closeNow();
+                        }}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
                 </div>
               </div>
             </div>

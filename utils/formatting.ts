@@ -8,10 +8,12 @@ export function formatTime(timeMs: number, isStunt: boolean = false, isTM2: bool
 
   const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
   const abs = Math.abs(timeMs);
-  const minutes = Math.floor(abs / 60000);
-  const seconds = Math.floor((abs % 60000) / 1000);
+
+  const rounded = isTM2 ? Math.round(abs) : Math.round(abs / 10) * 10;
+  const minutes = Math.floor(rounded / 60000);
+  const seconds = Math.floor((rounded % 60000) / 1000);
+  const split = isTM2 ? rounded % 1000 : Math.floor((rounded % 1000) / 10);
   const decimals = isTM2 ? 3 : 2
-  const split = isTM2 ? Math.round(abs) % 1000 : Math.round(abs / 10) % 100;
 
   if (minutes > 0) {
     return `${sign}${minutes}:${seconds

@@ -355,7 +355,7 @@ export default function SubmitForm() {
             <div>
               <div className="flex items-center w-full">
                 <div className={labelClass}>Video (recommended)</div>
-                <div className="group relative ml-auto cursor-help px-1 py-0.5">
+                <div className="group relative ml-auto cursor-help px-1 py-0.5 hidden sm:block">
                   <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-slate-400 text-[10px]">?</span>
                   <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                     Provide a video URL for your TAS. YouTube is preferred (even if unlisted), but Streamable or Discord videos will be accepted. You must provide a video for your TAS to be eligible for TAS of the Day.
@@ -385,7 +385,7 @@ export default function SubmitForm() {
             <div>
               <div className="flex items-center w-full">
                 <div className={labelClass}>Category (optional)</div>
-                <div className="group relative ml-auto cursor-help px-1 py-0.5">
+                <div className="group relative ml-auto cursor-help px-1 py-0.5 hidden sm:block">
                   <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-slate-400 text-[10px]">?</span>
                   <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                     You may indicate the target category for your TAS. Note, this may be updated by the moderators at any time. Please see the About page for more info on TAS categories.
@@ -408,7 +408,7 @@ export default function SubmitForm() {
             <div>
               <div className="flex items-center w-full">
                 <div className={labelClass}>Notes (optional)</div>
-                <div className="group relative ml-auto cursor-help px-1 py-0.5">
+                <div className="group relative ml-auto cursor-help px-1 py-0.5 hidden sm:block">
                   <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-slate-400 text-[10px]">?</span>
                   <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-58 -translate-x-50 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
                     These notes are visible only to the moderators. Write any information that may be needed to process the TAS.

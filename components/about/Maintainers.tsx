@@ -98,6 +98,16 @@ export function Maintainers() {
         </div>
 
       </div>
+
+      <p className="relative mt-3 px-2 text-sm tracking-[0.25em] text-start font-sakura pink-white-gradient">
+        Moderators
+      </p>
+
+      <div className="relative px-2 text-sm text-start font-sakura pink-white-gradient italic">
+        fabi, Miku, Bdcap, Link
+      </div>
+
+
     </div>
   )
 }

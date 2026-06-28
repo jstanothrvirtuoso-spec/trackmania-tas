@@ -231,7 +231,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                   </div>
                 </div>
               )}
-              {rta.time_ms > 0 && (
+              {rta && rta.time_ms > 0 && (
                 <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
                   <div className="text-left translate-y-[2px]">
                     <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
