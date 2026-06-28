@@ -39,10 +39,11 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const { data: trackRtaRecords } = useTrackRtaRecords(track ?? "");
   const { data: tasRecords = [] } = useTasRecords();
 
-  const { records, rta, minDate } = useMemo(() => {
+  const { records, tas, rta, minDate } = useMemo(() => {
     if (!track || !trackRtaRecords || !tasRecords) return { 
       records: [], 
-      rta: { time_ms: 0, player: "", date: ""},
+      tas: null,
+      rta: null,
       minDate: BASELINE_DATE,
     };
 
@@ -64,7 +65,8 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
     return { 
       records: [...tasRows, ...relevantRtaRows]
         .filter((t) => t.track === track)
-        .sort((a, b) => a.time_ms - b.time_ms), 
+        .sort((a, b) => a.time_ms - b.time_ms),
+      tas: tasRows[tasRows.length - 1] ?? null,
       rta: trackRtaRecords[trackRtaRecords.length - 1] ?? null,
       minDate: minDate
     };
@@ -205,57 +207,54 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
               <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-[0_5px_20px_rgba(0,0,0,0.6)]" />
             </div>
             <div className="flex flex-col gap-1 items-center sm:flex-row sm:gap-4">
-              {records.length > 0 && (
-                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
-                  <div className="text-left translate-y-[2px]">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                      TAS Record
-                    </div>
-
-                    <div className="font-mono text-lg font-semibold text-emerald-400 whitespace-nowrap">
-                      {formatTime(records[0].time_ms, isStunt, isTM2)}
-                      <span className="text-xs text-blue-300">{` (-${rta ? formatPercentSaved(records[0].time_ms, rta.time_ms, 3) : ""}%)`}</span>
-                    </div>
+              <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+                <div className="text-left translate-y-[2px]">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                    TAS Record
                   </div>
 
-                  <div className="h-8 w-px bg-slate-700" />
-
-                  <div className="text-left">
-                    <div className="text-slate-200 italic text-sm sm:text-lg">
-                      {formatAuthors(records[0].authors, 2)}
-                    </div>
-
-                    <div className="text-xs text-slate-400">
-                      {formatDate(records[0].date)}
-                    </div>
+                  <div className="font-mono text-lg font-semibold text-emerald-400 whitespace-nowrap">
+                    {tas ? formatTime(tas.time_ms, isStunt, isTM2) : "-"}
+                    {tas && rta && (<span className="text-xs text-blue-300">{` (-${formatPercentSaved(tas.time_ms, rta.time_ms, 3)}%)`}</span>)}
                   </div>
                 </div>
-              )}
-              {rta && rta.time_ms > 0 && (
-                <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
-                  <div className="text-left translate-y-[2px]">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                      RTA Record
-                    </div>
 
-                    <div className="font-mono text-lg font-semibold text-emerald-400">
-                      {formatTime(rta.time_ms, isStunt, isTM2)}
-                    </div>
+                <div className="h-8 w-px bg-slate-700" />
+
+                <div className="text-left">
+                  <div className="text-slate-200 italic text-sm sm:text-lg">
+                    {tas ? formatAuthors(tas.authors, 2) : "None"}
                   </div>
 
-                  <div className="h-8 w-px bg-slate-700" />
-
-                  <div className="text-left">
-                    <div className="text-slate-200 italic text-sm sm:text-lg">
-                      {rta.player}
-                    </div>
-
-                    <div className="text-xs text-slate-400">
-                      {formatDate(rta.date)}
-                    </div>
+                  <div className="text-xs text-slate-400">
+                    {tas ? formatDate(tas.date) : ""}
                   </div>
                 </div>
-              )}
+              </div>
+              
+              <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
+                <div className="text-left translate-y-[2px]">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
+                    RTA Record
+                  </div>
+
+                  <div className="font-mono text-lg font-semibold text-emerald-400">
+                    {rta ? formatTime(rta.time_ms, isStunt, isTM2) : "-"}
+                  </div>
+                </div>
+
+                <div className="h-8 w-px bg-slate-700" />
+
+                <div className="text-left">
+                  <div className="text-slate-200 italic text-sm sm:text-lg">
+                    {rta ? rta.player : "None"}
+                  </div>
+
+                  <div className="text-xs text-slate-400">
+                    {rta ? formatDate(rta.date) : ""}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

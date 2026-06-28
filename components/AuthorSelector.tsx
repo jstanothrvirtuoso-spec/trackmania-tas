@@ -6,6 +6,7 @@ import { AuthorInfo } from "@/utils/typing";
 
 interface AuthorSelectorProps {
   authors: string[];
+  maxAuthors?: number;
   onChange: (next: string[]) => void;
 };
 
@@ -13,7 +14,7 @@ const AUTHOR_REGEX = /^[a-zA-Z0-9 _.'-]+$/;
 const MAX_LEN = 20;
 const MIN_LEN = 3;
 
-export default function AuthorSelector({ authors, onChange }: AuthorSelectorProps) {
+export default function AuthorSelector({ authors, maxAuthors, onChange }: AuthorSelectorProps) {
 
   const { data: authorData = [] } = useAuthors();
   const [authorQuery, setAuthorQuery] = useState("");
@@ -90,7 +91,7 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
     if (clean.length > MAX_LEN) return;
     if (!AUTHOR_REGEX.test(clean)) return;
     if (authors.includes(clean)) return;
-    if (authors.length >= 20) return;
+    if (authors.length >= (maxAuthors ?? 20)) return;
 
     onChange([...authors, clean]);
     setSelectedSuggestion(0);
@@ -140,8 +141,8 @@ export default function AuthorSelector({ authors, onChange }: AuthorSelectorProp
           {/* Input box */}
           <input
             value={authorQuery}
-            disabled={authors.length >= 20}
-            placeholder={authors.length >= 20 ? "Max authors reached!" : authors.length ? "Add another author..." : "Type an author..."}
+            disabled={authors.length >= (maxAuthors ?? 20)}
+            placeholder={authors.length >= (maxAuthors ?? 20) ? "Max authors reached!" : authors.length ? "Add another author..." : "Type an author..."}
             className="min-w-[180px] flex-1 bg-transparent outline-none text-slate-300 placeholder:text-slate-500"
             onChange={(e) => {
               const val = e.target.value;

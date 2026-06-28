@@ -1551,9 +1551,9 @@ export const TRACKS: Record<string, TrackInfo> = {
   "Platform E02": { game: "TM2", id: 45702, gameSet: "Platform", environment: "Canyon" },
   "Platform E03": { game: "TM2", id: 45703, gameSet: "Platform", environment: "Canyon" },
 
-  "GoodMorning": { game: "TM2", id: 136657, gameSet: "Beta", environment: "Canyon" },
-  "BarrageWest": { game: "TM2", id: 136658, gameSet: "Beta", environment: "Canyon" },
-  "LittleEast": { game: "TM2", id: 136659, gameSet: "Beta", environment: "Canyon" },
+  "GoodMorning [Beta]": { game: "TM2", id: 136657, gameSet: "Beta", environment: "Canyon" },
+  "BarrageWest [Beta]": { game: "TM2", id: 136658, gameSet: "Beta", environment: "Canyon" },
+  "LittleEast [Beta]": { game: "TM2", id: 136659, gameSet: "Beta", environment: "Canyon" },
 
 };
 

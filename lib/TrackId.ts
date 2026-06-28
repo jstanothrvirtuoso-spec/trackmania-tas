@@ -1542,8 +1542,8 @@ export const trackIds: Record<string, string> = {
   "dsckmyykLBt0z4QPhk0vn0Qvm9i": "Platform E02",
   "1jgHYCoqECWUcFpalZvL3ZKKJ1h": "Platform E03",
 
-  "MS7s5nIP1Fe82E7zvAoPpzTDWp6": "GoodMorning",
-  "s_eH814Hvo0TUxB3OZ5pubdB_Ng": "BarrageWest",
-  "b83Up7PF3FonQNjuKUT2ywTRBM7": "LittleEast",
+  "MS7s5nIP1Fe82E7zvAoPpzTDWp6": "GoodMorning [Beta]",
+  "s_eH814Hvo0TUxB3OZ5pubdB_Ng": "BarrageWest [Beta]",
+  "b83Up7PF3FonQNjuKUT2ywTRBM7": "LittleEast [Beta]",
 
 }

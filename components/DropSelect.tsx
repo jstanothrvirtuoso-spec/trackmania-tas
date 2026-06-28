@@ -38,7 +38,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
         (max, child) => Math.max(max, (child as HTMLElement).getBoundingClientRect().width),
         0,
       );
-      setButtonWidth(Math.min(Math.ceil(width + 52), window.innerWidth - 32));
+      setButtonWidth(Math.max(170, Math.min(Math.ceil(width + 30), window.innerWidth - 32)));
     }
   }, [allOptions]);
 
@@ -92,7 +92,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
         }}
         className="
           relative inline-flex w-full items-center justify-between rounded-lg 
-          border border-slate-700 bg-slate-800 px-3 py-1.5 pr-10 text-left text-slate-100 
+          border border-slate-700 bg-slate-800 px-3 py-1.5 pr-3 text-left text-slate-100 
           shadow-sm transition hover:bg-slate-700 cursor-pointer text-xs sm:text-sm"
         type="button"
       >
