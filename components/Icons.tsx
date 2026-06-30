@@ -1,23 +1,22 @@
 
 import Image from "next/image";
-import { Game } from "@/utils/typing";
+import { Game, TasEntry } from "@/utils/typing";
 import { Environment } from "@/utils/typing";
-import { TRACKS } from "@/lib/TrackList";
-import { getReplayInputs } from "@/utils/common";
+// import { TRACKS } from "@/lib/TrackList";
+// import { getReplayInputs } from "@/utils/common";
 
-
-const GAME_CONVERT: Record<string, Game> = {
-  "TMNF": "TMNF",
-  "TMNF No Cut": "TMNF",
-  "ESWC": "ESWC",
-  "TMN Remakes": "TMUF",
-  "TMUF": "TMUF",
-  "StarTrack": "TMUF",
-  "TMS": "TMUF",
-  "TMO": "TMUF",
-  "Demo/Beta": "TMUF",
-  "TM2": "TM2"
-}
+// const GAME_CONVERT: Record<string, Game> = {
+//   "TMNF": "TMNF",
+//   "TMNF No Cut": "TMNF",
+//   "ESWC": "ESWC",
+//   "TMN Remakes": "TMUF",
+//   "TMUF": "TMUF",
+//   "StarTrack": "TMUF",
+//   "TMS": "TMUF",
+//   "TMO": "TMUF",
+//   "Demo/Beta": "TMUF",
+//   "TM2": "TM2"
+// }
 
 export function VideoIcon({ video_url }: { video_url: string }) {
   const type = video_url.includes("discord.")
@@ -86,7 +85,8 @@ export function RtaReplayIcon({ replay_url }: { replay_url: string }) {
 
 function slugify(value: string) {
   return value
-    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/\//g, "")
+    .replace(/[^a-zA-Z0-9.()]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 
@@ -149,10 +149,10 @@ export function InputsIcon({ inputs_url }: { inputs_url: string }) {
   );
 }
 
-// export function InputsIcon({ inputs_url }: { inputs_url: string }) {
+// export function InputsIcon({ game, track, time_ms, replay_path }: { game: Game, track: string, time_ms: number, replay_path: string }) {
 //   async function handleClick() {
 //     try {
-//       const inputs = await getReplayInputs(inputs_url);
+//       const inputs = await getReplayInputs(replayUrl);
 //       console.log(inputs);
 
 //       // do whatever you want here:
@@ -161,6 +161,14 @@ export function InputsIcon({ inputs_url }: { inputs_url: string }) {
 //       console.error("Failed to load inputs", e);
 //     }
 //   }
+
+//   if (!replay_path) return null;
+
+//   const replayUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/downloads/` +
+//       `${slugify(game)}/${slugify(track)}/${replay_path}.gbx` +
+//       `?download=${encodeURIComponent(
+//         `${track} TAS (${formatDownloadTime(time_ms)}).Replay.Gbx`
+//       )}`;
 
 //   return (
 //     <button
@@ -178,29 +186,85 @@ export function InputsIcon({ inputs_url }: { inputs_url: string }) {
 //   );
 // }
 
-export function GbxIcon({ replay_url, track }: { replay_url: string, track: string }) {
+// export function GbxIcon({ replay_path, track }: { replay_path: string, track: string }) {
 
-  const id = new URL(replay_url).searchParams.get("id");
+//   if (!replay_path) return null;
 
-  let gbx_url = "";
-  if (id) {
-    gbx_url = `https://3d.gbx.tools/view/replay?gd=${id}`;
-  } else {
-    const trackInfo = TRACKS[track]
-    const game = GAME_CONVERT[trackInfo.tmx ?? trackInfo.game];
-    const mapId = trackInfo.id;
-    const replayId = replay_url.split("/").pop();
+//   const replayUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/downloads/` +
+//       `${slugify(game)}/${slugify(track)}/${replay_path}.gbx` +
+//       `?download=${encodeURIComponent(
+//         `${track} TAS (${formatDownloadTime(time_ms)}).Replay.Gbx`
+//       )}`;
 
-    if (game === "TM2") {
-      gbx_url = `https://3d.gbx.tools/view/replay?mx=${game}&id=${replayId}&mapid=${mapId}`;
-    } else { 
-      gbx_url = `https://3d.gbx.tools/view/replay?tmx=${game}&id=${replayId}&mapid=${mapId}`;
-    }
-  }
+//   const id = new URL(replay_url).searchParams.get("id");
+
+//   let gbx_url = "";
+//   if (id) {
+//     gbx_url = `https://3d.gbx.tools/view/replay?gd=${id}`;
+//   } else {
+//     const trackInfo = TRACKS[track]
+//     const game = GAME_CONVERT[trackInfo.tmx ?? trackInfo.game];
+//     const mapId = trackInfo.id;
+//     const replayId = replay_url.split("/").pop();
+
+//     if (game === "TM2") {
+//       gbx_url = `https://3d.gbx.tools/view/replay?mx=${game}&id=${replayId}&mapid=${mapId}`;
+//     } else { 
+//       gbx_url = `https://3d.gbx.tools/view/replay?tmx=${game}&id=${replayId}&mapid=${mapId}`;
+//     }
+//   }
+
+//   return (
+//     <a
+//       href={gbx_url}
+//       target="_blank"
+//       rel="noreferrer"
+//       title="Open 3D GBX tools"
+//       className="hover:opacity-80 transition"
+//     >
+//       <Image
+//         src="/links/3dgbx.webp"
+//         alt="3dGbx"
+//         width={18}
+//         height={18}
+//       />
+//     </a>
+//   );
+// }
+
+export function GbxIcon({ tas }: { tas: TasEntry }) {
+
+  if (!tas.replay_path) return null;
+
+  const replayUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/downloads/` +
+      `${slugify(tas.game)}/${slugify(tas.track)}/${tas.replay_path}.gbx` +
+      `?download=${encodeURIComponent(
+        `${tas.track} TAS (${formatDownloadTime(tas.time_ms)}).Replay.Gbx`
+      )}`;
+
+  const gbxUrl = `https://3d.gbx.tools/view/replay?url=${replayUrl}`;
+
+  // const id = new URL(replay_url).searchParams.get("id");
+
+  // let gbx_url = "";
+  // if (id) {
+  //   gbx_url = `https://3d.gbx.tools/view/replay?gd=${id}`;
+  // } else {
+  //   const trackInfo = TRACKS[track]
+  //   const game = GAME_CONVERT[trackInfo.tmx ?? trackInfo.game];
+  //   const mapId = trackInfo.id;
+  //   const replayId = replay_url.split("/").pop();
+
+  //   if (game === "TM2") {
+  //     gbx_url = `https://3d.gbx.tools/view/replay?mx=${game}&id=${replayId}&mapid=${mapId}`;
+  //   } else { 
+  //     gbx_url = `https://3d.gbx.tools/view/replay?tmx=${game}&id=${replayId}&mapid=${mapId}`;
+  //   }
+  // }
 
   return (
     <a
-      href={gbx_url}
+      href={gbxUrl}
       target="_blank"
       rel="noreferrer"
       title="Open 3D GBX tools"

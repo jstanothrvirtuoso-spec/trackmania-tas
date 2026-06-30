@@ -247,7 +247,16 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                       />
                     }</div>)}
                     {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.inputs && <InputsIcon inputs_url={entry.inputs} />}</div>)}
+                    {/* {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{
+                      <InputsIcon
+                        game={entry.game}
+                        track={entry.track}
+                        time_ms={entry.time_ms}
+                        replay_path={entry.replay_path ?? ""}
+                      />
+                    }</div>)} */}
                     {/* {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.replay && <GbxIcon replay_url={entry.replay} track={entry.track} />}</div>)} */}
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{<GbxIcon tas={entry}/>}</div>)}
                   </div>
                 ) : (
                   "-"
