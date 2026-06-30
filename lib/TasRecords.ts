@@ -26,6 +26,7 @@ async function getTasRecords(): Promise<TasEntry[]> {
     from += pageSize;
   }
 
+  console.log(allRows)
   return allRows;
 }
 

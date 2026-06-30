@@ -150,3 +150,17 @@ export function getYouTubeId(input?: string | null): string | null {
     return null;
   }
 }
+
+export async function getReplayInputs(replayUrl: string) {
+
+  const res = await fetch(replayUrl);
+  if (!res.ok) throw new Error("Could not download replay");
+
+  const bytes = new Uint8Array(await res.arrayBuffer());
+
+  return window.extractInputsFromBytes(bytes, {
+    decimal: true,
+    relative: false,
+    separate: true,
+  });
+}

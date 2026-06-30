@@ -127,7 +127,7 @@ export default function AdminTas() {
       authors: t.authors,
       date: t.date.slice(0, 10),
       video: t.video ?? "",
-      replay: t.replay ?? "",
+      replay: t.replay_path ?? "",
       inputs: t.inputs ?? "",
     });
     setTime(timeMsToState(t.time_ms));
@@ -175,7 +175,7 @@ export default function AdminTas() {
         return;
       }
 
-      // 1. Upsert TAS record
+      // Upsert TAS record
       const payload = {
         game: form.game,
         track: form.track,
@@ -308,7 +308,7 @@ export default function AdminTas() {
 
       const oldPath = selectedSubmission.replay_path;
       const filename = oldPath.split("/").pop() ?? "";
-      const newPath = `rejected/${selectedSubmission.submitted_by}/${filename}`;
+      const newPath = `${status}/${selectedSubmission.submitted_by}/${filename}`;
 
       const { error: moveError } = await supabase.storage
         .from("replays")

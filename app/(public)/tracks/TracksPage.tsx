@@ -12,7 +12,7 @@ import { RecordProgressionGraph } from "./ProgressionGraph";
 import { useTrackRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
-import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
+import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon, RtaReplayIcon } from "@/components/Icons";
 import { formatAuthors } from "@/components/FormatLinks";
 
 export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
@@ -59,6 +59,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         ...rta,
         category: "RTA" as Category,
         authors: [rta.player],
+        replay_path: rta.replay,
         inputs: "",
       }));
 
@@ -346,16 +347,25 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                           </div>
 
                           <div className="w-5 h-5 flex items-center justify-center">
-                            {tas.replay && (<ReplayIcon replay_url={tas.replay}/>)}
+                            {tas.category !== "RTA" as Category ? (
+                              <ReplayIcon 
+                                game={tas.game}
+                                track={tas.track}
+                                time_ms={tas.time_ms}
+                                replay_path={tas.replay_path ?? ""}
+                              />
+                            ) : (
+                              <RtaReplayIcon replay_url={tas.replay_path ?? ""} />
+                            )}
                           </div>
 
                           <div className="w-5 h-5 flex items-center justify-center">
                             {tas.inputs && (<InputsIcon inputs_url={tas.inputs}/>)}
                           </div>
 
-                          <div className="w-5 h-5 flex items-center justify-center">
+                          {/* <div className="w-5 h-5 flex items-center justify-center">
                             {tas.replay && (<GbxIcon replay_url={tas.replay} track={tas.track}/>)}
-                          </div>
+                          </div> */}
                         </div>
                       </td>
                     </tr>

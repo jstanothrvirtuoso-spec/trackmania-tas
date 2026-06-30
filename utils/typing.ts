@@ -90,7 +90,7 @@ export type TasEntry = {
   authors: string[];
   date: string;
   video: string | null;
-  replay: string | null;
+  replay_path: string | null;
   inputs: string | null;
   created_at: string;
 };

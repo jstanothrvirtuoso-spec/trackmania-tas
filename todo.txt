@@ -12,7 +12,6 @@ Ideas zone for partial TASes
 
 Improvements for game RecordTable
 Can we remove "TMNF No Cut" as a game in supabase?
-Authors - change name
 Add inputs script
 Add reactions??
 

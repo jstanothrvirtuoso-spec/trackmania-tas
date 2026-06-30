@@ -5,7 +5,7 @@ import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
 import { SortOrder, Game, RecordRow, Category } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting";
 import SortIndicator from "@/components/SortIndicator";
-import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
+import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, RtaReplayIcon, VideoIcon } from "@/components/Icons";
 import { formatAuthors, formatTrack } from "../FormatLinks";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate" | "inputs";
@@ -238,9 +238,16 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                 {entry ? (
                   <div className="flex items-center justify-center gap-1">
                     <div className="w-5 h-5 flex items-center justify-center">{entry.video && <VideoIcon video_url={entry.video} />}</div>
-                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.replay && <ReplayIcon replay_url={entry.replay} />}</div>)}
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{
+                      <ReplayIcon 
+                        game={entry.game}
+                        track={entry.track}
+                        time_ms={entry.time_ms}
+                        replay_path={entry.replay_path ?? ""}
+                      />
+                    }</div>)}
                     {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.inputs && <InputsIcon inputs_url={entry.inputs} />}</div>)}
-                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.replay && <GbxIcon replay_url={entry.replay} track={entry.track} />}</div>)}
+                    {/* {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.replay && <GbxIcon replay_url={entry.replay} track={entry.track} />}</div>)} */}
                   </div>
                 ) : (
                   "-"
@@ -257,7 +264,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                     {row.rta ? (
                       <div className="flex items-center justify-center gap-1">
                         <div className="w-5 h-5 flex items-center justify-center">{row.rta.video && <VideoIcon video_url={row.rta.video} />}</div>
-                        <div className="w-5 h-5 flex items-center justify-center">{row.rta.replay && <ReplayIcon replay_url={row.rta.replay} />}</div>
+                        <div className="w-5 h-5 flex items-center justify-center">{row.rta.replay && <RtaReplayIcon replay_url={row.rta.replay} />}</div>
                       </div>
                     ) : (
                       "-"

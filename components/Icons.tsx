@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Game } from "@/utils/typing";
 import { Environment } from "@/utils/typing";
 import { TRACKS } from "@/lib/TrackList";
+import { getReplayInputs } from "@/utils/common";
+
 
 const GAME_CONVERT: Record<string, Game> = {
   "TMNF": "TMNF",
@@ -56,7 +58,9 @@ export function VideoIcon({ video_url }: { video_url: string }) {
   );
 }
 
-export function ReplayIcon({ replay_url }: { replay_url: string }) {
+export function RtaReplayIcon({ replay_url }: { replay_url: string }) {
+
+  if (!replay_url) return null;
 
   const type = replay_url.includes("discord.") ? "discord" : "replay";
   const src = type === "discord" ? "/links/discord.webp" : "/links/replay.webp";
@@ -72,6 +76,51 @@ export function ReplayIcon({ replay_url }: { replay_url: string }) {
     >
       <Image
         src={src}
+        alt="Replay"
+        fill
+        sizes="20vw"
+      />
+    </a>
+  );
+}
+
+function slugify(value: string) {
+  return value
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function formatDownloadTime(ms: number) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const centiseconds = Math.floor((ms % 1000) / 10);
+
+  return `${String(minutes).padStart(2, "0")}'${String(seconds).padStart(2, "0")}''${String(centiseconds).padStart(2, "0")}`;
+}
+
+export function ReplayIcon({ game, track, time_ms, replay_path }: { game: Game, track: string, time_ms: number, replay_path: string }) {
+
+  const replayUrl = replay_path
+    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/downloads/` +
+      `${slugify(game)}/${slugify(track)}/${replay_path}.gbx` +
+      `?download=${encodeURIComponent(
+        `${track} TAS (${formatDownloadTime(time_ms)}).Replay.Gbx`
+      )}`
+    : null;
+
+  if (!replayUrl) return null;
+
+  return (
+    <a
+      href={replayUrl}
+      target="_blank"
+      rel="noreferrer"
+      title="Download replay"
+      className="hover:opacity-80 transition relative w-4 h-4"
+    >
+      <Image
+        src="/links/replay.webp"
         alt="Replay"
         fill
         sizes="20vw"
@@ -99,6 +148,35 @@ export function InputsIcon({ inputs_url }: { inputs_url: string }) {
     </a>
   );
 }
+
+// export function InputsIcon({ inputs_url }: { inputs_url: string }) {
+//   async function handleClick() {
+//     try {
+//       const inputs = await getReplayInputs(inputs_url);
+//       console.log(inputs);
+
+//       // do whatever you want here:
+//       // open modal, set state, etc.
+//     } catch (e) {
+//       console.error("Failed to load inputs", e);
+//     }
+//   }
+
+//   return (
+//     <button
+//       onClick={handleClick}
+//       title="Show inputs"
+//       className="hover:opacity-80 transition relative w-4 h-4 cursor-pointer"
+//     >
+//       <Image
+//         src="/links/pastebin.webp"
+//         alt="Inputs"
+//         fill
+//         sizes="20vw"
+//       />
+//     </button>
+//   );
+// }
 
 export function GbxIcon({ replay_url, track }: { replay_url: string, track: string }) {
 

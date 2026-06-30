@@ -1,5 +1,6 @@
 
 import "./globals.css";
+import Script from "next/script";
 import { CURSOR } from "@/utils/constants";
 import Header from "@/components/header/Header";
 import Providers from "./providers";
@@ -60,6 +61,8 @@ export default function RootLayout({
           <main className="sticky inset-0">{children}</main>
           {/* <VisitorCounter /> */}
           {modal}
+          <Script src="/scripts/lzo1x.js" strategy="afterInteractive" />
+          <Script src="/scripts/extractInputs.js" strategy="afterInteractive" />
         </Providers>
       </body>
     </html>
