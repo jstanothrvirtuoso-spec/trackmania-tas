@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { timeMsToState, timeStateToMs } from "@/utils/common";
-import { TimeState, Category } from "@/utils/typing";
+import { parseGbx, timeMsToState, timeStateToMs } from "@/utils/common";
+import { ReplayState, Category } from "@/utils/typing";
 import { MAX_NOTES, MAX_REPLAY_SIZE, CURSOR, CATEGORIES } from "@/utils/constants";
 import { DropSelect } from "@/components/DropSelect";
 import { useAlert } from "@/components/providers/AlertProvider";
@@ -21,20 +21,6 @@ type FormState = {
   date: string;
 };
 
-type GBXData = {
-  uid: string | null;
-  bestTime: number | null;
-  version: string | null;
-  stuntScore: number | null;
-  validable: boolean | null;
-};
-
-type ReplayState = {
-  file: File | null;
-  track: string;
-  time: TimeState;
-};
-
 const today = new Date().toISOString().split("T")[0];
 
 function isValidUrl(url: string) {
@@ -47,54 +33,6 @@ function isValidUrl(url: string) {
   } catch {
     return false;
   }
-}
-
-async function parseGBX(file: File): Promise<GBXData> {
-
-  const buffer = await file.arrayBuffer();
-  const header = new TextDecoder("utf-8").decode(buffer.slice(0, 64));
-
-  if (!header.startsWith("GBX")) {
-    return {
-      uid: null,
-      bestTime: null,
-      version: null,
-      stuntScore: null,
-      validable: null,
-    };
-  }
-
-  const maxScanBytes = 8192;
-  const decoder = new TextDecoder("utf-8", { fatal: false });
-  const sample = decoder.decode(
-    buffer.byteLength <= maxScanBytes ? buffer : buffer.slice(0, maxScanBytes)
-  );
-
-  let uid = sample.match(/<challenge uid="([^"]+)"/)?.[1] ?? sample.match(/<map uid="([^"]+)"/)?.[1] ?? null;
-  let bestTimeRaw = sample.match(/<times best="(\d+)"/)?.[1];
-  let version = sample.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
-  let stuntScoreRaw = sample.match(/stuntscore="(\d+)"/)?.[1];
-  let validableRaw = sample.match(/validable="(\d+)"/)?.[1];
-
-  if (
-    buffer.byteLength > maxScanBytes &&
-    (uid === null || bestTimeRaw === undefined || version === null || stuntScoreRaw === undefined || validableRaw === undefined)
-  ) {
-    const text = decoder.decode(buffer);
-    uid = uid ?? text.match(/<challenge uid="([^"]+)"/)?.[1] ?? text.match(/<map uid="([^"]+)"/)?.[1] ?? null;
-    bestTimeRaw = bestTimeRaw ?? text.match(/<times best="(\d+)"/)?.[1];
-    version = version ?? text.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
-    stuntScoreRaw = stuntScoreRaw ?? text.match(/stuntscore="(\d+)"/)?.[1];
-    validableRaw = validableRaw ?? text.match(/validable="(\d+)"/)?.[1];
-  }
-
-  return {
-    uid,
-    bestTime: bestTimeRaw ? Number(bestTimeRaw) : null,
-    version,
-    stuntScore: stuntScoreRaw ? Number(stuntScoreRaw) : null,
-    validable: validableRaw ? validableRaw === "1" : null,
-  };
 }
 
 const supabase = createClient();
@@ -156,7 +94,7 @@ export default function SubmitForm() {
       return;
     }
 
-    const parsed = await parseGBX(file);
+    const parsed = await parseGbx(file);
     if (!parsed.uid) {
       showAlert("Invalid replay file");
       return;

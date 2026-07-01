@@ -1,6 +1,6 @@
 
 import { useRef, useState, useCallback, useEffect } from "react";
-import { TimeState, Game } from "./typing";
+import { TimeState, Game, GbxData } from "./typing";
 
 export function timeMsToState(time_ms: number): TimeState {
   return {
@@ -151,16 +151,72 @@ export function getYouTubeId(input?: string | null): string | null {
   }
 }
 
-export async function getReplayInputs(replayUrl: string) {
+function slugify(value: string) {
+  return value
+    .replace(/\//g, "")
+    .replace(/[^a-zA-Z0-9.()]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
-  const res = await fetch(replayUrl);
-  if (!res.ok) throw new Error("Could not download replay");
+export function getReplayURL(game: Game, track: string, time_ms: number, replay_path: string | null) {
 
-  const bytes = new Uint8Array(await res.arrayBuffer());
+  if (!replay_path) return null;
 
-  return window.extractInputsFromBytes(bytes, {
-    decimal: true,
-    relative: false,
-    separate: true,
-  });
+  const totalSeconds = Math.floor(time_ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const centiseconds = Math.floor((time_ms % 1000) / 10);
+  const timeString = `${String(minutes).padStart(2, "0")}'${String(seconds).padStart(2, "0")}''${String(centiseconds).padStart(2, "0")}`;
+
+  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/downloads/` +
+      `${slugify(game)}/${slugify(track)}/${replay_path}.gbx` +
+      `?download=${encodeURIComponent(`${track} TAS (${timeString}).Replay.Gbx`)}`;
+}
+
+export async function parseGbx(file: File): Promise<GbxData> {
+
+  const buffer = await file.arrayBuffer();
+  const header = new TextDecoder("utf-8").decode(buffer.slice(0, 64));
+
+  if (!header.startsWith("GBX")) {
+    return {
+      uid: null,
+      bestTime: null,
+      version: null,
+      stuntScore: null,
+      validable: null,
+    };
+  }
+
+  const maxScanBytes = 8192;
+  const decoder = new TextDecoder("utf-8", { fatal: false });
+  const sample = decoder.decode(
+    buffer.byteLength <= maxScanBytes ? buffer : buffer.slice(0, maxScanBytes)
+  );
+
+  let uid = sample.match(/<challenge uid="([^"]+)"/)?.[1] ?? sample.match(/<map uid="([^"]+)"/)?.[1] ?? null;
+  let bestTimeRaw = sample.match(/<times best="(\d+)"/)?.[1];
+  let version = sample.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
+  let stuntScoreRaw = sample.match(/stuntscore="(\d+)"/)?.[1];
+  let validableRaw = sample.match(/validable="(\d+)"/)?.[1];
+
+  if (
+    buffer.byteLength > maxScanBytes &&
+    (uid === null || bestTimeRaw === undefined || version === null || stuntScoreRaw === undefined || validableRaw === undefined)
+  ) {
+    const text = decoder.decode(buffer);
+    uid = uid ?? text.match(/<challenge uid="([^"]+)"/)?.[1] ?? text.match(/<map uid="([^"]+)"/)?.[1] ?? null;
+    bestTimeRaw = bestTimeRaw ?? text.match(/<times best="(\d+)"/)?.[1];
+    version = version ?? text.match(/<header[^>]*version="([^"]+)"/)?.[1] ?? null;
+    stuntScoreRaw = stuntScoreRaw ?? text.match(/stuntscore="(\d+)"/)?.[1];
+    validableRaw = validableRaw ?? text.match(/validable="(\d+)"/)?.[1];
+  }
+
+  return {
+    uid,
+    bestTime: bestTimeRaw ? Number(bestTimeRaw) : null,
+    version,
+    stuntScore: stuntScoreRaw ? Number(stuntScoreRaw) : null,
+    validable: validableRaw ? validableRaw === "1" : null,
+  };
 }

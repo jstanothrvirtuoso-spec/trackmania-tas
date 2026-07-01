@@ -7,7 +7,7 @@ declare global {
         relative?: boolean;
         separate?: boolean;
       }
-    ) => unknown;
+    ) => string;
   }
 }
 

@@ -102,7 +102,7 @@ export default function PendingRecords({
                     
                     <div className="flex items-center justify-center gap-1">
                       <div className="w-5 h-5 flex items-center justify-center">
-                        {s.video && (<VideoIcon video_url={s.video}/>)}
+                        {s.video && (<VideoIcon videoURL={s.video}/>)}
                       </div>
 
                       <div className="w-5 h-5 flex items-center justify-center">

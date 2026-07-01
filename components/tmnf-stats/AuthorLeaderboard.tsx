@@ -124,8 +124,6 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
     };
   }, [filteredTasRecords, authors, bestRtaByTrack, graphType]);
 
-  console.log(series["Kimura"])
-
   const topAuthors = useMemo(() => {
     return [...authorMax.entries()]
       .sort((a, b) => b[1] - a[1])
@@ -347,11 +345,6 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
               d += ` H ${WIDTH - PADDING_X / 2}`
             }
 
-            if (author === "Virtuoso") {
-              console.log(d)
-              console.log(points)
-            }
-            
             return (
               <path
                 key={author}

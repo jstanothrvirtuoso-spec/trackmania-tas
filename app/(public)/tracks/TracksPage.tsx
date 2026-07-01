@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getTmxLink } from "@/utils/common";
+import { getReplayURL, getTmxLink } from "@/utils/common";
 import { CATEGORY_COLOURS, CATEGORY_FILTERS, GAME_LIST, GRAPH_CATEGORIES } from "@/utils/constants";
 import { formatDate, formatGame, formatPercentSaved, formatTime } from "@/utils/formatting"
 import { Game, Category } from "@/utils/typing";
@@ -12,7 +12,7 @@ import { RecordProgressionGraph } from "./ProgressionGraph";
 import { useTrackRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
-import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon, RtaReplayIcon } from "@/components/Icons";
+import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
 import { formatAuthors } from "@/components/FormatLinks";
 
 export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
@@ -83,7 +83,8 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const isStunt = track ? TRACKS[track].gameSet === "Stunt" : false;
   const isTM2 = track ? TRACKS[track].game === "TM2" : false;
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
-  const tmxLink = getTmxLink(TRACKS[track].id, TRACKS[track].tmx ?? TRACKS[track].game);
+  const tmxGame = TRACKS[track].tmx ?? TRACKS[track].game;
+  const tmxLink = getTmxLink(TRACKS[track].id, tmxGame);
 
   function updateTrack(track: string) {
     setTrack(track);
@@ -312,60 +313,54 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
               </thead>
 
               <tbody>
-                {records.map((tas, i) => {
+                {records.map((entry, i) => {
                   
                   const colourIndex = i % 2 == 0 ? 2 : 1
-                  const rowColour = CATEGORY_COLOURS[tas.category]?.[colourIndex] ?? "bg-slate-500/10"
+                  const rowColour = CATEGORY_COLOURS[entry.category]?.[colourIndex] ?? "bg-slate-500/10"
+                  const replayType = entry.category === "RTA" as Category ? "rta" : "tas";
+                  const hideInputs = replayType === "rta" && ["ESWC", "TM2"].includes(tmxGame)
+                  const replayURL = replayType === "rta" ? entry.replay_path : getReplayURL(entry.game, entry.track, entry.time_ms, entry.replay_path)
                   
                   return (
                     <tr
-                      key={`${tas.time_ms}-${tas.date}`}
-                      onMouseEnter={() => setCurrentRecord({ category: tas.category, id: tas.id })}
+                      key={`${entry.time_ms}-${entry.date}`}
+                      onMouseEnter={() => setCurrentRecord({ category: entry.category, id: entry.id })}
                       onMouseLeave={() => setCurrentRecord(null)}
                       className={`border-x border-slate-800 transition-colors hover:bg-orange-500/60 ${rowColour}`}
                     >
                       <td className="px-2 py-1.5 text-center text-slate-300 whitespace-nowrap">
-                        {tas.category}
+                        {entry.category}
                       </td>
 
                       <td className="px-2 py-1.5 text-center font-medium text-slate-200">
-                        { formatTime(tas.time_ms, isStunt, isTM2) }
+                        { formatTime(entry.time_ms, isStunt, isTM2) }
                       </td>
 
                       <td className="px-2 py-1.5 text-center text-slate-200 max-w-[420px]">
-                        {formatAuthors(tas.authors, 6)}
+                        {formatAuthors(entry.authors, 6)}
                       </td>
 
                       <td className="px-2 py-1.5 text-center text-slate-300 whitespace-nowrap">
-                        { formatDate(tas.date) }
+                        { formatDate(entry.date) }
                       </td>
                       
                       <td className="px-2 py-1.5 text-center text-slate-300 whitespace-nowrap hidden sm:table-cell">
                         <div className="flex items-center justify-center gap-1">
                           <div className="w-5 h-5 flex items-center justify-center">
-                            {tas.video && (<VideoIcon video_url={tas.video}/>)}
+                            <VideoIcon videoURL={entry.video}/>
                           </div>
 
                           <div className="w-5 h-5 flex items-center justify-center">
-                            {tas.category !== "RTA" as Category ? (
-                              <ReplayIcon 
-                                game={tas.game}
-                                track={tas.track}
-                                time_ms={tas.time_ms}
-                                replay_path={tas.replay_path ?? ""}
-                              />
-                            ) : (
-                              <RtaReplayIcon replay_url={tas.replay_path ?? ""} />
-                            )}
+                            <ReplayIcon replayURL={replayURL}/>
                           </div>
 
                           <div className="w-5 h-5 flex items-center justify-center">
-                            {tas.inputs && (<InputsIcon inputs_url={tas.inputs}/>)}
+                            {replayURL && !hideInputs && <InputsIcon replayID={entry.id} replayType={replayType} />}
                           </div>
 
-                          {/* <div className="w-5 h-5 flex items-center justify-center">
-                            {tas.replay && (<GbxIcon replay_url={tas.replay} track={tas.track}/>)}
-                          </div> */}
+                          <div className="w-5 h-5 flex items-center justify-center">
+                            <GbxIcon replayURL={replayURL} track={entry.category === "RTA" as Category ? track : ""}/>
+                          </div>
                         </div>
                       </td>
                     </tr>

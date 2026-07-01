@@ -311,14 +311,14 @@
     0 0 16px rgba(120,200,255,0.15);
 }
 
-.bubble-1 { width: 10px; height: 10px; left: 10%; animation-duration: 6s; animation-delay: 0s; }
-.bubble-2 { width: 18px; height: 18px; left: 25%; animation-duration: 8s; animation-delay: 1s; }
-.bubble-3 { width: 6px; height: 6px; left: 40%; animation-duration: 5s; animation-delay: 2s; }
-.bubble-4 { width: 22px; height: 22px; left: 60%; animation-duration: 9s; animation-delay: 0.5s; }
-.bubble-5 { width: 12px; height: 12px; left: 75%; animation-duration: 7s; animation-delay: 1.8s; }
-.bubble-6 { width: 8px; height: 8px; left: 90%; animation-duration: 6.5s; animation-delay: 3s; }
-.bubble-7 { width: 14px; height: 14px; left: 15%; animation-duration: 7.5s; animation-delay: 2.5s; }
-.bubble-8 { width: 9px; height: 9px; left: 55%; animation-duration: 6.8s; animation-delay: 0.8s; }
+.bubble-1 { width: 10px; height: 10px; left: 10%; animation-duration: 9s; animation-delay: 0s; }
+.bubble-2 { width: 18px; height: 18px; left: 25%; animation-duration: 12s; animation-delay: 2s; }
+.bubble-3 { width: 6px; height: 6px; left: 40%; animation-duration: 7.5s; animation-delay: 4s; }
+.bubble-4 { width: 22px; height: 22px; left: 60%; animation-duration: 13.5s; animation-delay: 1.5s; }
+.bubble-5 { width: 12px; height: 12px; left: 75%; animation-duration: 10.5s; animation-delay: 3.5s; }
+.bubble-6 { width: 8px; height: 8px; left: 90%; animation-duration: 10s; animation-delay: 7s; }
+.bubble-7 { width: 14px; height: 14px; left: 15%; animation-duration: 12s; animation-delay: 5s; }
+.bubble-8 { width: 9px; height: 9px; left: 55%; animation-duration: 11s; animation-delay: 2.5s; }
 
 @keyframes floatUp {
   0% {
@@ -330,8 +330,8 @@
     opacity: 0.95;
   }
 
-  60% {
-    transform: translateY(-70px) translateX(10px) scale(1);
+  55% {
+    transform: translateY(-125px) translateX(10px) scale(1);
     opacity: 0.9;
   }
 
@@ -340,7 +340,7 @@
   }
 
   100% {
-    transform: translateY(-140px) translateX(-10px) scale(1.2);
+    transform: translateY(-250px) translateX(-10px) scale(1.2);
     opacity: 0;
   }
 }

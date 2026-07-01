@@ -436,8 +436,8 @@ export default function AdminRta() {
                         
                         <td className="py-2 px-2 text-center align-middle hidden sm:table-cell">
                           <div className="flex items-center justify-center gap-1">
-                            <div className="w-5 h-5 flex items-center justify-center">{t.video && <VideoIcon video_url={t.video} />}</div>
-                            {/* <div className="w-5 h-5 flex items-center justify-center">{t.replay && <ReplayIcon replay_url={t.replay} />}</div> */}
+                            <div className="w-5 h-5 flex items-center justify-center"><VideoIcon videoURL={t.video}/></div>
+                            <div className="w-5 h-5 flex items-center justify-center"><ReplayIcon replayURL={t.replay}/></div>
                           </div>
                         </td>
                         

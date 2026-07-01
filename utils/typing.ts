@@ -113,3 +113,16 @@ export type ProfileDraft = {
   allow_sounds: boolean;
 };
 
+export type ReplayState = {
+  file: File | null;
+  track: string;
+  time: TimeState;
+};
+
+export type GbxData = {
+  uid: string | null;
+  bestTime: number | null;
+  version: string | null;
+  stuntScore: number | null;
+  validable: boolean | null;
+};

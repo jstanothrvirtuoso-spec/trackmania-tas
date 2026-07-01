@@ -5,8 +5,9 @@ import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
 import { SortOrder, Game, RecordRow, Category } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting";
 import SortIndicator from "@/components/SortIndicator";
-import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, RtaReplayIcon, VideoIcon } from "@/components/Icons";
+import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
 import { formatAuthors, formatTrack } from "../FormatLinks";
+import { getReplayURL } from "@/utils/common";
 
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate" | "inputs";
 
@@ -168,19 +169,19 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
       </thead>
 
       <tbody className="font-sans divide-y divide-slate-800 text-center align-middle">
-        {sortedRows.map((row, index) => {
-          const entry = row.tas;
-          const recent = showRecent && entry && isRecentEntry(entry.date);
-          const difficultyClass = getTrackDifficultyTint(row.trackInfo.gameSet, index);
+        {sortedRows.map(({tas, rta, track, trackInfo}, index) => {
+          const recent = showRecent && tas && isRecentEntry(tas.date);
+          const difficultyClass = getTrackDifficultyTint(trackInfo.gameSet, index);
           const bgColour = recent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
-          const rtaColour = (showRecent && row.rta && isRecentEntry(row.rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
-          const isStunt = row.trackInfo.gameSet === "Stunt";
+          const rtaColour = (showRecent && rta && isRecentEntry(rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
+          const isStunt = trackInfo.gameSet === "Stunt";
           const isLastRow = index === sortedRows.length - 1;
+          const replayURL = tas && getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path)
           const rowCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, bgColour);
           const rowRtaCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, rtaColour);
 
           return (
-            <tr key={row.track} className="group h-[30px] transition-colors">
+            <tr key={track} className="group h-[30px] transition-colors">
               {showRecent && (
                 <td className="px-1 text-center">
                   {recent && (
@@ -189,24 +190,24 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                 </td>
               )}
               <td className={rowCommon(classNames("px-1", "border-l", isLastRow ? "rounded-bl-lg" : ""))}>
-                <EnvironmentIcon environment={row.trackInfo.environment} />
+                <EnvironmentIcon environment={trackInfo.environment} />
               </td>
               
               <td className={rowCommon("pr-2 py-1 w-max whitespace-nowrap")}>
-                {formatTrack(row.track, "hover:text-emerald-500 text-slate-200")}
+                {formatTrack(track, "hover:text-emerald-500 text-slate-200")}
               </td>
 
               {lowInputCategory ? (
                 <>
-                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{entry?.num_inputs ?? "-"}</td>
-                  <td className={rowCommon("px-3 py-1 text-slate-200")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas?.num_inputs ?? "-"}</td>
+                  <td className={rowCommon("px-3 py-1 text-slate-200")}>{tas ? formatTime(tas.time_ms, isStunt, isTM2) : "-"}</td>
                 </>
               ) : (
                 <>
-                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{entry ? formatTime(entry.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas ? formatTime(tas.time_ms, isStunt, isTM2) : "-"}</td>
                   {(() => {
-                    const isBadDiff = entry && row.rta && ((entry.time_ms - row.rta.time_ms > 0 && !isStunt) || (entry.time_ms - row.rta.time_ms < 0 && isStunt));
-                    const isEqual = entry && row.rta && entry.time_ms === row.rta.time_ms;
+                    const isBadDiff = tas && rta && ((tas.time_ms - rta.time_ms > 0 && !isStunt) || (tas.time_ms - rta.time_ms < 0 && isStunt));
+                    const isEqual = tas && rta && tas.time_ms === rta.time_ms;
                     return (
                       <td
                         className={classNames(BODY_BASE, "font-vga px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-200")}
@@ -217,46 +218,30 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                             : "0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)",
                         }}
                       >
-                        {entry && row.rta ? `${formatTime(entry.time_ms - row.rta.time_ms, isStunt, isTM2, true)}` : "-"}
+                        {tas && rta ? `${formatTime(tas.time_ms - rta.time_ms, isStunt, isTM2, true)}` : "-"}
                       </td>
                     );
                   })()}
-                  <td className={rowCommon("px-1.5 text-slate-200")}>{entry && row.rta ? formatPercentSaved(entry.time_ms, row.rta.time_ms, 3, isStunt) : "-"}</td>
+                  <td className={rowCommon("px-1.5 text-slate-200")}>{tas && rta ? formatPercentSaved(tas.time_ms, rta.time_ms, 3, isStunt) : "-"}</td>
                 </>
               )}
 
               <td className={rowCommon("px-1.5 py-1 border-l break-words min-w-[180px] max-w-[320px] whitespace-normal")}>
-                {entry ? (
+                {tas ? (
                   <div className="flex flex-wrap items-center justify-center gap-1 leading-none">
-                    {formatAuthors(entry.authors, 6)}
+                    {formatAuthors(tas.authors, 6)}
                   </div>
                 ) : "-"}
               </td>
-              <td className={rowCommon("px-3 border-l whitespace-nowrap text-slate-200")}>{entry ? formatDate(entry.date) : "-"}</td>
-              <td className={rowCommon("px-3 whitespace-nowrap text-slate-200")}>{entry ? entry.category : "-"}</td>
+              <td className={rowCommon("px-3 border-l whitespace-nowrap text-slate-200")}>{tas ? formatDate(tas.date) : "-"}</td>
+              <td className={rowCommon("px-3 whitespace-nowrap text-slate-200")}>{tas ? tas.category : "-"}</td>
               <td className={rowCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""))}>
-                {entry ? (
+                {tas ? (
                   <div className="flex items-center justify-center gap-1">
-                    <div className="w-5 h-5 flex items-center justify-center">{entry.video && <VideoIcon video_url={entry.video} />}</div>
-                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{
-                      <ReplayIcon 
-                        game={entry.game}
-                        track={entry.track}
-                        time_ms={entry.time_ms}
-                        replay_path={entry.replay_path ?? ""}
-                      />
-                    }</div>)}
-                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.inputs && <InputsIcon inputs_url={entry.inputs} />}</div>)}
-                    {/* {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{
-                      <InputsIcon
-                        game={entry.game}
-                        track={entry.track}
-                        time_ms={entry.time_ms}
-                        replay_path={entry.replay_path ?? ""}
-                      />
-                    }</div>)} */}
-                    {/* {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{entry.replay && <GbxIcon replay_url={entry.replay} track={entry.track} />}</div>)} */}
-                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{<GbxIcon tas={entry}/>}</div>)}
+                    <div className="w-5 h-5 flex items-center justify-center"><VideoIcon videoURL={tas.video}/></div>
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center"><ReplayIcon replayURL={replayURL}/></div>)}
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center">{replayURL && <InputsIcon replayID={tas.id} replayType="tas"/>}</div>)}
+                    {!isTM2 && (<div className="w-5 h-5 flex items-center justify-center"><GbxIcon replayURL={replayURL}/></div>)}
                   </div>
                 ) : (
                   "-"
@@ -266,14 +251,14 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {showRta && (
                 <>
                   <td className="pl-3" />
-                  <td className={rowRtaCommon(classNames("px-2 border-l text-slate-200", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{row.rta ? formatTime(row.rta.time_ms, isStunt, isTM2) : "-"}</td>
-                  <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{row.rta?.player ?? "-"}</td>
-                  <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{row.rta ? formatDate(row.rta.date) : "-"}</td>
+                  <td className={rowRtaCommon(classNames("px-2 border-l text-slate-200", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{rta ? formatTime(rta.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{rta?.player ?? "-"}</td>
+                  <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{rta ? formatDate(rta.date) : "-"}</td>
                   <td className={rowRtaCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""), rtaColour)}>
-                    {row.rta ? (
+                    {rta ? (
                       <div className="flex items-center justify-center gap-1">
-                        <div className="w-5 h-5 flex items-center justify-center">{row.rta.video && <VideoIcon video_url={row.rta.video} />}</div>
-                        <div className="w-5 h-5 flex items-center justify-center">{row.rta.replay && <RtaReplayIcon replay_url={row.rta.replay} />}</div>
+                        <div className="w-5 h-5 flex items-center justify-center"><VideoIcon videoURL={rta.video}/></div>
+                        <div className="w-5 h-5 flex items-center justify-center"><ReplayIcon replayURL={rta.replay}/></div>
                       </div>
                     ) : (
                       "-"

@@ -68,6 +68,7 @@ export default function Page() {
                 <Maintainers />
                 <CategoryTable />
               </div>
+              
               <div className="flex flex-col gap-6 items-start">
                 {/* TOP RIGHT LINKS */}
                 <div className="w-full flex justify-center">
