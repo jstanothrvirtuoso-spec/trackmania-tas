@@ -31,8 +31,8 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
         let timeSaved = 0;
         if (override) {
           timeSaved = override * 1000;
-        } else if (row.rta && row.rta.time_ms > row.tas.time_ms && row.trackInfo.gameSet !== "Stunt") {
-          timeSaved = row.rta.time_ms - row.tas.time_ms;
+        } else if (row.rta && Math.abs(row.rta.time_ms) > row.tas.time_ms && row.trackInfo.gameSet !== "Stunt") {
+          timeSaved = Math.abs(row.rta.time_ms) - row.tas.time_ms;
         }
 
         const splitTimeSaved = timeSaved * contribution;

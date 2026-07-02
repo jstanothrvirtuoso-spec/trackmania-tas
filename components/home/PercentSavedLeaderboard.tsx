@@ -67,7 +67,7 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
 
       if (!tas || !rta) continue;
 
-      const pcSaved = ((rta.time_ms - tas.time_ms) / rta.time_ms) * 100;
+      const pcSaved = ((Math.abs(rta.time_ms) - tas.time_ms) / Math.abs(rta.time_ms)) * 100;
 
       const [ tier1, tier2, tier3 ] = TIERS[category]
 

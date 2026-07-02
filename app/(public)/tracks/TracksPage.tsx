@@ -82,7 +82,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const trackOptions = tracksByGame[game];
   const isStunt = track ? TRACKS[track].gameSet === "Stunt" : false;
   const isTM2 = track ? TRACKS[track].game === "TM2" : false;
-  const useMinutes = rta ? rta.time_ms >= 120000 : false;
+  const useMinutes = rta ? Math.abs(rta.time_ms) >= 120000 : false;
   const tmxGame = TRACKS[track].tmx ?? TRACKS[track].game;
   const tmxLink = getTmxLink(TRACKS[track].id, tmxGame);
 

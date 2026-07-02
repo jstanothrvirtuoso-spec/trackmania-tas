@@ -61,7 +61,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
       if (override) {
         savedMs = override * 1000;
       } else if (rta) {
-        savedMs = Math.max(0, rta.time_ms - entry.time_ms);
+        savedMs = Math.max(0, Math.abs(rta.time_ms) - entry.time_ms);
       }
       contributions += 1 / entry.authors.length;
       timeSaved += savedMs / entry.authors.length;
@@ -186,7 +186,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
         <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 max-w-full scroll-smooth">
           {records.map((record) => {
             const rta = bestRtaByTrack.get(record.track);
-            const saved = rta ? Math.max(0, rta.time_ms - record.time_ms) : 0;
+            const saved = rta ? Math.max(0, Math.abs(rta.time_ms) - record.time_ms) : 0;
 
             return (
               <Link

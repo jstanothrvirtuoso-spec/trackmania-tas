@@ -20,6 +20,7 @@ Fix stunt RTA scores, check all stunt stuff
   - Remove all Math.abs()
   - Submissions and updating needs to be careful with *-1000
   - Check sorting of /tracks table
+  - Inputs generator display time for stunt (probably check elsewhere too, like tas of the day?)
 
 
 //////////////////////////////////////////////////////////////////////////

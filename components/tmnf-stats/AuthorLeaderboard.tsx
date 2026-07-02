@@ -82,7 +82,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
         if (graphType === "TASes") {
           pointsOff = 1;
         } else if (graphType === "TimeSaved") {
-          pointsOff = (OVERRIDE[existing.track]?.[existing.time_ms] ?? Math.max(0, (rta.time_ms - existing.time_ms) / 1000)) / existing.authors.length;
+          pointsOff = (OVERRIDE[existing.track]?.[existing.time_ms] ?? Math.max(0, (Math.abs(rta.time_ms) - existing.time_ms) / 1000)) / existing.authors.length;
         } else {
           pointsOff = 1 / existing.authors.length;
         }
@@ -98,7 +98,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
       if (graphType === "TASes") {
         pointsOn = 1;
       } else if (graphType === "TimeSaved") {
-        pointsOn = (OVERRIDE[tas.track]?.[tas.time_ms] ?? Math.max(0, (rta.time_ms - tas.time_ms) / 1000)) / tas.authors.length;
+        pointsOn = (OVERRIDE[tas.track]?.[tas.time_ms] ?? Math.max(0, (Math.abs(rta.time_ms) - tas.time_ms) / 1000)) / tas.authors.length;
       } else {
         pointsOn = 1 / tas.authors.length;
       }

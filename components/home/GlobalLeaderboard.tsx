@@ -190,7 +190,7 @@ export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
       if (override) {
         savedMs = override * 1000;
       } else if (rta) {
-        savedMs = Math.max(0, rta.time_ms - entry.time_ms);
+        savedMs = Math.max(0, Math.abs(rta.time_ms) - entry.time_ms);
       }
 
       const contributionPerAuthor = 1 / entry.authors.length;

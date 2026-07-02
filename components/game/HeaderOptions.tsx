@@ -9,7 +9,7 @@ type EnvironmentFilter = Environment | "All Envs";
 
 const CATEGORY_OPTIONS: Partial<Record<Game, Category[]>> = {
   "TMNF": ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "Low Input"],
-  "TMUF": ["Open", "No Cut"],
+  "TMUF": ["Open", "No Cut", "Low Input"],
 };
 
 interface HeaderOptionsProps {

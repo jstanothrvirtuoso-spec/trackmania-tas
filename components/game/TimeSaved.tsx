@@ -21,8 +21,8 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
       if (!row.rta) continue;
 
       const category = row.trackInfo.gameSet;
-      const tas = (row.tas && row.tas.time_ms < row.rta.time_ms) ? row.tas.time_ms : row.rta.time_ms;
-      const rta = row.rta.time_ms;
+      const tas = (row.tas && row.tas.time_ms < Math.abs(row.rta.time_ms)) ? row.tas.time_ms : Math.abs(row.rta.time_ms);
+      const rta = Math.abs(row.rta.time_ms);
 
       if (!acc[category]) {
         acc[category] = { category, tasMs: 0, rtaMs: 0 };
