@@ -64,15 +64,15 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       }));
 
     const tas = tasRows.length === 0 ? null
-      : tasRows.reduce((best, row) => { if (row.time_ms < best.time_ms) return row;
-        if (row.time_ms === best.time_ms && new Date(row.date).getTime() < new Date(best.date).getTime()) { return row }
+      : tasRows.reduce((best, row) => { if (Math.abs(row.time_ms) < Math.abs(best.time_ms)) return row;
+        if (Math.abs(row.time_ms) === Math.abs(best.time_ms) && new Date(row.date).getTime() < new Date(best.date).getTime()) { return row }
         return best;
       });
     
     return { 
       records: [...tasRows, ...relevantRtaRows]
         .filter((t) => t.track === track)
-        .sort((a, b) => a.time_ms - b.time_ms),
+        .sort((a, b) => TRACKS[track].gameSet === "Stunt" ? Math.abs(b.time_ms) - Math.abs(a.time_ms) : Math.abs(a.time_ms) - Math.abs(b.time_ms)),
       tas: tas,
       rta: trackRtaRecords[trackRtaRecords.length - 1] ?? null,
       minDate: minDate
@@ -124,12 +124,12 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         sorted
           .filter((tas) => allowedCategories.has(tas.category))
           .forEach((tas) => {
-            if (tas.time_ms > best) {
-              best = tas.time_ms;
+            if (Math.abs(tas.time_ms) > best) {
+              best = Math.abs(tas.time_ms);
               points.push({
                 id: tas.id,
                 date: tas.date,
-                time: tas.time_ms / 1000,
+                time: Math.abs(tas.time_ms) / 1000,
                 category: tas.category as GraphCategory
               });
             }
@@ -223,7 +223,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
                   <div className="font-mono text-lg font-semibold text-emerald-400 whitespace-nowrap">
                     {tas ? formatTime(tas.time_ms, isStunt, isTM2) : "-"}
-                    {tas && rta && (<span className="text-xs text-blue-300">{` (-${formatPercentSaved(tas.time_ms, rta.time_ms, 3)}%)`}</span>)}
+                    {tas && rta && (<span className="text-xs text-blue-300">{` (-${formatPercentSaved(tas.time_ms, Math.abs(rta.time_ms), 3, TRACKS[tas.track].gameSet === "Stunt")}%)`}</span>)}
                   </div>
                 </div>
 
@@ -247,7 +247,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                   </div>
 
                   <div className="font-mono text-lg font-semibold text-emerald-400">
-                    {rta ? formatTime(rta.time_ms, isStunt, isTM2) : "-"}
+                    {rta ? formatTime(Math.abs(rta.time_ms), isStunt, isTM2) : "-"}
                   </div>
                 </div>
 
@@ -319,11 +319,11 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                   const rowColour = CATEGORY_COLOURS[entry.category]?.[colourIndex] ?? "bg-slate-500/10"
                   const replayType = entry.category === "RTA" as Category ? "rta" : "tas";
                   const hideInputs = replayType === "rta" && ["ESWC", "TM2"].includes(tmxGame)
-                  const replayURL = replayType === "rta" ? entry.replay_path : getReplayURL(entry.game, entry.track, entry.time_ms, entry.replay_path)
+                  const replayURL = replayType === "rta" ? entry.replay_path : getReplayURL(entry.game, entry.track, Math.abs(entry.time_ms), entry.replay_path)
                   
                   return (
                     <tr
-                      key={`${entry.time_ms}-${entry.date}`}
+                      key={`${Math.abs(entry.time_ms)}-${entry.date}`}
                       onMouseEnter={() => setCurrentRecord({ category: entry.category, id: entry.id })}
                       onMouseLeave={() => setCurrentRecord(null)}
                       className={`border-x border-slate-800 transition-colors hover:bg-orange-500/60 ${rowColour}`}
@@ -333,7 +333,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                       </td>
 
                       <td className="px-2 py-1.5 text-center font-medium text-slate-200">
-                        { formatTime(entry.time_ms, isStunt, isTM2) }
+                        { formatTime(Math.abs(entry.time_ms), isStunt, isTM2) }
                       </td>
 
                       <td className="px-2 py-1.5 text-center text-slate-200 max-w-[420px]">

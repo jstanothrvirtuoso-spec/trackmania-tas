@@ -14,6 +14,12 @@ Improvements for game RecordTable
 Can we remove "TMNF No Cut" as a game in supabase?
 Add inputs script
 Add reactions??
+Fix weird row grouping in game RecordTable (show extra authors, and fix environment icons)
+Fix stunt RTA scores, check all stunt stuff
+  - Might want to make all tas records -time_ms too 
+  - Remove all Math.abs()
+  - Submissions and updating needs to be careful with *-1000
+  - Check sorting of /tracks table
 
 
 //////////////////////////////////////////////////////////////////////////
