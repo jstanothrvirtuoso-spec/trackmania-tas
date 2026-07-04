@@ -61,7 +61,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         num_inputs: 0,
         authors: [rta.player],
         date: rta.date,
-        video: "",
+        video: rta.video,
         replay_path: rta.replay,
         inputs: "",
         created_at: "",

@@ -21,6 +21,7 @@ Check you can't submit in /admin-tas without replay
 Change formatTime() to just take a whole TasEntry | RtaEntry to check for low input/TM2/stunt
 Edit submissions in /admin-tas without upsetting existing replay files
 Deleting submissions should remove replay file from downloads
+Delete inputs/google-drive link from supabase
 
 
 

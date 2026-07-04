@@ -296,7 +296,7 @@ export default function SubmitForm() {
                 <div className="group relative ml-auto cursor-help px-1 py-0.5 hidden sm:block">
                   <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-slate-400 text-[10px]">?</span>
                   <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-66 -translate-x-58 rounded-lg border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-200 opacity-0 shadow-xl transition-opacity group-hover:opacity-100">
-                    Provide a video URL for your TAS. YouTube is preferred (even if unlisted), but Streamable or Discord videos will be accepted. You must provide a video for your TAS to be eligible for TAS of the Day.
+                    Provide a video URL for your TAS. YouTube is preferred (even if unlisted), but Streamable or Discord videos will be accepted. You must provide a YouTube video for your TAS to be eligible for TAS of the Day.
                   </div>
                 </div>
               </div>
