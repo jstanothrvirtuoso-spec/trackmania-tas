@@ -1,9 +1,9 @@
 
-export function formatTime(timeMs: number, isStunt: boolean = false, isTM2: boolean = false, showSign: boolean = false): string {
+export function formatTime(timeMs: number, isTM2: boolean = false, showSign: boolean = false) {
 
-  if (isStunt) {
-    const sign = showSign && timeMs !== 0 ? timeMs > 0 ? "+" : "-" : "";
-    return `${sign}${timeMs / 1000}`
+  if (timeMs < 0) {
+    const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
+    return `${sign}${Math.abs(timeMs) / 1000}`
   }
 
   const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
@@ -28,17 +28,24 @@ export function formatTime(timeMs: number, isStunt: boolean = false, isTM2: bool
     .padStart(decimals, "0")}`;
 }
 
-export function formatPercentSaved(timeMs: number, rtaMs: number, numSig: number, isStunt: boolean = false) {
+export function formatDiff(timeMs: number, rtaMs: number, isTM2: boolean = false, showSign: boolean = true) { 
 
-  const percent = ((rtaMs - timeMs) / rtaMs) * (isStunt ? 100 : -100);
+  if (timeMs < 0) {
+    const sign = showSign ? rtaMs < timeMs ? "-" : "+" : "";
+    return `${sign}${Math.abs(timeMs - rtaMs) / 1000}`
+  };
+
+  return `${showSign ? rtaMs < timeMs ? "+" : "-" : ""}${formatTime(rtaMs - timeMs, isTM2)}`
+}
+
+export function formatPercentSaved(timeMs: number, rtaMs: number, numSig: number, showSign: boolean = false) {
+
+  const percent = (rtaMs - timeMs) / rtaMs * 100;
   if (percent >= 1000) {
     return "+++"
   }
   
-  let str = Number(percent).toPrecision(numSig);
-
-  const isNegative = str.startsWith("-");
-  if (isNegative) str = str.slice(1);
+  let str = Math.abs(Number(percent)).toPrecision(numSig);
 
   if (str.length > numSig + 1) {
     str = str.slice(0, numSig + 1);
@@ -48,12 +55,14 @@ export function formatPercentSaved(timeMs: number, rtaMs: number, numSig: number
     }
   }
 
-  if (isStunt) {
+  if (showSign) {
+    return `${percent < 0 ? "+" : "-"}${str}`;
+  }
+  if (rtaMs < 0) {
     return `${percent <= 0 ? "" : "-"}${str}`;
   } else {
-    return `${percent <= 0 ? "" : "+"}${str}`;
+    return `${percent >= 0 ? "" : "+"}${str}`;
   }
-  
 }
 
 export function formatDate(dateStr: string) {

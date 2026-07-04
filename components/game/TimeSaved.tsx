@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { RecordRow } from "@/utils/typing";
-import { formatTime, formatPercentSaved } from "@/utils/formatting";
+import { formatTime, formatPercentSaved, formatDiff } from "@/utils/formatting";
 
 type CategoryTotals = {
   category: string;
@@ -21,8 +21,8 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
       if (!row.rta) continue;
 
       const category = row.trackInfo.gameSet;
-      const tas = (row.tas && row.tas.time_ms < Math.abs(row.rta.time_ms)) ? row.tas.time_ms : Math.abs(row.rta.time_ms);
-      const rta = Math.abs(row.rta.time_ms);
+      const tas = (row.tas && row.tas.time_ms < row.rta.time_ms) ? row.tas.time_ms : row.rta.time_ms;
+      const rta = row.rta.time_ms;
 
       if (!acc[category]) {
         acc[category] = { category, tasMs: 0, rtaMs: 0 };
@@ -95,39 +95,32 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
         </thead>
 
         <tbody className="font-sans divide-y divide-slate-800">
-          {rows.map((category) => {
-            const hasRta = category.rtaMs > 0;
-            const isStunt = category.category === "Stunt";
+          {rows.map((category) => (
+            <tr
+              key={category.category}
+              className="border-b border-slate-800 last:border-b-0 hover:bg-blue-900/20 text-slate-300 transition-colors odd:bg-green-600/20 even:bg-green-800/20"
+            >
+              <td className="px-2 py-1 font-medium text-slate-200">
+                {category.category}
+              </td>
 
-            return (
-              <tr
-                key={category.category}
-                className="border-b border-slate-800 last:border-b-0 hover:bg-blue-900/20 text-slate-300 transition-colors odd:bg-green-600/20 even:bg-green-800/20"
-              >
-                <td className="px-2 py-1 font-medium text-slate-200">
-                  {category.category}
-                </td>
+              <td className="px-2 py-1 border-l border-slate-800">
+                {formatTime(category.tasMs)}
+              </td>
 
-                <td className="px-2 py-1 border-l border-slate-800">
-                  {formatTime(category.tasMs, isStunt)}
-                </td>
+              <td className="px-2 py-1">
+                {formatTime(category.rtaMs)}
+              </td>
 
-                <td className="px-2 py-1">
-                  {hasRta ? formatTime(category.rtaMs, isStunt) : "-"}
-                </td>
+              <td className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]">
+                {formatDiff(category.tasMs, category.rtaMs)}
+              </td>
 
-                <td
-                  className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]"
-                >
-                  {hasRta ? formatTime(category.tasMs - category.rtaMs, isStunt, false, true) : "-"}
-                </td>
-
-                <td className="py-1 font-bold px-1.5 sm:px-3">
-                  {hasRta ? formatPercentSaved(category.tasMs, category.rtaMs, 4, isStunt) : "-"}
-                </td>
-              </tr>
-            );
-          })}
+              <td className="py-1 font-bold px-1.5 sm:px-3">
+                {formatPercentSaved(category.tasMs, category.rtaMs, 4)}
+              </td>
+            </tr>
+          ))}
 
           <tr className="border-t-2 border-slate-600 font-semibold text-slate-200 hover:bg-blue-900/20 transition-colors bg-blue-700/20">
             <td className="px-2 py-1">Total</td>
@@ -137,17 +130,15 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
             </td>
 
             <td className="px-2 py-1 text-slate-300">
-              {total.rtaMs > 0 ? formatTime(total.rtaMs) : "-"}
+              {formatTime(total.rtaMs)}
             </td>
 
-            <td
-              className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]"
-            >
-              {total.rtaMs > 0 ? formatTime(total.tasMs - total.rtaMs, false, false, true) : "-"}
+            <td className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]">
+              {formatDiff(total.tasMs, total.rtaMs)}
             </td>
 
             <td className="px-2 py-1 font-bold px-1.5 sm:px-3">
-              {total.rtaMs > 0 ? formatPercentSaved(total.tasMs, total.rtaMs, 4) : "-"}
+              {formatPercentSaved(total.tasMs, total.rtaMs, 4)}
             </td>
           </tr>
         </tbody>

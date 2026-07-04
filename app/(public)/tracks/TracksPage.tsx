@@ -3,39 +3,36 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getReplayURL, getTmxLink } from "@/utils/common";
-import { CATEGORY_COLOURS, CATEGORY_FILTERS, GAME_LIST, GRAPH_CATEGORIES } from "@/utils/constants";
-import { formatDate, formatGame, formatPercentSaved, formatTime } from "@/utils/formatting"
-import { Game, Category } from "@/utils/typing";
+import { getTmxLink } from "@/utils/common";
+import { GAME_LIST } from "@/utils/constants";
+import { formatGame } from "@/utils/formatting"
+import { Game, Category, TasEntry } from "@/utils/typing";
 import { useTasRecords } from "@/lib/TasRecords";
-import { RecordProgressionGraph } from "./ProgressionGraph";
+import { RecordProgressionGraph } from "@/components/tracks/ProgressionGraph";
 import { useTrackRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
-import { VideoIcon, ReplayIcon, InputsIcon, GbxIcon } from "@/components/Icons";
-import { formatAuthors } from "@/components/FormatLinks";
+import { TrackRecordTable } from "@/components/tracks/TrackRecordTable";
+import { TracksTitles } from "@/components/tracks/TracksTitles";
+import { TrackSelector } from "@/components/tracks/TrackSelector";
 
-export type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
-export type ProgressionGraphPoint = {
+export type CurrentRecord = {
+  category: Category,
   id: number,
-  date: string, 
-  time: number, 
-  category: GraphCategory
-}
+};
 
 const BASELINE_DATE = new Date("2021-06-01").getTime();
 
 export default function TracksPage({ initialGame, initialTrack }: { initialGame: Game, initialTrack: string }) {
 
-  const router = useRouter();
   const [nowDate] = useState<number>(() => Date.now());
-  const [currentRecord, setCurrentRecord] = useState<{ category: string, id: number } | null>(null);
-
+  const [currentRecord, setCurrentRecord] = useState<CurrentRecord | null>(null);
   const [game, setGame] = useState<Game>(initialGame);
   const [track, setTrack] = useState<string>(initialTrack);
   const [imageOpen, setImageOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+  const router = useRouter();
   const { data: trackRtaRecords } = useTrackRtaRecords(track ?? "");
   const { data: tasRecords = [] } = useTasRecords();
 
@@ -53,26 +50,33 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
     const minDate = firstTasDate - datePadding;
     
     const cutoffIndex = trackRtaRecords.findLastIndex(r => new Date(r.date).getTime() < minDate);
-    const relevantRtaRows = trackRtaRecords
+    const relevantRtaRows: TasEntry[] = trackRtaRecords
       .slice(Math.max(0, cutoffIndex))
       .map(rta => ({
-        ...rta,
+        id: rta.id,
+        game: rta.game,
+        track: rta.track,
         category: "RTA" as Category,
+        time_ms: rta.time_ms,
+        num_inputs: 0,
         authors: [rta.player],
+        date: rta.date,
+        video: "",
         replay_path: rta.replay,
         inputs: "",
+        created_at: "",
       }));
 
     const tas = tasRows.length === 0 ? null
-      : tasRows.reduce((best, row) => { if (Math.abs(row.time_ms) < Math.abs(best.time_ms)) return row;
-        if (Math.abs(row.time_ms) === Math.abs(best.time_ms) && new Date(row.date).getTime() < new Date(best.date).getTime()) { return row }
+      : tasRows.reduce((best, row) => { if (row.time_ms < best.time_ms) return row;
+        if (row.time_ms === best.time_ms && new Date(row.date).getTime() < new Date(best.date).getTime()) { return row }
         return best;
       });
     
     return { 
       records: [...tasRows, ...relevantRtaRows]
         .filter((t) => t.track === track)
-        .sort((a, b) => TRACKS[track].gameSet === "Stunt" ? Math.abs(b.time_ms) - Math.abs(a.time_ms) : Math.abs(a.time_ms) - Math.abs(b.time_ms)),
+        .sort((a, b) => a.time_ms - b.time_ms),
       tas: tas,
       rta: trackRtaRecords[trackRtaRecords.length - 1] ?? null,
       minDate: minDate
@@ -81,12 +85,15 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
   const trackOptions = tracksByGame[game];
   const isStunt = track ? TRACKS[track].gameSet === "Stunt" : false;
+  const useMinutes = rta ? rta.time_ms >= 120000 : false;
+  const graphUnits = isStunt ? "pts" : useMinutes ? "min" : "sec";
   const isTM2 = track ? TRACKS[track].game === "TM2" : false;
-  const useMinutes = rta ? Math.abs(rta.time_ms) >= 120000 : false;
   const tmxGame = TRACKS[track].tmx ?? TRACKS[track].game;
   const tmxLink = getTmxLink(TRACKS[track].id, tmxGame);
 
   function updateTrack(track: string) {
+    const game = TRACKS[track].game
+    setGame(game)
     setTrack(track);
     updateURL(game, track);
     setImageLoaded(false);
@@ -109,63 +116,6 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
     router.replace(`/tracks?${params.toString()}`);
   };
 
-  const progression = useMemo<Record<GraphCategory, ProgressionGraphPoint[]>>(() => {
-    const sorted = [...records].sort((a, b) =>
-        new Date(a.date).getTime() -
-        new Date(b.date).getTime()
-    );
-
-    const buildPoints = (category: GraphCategory) => {
-      const allowedCategories = CATEGORY_FILTERS[category];
-      const points: ProgressionGraphPoint[] = [];
-      
-      if (isStunt) {
-        let best = 0;
-        sorted
-          .filter((tas) => allowedCategories.has(tas.category))
-          .forEach((tas) => {
-            if (Math.abs(tas.time_ms) > best) {
-              best = Math.abs(tas.time_ms);
-              points.push({
-                id: tas.id,
-                date: tas.date,
-                time: Math.abs(tas.time_ms) / 1000,
-                category: tas.category as GraphCategory
-              });
-            }
-          });
-      } else {
-        let best = Infinity;
-        sorted
-          .filter((tas) => allowedCategories.has(tas.category))
-          .forEach((tas) => {
-            if (tas.time_ms < best) {
-              best = tas.time_ms;
-              points.push({
-                id: tas.id,
-                date: tas.date,
-                time: useMinutes ? tas.time_ms / 60000 : tas.time_ms / 1000,
-                category: tas.category as GraphCategory
-              });
-            }
-          });
-      };
-
-      const filterPoints = points.filter((tas) => tas.category === category);
-
-      return filterPoints.length > 0 ? points : [];
-    };
-
-    return {
-      "Open": buildPoints("Open"),
-      "NOseboost": buildPoints("NOseboost"),
-      "No Uber": buildPoints("No Uber"),
-      "WR Route": buildPoints("WR Route"),
-      "No Cut": buildPoints("No Cut"),
-      "RTA": buildPoints("RTA"),
-    };
-  }, [records, useMinutes, isStunt]);
-
   return (
     <div className="flex pt-20 flex-col items-center justify-center text-slate-100 pb-3 px-3 sm:pb-5 sm:px-5">
 
@@ -178,9 +128,17 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
       <div className="flex flex-row w-full max-w-7xl items-start justify-center">
         <div className="flex flex-col w-full items-center justify-center">
-
+  
           {/* Options */}
-          <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
+          <div className="z-20 hidden md:block">
+            <TrackSelector
+              selectedGame={game}
+              selectedTrack={track}
+              updateTrack={(value) => updateTrack(value)}
+            />
+          </div>
+
+          <div className="flex flex-col items-center gap-2 md:hidden">
             <DropSelect
               initialValue={game}
               options={GAME_LIST.map((game) => ({
@@ -199,74 +157,17 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
               onChange={(value) => updateTrack(value)}
             />
           </div>
-
+  
           {/* Title/Wrs */}
-          <div className="mb-4 mt-6 text-center">
-            <div className="flex flex-col items-center">
-              <button className="text-4xl font-black tracking-tight text-white [text-shadow:2px_2px_4px_rgba(0,0,0,0.6)]"> 
-                {tmxLink ? (
-                  <a href={tmxLink} target="_blank" rel="noreferrer" className="hover:text-emerald-500 transition">
-                    {track}
-                  </a>
-                ) : (
-                  track
-                )}
-              </button>
-              <div className="mt-2 h-1 w-34 rounded-full bg-emerald-400/70 shadow-[0_5px_20px_rgba(0,0,0,0.6)]" />
-            </div>
-            <div className="flex flex-col gap-1 items-center sm:flex-row sm:gap-4">
-              <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
-                <div className="text-left translate-y-[2px]">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                    TAS Record
-                  </div>
-
-                  <div className="font-mono text-lg font-semibold text-emerald-400 whitespace-nowrap">
-                    {tas ? formatTime(tas.time_ms, isStunt, isTM2) : "-"}
-                    {tas && rta && (<span className="text-xs text-blue-300">{` (-${formatPercentSaved(tas.time_ms, Math.abs(rta.time_ms), 3, TRACKS[tas.track].gameSet === "Stunt")}%)`}</span>)}
-                  </div>
-                </div>
-
-                <div className="h-8 w-px bg-slate-700" />
-
-                <div className="text-left">
-                  <div className="text-slate-200 italic text-sm sm:text-lg">
-                    {tas ? formatAuthors(tas.authors, 2) : "None"}
-                  </div>
-
-                  <div className="text-xs text-slate-400">
-                    {tas ? formatDate(tas.date) : ""}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-3 inline-flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 px-4 py-2 backdrop-blur-md shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
-                <div className="text-left translate-y-[2px]">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-300">
-                    RTA Record
-                  </div>
-
-                  <div className="font-mono text-lg font-semibold text-emerald-400">
-                    {rta ? formatTime(Math.abs(rta.time_ms), isStunt, isTM2) : "-"}
-                  </div>
-                </div>
-
-                <div className="h-8 w-px bg-slate-700" />
-
-                <div className="text-left">
-                  <div className="text-slate-200 italic text-sm sm:text-lg">
-                    {rta ? rta.player : "None"}
-                  </div>
-
-                  <div className="text-xs text-slate-400">
-                    {rta ? formatDate(rta.date) : ""}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <TracksTitles
+            tmxLink={tmxLink}
+            tas={tas}
+            rta={rta}
+            isTM2={isTM2}
+            track={track}
+          />
         </div>
-
+  
         {/* Track image */}
         {tmxLink && (
           <div className="hidden lg:block shrink-0">
@@ -277,7 +178,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
               {!imageLoaded && (
                 <div className="absolute inset-0 animate-pulse bg-slate-800" />
               )}
-
+  
               <Image
                 src={`${tmxLink}/image/1`}
                 alt={track}
@@ -289,7 +190,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
                   imageLoaded ? "opacity-100" : "opacity-0"
                 }`}
               />
-
+  
               <div className="absolute inset-0 bg-black/15 hover:bg-black/0 transition" />
             </button>
           </div>
@@ -301,81 +202,22 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
           {/* Record table */}
           <div className="overflow-hidden rounded-xl border border-slate-800 shadow-[0_5px_20px_rgba(0,0,0,0.6)] w-full max-w-160">
-            <table className="min-w-full table-auto bg-slate-800/90 text-xs sm:text-sm">
-              <thead>
-                <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/40 ">
-                  <th className="px-2 py-1.5 text-center whitespace-nowrap">Category</th>
-                  <th className="px-2 py-1.5 text-center whitespace-nowrap">Record</th>
-                  <th className="px-2 py-1.5 text-center whitespace-nowrap">Authors</th>
-                  <th className="px-2 py-1.5 text-center whitespace-nowrap">Date</th>
-                  <th className="px-2 py-1.5 whitespace-nowrap hidden sm:table-cell text-center">Links</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {records.map((entry, i) => {
-                  
-                  const colourIndex = i % 2 == 0 ? 2 : 1
-                  const rowColour = CATEGORY_COLOURS[entry.category]?.[colourIndex] ?? "bg-slate-500/10"
-                  const replayType = entry.category === "RTA" as Category ? "rta" : "tas";
-                  const hideInputs = replayType === "rta" && ["ESWC", "TM2"].includes(tmxGame)
-                  const replayURL = replayType === "rta" ? entry.replay_path : getReplayURL(entry.game, entry.track, Math.abs(entry.time_ms), entry.replay_path)
-                  
-                  return (
-                    <tr
-                      key={`${Math.abs(entry.time_ms)}-${entry.date}`}
-                      onMouseEnter={() => setCurrentRecord({ category: entry.category, id: entry.id })}
-                      onMouseLeave={() => setCurrentRecord(null)}
-                      className={`border-x border-slate-800 transition-colors hover:bg-orange-500/60 ${rowColour}`}
-                    >
-                      <td className="px-2 py-1.5 text-center text-slate-300 whitespace-nowrap">
-                        {entry.category}
-                      </td>
-
-                      <td className="px-2 py-1.5 text-center font-medium text-slate-200">
-                        { formatTime(Math.abs(entry.time_ms), isStunt, isTM2) }
-                      </td>
-
-                      <td className="px-2 py-1.5 text-center text-slate-200 max-w-[420px]">
-                        {formatAuthors(entry.authors, 6)}
-                      </td>
-
-                      <td className="px-2 py-1.5 text-center text-slate-300 whitespace-nowrap">
-                        { formatDate(entry.date) }
-                      </td>
-                      
-                      <td className="px-2 py-1.5 text-center text-slate-300 whitespace-nowrap hidden sm:table-cell">
-                        <div className="flex items-center justify-center gap-1">
-                          <div className="w-5 h-5 flex items-center justify-center">
-                            <VideoIcon videoURL={entry.video}/>
-                          </div>
-
-                          <div className="w-5 h-5 flex items-center justify-center">
-                            <ReplayIcon replayURL={replayURL}/>
-                          </div>
-
-                          <div className="w-5 h-5 flex items-center justify-center">
-                            {replayURL && !hideInputs && <InputsIcon replayID={entry.id} replayType={replayType} />}
-                          </div>
-
-                          <div className="w-5 h-5 flex items-center justify-center">
-                            <GbxIcon replayURL={replayURL} track={entry.category === "RTA" as Category ? track : ""}/>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            {records && (
+              <TrackRecordTable
+                tmxGame={tmxGame}
+                records={records}
+                isTM2={isTM2}
+                track={track}
+                setCurrentRecord={setCurrentRecord}
+              />
+            )}
           </div>
 
           {/* Progression graph */}
           <div className="w-full max-w-180 mb-2">
             <RecordProgressionGraph 
-              progression={progression}
-              useMinutes={useMinutes}
-              isStunt={isStunt}
+              records={records}
+              graphUnits={graphUnits}
               currentRecord={currentRecord}
               minDate={minDate}
               maxDate={nowDate}

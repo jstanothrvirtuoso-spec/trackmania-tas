@@ -31,7 +31,7 @@ const inputClass = "w-full rounded-md bg-slate-800 px-3 py-2 text-white outline-
 const labelClass = "text-sm text-slate-300 mb-1";
 const URL_FIELDS = [
   ["Video", "video", "https://youtu.be/<id>"],
-  ["Replay", "replay", "https://drive.google.com/uc?export=download&id=<id>"],
+  ["Replay", "replay", "https://tmnf.exchange/recordgbx/<id>"],
 ] as const;
 
 export default function AdminRta() {
@@ -102,7 +102,7 @@ export default function AdminRta() {
       replay: t.replay ?? "",
     });
 
-    setTime(timeMsToState(t.time_ms));
+    setTime(timeMsToState(Math.abs(t.time_ms)));
   }
 
   function updateGame(game: Game) {
@@ -131,7 +131,7 @@ export default function AdminRta() {
       const payload = {
         game: form.game,
         track: form.track,
-        time_ms: timeMs,
+        time_ms: isStunt ? -timeMs : timeMs,
         player: form.player,
         date: new Date(form.date).toISOString(),
         video: form.video || null,
@@ -163,7 +163,7 @@ export default function AdminRta() {
     const confirmed = await confirm(`
       Delete ${t.track} for ${t.player}?
         Time (ms): ${t.time_ms}
-        Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].gameSet === "Stunt", t.game === "TM2")}\n
+        Formatted Time: ${formatTime(t.time_ms, t.game === "TM2")}\n
       This cannot be undone!`
     );
 
@@ -310,7 +310,7 @@ export default function AdminRta() {
               </div>
 
               <div className="mt-2 text-sm text-slate-400">
-                {`Formatted time: ${formatTime(timeMs, isStunt, time.thousandth > 0)} ${isStunt ? "(Stunt points)" : ""}`}
+                {`Formatted time: ${formatTime(isStunt ? -timeMs : timeMs, time.thousandth > 0)} ${isStunt ? "(Stunt points)" : ""}`}
               </div>
               <div className="text-sm text-slate-400">
                 Database time: {timeMs} ms
@@ -416,14 +416,14 @@ export default function AdminRta() {
                     </td>
                   </tr>
                 ) : (
-                  trackRecords.map((t, i) => {
+                  trackRecords.sort((a, b) => a.time_ms - b.time_ms).map((t, i) => {
                     return (
                       <tr
                         key={i}
                         className="border-b border-slate-800"
                       >
                         <td className="py-2 px-2">
-                          {formatTime(t.time_ms, isStunt, t.game === "TM2")}
+                          {formatTime(t.time_ms, t.game === "TM2")}
                         </td>
 
                         <td className="py-1 px-2">

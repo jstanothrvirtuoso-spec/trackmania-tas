@@ -10,6 +10,7 @@ import { TasCard } from "@/components/highlight/TasCard";
 import { AuthorCard } from "@/components/highlight/AuthorCard";
 import { UndoneCard } from "@/components/highlight/UndoneCard";
 import { LegendsCard } from "@/components/highlight/LegendsCard";
+import { getYouTubeId } from "@/utils/common";
 
 const reversedCategories = [...CATEGORIES].reverse();
 
@@ -61,7 +62,7 @@ export default function HighlightPage() {
       }
     }
 
-    const topTasVideos = topTasList.filter((tas) => tas.video)
+    const topTasVideos = topTasList.filter((tas) => tas.video && getYouTubeId(tas.video))
     const topAuthors = Array.from(authorCounts.entries())
       .filter(([, count]) => count >= 5)
       .map(([author]) => author);

@@ -146,7 +146,7 @@ export default function AdminTas() {
       video: s.video ?? "",
     });
 
-    setTime(timeMsToState(s.time_ms ?? 0));
+    setTime(timeMsToState(Math.abs(s.time_ms ?? 0)));
   }
 
   async function copyTasToForm(t: TasEntry) {
@@ -189,7 +189,7 @@ export default function AdminTas() {
       date: t.date.slice(0, 10),
       video: t.video ?? "",
     });
-    setTime(timeMsToState(t.time_ms));
+    setTime(timeMsToState(Math.abs(t.time_ms)));
   }
 
   async function onFileSelect(file?: File) {
@@ -227,7 +227,7 @@ export default function AdminTas() {
       const confirmed = await confirm(`
         Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
           Time (ms): ${t.time_ms}
-          Formatted Time: ${formatTime(t.time_ms, TRACKS[t.track].gameSet === "Stunt", t.game === "TM2")}\n
+          Formatted Time: ${formatTime(t.time_ms, t.game === "TM2")}\n
         This cannot be undone!`
       );
 
@@ -356,7 +356,7 @@ export default function AdminTas() {
         track: form.track,
         category: form.category,
         num_inputs: form.num_inputs || null,
-        time_ms: timeMs,
+        time_ms: isStunt ? -timeMs : timeMs,
         date: new Date(form.date).toISOString(),
         video: form.video || null,
         replay_path: replayUid ?? null,
@@ -641,7 +641,7 @@ export default function AdminTas() {
               </div>
 
               <div className="mt-2 text-sm text-slate-400">
-                {`Formatted time: ${formatTime(timeMs, isStunt, time.thousandth > 0)} ${isStunt ? "(Stunt points)" : ""}`}
+                {`Formatted time: ${formatTime(isStunt ? -timeMs : timeMs, time.thousandth > 0)} ${isStunt ? "(Stunt points)" : ""}`}
               </div>
               <div className="text-sm text-slate-400">
                 Database time: {timeMs} ms
@@ -841,7 +841,6 @@ export default function AdminTas() {
           {/* Pending records */}
           <PendingRecords
             submissions={pendingSubmissions}
-            isStunt={isStunt}
             selectedSubmission={selectedSubmission}
             copySubmissionToForm={copySubmissionToForm}
             downloadReplay={downloadReplay}

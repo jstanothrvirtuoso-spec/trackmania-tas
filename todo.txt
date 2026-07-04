@@ -12,15 +12,16 @@ Ideas zone for partial TASes
 
 Improvements for game RecordTable
 Can we remove "TMNF No Cut" as a game in supabase?
-Add inputs script
 Add reactions??
 Fix weird row grouping in game RecordTable (show extra authors, and fix environment icons)
-Fix stunt RTA scores, check all stunt stuff
-  - Might want to make all tas records -time_ms too 
-  - Remove all Math.abs()
-  - Submissions and updating needs to be careful with *-1000
-  - Check sorting of /tracks table
-  - Inputs generator display time for stunt (probably check elsewhere too, like tas of the day?)
+Migrate pastebin inputs to replay files 
+Clicking on gameSet in TimeSaved table should filter rows by that set
+Add loading symbol for pending submisisons in /admin-tas, expand table to show recent approved/rejected submissions and allow deletion/clearing of them
+Check you can't submit in /admin-tas without replay
+Change formatTime() to just take a whole TasEntry | RtaEntry to check for low input/TM2/stunt
+Edit submissions in /admin-tas without upsetting existing replay files
+Deleting submissions should remove replay file from downloads
+
 
 
 //////////////////////////////////////////////////////////////////////////

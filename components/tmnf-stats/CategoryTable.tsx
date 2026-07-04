@@ -138,14 +138,14 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
               </td>
 
               {/* TAS columns */}
-              {row.columns.toReversed().map((c, i) => (
+              {row.columns.toReversed().map((column, i) => (
                 <td
                   key={i}
-                  className={`px-1.5 py-0.5 tabular-nums sm:px-2 sm:py-1.5 ${CATEGORY_COLOURS[c.colourIndex]}`}
+                  className={`px-1.5 py-0.5 tabular-nums sm:px-2 sm:py-1.5 ${CATEGORY_COLOURS[column.colourIndex]}`}
                 >
-                  {c.entry ? (
+                  {column.entry ? (
                     <span className="text-slate-300">
-                      { formatTime(c.entry.time_ms) }
+                      { formatTime(column.entry.time_ms) }
                     </span>
                   ) : (
                     <span className="text-slate-600"></span>

@@ -104,7 +104,7 @@ export function Maintainers() {
       </p>
 
       <div className="relative px-2 text-sm text-start font-sakura pink-white-gradient italic">
-        fabi, Miku, Bdcap, Link
+        fabi, Miku, Bdcap, Link, DarkLink
       </div>
       
       <p className="relative mt-3 px-2 text-sm tracking-[0.25em] text-start font-sakura pink-white-gradient">

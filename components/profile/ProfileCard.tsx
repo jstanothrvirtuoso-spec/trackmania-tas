@@ -289,6 +289,7 @@ export default function ProfileCard({ profile, onEditClick }: {
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
+    // eslint-disable-next-line react-hooks/immutability
     target.current = {
       x: (e.clientX - rect.left) / rect.width,
       y: (e.clientY - rect.top) / rect.height,

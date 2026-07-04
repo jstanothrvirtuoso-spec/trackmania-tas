@@ -41,8 +41,9 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
       setButtonWidth(Math.max(170, Math.min(Math.ceil(width + 30), window.innerWidth - 32)));
     }
   }, [allOptions]);
-
+  
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setValue(initialValue);
   }, [initialValue]);
 

@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
 import { SortOrder, Game, RecordRow, Category } from "@/utils/typing";
-import { formatTime, formatPercentSaved, formatDate } from "@/utils/formatting";
+import { formatTime, formatPercentSaved, formatDate, formatDiff } from "@/utils/formatting";
 import SortIndicator from "@/components/SortIndicator";
 import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
 import { formatAuthors, formatTrack } from "../FormatLinks";
@@ -55,9 +55,9 @@ function getSortValue(row: RecordRow, field: SortField, gameSetIndexes: Map<stri
     case "inputs":
       return row.tas?.num_inputs ?? Infinity;
     case "diff":
-      return row.tas && row.rta ? row.tas.time_ms - Math.abs(row.rta.time_ms) : Infinity;
+      return row.tas && row.rta ? row.tas.time_ms - row.rta.time_ms : Infinity;
     case "percentSaved":
-      return row.tas && row.rta ? (row.tas.time_ms - Math.abs(row.rta.time_ms)) / Math.abs(row.rta.time_ms) : Infinity;
+      return row.tas && row.rta ? (row.tas.time_ms - row.rta.time_ms) / row.rta.time_ms : Infinity;
     case "authors":
       return row.tas?.authors.join(", ") ?? "";
     case "date":
@@ -174,7 +174,6 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
           const difficultyClass = getTrackDifficultyTint(trackInfo.gameSet, index);
           const bgColour = recent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
           const rtaColour = (showRecent && rta && isRecentEntry(rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
-          const isStunt = trackInfo.gameSet === "Stunt";
           const isLastRow = index === sortedRows.length - 1;
           const replayURL = tas && getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path)
           const rowCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, bgColour);
@@ -200,14 +199,14 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {lowInputCategory ? (
                 <>
                   <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas?.num_inputs ?? "-"}</td>
-                  <td className={rowCommon("px-3 py-1 text-slate-200")}>{tas ? formatTime(tas.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-3 py-1 text-slate-200")}>{tas ? formatTime(tas.time_ms, isTM2) : "-"}</td>
                 </>
               ) : (
                 <>
-                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas ? formatTime(tas.time_ms, isStunt, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas ? formatTime(tas.time_ms, isTM2) : "-"}</td>
                   {(() => {
-                    const isBadDiff = tas && rta && ((tas.time_ms - Math.abs(rta.time_ms) > 0 && !isStunt) || (tas.time_ms - Math.abs(rta.time_ms) < 0 && isStunt));
-                    const isEqual = tas && rta && tas.time_ms === Math.abs(rta.time_ms);
+                    const isBadDiff = tas && rta && tas.time_ms > rta.time_ms;
+                    const isEqual = tas && rta && tas.time_ms === rta.time_ms;
                     return (
                       <td
                         className={classNames(BODY_BASE, "font-vga px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-200")}
@@ -218,11 +217,11 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                             : "0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)",
                         }}
                       >
-                        {tas && rta ? `${formatTime(tas.time_ms - Math.abs(rta.time_ms), isStunt, isTM2, true)}` : "-"}
+                        {tas && rta ? `${formatDiff(tas.time_ms, rta.time_ms, isTM2)}` : "-"}
                       </td>
                     );
                   })()}
-                  <td className={rowCommon("px-1.5 text-slate-200")}>{tas && rta ? formatPercentSaved(tas.time_ms, Math.abs(rta.time_ms), 3, isStunt) : "-"}</td>
+                  <td className={rowCommon("px-1.5 text-slate-200")}>{tas && rta ? formatPercentSaved(tas.time_ms, rta.time_ms, 3) : "-"}</td>
                 </>
               )}
 
@@ -251,7 +250,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {showRta && (
                 <>
                   <td className="pl-3" />
-                  <td className={rowRtaCommon(classNames("px-2 border-l text-slate-200", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{rta ? formatTime(Math.abs(rta.time_ms), isStunt, isTM2) : "-"}</td>
+                  <td className={rowRtaCommon(classNames("px-2 border-l text-slate-200", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{rta ? formatTime(rta.time_ms, isTM2) : "-"}</td>
                   <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{rta?.player ?? "-"}</td>
                   <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{rta ? formatDate(rta.date) : "-"}</td>
                   <td className={rowRtaCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""), rtaColour)}>

@@ -10,7 +10,6 @@ type TrackRecordsProps = {
   category: Category;
   isStunt: boolean;
   records: TasEntry[];
-
   copyTasToForm: (t: TasEntry) => void;
   deleteTas: (t: TasEntry) => Promise<void>;
 };
@@ -76,7 +75,7 @@ export default function TrackRecords({
                     </td>
 
                     <td className="py-2 px-2">
-                      {formatTime(t.time_ms, isStunt, t.game === "TM2")}
+                      {formatTime(t.time_ms, t.game === "TM2")}
                     </td>
 
                     <td className="py-1 px-1 max-w-80">

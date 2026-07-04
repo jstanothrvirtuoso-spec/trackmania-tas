@@ -2,7 +2,7 @@
 import { Category, RecordRow, SortOrder } from "@/utils/typing";
 import { EnvironmentIcon } from "../Icons";
 import { formatTrack } from "../FormatLinks";
-import { formatDate, formatGame, formatTime } from "@/utils/formatting";
+import { formatDate, formatDiff, formatGame, formatTime } from "@/utils/formatting";
 import { CATEGORY_ORDER } from "@/utils/constants";
 import { useMemo, useState } from "react";
 import SortIndicator from "../SortIndicator";
@@ -16,7 +16,7 @@ function getSortValue(row: RecordRow, field: SortField): string | number {
     case "time":
       return row.tas?.time_ms ?? Infinity;
     case "diff":
-      return row.tas && row.rta ? row.tas.time_ms - Math.abs(row.rta.time_ms) : Infinity;
+      return row.tas && row.rta ? row.tas.time_ms - row.rta.time_ms : Infinity;
     case "game":
       return `${row.tas?.game ?? ""}-${row.tas?.track ?? ""}`;
     case "date":
@@ -124,7 +124,6 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
         <tbody>
           {sortedRows.map((row, index) => {
             if (!row.tas) return null;
-            const isStunt = row.trackInfo.gameSet === "Stunt"
             const tasGame = row.tas.category === "No Cut" && row.trackInfo.noCutTrack ? "TMNF No Cut" : formatGame(row.tas.game)
             const opacity = row.isCurrentBestTas ? "opacity-100" : "opacity-40"
 
@@ -145,11 +144,11 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
                 </td>
 
                 <td className="px-3 py-1.5">
-                  { formatTime(row.tas.time_ms, isStunt, row.tas.game === "TM2")}
+                  { formatTime(row.tas.time_ms, row.tas.game === "TM2")}
                 </td>
 
                 <td className="px-2 py-1.5 italic hidden sm:table-cell">
-                  { row.rta ? formatTime(row.tas.time_ms - Math.abs(row.rta.time_ms), isStunt, row.tas.game === "TM2", true) : "-" }
+                  { row.rta ? formatDiff(row.tas.time_ms, row.rta.time_ms, row.tas.game === "TM2", true) : "-" }
                 </td>
 
                 <td className="px-2 py-1.5 hidden sm:table-cell">

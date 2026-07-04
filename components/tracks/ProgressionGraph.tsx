@@ -1,7 +1,15 @@
 
 import { useState, useMemo } from "react";
-import { CATEGORY_COLOURS, GRAPH_CATEGORIES } from "@/utils/constants";
-import { GraphCategory, ProgressionGraphPoint } from "./TracksPage";
+import { CATEGORY_COLOURS, CATEGORY_FILTERS, GRAPH_CATEGORIES } from "@/utils/constants";
+import { TasEntry } from "@/utils/typing";
+
+type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
+type ProgressionGraphPoint = {
+  id: number,
+  date: string, 
+  time: number, 
+  category: GraphCategory
+};
 
 const WIDTH = 720;
 const HEIGHT = 405;
@@ -47,14 +55,55 @@ function generateYAxisTicks(min: number, max: number) {
   return { step: niceStep, yTicks: ticks.map((t) => Math.round(t * 1e6) / 1e6) };
 }
 
-export function RecordProgressionGraph({ progression, useMinutes, isStunt, currentRecord, minDate, maxDate }: {
-  progression: Record<GraphCategory, ProgressionGraphPoint[]>;
-  useMinutes: boolean;
-  isStunt: boolean;
+export function RecordProgressionGraph({ records, graphUnits, currentRecord, minDate, maxDate }: {
+  records: TasEntry[];
+  graphUnits: string;
   currentRecord: { category: string, id: number } | null;
   minDate: number;
   maxDate: number;
 }) {
+
+  const progression = useMemo<Record<GraphCategory, ProgressionGraphPoint[]>>(() => {
+
+    const sorted = [...records].sort((a, b) => {
+      const dateDiff = new Date(a.date).getTime() - new Date(b.date).getTime();
+      if (dateDiff !== 0) return dateDiff;
+      return b.time_ms - a.time_ms;
+    });
+
+    const buildPoints = (category: GraphCategory) => {
+      const allowedCategories = CATEGORY_FILTERS[category];
+      const points: ProgressionGraphPoint[] = [];
+      
+      let best = Infinity;
+      sorted
+        .filter((tas) => allowedCategories.has(tas.category))
+        .forEach((tas) => {
+          if (tas.time_ms < best) {
+            best = tas.time_ms;
+            points.push({
+              id: tas.id,
+              date: tas.date,
+              time: graphUnits === "min" ? tas.time_ms / 60000 : Math.abs(tas.time_ms) / 1000,
+              category: tas.category as GraphCategory
+            });
+          }
+        });
+
+      const filterPoints = points.filter((tas) => tas.category === category);
+
+      return filterPoints.length > 0 ? points : [];
+    };
+
+    return {
+      "Open": buildPoints("Open"),
+      "NOseboost": buildPoints("NOseboost"),
+      "No Uber": buildPoints("No Uber"),
+      "WR Route": buildPoints("WR Route"),
+      "No Cut": buildPoints("No Cut"),
+      "RTA": buildPoints("RTA"),
+    };
+  }, [records, graphUnits]);
 
   const [forceZeroY, setForceZeroY] = useState(false);
   const [visibleCategories, setVisibleCategories] = useState(INITIAL_VISIBLE);
@@ -77,14 +126,14 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   const minTime = forceZeroY ? 0 : Math.max(0, rawMinTime - paddingSeconds);
   const maxTime = rawMaxTime + paddingSeconds;
   const { step, yTicks } = generateYAxisTicks(minTime, maxTime);
-  const yTickDecimals = step < 0.1 ? 2 : step < 1 ? 1 : 0
+  const yTickDecimals = step < 0.1 ? 2 : step < 1 ? 1 : 0;
 
-  const xScale = (date: string) => {
+  function xScale(date: string) {
     const t = new Date(date).getTime();
     return round(PADDING_X + ((t - minDate) / (maxDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
   };
 
-  const yScale = (time: number) => {
+  function yScale(time: number) {
     return round(HEIGHT - PADDING_Y - ((time - yTicks[0]) / (yTicks[yTicks.length - 1] - yTicks[0] || 1)) * (HEIGHT - PADDING_Y * 2));
   };
 
@@ -98,7 +147,7 @@ export function RecordProgressionGraph({ progression, useMinutes, isStunt, curre
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 w-full flex-1 backdrop-blur-sm shadow-[0_5px_20px_rgba(0,0,0,0.6)]">
       <h2 className="mb-1 uppercase tracking-[0.18em] text-slate-300 text-xs lg:text-sm lg:font-semibold">
-        Record Progression ({isStunt ? "pts" : useMinutes ? "min" : "sec"})
+        Record Progression ({graphUnits})
       </h2>
 
       <div className="w-full aspect-[16/9]">

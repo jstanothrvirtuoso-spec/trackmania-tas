@@ -6,9 +6,7 @@ import { VideoIcon } from "@/components/Icons";
 
 type PendingRecordsProps = {
   submissions: SubmitForm[];
-  isStunt: boolean;
   selectedSubmission: SubmitForm | null;
-
   copySubmissionToForm: (s: SubmitForm) => void;
   downloadReplay: (
     replayPath: string,
@@ -17,8 +15,7 @@ type PendingRecordsProps = {
 };
 
 export default function PendingRecords({ 
-  submissions, 
-  isStunt,
+  submissions,
   selectedSubmission, 
   copySubmissionToForm, 
   downloadReplay,
@@ -83,7 +80,7 @@ export default function PendingRecords({
                   </td>
 
                   <td className="px-2 py-2">
-                    {s.time_ms ? formatTime(s.time_ms, isStunt, s.game === "TM2") : "-"}
+                    {s.time_ms ? formatTime(s.time_ms, s.game === "TM2") : "-"}
                   </td>
 
                   <td className="px-2 py-2 hidden sm:table-cell">

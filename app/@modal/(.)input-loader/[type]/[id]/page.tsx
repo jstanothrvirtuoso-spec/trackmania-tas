@@ -8,6 +8,7 @@ import { getReplayURL } from "@/utils/common";
 import { formatTime } from "@/utils/formatting";
 import { createClient } from "@/utils/supabase/client";
 import { Game } from "@/utils/typing";
+import { TRACKS } from "@/lib/TrackList";
 
 type LoadState = "fetching" | "downloading" | "generating" | "done" | "error" | "timeout"
 type RecordData = {
@@ -167,7 +168,7 @@ export default function InputsModal() {
             </div>
 
             <div className="font-mono font-semibold text-sky-400 whitespace-nowrap text-lg sm:text-xl">
-              {record ? formatTime(record["Time"], false, record["Game"] === "TM2") : "-"}
+              {record ? `${formatTime(record["Time"], record["Game"] === "TM2")}${TRACKS[record["Track"]].gameSet === "Stunt" ? " pts" : ""}` : "-"}
             </div>
             
             <div className="font-xs sm:font-sm text-slate-200">
