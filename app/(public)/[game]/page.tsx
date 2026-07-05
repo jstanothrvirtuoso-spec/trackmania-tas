@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import { use, useState, useMemo } from "react";
 import { CATEGORY_FILTERS, GAME_SLUGS } from "@/utils/constants";
-import { Environment, Category, TasEntry } from "@/utils/typing";
+import { Environment, Category, TasEntry, GameSet } from "@/utils/typing";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { useBestRtaRecords } from "@/lib/RtaRecords";
 import { useTasRecords } from "@/lib/TasRecords";
@@ -19,13 +19,13 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
   const { game } = use(params);
   const gameName = GAME_SLUGS[game];
   if (!gameName) { notFound() }
-  
+
+  const trackList = tracksByGame[gameName];
   const [selectedAuthor, setSelectedAuthor] = useState<string>("All Authors");
+  const [selectedGameSet, setSelectedGameSet] = useState<GameSet | "All Sets">("All Sets");
   const [selectedCategory, setSelectedCategory] = useState<Category>("Open");
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | "All Envs">("All Envs");
-  const allowedCategories = CATEGORY_FILTERS[selectedCategory]
-  const trackList = tracksByGame[gameName];
-
+ 
   const { data: profilePrivate, isLoading } = useProfilePrivate();
   const { data: bestRtaByTrack } = useBestRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
@@ -43,6 +43,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
     if (!bestRtaByTrack) return []
     
     const bestTasByTrack = new Map<string, TasEntry>();
+    const allowedCategories = CATEGORY_FILTERS[selectedCategory];
 
     for (const entry of Object.values(tasRecords)) {
       if (!allowedCategories.has(entry.category)) continue;
@@ -54,10 +55,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
 
       const existing = bestTasByTrack.get(baseTrack);
 
-      if (
-        !existing || entry.time_ms < existing.time_ms ||
-        (entry.time_ms === existing.time_ms && entry.date < existing.date)
-      ) {
+      if (!existing || entry.time_ms < existing.time_ms || (entry.time_ms === existing.time_ms && entry.date < existing.date)) {
         bestTasByTrack.set(baseTrack, entry);
       }
     }
@@ -68,7 +66,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
       tas: bestTasByTrack.get(track) ?? null,
       rta: bestRtaByTrack.get((TRACKS[track].noCutTrack && selectedCategory === "No Cut") ? TRACKS[track].noCutTrack : track) ?? null,
     }));
-  }, [gameName, bestRtaByTrack, tasRecords, allowedCategories, selectedCategory, trackList]);
+  }, [gameName, bestRtaByTrack, tasRecords, selectedCategory, trackList]);
 
   const selectedAuthorCheck = useMemo(() => {
     if (!selectedAuthor) return "";
@@ -85,64 +83,56 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
 
   const filteredRows = useMemo(() => {
     return currentRecords.filter((row) => {
-      const matchesAuthor = !selectedAuthorCheck || selectedAuthorCheck === "All Authors" || row.tas?.authors.includes(selectedAuthorCheck)
-      const matchesEnvironment = selectedEnvironment === "All Envs" || row.trackInfo.environment === selectedEnvironment
-      return matchesEnvironment && matchesAuthor;
+      const matchesAuthor = !selectedAuthorCheck || selectedAuthorCheck === "All Authors" || row.tas?.authors.includes(selectedAuthorCheck);
+      const matchesEnvironment = selectedEnvironment === "All Envs" || row.trackInfo.environment === selectedEnvironment;
+      const matchesGameSet = !selectedGameSet || selectedGameSet === "All Sets" || row.trackInfo.gameSet === selectedGameSet;
+      return matchesEnvironment && matchesAuthor && matchesGameSet;
     })
-  }, [currentRecords, selectedAuthorCheck, selectedEnvironment]);
+  }, [currentRecords, selectedAuthorCheck, selectedEnvironment, selectedGameSet]);
 
   if (isLoading) {
     return <div className="text-white p-10">Loading...</div>;
   }
 
- return (
-  <div className="relative pt-20 min-h-screen overflow-hidden bg-slate-950">
+  return (
+    <div className="relative pt-20 min-h-screen overflow-hidden bg-slate-950">
+      <div className="relative z-10">
 
-    {/* Blurred wallpaper layer */}
-    {/* <div
-      className="absolute inset-0 bg-cover bg-center scale-110 blur-md"
-      style={{ backgroundImage: "url('/wallpapers/gamewp.webp')" }}
-    /> */}
-
-    {/* Dark overlay */}
-    {/* <div className="absolute inset-0 bg-black/85" /> */}
-
-    {/* Content */}
-    <div className="relative z-10">
-
-      <HeaderOptions
-        game={gameName}
-        currentRecords={currentRecords}
-        selectedAuthor={selectedAuthorCheck}
-        selectedCategory={selectedCategory}
-        selectedEnvironment={selectedEnvironment}
-        onAuthorChange={setSelectedAuthor}
-        onCategoryChange={setSelectedCategory}
-        onEnvironmentChange={setSelectedEnvironment}
-      />
-
-      <div className="p-3 gap-4 justify-center flex flex-col xl:flex-row">
-        
-        <div className="overflow-x-auto">
-          <RecordTable 
-            game={gameName}
-            showRta={show_rta}
-            showRecent={show_recent}
-            currentRecords={filteredRows}
-            selectedCategory={selectedCategory}
+        <HeaderOptions
+          game={gameName}
+          currentRecords={currentRecords}
+          selectedAuthor={selectedAuthorCheck}
+          selectedGameSet={selectedGameSet}
+          selectedCategory={selectedCategory}
+          selectedEnvironment={selectedEnvironment}
+          onAuthorChange={setSelectedAuthor}
+          onGameSetChange={setSelectedGameSet}
+          onCategoryChange={setSelectedCategory}
+          onEnvironmentChange={setSelectedEnvironment}
         />
-        </div>
 
-        <div className="items-center justify-center gap-4 flex flex-wrap sm:items-start xl:flex-col xl:justify-start">
-          {show_time_saved && (<TimeSaved currentRecords={filteredRows} />)}
+        <div className="p-3 gap-4 justify-center flex flex-col xl:flex-row">
+          
+          <div className="overflow-x-auto">
+            <RecordTable 
+              game={gameName}
+              showRta={show_rta}
+              showRecent={show_recent}
+              currentRecords={filteredRows}
+              selectedCategory={selectedCategory}
+          />
+          </div>
 
-          <div className="items-center gap-4 flex flex-col sm:flex-row sm:items-start">
-            {show_leaderboard && (<Leaderboard currentRecords={filteredRows} />)}
-            {show_rta_leaderboard && (<RtaTable currentRecords={filteredRows} />)}
+          <div className="items-center justify-center gap-4 flex flex-wrap sm:items-start xl:flex-col xl:justify-start">
+            {show_time_saved && (<TimeSaved currentRecords={filteredRows} />)}
+
+            <div className="items-center gap-4 flex flex-col sm:flex-row sm:items-start">
+              {show_leaderboard && (<Leaderboard currentRecords={filteredRows} />)}
+              {show_rta_leaderboard && (<RtaTable currentRecords={filteredRows} />)}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

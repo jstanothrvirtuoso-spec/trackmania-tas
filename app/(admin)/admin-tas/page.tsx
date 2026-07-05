@@ -11,13 +11,12 @@ import { useAlert } from "@/components/providers/AlertProvider";
 import { useConfirm } from "@/components/providers/ConfirmProvider";
 import { useAuthors } from "@/lib/Authors";
 import { useTasRecords } from "@/lib/TasRecords";
-import { usePendingSubmissions } from "@/lib/TasSubmissions";
 import { getGameSetOptions, TRACKS, tracksByGame } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
 import { trackIds } from "@/lib/TrackId";
 import AuthorSelector from "@/components/AuthorSelector";
 import TrackRecords from "./TrackRecords";
-import PendingRecords from "./PendingRecords";
+import TasSubmissions from "./TasSubmissions";
 
 export type TasForm = {
   game: Game;
@@ -28,7 +27,11 @@ export type TasForm = {
   authors: string[];
   date: string;
   video: string;
+  replay_path: string;
 };
+
+const REPLAY_OPTIONS = ["Keep existing", "Replace"] as const;
+type ReplayOptions = (typeof REPLAY_OPTIONS)[number];
 
 const supabase = createClient();
 const today = new Date().toISOString().split("T")[0];
@@ -53,11 +56,12 @@ export default function AdminTas() {
   const [loading, setLoading] = useState(false);
   const [adminNote, setAdminNote] = useState("");
   const [dragging, setDragging] = useState(false);
+  const [selectedReplayOption, setSelectedReplayOption] = useState<ReplayOptions>("Keep existing")
   const [selectedSubmission, setSelectedSubmission] = useState<SubmitForm | null>(null);
+  const [selectedCopiedTas, setSelectedCopiedTas] = useState<TasEntry | null>(null);
 
   const { data: authorData = [] } = useAuthors();
   const { data: tasRecords = [] } = useTasRecords();
-  const { data: pendingSubmissions = [] } = usePendingSubmissions();
   
   const [replay, setReplay] = useState<ReplayState>({
     file: null,
@@ -74,6 +78,7 @@ export default function AdminTas() {
     authors: ["Kimura"],
     date: today,
     video: "",
+    replay_path: "",
   });
 
   const [time, setTime] = useState<TimeState>({
@@ -100,7 +105,11 @@ export default function AdminTas() {
   }
 
   function resetForm() {
-    setSelectedSubmission(null)
+
+    setSelectedSubmission(null);
+    setSelectedCopiedTas(null);
+    setSelectedReplayOption("Keep existing");
+
     setForm({
       game: form.game,
       gameSet: form.gameSet,
@@ -110,6 +119,7 @@ export default function AdminTas() {
       authors: ["Kimura"],
       date: today,
       video: "",
+      replay_path: "",
     });
 
     setTime({
@@ -129,29 +139,31 @@ export default function AdminTas() {
     update("gameSet", gameSetOptions[0])
   }
   
-  function copySubmissionToForm(s: SubmitForm) {
+  function copySubmissionToForm(submission: SubmitForm) {
 
-    const category = s.category && s.category != "Unsure" ? s.category : "Open"
+    const category = submission.category && submission.category != "Unsure" ? submission.category : "Open"
 
-    getSubmissionReplayData(s.replay_path, s.file_name);
-    setSelectedSubmission(s);
+    getSubmissionReplayData(submission.replay_path, submission.file_name);
+    setSelectedSubmission(submission);
+    setSelectedCopiedTas(null);
     setForm({
-      game: s.game ?? "TMNF",
-      gameSet: s.track ? TRACKS[s.track].gameSet : "White",
-      track: s.track ?? "",
+      game: submission.game ?? "TMNF",
+      gameSet: submission.track ? TRACKS[submission.track].gameSet : "White",
+      track: submission.track ?? "",
       category: category,
       num_inputs: 0,
-      authors: Array.isArray(s.authors) ? s.authors : [],
-      date: s.date?.slice(0, 10) ?? today,
-      video: s.video ?? "",
+      authors: Array.isArray(submission.authors) ? submission.authors : [],
+      date: submission.date?.slice(0, 10) ?? today,
+      video: submission.video ?? "",
+      replay_path: "",
     });
-
-    setTime(timeMsToState(Math.abs(s.time_ms ?? 0)));
+    setTime(timeMsToState(Math.abs(submission.time_ms ?? 0)));
   }
 
-  async function copyTasToForm(t: TasEntry) {
+  async function copyTasToForm(tas: TasEntry) {
 
-    const replayURL = getReplayURL(t.game, t.track, t.time_ms, t.replay_path);
+    setReplay({ file: null, track: "", time: timeMsToState(0) });
+    const replayURL = getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path);
 
     if (replayURL) {
       
@@ -166,9 +178,14 @@ export default function AdminTas() {
         }
 
         const blob = await res.blob();
+        const totalSeconds = Math.floor(tas.time_ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        const centiseconds = Math.floor((tas.time_ms % 1000) / 10);
+        const timeString = `${String(minutes).padStart(2, "0")}'${String(seconds).padStart(2, "0")}''${String(centiseconds).padStart(2, "0")}`;
         const file = new File(
           [blob],
-          "replay.gbx",
+          `${tas.track} TAS (${timeString}).Replay.Gbx`,
           { type: "application/octet-stream" }
         );
 
@@ -179,17 +196,19 @@ export default function AdminTas() {
     }
 
     setSelectedSubmission(null);
+    setSelectedCopiedTas(tas);
     setForm({
-      game: t.game,
-      gameSet: TRACKS[t.track].gameSet,
-      track: t.track,
-      category: t.category,
-      num_inputs: t.num_inputs ?? 0,
-      authors: t.authors,
-      date: t.date.slice(0, 10),
-      video: t.video ?? "",
+      game: tas.game,
+      gameSet: TRACKS[tas.track].gameSet,
+      track: tas.track,
+      category: tas.category,
+      num_inputs: tas.num_inputs ?? 0,
+      authors: tas.authors,
+      date: tas.date.slice(0, 10),
+      video: tas.video ?? "",
+      replay_path: tas.replay_path ?? "",
     });
-    setTime(timeMsToState(Math.abs(t.time_ms)));
+    setTime(timeMsToState(Math.abs(tas.time_ms)));
   }
 
   async function onFileSelect(file?: File) {
@@ -220,14 +239,14 @@ export default function AdminTas() {
     });
   }
 
-  async function deleteTas(t: TasEntry) {
+  async function deleteTas(tas: TasEntry) {
 
     setLoading(true);
     try {
       const confirmed = await confirm(`
-        Delete ${t.track} (${t.category}) by ${t.authors.join(", ")}?
-          Time (ms): ${t.time_ms}
-          Formatted Time: ${formatTime(t.time_ms, t.game === "TM2")}\n
+        Delete ${tas.track} (${tas.category}) by ${tas.authors.join(", ")}?
+          Time (ms): ${tas.time_ms}
+          Formatted Time: ${formatTime(tas.time_ms, tas.game === "TM2")}\n
         This cannot be undone!`
       );
 
@@ -236,9 +255,13 @@ export default function AdminTas() {
       const { error } = await supabase
         .from("tas_records")
         .delete()
-        .eq("track", t.track)
-        .eq("category", t.category)
-        .eq("time_ms", t.time_ms);
+        .eq("track", tas.track)
+        .eq("category", tas.category)
+        .eq("time_ms", tas.time_ms);
+      
+      if (tas.replay_path) {
+        await deleteReplay(tas.replay_path, tas.game, tas.track)
+      }
 
       await queryClient.invalidateQueries({
         queryKey: ["tasRecords"],
@@ -251,6 +274,113 @@ export default function AdminTas() {
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function uploadReplay() {
+
+    if (!replay.file) {
+      setWarning("Replay migration failed.");
+      return;
+    };
+
+    const formData = new FormData();
+
+    formData.append("file", replay.file);
+    formData.append("game", form.game);
+    formData.append("track", form.track);
+
+    const response = await fetch("/api/upload-replay", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      setWarning("Replay migration failed.");
+      return;
+    };
+
+    const { replayUid } = await response.json();
+
+    return replayUid;
+        
+  }
+
+  async function deleteReplay(replay_path: string, game: Game, track: string) {
+
+    const response = await fetch("/api/delete-replay", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        replayPath: replay_path,
+        game: game,
+        track: track,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete replay");
+    }
+
+  }
+
+  async function handleSubmit() {
+
+    setLoading(true)
+
+    try {
+      {/* New TAS */}
+      if (!selectedCopiedTas) {
+
+        {/* Add without replay */}
+        if (!replay.file) {
+          await submit(null);
+          return;
+        }
+
+        {/* Add with replay */}
+        const replayUid = await uploadReplay();
+        await submit(replayUid);
+        return;
+      }
+
+      {/* Edit TAS */}
+      {/* No existing replay */}
+      if (!form.replay_path) {
+
+        {/* Stay as nothing */}
+        if (!replay.file) {
+          await submit(null);
+          return;
+        }
+
+        {/* Add new replay */}
+        const replayUid = await uploadReplay();
+        await submit(replayUid);
+        return;
+      }
+
+      {/* Existing replay */}
+      if (form.replay_path) {
+
+        {/* Keep existing */}
+        if (selectedReplayOption === "Keep existing") {
+          await submit(form.replay_path);
+          return;
+        }
+
+        {/* Replace with new file */}
+        await deleteReplay(form.replay_path, form.game, form.track);
+        const replayUid = await uploadReplay();
+        await submit(replayUid);
+        return;
+      }
+
+    } finally {
+      resetForm();
+      setLoading(false)
     }
   }
 
@@ -318,156 +448,119 @@ export default function AdminTas() {
         await submit(replayUid)
       }
 
-      queryClient.setQueryData(
-        ["tas_submissions", "pending"],
-        (old: SubmitForm[] | undefined) =>
-          old?.filter((x) => x.id !== selectedSubmission.id)
+      queryClient.setQueryData(["tas_submissions"],
+        (old: SubmitForm[] | undefined) => old?.filter((x) => x.id !== selectedSubmission.id)
       );
 
       await queryClient.invalidateQueries({
-        queryKey: ["tas_submissions", "pending"],
+        queryKey: ["tas_submissions"],
       });
 
       setAdminNote("");
-      resetForm()
+      resetForm();
     } finally {
       setLoading(false);
     }
   }
 
-  async function submit(replayUid?: string) {
+  async function submit(replayUid: string | null) {
 
     setWarning("");
-    setLoading(true);
-    try {
-      if (!form.track) {
-        setWarning("Please select a track.");
-        return;
-      }
 
-      if (timeMs <= 0) {
-        setWarning("Please set the time");
-        return;
-      }
+    if (!form.track) {
+      setWarning("Please select a track.");
+      return;
+    }
 
-      // Upsert TAS record
-      const payload = {
-        game: form.game,
-        track: form.track,
-        category: form.category,
-        num_inputs: form.num_inputs || null,
-        time_ms: isStunt ? -timeMs : timeMs,
-        date: new Date(form.date).toISOString(),
-        video: form.video || null,
-        replay_path: replayUid ?? null,
-      };
+    if (timeMs <= 0) {
+      setWarning("Please set the time");
+      return;
+    }
 
-      const { data: tasRecord, error: tasError } = await supabase
-        .from("tas_records")
-        .upsert(payload, { onConflict: "track,category,time_ms" })
-        .select()
-        .single();
+    // Upsert TAS record
+    const payload = {
+      game: form.game,
+      track: form.track,
+      category: form.category,
+      num_inputs: form.num_inputs || null,
+      time_ms: isStunt ? -timeMs : timeMs,
+      date: new Date(form.date).toISOString(),
+      video: form.video || null,
+      replay_path: replayUid,
+    };
 
-      if (tasError) {
-        setWarning(tasError.message);
-        return;
-      }
+    const { data: tasRecord, error: tasError } = await supabase
+      .from("tas_records")
+      .upsert(payload, { onConflict: "track,category,time_ms" })
+      .select()
+      .single();
 
-      // Find authors that don't exist yet
-      const existingAuthors = authorData.map((a) => a.author);
+    if (tasError) {
+      setWarning(tasError.message);
+      return;
+    }
 
-      const newAuthors = form.authors.filter(
-        (name) => !existingAuthors.includes(name)
-      );
+    // Find authors that don't exist yet
+    const existingAuthors = authorData.map((a) => a.author);
+    const newAuthors = form.authors.filter(
+      (name) => !existingAuthors.includes(name)
+    );
 
-      // Insert missing authors
-      if (newAuthors.length) {
-        const { error: newAuthorsError } = await supabase
-          .from("authors")
-          .insert(newAuthors.map((author) => ({ author })));
-
-        if (newAuthorsError) {
-          setWarning(newAuthorsError.message);
-          return;
-        }
-        
-        await queryClient.invalidateQueries({
-          queryKey: ["authors"],
-        });
-      }
-
-      // Re-fetch all relevant authors
-      const { data: allAuthors, error: authorsFetchError } = await supabase
+    // Insert missing authors
+    if (newAuthors.length) {
+      const { error: newAuthorsError } = await supabase
         .from("authors")
-        .select("id, author")
-        .in("author", form.authors);
+        .insert(newAuthors.map((author) => ({ author })));
 
-      if (authorsFetchError) {
-        setWarning(authorsFetchError.message);
+      if (newAuthorsError) {
+        setWarning(newAuthorsError.message);
         return;
       }
-
-      // Build junction rows
-      const authorRows = form.authors.map((name) => ({
-        tas_record_id: tasRecord.id,
-        author_id: allAuthors.find((a) => a.author === name)?.id,
-      }));
-
-      // Clear existing links
-      await supabase
-        .from("tas_record_authors")
-        .delete()
-        .eq("tas_record_id", tasRecord.id);
-
-      // Insert links
-      const { error: authorsError } = await supabase
-        .from("tas_record_authors")
-        .insert(authorRows);
-
-      if (authorsError) {
-        setWarning(authorsError.message);
-        return;
-      }
-
+      
       await queryClient.invalidateQueries({
-        queryKey: ["tasRecords"],
+        queryKey: ["authors"],
       });
-
-      showAlert("Success!");
-    } finally {
-      setLoading(false);
     }
+
+    // Re-fetch all relevant authors
+    const { data: allAuthors, error: authorsFetchError } = await supabase
+      .from("authors")
+      .select("id, author")
+      .in("author", form.authors);
+
+    if (authorsFetchError) {
+      setWarning(authorsFetchError.message);
+      return;
+    }
+
+    // Build junction rows
+    const authorRows = form.authors.map((name) => ({
+      tas_record_id: tasRecord.id,
+      author_id: allAuthors.find((a) => a.author === name)?.id,
+    }));
+
+    // Clear existing links
+    await supabase
+      .from("tas_record_authors")
+      .delete()
+      .eq("tas_record_id", tasRecord.id);
+
+    // Insert links
+    const { error: authorsError } = await supabase
+      .from("tas_record_authors")
+      .insert(authorRows);
+
+    if (authorsError) {
+      setWarning(authorsError.message);
+      return;
+    }
+
+    await queryClient.invalidateQueries({
+      queryKey: ["tasRecords"],
+    });
+
+    showAlert("Success!");
   }
-  
-  async function downloadReplay(replayPath: string, fileName: string) {
-
-    if (!replayPath) return;
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .storage
-        .from("replays")
-        .createSignedUrl(replayPath, 60 * 5);
-
-      if (error || !data?.signedUrl) return;
-
-      const res = await fetch(data.signedUrl);
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-
-      a.href = url;
-      a.download = fileName || "replay.gbx";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      URL.revokeObjectURL(url);
-    
-    } finally {
-      setLoading(false);
-    }
-  };
 
   async function getSubmissionReplayData(replayPath: string, fileName: string) {
     if (!replayPath) return;
@@ -508,7 +601,7 @@ export default function AdminTas() {
       <div className="grid gap-4 lg:grid-cols-[460px_1fr] items-start">
 
         {/* TAS submission form */}
-        <div className={`rounded-2xl border border-slate-700 p-4 shadow-xl ${selectedSubmission ? "bg-sky-400/10" : "bg-slate-900"}`}>
+        <div className={`rounded-2xl border border-slate-700 p-4 shadow-xl ${selectedSubmission ? "bg-sky-400/10" : selectedCopiedTas ? "bg-emerald-500/10" : "bg-slate-900"}`}>
           <div className="mb-3 border-b border-slate-700 pb-4">
             <div className="flex items-start justify-between">
               <div>
@@ -517,7 +610,7 @@ export default function AdminTas() {
                 </h1>
 
                 <div className="mt-1 text-sm text-slate-400 italic">
-                  {`${selectedSubmission ? "Processing user submission" : "Adding new or updating existing TAS"}`}
+                  {`${selectedSubmission ? "Processing user submission" : selectedCopiedTas ? "Editing existing TAS" : "Adding new TAS"}`}
                 </div>
               </div>
 
@@ -707,85 +800,93 @@ export default function AdminTas() {
             </div>
             
             {/* REPLAY */}
-            <div>
-              <div className={labelClass}>Replay (.gbx)</div>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row justify-between w-full items-end">
+                <div className={labelClass}>Replay (.gbx)</div>
 
-              <label
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  setDragging(true);
-                }}
-                onDragLeave={() => setDragging(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setDragging(false);
-                  const file = e.dataTransfer.files?.[0];
-                  onFileSelect(file);
-                }}
-                className={`
-                  flex h-26 cursor-pointer flex-col items-center justify-center
-                  rounded-xl border-2 border-dashed transition
-                  ${
-                    dragging
-                      ? "border-emerald-400 bg-emerald-500/10"
-                      : "border-slate-700 bg-slate-800 hover:border-slate-500"
-                  }
-                `}
-              >
-                <input
-                  hidden
-                  type="file"
-                  accept=".gbx"
-                  onChange={(e) => onFileSelect(e.target.files?.[0])}
-                />
-
-                <div className="text-lg font-medium text-slate-200">Drop replay here</div>
-                <div className="mt-1 text-sm text-slate-400">or click to browse</div>
-
-                {replay.file && (
-                  <div className={`mt-3 text-xs ${replay.track ? "text-emerald-400" : "text-red-400"}`}>
-                    {replay.file.name} ({(replay.file.size / 1024 / 1024).toFixed(2)} MB)
-                  </div>
-                )}
-              </label>
-            </div>
-
-            {/* TRACK AND TIME */}
-            {replay.file && (
-              <div className="rounded-lg bg-slate-800/60 px-4 py-3 text-sm">
-                {replay.track ? (
-                  <>
-                    <div className="text-slate-300">
-                      Track:
-                      <span className={`ml-2 font-medium ${replay.track === form.track ? "text-emerald-400" : "text-red-400"}`}>
-                        {replay.track}
-                        {replay.track === form.track ? " (Match)" : " (DOES NOT MATCH!)"}
-                      </span>
-                    </div>
-                    {timeMs > 0 ? (
-                      <div className="mt-1 text-slate-300">
-                        Time:
-                        <span className={`ml-2 font-medium ${timesEqual(replay.time, time) ? "text-emerald-400" : "text-red-400"}`}>
-                          {`${replay.time.minutes > 0 ? String(replay.time.minutes) + ":" : ""}`}
-                          {String(replay.time.seconds).padStart(2, "0")}.
-                          {String(replay.time.hundredths).padStart(2, "0")}
-                          {`${TRACKS[replay.track].game === "TM2" ? replay.time.thousandth : ""}`}
-                          {timesEqual(replay.time, time) ? " (Match)" : " (DOES NOT MATCH!)"}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="mt-1 font-medium text-red-400">
-                        This replay may be unfinished. Please check before submitting.
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="font-medium text-red-400">
-                    This replay does not seem to be from a nadeo track. Please check before submitting.
-                  </div>
+                {form.replay_path && (
+                  <DropSelect
+                    initialValue={selectedReplayOption}
+                    options={REPLAY_OPTIONS.map((replayOption) => ({
+                      value: replayOption,
+                      label: replayOption,
+                    }))}
+                    onChange={(value) => setSelectedReplayOption(value)}
+                  />
                 )}
               </div>
-            )}
+              
+              {(!form.replay_path || (form.replay_path && selectedReplayOption === "Replace")) && (
+                <label
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragging(true);
+                  }}
+                  onDragLeave={() => setDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragging(false);
+                    const file = e.dataTransfer.files?.[0];
+                    onFileSelect(file);
+                  }}
+                  className={`flex h-26 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition
+                    ${dragging ? "border-emerald-400 bg-emerald-500/10" : "border-slate-700 bg-slate-800 hover:border-slate-500"}`}
+                >
+                  <input
+                    hidden
+                    type="file"
+                    accept=".gbx"
+                    onChange={(e) => onFileSelect(e.target.files?.[0])}
+                  />
+
+                  <div className="text-lg font-medium text-slate-200">Drop replay here</div>
+                  <div className="mt-1 text-sm text-slate-400">or click to browse</div>
+
+                  {replay.file && (
+                    <div className={`mt-3 text-xs ${replay.track ? "text-emerald-400" : "text-red-400"}`}>
+                      {replay.file.name} ({(replay.file.size / 1024 / 1024).toFixed(2)} MB)
+                    </div>
+                  )}
+                </label>
+              )}
+
+              {/* TRACK AND TIME */}
+              {replay.file && (
+                <div className="rounded-lg px-4 py-3 text-sm bg-slate-800/60">
+                  {replay.track ? (
+                    <>
+                      <div className="text-slate-300">
+                        Track:
+                        <span className={`ml-2 font-medium ${replay.track === form.track ? "text-emerald-400" : "text-red-400"}`}>
+                          {replay.track}
+                          {replay.track === form.track ? " (Match)" : " (DOES NOT MATCH!)"}
+                        </span>
+                      </div>
+                      {timeMs > 0 ? (
+                        <div className="mt-1 text-slate-300">
+                          Time:
+                          <span className={`ml-2 font-medium ${timesEqual(replay.time, time) ? "text-emerald-400" : "text-red-400"}`}>
+                            {`${replay.time.minutes > 0 ? String(replay.time.minutes) + ":" : ""}`}
+                            {String(replay.time.seconds).padStart(2, "0")}.
+                            {String(replay.time.hundredths).padStart(2, "0")}
+                            {`${TRACKS[replay.track].game === "TM2" ? replay.time.thousandth : ""}`}
+                            {timesEqual(replay.time, time) ? " (Match)" : " (DOES NOT MATCH!)"}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="mt-1 font-medium text-red-400">
+                          This replay may be unfinished. Please check before submitting.
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="font-medium text-red-400">
+                      This replay does not seem to be from a nadeo track. Please check before submitting.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* SUBMIT */}
             <div>
@@ -797,11 +898,11 @@ export default function AdminTas() {
 
               {!selectedSubmission ? (
                 <button
-                  onClick={() => submit()}
+                  onClick={() => handleSubmit()}
                   disabled={loading}
                   className="w-full mt-3 rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50 cursor-pointer"
                 >
-                  {loading ? "Submitting..." : "Submit"}
+                  {loading ? "Please wait..." : "Submit"}
                 </button>
               ) : (
                 <div className="space-y-3">
@@ -839,11 +940,10 @@ export default function AdminTas() {
         <div className="flex flex-col gap-4 items-center lg:items-start">
 
           {/* Pending records */}
-          <PendingRecords
-            submissions={pendingSubmissions}
+          <TasSubmissions
             selectedSubmission={selectedSubmission}
             copySubmissionToForm={copySubmissionToForm}
-            downloadReplay={downloadReplay}
+            setLoading={setLoading}
           />
           
           {/* Existing Track Records */}
@@ -852,6 +952,7 @@ export default function AdminTas() {
             category={form.category}
             isStunt={isStunt}
             records={trackTases}
+            selectedCopiedTas={selectedCopiedTas}
             copyTasToForm={copyTasToForm}
             deleteTas={deleteTas}
           />

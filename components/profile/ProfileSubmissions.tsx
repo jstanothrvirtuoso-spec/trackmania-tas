@@ -5,14 +5,7 @@ import { formatDate, formatTime, timeAgo } from "@/utils/formatting";
 import { useFetchUserSubmissions } from "@/lib/TasSubmissions";
 import { formatAuthors, formatTrack } from "../FormatLinks";
 import { DropSelect } from "../DropSelect";
-
-const STATUS = ["All", "Pending", "Approved", "Rejected"] as const;
-const TIMESPAN = ["Past month", "Past year", "All"] as const;
-const STATUS_COLOUR = {
-  "pending": ["bg-[#3230af]/30", "bg-[#3230af]/40"],
-  "approved": ["bg-[#6cbe36]/30", "bg-[#6cbe36]/40"],
-  "rejected": ["bg-[#9e2121]/20", "bg-[#9e2121]/30"]
-};
+import { STATUS_COLOUR, SUBMISSION_STATUS, TIMESPAN } from "@/utils/constants";
 
 export default function ProfileSubmission({ profilePrivate }: { profilePrivate: ProfilePrivate }) {
   
@@ -80,7 +73,7 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
 
             <DropSelect
               initialValue={"All"}
-              options={STATUS.map((status) => ({
+              options={SUBMISSION_STATUS.map((status) => ({
                 value: status,
                 label: status,
               }))}
@@ -93,33 +86,13 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
           <table className="overflow-hidden text-center text-[11px] sm:text-sm">
             <thead>
               <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
-                <th className="px-2 py-1.5 font-normal">
-                  Submitted
-                </th>
-
-                <th className="px-3 py-1.5 font-normal whitespace-nowrap hidden sm:table-cell">
-                  TAS Date
-                </th>
-
-                <th className="px-3 py-1.5 font-normal w-full sm:w-auto">
-                  Track
-                </th>
-
-                <th className="px-3 py-1.5 font-normal">
-                  Time
-                </th>
-
-                <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
-                  Cat.
-                </th>
-
-                <th className="px-3 py-1.5 font-normal w-full sm:w-auto">
-                  Authors
-                </th>
-
-                <th className="px-3 py-1.5 font-normal hidden sm:table-cell">
-                  Status
-                </th>
+                <th className="px-2 py-1.5 font-normal">Submitted</th>
+                <th className="px-3 py-1.5 font-normal whitespace-nowrap hidden sm:table-cell">TAS Date</th>
+                <th className="px-3 py-1.5 font-normal w-full sm:w-auto">Track</th>
+                <th className="px-3 py-1.5 font-normal">Time</th>
+                <th className="px-3 py-1.5 font-normal hidden sm:table-cell">Cat.</th>
+                <th className="px-3 py-1.5 font-normal w-full sm:w-auto">Authors</th>
+                <th className="px-3 py-1.5 font-normal hidden sm:table-cell">Status</th>
               </tr>
             </thead>
 
@@ -148,31 +121,31 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
                       key={index}
                       className={`border-b border-slate-800 text-slate-200 ${rowColour}`}
                     >
-                      <td className="px-3 py-1.5 whitespace-nowrap">
+                      <td className="px-2 py-1.5 whitespace-nowrap">
                         {formatDate(row.created_at)}
                       </td>
 
-                      <td className="px-3 py-1.5 whitespace-nowrap hidden sm:table-cell">
+                      <td className="px-2 py-1.5 whitespace-nowrap hidden sm:table-cell">
                         {formatDate(row.date)}
                       </td>
 
-                      <td className="px-3 py-1.5 lg:whitespace-nowrap">
+                      <td className="px-2 py-1.5 lg:whitespace-nowrap">
                         {formatTrack(row.track ?? "")}
                       </td>
 
-                      <td className="px-3 py-1.5">
+                      <td className="px-2 py-1.5">
                         {formatTime(row.time_ms ?? 0)}
                       </td>
 
-                      <td className="px-3 py-1.5 hidden sm:table-cell">
+                      <td className="px-2 py-1.5 hidden sm:table-cell">
                         {row.category}
                       </td>
 
-                      <td className="px-3 py-1.5">
+                      <td className="px-2 py-1.5 max-w-60">
                         {formatAuthors(row.authors, 6)}
                       </td>
 
-                      <td className="px-3 py-1.5 hidden sm:table-cell max-w-60">
+                      <td className="px-2 py-1.5 hidden sm:table-cell max-w-60">
                         { status }
                       </td>
                     </tr>

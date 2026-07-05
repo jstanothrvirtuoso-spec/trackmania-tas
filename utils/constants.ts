@@ -159,6 +159,25 @@ export const BADGE_IMAGES = [
   "mythic.png",
 ] as const;
 
+export const SUBMISSION_STATUS = [
+  "All", 
+  "Pending", 
+  "Approved", 
+  "Rejected"
+] as const;
+
+export const STATUS_COLOUR = {
+  "pending": ["bg-[#3230af]/30", "bg-[#3230af]/40"],
+  "approved": ["bg-[#6cbe36]/20", "bg-[#6cbe36]/30"],
+  "rejected": ["bg-[#9e2121]/20", "bg-[#9e2121]/30"]
+};
+
+export const TIMESPAN = [
+  "Past month", 
+  "Past year", 
+  "All"
+] as const;
+
 export const KEY_AUTHORS = [
   "Kimura",
   "DELETE_CLUB",
@@ -197,4 +216,4 @@ export const KEY_AUTHORS = [
   "Winterly",
   "Lukalyc",
   "exlpt",
-]
+];

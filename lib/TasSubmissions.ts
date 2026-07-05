@@ -6,21 +6,20 @@ import { SubmitForm } from "@/utils/typing";
 
 const supabase = createClient();
 
-async function fetchPendingSubmissions() {
+async function fetchAllSubmissions() {
   const { data, error } = await supabase
     .from("tas_submissions")
     .select("*")
-    .eq("status", "pending")
     .order("created_at", { ascending: true });
 
   if (error) throw error;
   return data;
 }
 
-export function usePendingSubmissions() {
-  return useQuery({
-    queryKey: ["tas_submissions", "pending"],
-    queryFn: fetchPendingSubmissions,
+export function useAllSubmissions() {
+  return useQuery<SubmitForm[]>({
+    queryKey: ["tas_submissions"],
+    queryFn: fetchAllSubmissions,
     staleTime: STALE_TIME,
   });
 }

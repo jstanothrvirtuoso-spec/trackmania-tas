@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import { DropSelect } from "@/components/DropSelect";
-import { Game, Environment, Category, RecordRow } from "@/utils/typing";
-import { getEnvironmentOptions } from "@/lib/TrackList";
+import { Game, Environment, Category, RecordRow, GameSet } from "@/utils/typing";
+import { getEnvironmentOptions, getGameSetOptions } from "@/lib/TrackList";
 
 type EnvironmentFilter = Environment | "All Envs";
 
@@ -16,9 +16,11 @@ interface HeaderOptionsProps {
   game: Game,
   currentRecords: RecordRow[],
   selectedAuthor: string;
+  selectedGameSet: GameSet;
   selectedCategory: Category;
   selectedEnvironment: EnvironmentFilter;
   onAuthorChange: (author: string) => void;
+  onGameSetChange: (gameSet: GameSet) => void;
   onCategoryChange: (category: Category) => void;
   onEnvironmentChange: (environment: EnvironmentFilter) => void;
 };
@@ -27,15 +29,18 @@ export default function HeaderOptions({
   game,
   currentRecords,
   selectedAuthor,
+  selectedGameSet,
   selectedCategory,
   selectedEnvironment,
   onAuthorChange,
+  onGameSetChange,
   onCategoryChange,
   onEnvironmentChange,
 }: HeaderOptionsProps) {
 
-  const categoryOptions = CATEGORY_OPTIONS[game]
-  const environmentOptions = getEnvironmentOptions(game)
+  const gameSets = getGameSetOptions(game);
+  const categoryOptions = CATEGORY_OPTIONS[game];
+  const environmentOptions = getEnvironmentOptions(game);
 
   const authorOptions = useMemo(() => {
     const authorCount = new Map<string, number>();
@@ -56,6 +61,17 @@ export default function HeaderOptions({
 
   return (
     <div className="flex w-full flex-wrap justify-center items-center gap-3 px-4">
+
+      {/* GameSet */}
+      <DropSelect
+        initialValue={selectedGameSet}
+        options={gameSets.map((gameSet) => ({
+          value: gameSet,
+          label: gameSet,
+        }))}
+        onChange={(value) => onGameSetChange(value as GameSet | "All Sets")}
+        defaultOption={{ value: "All Sets", label: "All Sets" }}
+      />
 
       {/* Categories */}
       {categoryOptions && (

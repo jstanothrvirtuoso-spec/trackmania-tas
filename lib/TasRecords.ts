@@ -5,8 +5,8 @@ import { STALE_TIME } from "@/utils/constants";
 import { TasEntry } from "@/utils/typing";
 
 async function getTasRecords(): Promise<TasEntry[]> {
-  const supabase = createClient();
 
+  const supabase = createClient();
   const pageSize = 2000;
   const allRows: TasEntry[] = [];
   let from = 0;

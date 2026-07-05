@@ -148,7 +148,7 @@ export function BadgeIcon({ badge_src }: { badge_src: string }) {
     .replace(/\b\w/g, c => c.toUpperCase())
   
   return (
-    <div className="relative group flex justify-center">
+    <div className="relative group/badge flex justify-center">
       <Image
         src={`/badges/${badge_src}`}
         alt={alt}
@@ -158,7 +158,10 @@ export function BadgeIcon({ badge_src }: { badge_src: string }) {
         sizes="100vw"
       />
     
-      <div className="absolute bottom-full mb-1 hidden group-hover:block whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white shadow">
+      <div className="absolute left-1/2 bottom-full -translate-x-1/2 pointer-events-none opacity-0 scale-65 transition-all duration-200 
+        group-hover/badge:opacity-100 group-hover/badge:scale-100 whitespace-nowrap rounded-md border border-emerald-500/15
+        bg-slate-800/95 px-1.5 py-0.5 text-[11px] font-medium text-slate-300 shadow-xl backdrop-blur"
+      >
         {alt}
       </div>
     </div>
@@ -172,7 +175,7 @@ export function EnvironmentIcon({ environment }: { environment: Environment }) {
     .replace("²", "")
 
   return (
-    <div className="w-6 h-6 relative">
+    <div className="w-6 h-6 relative group/environment">
       <Image
         src={`/environments/${key}.webp`}
         alt={environment.slice(5)}
@@ -182,9 +185,12 @@ export function EnvironmentIcon({ environment }: { environment: Environment }) {
         className="object-contain"
       />
 
-      {/* <div className="absolute bottom-full mb-1 hidden group-hover:block whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white shadow">
+      <div className="absolute left-1/2 bottom-3/4 -translate-x-1/2 pointer-events-none opacity-0 scale-65 transition-all duration-200 
+        group-hover/environment:opacity-100 group-hover/environment:scale-100 whitespace-nowrap rounded-md border border-emerald-500/15
+        bg-slate-800/55 px-1.5 py-0.5 text-[11px] font-medium text-slate-300 shadow-xl backdrop-blur"
+      >
         {environment}
-      </div> */}
+      </div>
     </div>
   )
 };

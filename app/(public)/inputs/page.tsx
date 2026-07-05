@@ -4,7 +4,7 @@ import Image from "next/image";
 import { soundManager } from "@/lib/SoundManager";
 import { useState, useEffect, useRef } from "react";
 
-const ENVIRONMENTS = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const
+const ENVIRONMENTS = ["STADIUM", "ISLAND", "COAST", "SNOW", "BAY"] as const;
 type Environment = (typeof ENVIRONMENTS)[number];
 type Trick = {
   src: string;

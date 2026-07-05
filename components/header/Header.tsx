@@ -175,8 +175,11 @@ export default function Header() {
               <FaDiscord size={22} />
             </a>
             
+            {/* TM-TAS */}
             <Link
               href="https://tmtas.exchange/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="block border border-slate-300/80 rounded-lg transition-all duration-100 hover:brightness-110 hover:border-cyan-500 hover:scale-105"
             >
               <div className="relative h-8 w-[32px]">

@@ -1,8 +1,6 @@
 
 import { useState, useMemo } from "react";
 import { useAuthors } from "@/lib/Authors";
-import { KEY_AUTHORS } from "@/utils/constants";
-import { AuthorInfo } from "@/utils/typing";
 
 interface AuthorSelectorProps {
   authors: string[];
@@ -20,49 +18,25 @@ export default function AuthorSelector({ authors, maxAuthors, onChange }: Author
   const [authorQuery, setAuthorQuery] = useState("");
   const [selectedSuggestion, setSelectedSuggestion] = useState(0);
 
-  const authorOptions = useMemo(() => {
-    const rest = authorData.filter((a) => a.author !== "Unknown");
-
-    const keySet = new Set(KEY_AUTHORS);
-
-    const keyAuthors = rest.filter((a) => keySet.has(a.author));
-    const remaining = rest.filter((a) => !keySet.has(a.author));
-
-    const sorted = (arr: AuthorInfo[]) =>
-      [...arr].sort((a, b) => a.author.localeCompare(b.author));
-
-    return [
-      ...sorted(keyAuthors),
-      { id: "", author: "" },
-      ...sorted(remaining),
-    ];
+  const knownAuthors = useMemo(() => {
+    return new Set(authorData
+      .filter((a) => a.author && a.author !== "Unknown")
+      .map((a) => a.author)
+    )
   }, [authorData]);
-
-  const knownAuthors = useMemo(
-    () => new Set(authorOptions.map((a) => a.author)),
-    [authorOptions]
-  );
 
   const suggestions = useMemo(() => {
 
     const query = authorQuery.trim().toLowerCase();
-    const matches = authorOptions
-      .filter((a) => a.author)
-      .filter((a) => !authors.includes(a.author))
+    const matches = [...knownAuthors]
+      .filter((a) => !authors.includes(a))
       .map((a) => ({
-        ...a,
-        score: a.author.toLowerCase().startsWith(query)
-          ? 0
-          : a.author.toLowerCase().includes(query)
-          ? 1
-          : 999,
+        isNew: false,
+        author: a,
+        score: a.toLowerCase().startsWith(query) ? 0 : a.toLowerCase().includes(query) ? 1 : 999,
       }))
       .filter((a) => query && a.score < 999)
-      .sort(
-        (a, b) =>
-          a.score - b.score ||
-          a.author.localeCompare(b.author)
-      )
+      .sort((a, b) => a.score - b.score || a.author.localeCompare(b.author))
       .slice(0, 3);
 
     const cleanQuery = authorQuery.replace(/\s+/g, " ").trim();
@@ -75,14 +49,14 @@ export default function AuthorSelector({ authors, maxAuthors, onChange }: Author
       !alreadyKnown
     ) {
       matches.push({
-        id: "__new__",
+        isNew: true,
         author: cleanQuery,
         score: 0,
       });
     }
 
     return matches;
-  }, [authors, authorOptions, authorQuery, knownAuthors]);
+  }, [authors, authorQuery, knownAuthors]);
   
   function addAuthor(author: string) {
     const clean = author.replace(/\s+/g, " ").trim();
@@ -181,28 +155,19 @@ export default function AuthorSelector({ authors, maxAuthors, onChange }: Author
         {/* Suggested authors dropdown */}
         {authorQuery && suggestions.length > 0 && (
           <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-slate-700 bg-slate-800 shadow-2xl">
-            {suggestions.map((a, i) => {
-              const isCreate = a.id === "__new__";
-
-              return (
-                <div
-                  key={a.author}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => addAuthor(a.author)}
-                  className={`w-full px-3 py-2 text-left text-sm transition cursor-pointer
-                    ${i === selectedSuggestion ? "bg-emerald-600/40 text-emerald-100" : "hover:bg-slate-700/50 text-slate-400"}`}
-                >
-                  {isCreate ? (
-                    <>
-                      {a.author} <span className="text-emerald-400">(New)</span>
-                    </>
-                  ) : (
-                    a.author
-                  )}
-                </div>
-              );
-            })}
+            {suggestions.map((a, i) => 
+              <div
+                key={a.author}
+                role="button"
+                tabIndex={0}
+                onClick={() => addAuthor(a.author)}
+                className={`w-full px-3 py-2 text-left text-sm transition cursor-pointer
+                  ${i === selectedSuggestion ? "bg-emerald-600/40 text-emerald-100" : "hover:bg-slate-700/50 text-slate-400"}`}
+              >
+                {a.author} 
+                <span className="text-emerald-400">{a.isNew ? " (New)" : ""}</span>
+              </div>
+            )}
           </div>
         )}
       </div>

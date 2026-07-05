@@ -10,6 +10,7 @@ type TrackRecordsProps = {
   category: Category;
   isStunt: boolean;
   records: TasEntry[];
+  selectedCopiedTas: TasEntry | null;
   copyTasToForm: (t: TasEntry) => void;
   deleteTas: (t: TasEntry) => Promise<void>;
 };
@@ -18,7 +19,8 @@ export default function TrackRecords({
   track, 
   category, 
   isStunt, 
-  records, 
+  records,
+  selectedCopiedTas,
   copyTasToForm, 
   deleteTas 
 }: TrackRecordsProps) {
@@ -59,44 +61,45 @@ export default function TrackRecords({
                 </td>
               </tr>
             ) : (
-              records.map((t) => {
-                const isMatch = t.category === category;
-                const replayURL = getReplayURL(t.game, t.track, t.time_ms, t.replay_path)
+              records.map((tas) => {
+                const isMatch = tas.category === category;
+                const replayURL = getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path)
 
                 return (
                   <tr
-                    key={`${t.track}-${t.category}-${t.time_ms}`}
+                    key={`${tas.track}-${tas.category}-${tas.time_ms}`}
                     className={`border-b border-slate-800 ${
-                      isMatch ? "bg-emerald-500/20 italic" : ""
+                      tas.id == selectedCopiedTas?.id ? "bg-sky-500/40"
+                        : isMatch ? "bg-emerald-800/20 italic" : ""
                     }`}
                   >
                     <td className="py-2 px-2 hidden sm:table-cell">
-                      {t.category}
+                      {tas.category}
                     </td>
 
                     <td className="py-2 px-2">
-                      {formatTime(t.time_ms, t.game === "TM2")}
+                      {formatTime(tas.time_ms, tas.game === "TM2")}
                     </td>
 
                     <td className="py-1 px-1 max-w-80">
-                      {t.authors.join(", ")}
+                      {tas.authors.join(", ")}
                     </td>
 
                     <td className="py-2 px-2 whitespace-nowrap hidden sm:table-cell">
-                      {formatDate(t.date)}
+                      {formatDate(tas.date)}
                     </td>
                     
                     <td className="py-2 px-2 text-center align-middle hidden sm:table-cell">
                       <div className="flex items-center justify-center gap-1">
-                        <div className="w-5 h-5 flex items-center justify-center"><VideoIcon videoURL={t.video}/></div>
+                        <div className="w-5 h-5 flex items-center justify-center"><VideoIcon videoURL={tas.video}/></div>
                         <div className="w-5 h-5 flex items-center justify-center"><ReplayIcon replayURL={replayURL}/></div>
-                        <div className="w-5 h-5 flex items-center justify-center">{replayURL && <InputsIcon replayID={t.id} replayType="tas"/>}</div>
+                        <div className="w-5 h-5 flex items-center justify-center">{replayURL && <InputsIcon replayID={tas.id} replayType="tas"/>}</div>
                       </div>
                     </td>
 
                     <td className="px-1 py-1 text-center">
                       <button
-                        onClick={() => copyTasToForm(t)}
+                        onClick={() => copyTasToForm(tas)}
                         title="Copy to form"
                         className="rounded bg-slate-800 px-2 py-0.5 hover:bg-slate-700 cursor-pointer"
                       >
@@ -107,7 +110,7 @@ export default function TrackRecords({
                     {profilePublicMe && profilePublicMe.role === "admin" && (
                       <td className="px-2 py-1 text-center">
                         <button
-                          onClick={() => deleteTas(t)}
+                          onClick={() => deleteTas(tas)}
                           title="Delete record"
                           className="rounded bg-red-900 px-2 py-0.5 hover:bg-red-700 cursor-pointer"
                         >
@@ -124,6 +127,5 @@ export default function TrackRecords({
         </table>
       </div>
     </div>
-  )
+  );
 }
-

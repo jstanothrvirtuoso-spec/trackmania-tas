@@ -4,6 +4,8 @@ import Link from "next/link";
 
 export function formatTrack(track: string, custom: string = "hover:text-emerald-500 text-slate-200") {
 
+  if (!track) return null
+
   const game = TRACKS[track].game
   
   return (
@@ -39,10 +41,10 @@ export function formatAuthors(authors: string[], maxLength: number = 0, fullSent
       ))}
 
       {remaining > 0 && (
-        <span className="relative group text-slate-300 cursor-default">
+        <span className="relative group/authors text-slate-300 cursor-default">
           {fullSentence ? "" : "+"}{remaining} author{remaining === 1 ? "" : "s"}
 
-          <div className="pointer-events-none absolute right-0 top-0 z-50 mt-1 hidden w-max max-w-xs rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-200 shadow-lg group-hover:block">
+          <div className="pointer-events-none absolute right-0 top-0 z-50 mt-1 hidden w-max max-w-50 rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-200 shadow-lg group-hover/authors:block">
             {authors.slice(maxLength > 0 ? maxLength - 1 : authors.length).join(", ")}
           </div>
         </span>

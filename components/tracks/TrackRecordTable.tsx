@@ -49,8 +49,8 @@ export function TrackRecordTable({tmxGame, records, isTM2, track, setCurrentReco
                 {entry.category}
               </td>
 
-              <td className="px-2 py-1.5 text-center font-medium text-slate-200">
-                { formatTime(entry.time_ms, isTM2) }
+              <td className="px-2 py-1.5 text-center font-medium text-slate-200 whitespace-nowrap">
+                { entry.num_inputs ? `${entry.num_inputs} input${entry.num_inputs > 1 ? "s" : ""}` : formatTime(entry.time_ms, isTM2) }
               </td>
 
               <td className="px-2 py-1.5 text-center text-slate-200 max-w-[420px]">
