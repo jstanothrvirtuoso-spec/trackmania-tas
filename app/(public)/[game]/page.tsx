@@ -49,7 +49,6 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
       if (!allowedCategories.has(entry.category)) continue;
 
       const baseTrack = TRACKS[entry.track].baseTrack ?? entry.track
-      console.log(baseTrack, entry.track)
       const tasGame = TRACKS[baseTrack].game
 
       if (tasGame !== gameName) continue;
