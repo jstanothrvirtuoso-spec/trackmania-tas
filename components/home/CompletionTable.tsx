@@ -6,14 +6,30 @@ import { formatGame } from "@/utils/formatting";
 
 const TRACK_ARRAY = Object.values(TRACKS);
 const TOTAL_BY_GAME = (() => {
-  const map = new Map<string, number>();
+  const counts: Record<string, number> = {
+    "TMNF": 0,
+    "ESWC": 0,
+    "TMN Remakes": 0,
+    "TMUF": 0,
+    "StarTrack": 0,
+    "TMS": 0,
+    "TMO": 0,
+    "Demo/Beta": 0,
+    "No Cut": 0,
+  };
 
   for (const track of TRACK_ARRAY) {
     if (track.game === "TM2") continue;
-    map.set(track.game, (map.get(track.game) ?? 0) + 1);
+
+    const game =
+      track.game === "TMNF No Cut" || track.game === "TMUF No Cut"
+        ? "No Cut"
+        : track.game;
+
+    counts[game] = (counts[game] ?? 0) + 1;
   }
 
-  return map;
+  return counts;
 })();
 
 export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}) {
@@ -22,16 +38,17 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
     
     const completedByGame = new Map<string, Set<string>>();
     for (const tas of tasRecords) {
-      const game = TRACKS[tas.track]?.game;
+      const trackInfo = TRACKS[tas.track]
+      const game = trackInfo.baseTrack ? "No Cut" : trackInfo.game;
 
       if (!game) continue;
       if (!completedByGame.has(game)) {
         completedByGame.set(game, new Set());
       }
-      completedByGame.get(game)!.add(tas.track);
+      completedByGame.get(game)?.add(tas.track);
     }
     
-    const rows = Array.from(TOTAL_BY_GAME, ([game, total]) => ({
+    const rows = Object.entries(TOTAL_BY_GAME).map(([game, total]) => ({
       game,
       completed: completedByGame.get(game)?.size ?? 0,
       total,

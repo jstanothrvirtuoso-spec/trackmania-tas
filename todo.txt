@@ -15,8 +15,12 @@ Can we remove "TMNF No Cut" as a game in supabase?
 Add reactions??
 Migrate pastebin inputs to replay files 
 Allow deletion/clearing of old submission replay files
-Change tmnf graph to small dropselect
+Add TMUF No Cut tracks
 Add quick track selection to /admin-tas/rta
+Fix category filtering
+Fix sound issues on mobile
+Set maximum height for /authors table (maybe look into others too)
+
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -9,6 +9,7 @@ const SHORT_GAMES = {
   "ESWC": "ESWC",
   "TMN Remakes": "TMN R.",
   "TMUF": "TMUF",
+  "TMUF No Cut": "No Cut",
   "StarTrack": "Star",
   "TMS": "TMS",
   "TMO": "TMO",

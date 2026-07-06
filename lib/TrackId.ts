@@ -84,10 +84,10 @@ export const trackIds: Record<string, string> = {
   "eMRIoWYP7MAW1RbRBG4NAF8ye9m": "B07-Race No Cut",
   "mgKNMKEbYKTLpPoqGoqhG1NOHm1": "B08-Endurance No Cut",
   "3dDL9B8Myvkx7Psr_Ez9mdtQh05": "B12-Race No Cut",
-  "": "C02-Race No Cut",
+  "61jqque9NxUXabLMYkCGOMsFd7h": "C02-Race No Cut",
   "WR90s5zCJ3toNmPfvkfkDk86bMa": "C04-Race No Cut",
   "DfO3GCdJ4XG42U2k6_71kbzcapg": "C07-Race No Cut",
-  "": "C08-Obstacle No Cut",
+  "0PKM8h5ySbMmbiNnhYVyooyeu53": "C08-Obstacle No Cut",
   "Vds0kURuTZm0x0CbeupVHNX1x07": "C09-Race No Cut",
   "o2jSMRcW19lHo66U34uVusLm2em": "C10-Acrobatic No Cut",
   "czm0TY4s10ZUkvgWJG9OleB215l": "C12-Obstacle No Cut",
@@ -98,7 +98,7 @@ export const trackIds: Record<string, string> = {
   "8WcUEUtEbcIkqFAfjEVeiI5CTOa": "D05-Race No Cut",
   "1rjE266y_BOXNnrFhZ7F8BvmPFe": "D06-Obstacle No Cut",
   "0LSycden3EPLAvcWjeBL1oa4t9i": "D07-Race No Cut",
-  "": "D08-Race No Cut",
+  "_b6s1bQrVQ68UpjEqSlXdNI3cV3": "D08-Race No Cut",
   "ZIz3vF4q1_V4tEgJnlXDAmBpkk5": "D09-Obstacle No Cut",
   "LAaFu69319lAKKn4nEergqDf8tk": "D10-Race No Cut",
   "SRXPQyt35lbsapw9M5B7VlId7K5": "D11-Acrobatic No Cut",
@@ -626,6 +626,17 @@ export const trackIds: Record<string, string> = {
   "W01IcEaRJxlydGOySkPPIDaXfv3": "StuntRaceD4",
   "xDke4qgT32krWE5ZGkxk327t64b": "StuntRaceD5",
   "pyg9uAFzvd8SAqJs_D1qADtTul": "StuntRaceE1",
+
+  // TMUF No Cut
+  "dDHBcKjKhj26EmVZK0Bu7IcAJpj": "StadiumA2 No Cut",
+  "kXCVjCWXa6k4Z7oi5MyLVkHUZV7": "StadiumA5 No Cut",
+  "4km5HSX1eoJ6Eg9aBzkZf5pbvZ6": "StadiumB5 No Cut",
+  "F2kbt2HzjCvWQQD6zjdN3wdV6F7": "StadiumC1 No Cut",
+  "93umGNCY3kqpjNYY_hFyt6Bwhg5": "StadiumC2 No Cut",
+  "v4OfSJX5x1Cv2xKI9NpeNknJT5f": "StadiumC5 No Cut",
+  "2uaWYCCvtGWacWI4asUmz8gVxZ6": "StadiumD1 No Cut",
+  "sz9vrjd6ocpUXcZl5YF9V3stur6": "StadiumD5 No Cut",
+  "BH3bjYMZXufWIOs2GifQjKwdP84": "TMU StadiumA4 No Cut",
 
   // StarTrack
   "fBdoqZeNGUWmQN_BtkfXjnBTv": "StarStadiumA1",
@@ -1207,6 +1218,7 @@ export const trackIds: Record<string, string> = {
   "Y6KLXAe_wRiGFtKRGtdw6yGCLBm": "TMS DemoStunts2",
 
   "1spFzusfZhMkiMZENlVZpHsJq6m": "TMU StadiumA4 [Beta]",
+  "Y6Xpbbi5awi15PzF5GCH3_ePZI6": "TMU StadiumA4 [Beta] No Cut",
   "xrbq89LJ6yqW1fAzmTKLxKQdbQ2": "SnowB5 [Beta]",
   "FyjwovR4lF0e7Rb9zJCKBYgCHvh": "SnowC1 [Beta]",
   "hHVRHPlw78thrtYSZkCYxREnwL9": "SnowC5 [Beta]",

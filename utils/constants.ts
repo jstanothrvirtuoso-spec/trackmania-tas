@@ -15,7 +15,7 @@ export const CURSOR = "cursor-[url('/cursor.png')_0_0,_auto]";
 // TrackMania TAS info //
 //////////////////////////////////////////////////////////////
 
-export const GAME_LIST = ["TMNF", "TMNF No Cut", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "TM2"] as const;
+export const GAME_LIST = ["TMNF", "TMNF No Cut", "ESWC", "TMN Remakes", "TMUF", "TMUF No Cut", "StarTrack", "TMS", "TMO", "Demo/Beta", "TM2"] as const;
 
 export const ENVIRONMENT = ["Stadium", "Island", "Desert", "Rally", "Bay", "Coast", "Snow", "Canyon", "Stadium²", "Valley", "Lagoon"] as const;
 
@@ -30,6 +30,7 @@ export const GAME_SETS: Record<Game, string[]> = {
   "ESWC": ["Beginner", "Advanced", "Expert", "Pro", "Bonus"],
   "TMN Remakes": ["Beginner", "Advanced", "Expert", "Pro", "Bonus"],
   "TMUF": ["White", "Green", "Blue", "Red", "Black", "TMU", "Platform", "Puzzle", "Stunt", "StuntRace"],
+  "TMUF No Cut": ["White", "Green", "Blue", "Red", "TMU"],
   "StarTrack": ["White", "Green", "Blue", "Red", "Black"],
   "TMS": ["Race", "Extreme", "Crazy", "Bonus", "Platform", "Puzzle", "Stunt", "StuntRace", "Remix"],
   "TMO": ["Race", "Survival", "Platform", "Puzzle", "Stunt", "StuntRace"],

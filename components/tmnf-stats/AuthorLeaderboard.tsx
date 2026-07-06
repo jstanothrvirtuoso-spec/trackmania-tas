@@ -390,24 +390,23 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
             );
           })}
 
-          <select
-            value={extraAuthor}
+          <div
             onMouseEnter={() => setHoverAuthor(extraAuthor)}
             onMouseLeave={() => setHoverAuthor("")}
-            onChange={(e) => setExtraAuthorRaw(e.target.value)}
-            className="text-[10px] bg-slate-800 text-slate-300 border border-slate-700 rounded px-2 py-1 cursor-pointer"
           >
-            <option value="">Add author...</option>
-
-            {extraAuthorOptions
-              .filter((a) => !topAuthors.includes(a))
-              .map((author) => (
-                <option key={author} value={author}>
-                  {`${author} (Max: ${Math.round((authorMax.get(author) ?? 0) * 100) / 100})`}
-                </option>
-              ))}
-          </select>
-
+            <DropSelect
+              initialValue={extraAuthor}
+              defaultOption={{value: "", label: "Add author..."}}
+              options={extraAuthorOptions
+                .filter((author) => !topAuthors.includes(author))
+                .map((author) => ({
+                  value: author,
+                  label: `${author} (Max: ${Math.round((authorMax.get(author) ?? 0) * 100) / 100})`,
+                }))}
+              onChange={(value) => setExtraAuthorRaw(value)}
+              small={true}
+            />
+          </div>
         </div>
       </div>
     </div>
