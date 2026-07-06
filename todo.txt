@@ -13,19 +13,10 @@ Ideas zone for partial TASes
 Improvements for game RecordTable
 Can we remove "TMNF No Cut" as a game in supabase?
 Add reactions??
-DONE - Fix weird row grouping in game RecordTable (show extra authors, and fix environment icons)
 Migrate pastebin inputs to replay files 
-DONE - Add gameSet filtering in [game] RecordTable
-
-DONE - Add loading symbol for pending submisisons in /admin-tas, expand table to show recent approved/rejected submissions and 
 Allow deletion/clearing of old submission replay files
-DONE - Check you can't submit in /admin-tas without replay
-DONE - Edit submissions in /admin-tas without upsetting existing replay files
-DONE - Deleting submissions should remove replay file from downloads
-DONE - Delete inputs/google-drive link from supabase
-DONE - Add all tmnf rta wr videos
-DONE - Make link to tm-tas open new tab
-
+Change tmnf graph to small dropselect
+Add quick track selection to /admin-tas/rta
 
 
 //////////////////////////////////////////////////////////////////////////

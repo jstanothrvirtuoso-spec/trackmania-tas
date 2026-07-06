@@ -32,7 +32,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
 
     const records = [...tasRecords]
       .filter((record) => record.authors.includes(authorOfTheDay))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || a.time_ms - b.time_ms)
 
     const recordsBest = [...records].filter((record) => bestTasByTrack.get(record.track)?.time_ms === record.time_ms)
 

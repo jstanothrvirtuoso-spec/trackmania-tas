@@ -1,12 +1,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-export function DropSelect<T extends string>({ initialValue, defaultOption, options, onChange, fullWidth=false }: {
+export function DropSelect<T extends string>({ initialValue, defaultOption, options, onChange, fullWidth=false, small=false }: {
   initialValue: T;
   options: { value: T; label: string }[];
   defaultOption?: { value: T; label: string };
   onChange?: (value: T) => void;
   fullWidth?: boolean;
+  small?: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const measureRef = useRef<HTMLDivElement | null>(null);
@@ -33,14 +34,24 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
   }, []);
 
   useEffect(() => {
-    if (measureRef.current) {
-      const width = Array.from(measureRef.current.children).reduce(
-        (max, child) => Math.max(max, (child as HTMLElement).getBoundingClientRect().width),
-        0,
-      );
-      setButtonWidth(Math.max(170, Math.min(Math.ceil(width + 30), window.innerWidth - 32)));
-    }
-  }, [allOptions]);
+    if (!measureRef.current) return;
+
+    const width = Array.from(measureRef.current.children).reduce(
+      (max, child) =>
+        Math.max(max, (child as HTMLElement).getBoundingClientRect().width),
+      0,
+    );
+
+    const minWidth = small ? 100 : 170;
+    const padding = small ? 5 : 30;
+
+    setButtonWidth(
+      Math.max(
+        minWidth,
+        Math.min(Math.ceil(width + padding), window.innerWidth - 32),
+      ),
+    );
+  }, [allOptions, small]);
   
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -71,7 +82,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
     <div
       ref={ref}
       className={`relative inline-block text-left${fullWidth ? " w-full" : ""}`}
-      style={ fullWidth ? undefined : buttonWidth ? { width: `${buttonWidth}px` } : { minWidth: 170 } }
+      style={ fullWidth ? undefined : buttonWidth ? { width: `${buttonWidth}px` } : { minWidth: small ? 100 : 170 } }
     >
       <button
         onClick={() => setOpen((prev) => !prev)}
@@ -91,16 +102,15 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
             }
           }
         }}
-        className="
-          relative inline-flex w-full items-center justify-between rounded-lg 
-          border border-slate-700 bg-slate-800 px-3 py-1.5 pr-3 text-left text-slate-100 
-          shadow-sm transition hover:bg-slate-700 cursor-pointer text-xs sm:text-sm"
+        className={`relative inline-flex w-full items-center justify-between rounded-lg 
+          border border-slate-700 bg-slate-800 pr-6 text-left text-slate-100 
+          shadow-sm transition hover:bg-slate-700 cursor-pointer ${small ? "text-xs px-2 py-1" : "text-xs sm:text-sm px-3 py-1.5"}`}
         type="button"
       >
         <span className="truncate">
           {allOptions.find((option) => option.value === value)?.label ?? defaultOption?.label ?? initialValue}
         </span>
-        <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-5 w-5 items-center justify-center">
+        <span className={`pointer-events-none absolute top-1/2 -translate-y-1/2 inline-flex h-5 w-5 items-center justify-center ${small ? "right-1" : "right-2"}`}>
           <svg viewBox="0 0 20 20" className="h-5 w-5 fill-current text-slate-100">
             <path d="M10 14l5-5H5l5 5z" />
           </svg>
@@ -113,7 +123,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
         style={{ width: 0, height: 0, overflow: "hidden" }}
       >
         {allOptions.map((option) => (
-          <span key={option.value} className="inline-block px-2 py-1 font-sans text-sm sm:text-base">
+          <span key={option.value} className={`inline-block px-2 py-1 font-sans ${small ? "text-xs" : "text-sm sm:text-base"}`}>
             {option.label}
           </span>
         ))}
@@ -122,7 +132,7 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
       {open && (
         <div
           ref={listRef}
-          className="absolute left-0 z-20 mt-0.5 w-full max-h-160 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm text-sm sm:text-[14px]"
+          className={`absolute left-0 z-20 mt-0.5 w-full max-h-160 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900/95 p-1 shadow-2xl backdrop-blur-sm ${small ? "text-xs" : "text-sm sm:text-[14px]"}`}
           onScroll={(event) => {
             scrollTopRef.current = (event.target as HTMLDivElement).scrollTop;
           }}
@@ -140,19 +150,10 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
                   onChange?.(option.value);
                   setOpen(false);
                 }}
-                className={`w-full rounded-md px-2 py-1.5 text-left transition cursor-pointer ${
-                  isSelected
-                    ? "bg-sky-800"
-                    : index % 2 === 0
-                      ? "bg-slate-900"
-                      : "bg-slate-800"
-                } ${
-                  isDefault
-                    ? "text-emerald-300 italic font-semibold"
-                    : isSelected
-                      ? "text-amber-300 font-semibold italic"
-                      : "text-slate-100"
-                } hover:bg-emerald-700/80`}
+                className={`w-full rounded-md text-left transition cursor-pointer whitespace-nowrap hover:bg-emerald-700/80
+                  ${small ? "py-1 px-1.5" : "py-1.5 px-2"}
+                  ${isSelected ? "bg-sky-800" : index % 2 === 0 ? "bg-slate-900" : "bg-slate-800"} 
+                  ${isDefault ? "text-emerald-300 italic font-semibold" : isSelected ? "text-amber-300 font-semibold italic" : "text-slate-100"}`}
               >
                 {option.label}
               </button>

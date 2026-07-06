@@ -82,7 +82,7 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
           </div>
         </div>
     
-        <div className="overflow-x-auto bg-slate-900/80 rounded-b-2xl">
+        <div className="overflow-x-auto bg-slate-900/80 rounded-b-2xl max-h-108 overflow-y-auto">
           <table className="overflow-hidden text-center text-[11px] sm:text-sm">
             <thead>
               <tr className="border-b border-slate-700 text-slate-300 uppercase tracking-[0.18em]">
@@ -121,31 +121,31 @@ export default function ProfileSubmission({ profilePrivate }: { profilePrivate: 
                       key={index}
                       className={`border-b border-slate-800 text-slate-200 ${rowColour}`}
                     >
-                      <td className="px-2 py-1.5 whitespace-nowrap">
+                      <td className="px-2 py-1 whitespace-nowrap">
                         {formatDate(row.created_at)}
                       </td>
 
-                      <td className="px-2 py-1.5 whitespace-nowrap hidden sm:table-cell">
+                      <td className="px-2 py-1 whitespace-nowrap hidden sm:table-cell">
                         {formatDate(row.date)}
                       </td>
 
-                      <td className="px-2 py-1.5 lg:whitespace-nowrap">
+                      <td className="px-2 py-1 lg:whitespace-nowrap">
                         {formatTrack(row.track ?? "")}
                       </td>
 
-                      <td className="px-2 py-1.5">
+                      <td className="px-2 py-1">
                         {formatTime(row.time_ms ?? 0)}
                       </td>
 
-                      <td className="px-2 py-1.5 hidden sm:table-cell">
+                      <td className="px-2 py-1 hidden sm:table-cell">
                         {row.category}
                       </td>
 
-                      <td className="px-2 py-1.5 max-w-60">
+                      <td className="px-2 py-1 max-w-60">
                         {formatAuthors(row.authors, 6)}
                       </td>
 
-                      <td className="px-2 py-1.5 hidden sm:table-cell max-w-60">
+                      <td className="px-2 py-1 hidden sm:table-cell max-w-60">
                         { status }
                       </td>
                     </tr>

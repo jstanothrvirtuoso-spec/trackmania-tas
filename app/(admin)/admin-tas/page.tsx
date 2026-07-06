@@ -629,114 +629,132 @@ export default function AdminTas() {
             {/* GAME */}
             <div>
               <div className={labelClass}>Game</div>
-              <DropSelect
-                initialValue={form.game}
-                options={GAME_LIST.map((game) => ({
-                  value: game,
-                  label: formatGame(game),
-                }))}
-                onChange={(value) => updateGame(value)}
-                fullWidth={true}
-              />
+              {selectedCopiedTas ? (
+                <span className="text-sm text-slate-400 pl-3">{form.game}</span>
+              ) : (
+                <DropSelect
+                  initialValue={form.game}
+                  options={GAME_LIST.map((game) => ({
+                    value: game,
+                    label: formatGame(game),
+                  }))}
+                  onChange={(value) => updateGame(value)}
+                  fullWidth={true}
+                />
+              )}
             </div>
 
             {/* GAME SET */}
             <div>
               <div className={labelClass}>Game Set</div>
-              <DropSelect
-                initialValue={form.gameSet}
-                options={gameSetOptions.map((gameSet) => ({
-                  value: gameSet,
-                  label: gameSet,
-                }))}
-                onChange={(value) => update("gameSet", value)}
-                fullWidth={true}
-              />
+              {selectedCopiedTas ? (
+                <span className="text-sm text-slate-400 pl-3">{form.gameSet}</span>
+              ) : (
+                <DropSelect
+                  initialValue={form.gameSet}
+                  options={gameSetOptions.map((gameSet) => ({
+                    value: gameSet,
+                    label: gameSet,
+                  }))}
+                  onChange={(value) => update("gameSet", value)}
+                  fullWidth={true}
+                />
+              )}
             </div>
 
             {/* TRACK */}
             <div>
               <div className={labelClass}>Track</div>
-              <DropSelect
-                initialValue={form.track}
-                options={trackOptions.map((track) => ({
-                  value: track,
-                  label: track,
-                }))}
-                onChange={(value) => update("track", value)}
-                defaultOption={{ value: "", label: "Select Track" }}
-                fullWidth={true}
-              />
+              {selectedCopiedTas ? (
+                <span className="text-sm text-slate-400 pl-3">{form.track}</span>
+              ) : (
+                <DropSelect
+                  initialValue={form.track}
+                  options={trackOptions.map((track) => ({
+                    value: track,
+                    label: track,
+                  }))}
+                  onChange={(value) => update("track", value)}
+                  defaultOption={{ value: "", label: "Select Track" }}
+                  fullWidth={true}
+                />
+              )}
             </div>
 
             {/* CATEGORY */}
             <div>
               <div className={labelClass}>Category</div>
-              <DropSelect
-                initialValue={form.category}
-                options={CATEGORIES.map((category) => ({
-                  value: category,
-                  label: category,
-                }))}
-                onChange={(value) => update("category", value as Category)}
-                fullWidth={true}
-              />
+              {selectedCopiedTas ? (
+                <span className="text-sm text-slate-400 pl-3">{form.category}</span>
+              ) : (
+                <DropSelect
+                  initialValue={form.category}
+                  options={CATEGORIES.map((category) => ({
+                    value: category,
+                    label: category,
+                  }))}
+                  onChange={(value) => update("category", value as Category)}
+                  fullWidth={true}
+                />
+              )}
             </div>
 
             {/* TIME */}
             <div>
               <div className={labelClass}>Time (minutes | seconds | hundreths | thousandth)</div>
 
-              <div className="grid grid-cols-4 gap-2">
-                <input
-                  type="number"
-                  min={0}
-                  max={60}
-                  className={inputClass}
-                  value={time.minutes}
-                  onChange={(e) =>
-                    setTime((t) => ({ ...t, minutes: Number(e.target.value) }))
-                  }
-                />
+              {!selectedCopiedTas && (
+                <div className="grid grid-cols-4 gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={60}
+                    className={inputClass}
+                    value={time.minutes}
+                    onChange={(e) =>
+                      setTime((t) => ({ ...t, minutes: Number(e.target.value) }))
+                    }
+                  />
 
-                <input
-                  type="number"
-                  min={0}
-                  max={59}
-                  className={inputClass}
-                  value={time.seconds}
-                  onChange={(e) =>
-                    setTime((t) => ({ ...t, seconds: Number(e.target.value) }))
-                  }
-                />
+                  <input
+                    type="number"
+                    min={0}
+                    max={59}
+                    className={inputClass}
+                    value={time.seconds}
+                    onChange={(e) =>
+                      setTime((t) => ({ ...t, seconds: Number(e.target.value) }))
+                    }
+                  />
 
-                <input
-                  type="number"
-                  min={0}
-                  max={99}
-                  className={inputClass}
-                  value={time.hundredths}
-                  onChange={(e) =>
-                    setTime((t) => ({ ...t, hundredths: Number(e.target.value) }))
-                  }
-                />
+                  <input
+                    type="number"
+                    min={0}
+                    max={99}
+                    className={inputClass}
+                    value={time.hundredths}
+                    onChange={(e) =>
+                      setTime((t) => ({ ...t, hundredths: Number(e.target.value) }))
+                    }
+                  />
 
-                <input
-                  type="number"
-                  min={0}
-                  max={9}
-                  className={inputClass}
-                  value={time.thousandth}
-                  onChange={(e) =>
-                    setTime((t) => ({ ...t, thousandth: Number(e.target.value) }))
-                  }
-                />
-              </div>
+                  <input
+                    type="number"
+                    min={0}
+                    max={9}
+                    className={inputClass}
+                    value={time.thousandth}
+                    onChange={(e) =>
+                      setTime((t) => ({ ...t, thousandth: Number(e.target.value) }))
+                    }
+                  />
+                </div>
+              )}
 
-              <div className="mt-2 text-sm text-slate-400">
+              <div className="mt-2 text-sm text-slate-400 pl-3">
                 {`Formatted time: ${formatTime(isStunt ? -timeMs : timeMs, time.thousandth > 0)} ${isStunt ? "(Stunt points)" : ""}`}
               </div>
-              <div className="text-sm text-slate-400">
+              <div className="text-sm text-slate-400 pl-3">
                 Database time: {timeMs} ms
               </div>
             </div>
@@ -953,6 +971,7 @@ export default function AdminTas() {
             isStunt={isStunt}
             records={trackTases}
             selectedCopiedTas={selectedCopiedTas}
+            setLoading={setLoading}
             copyTasToForm={copyTasToForm}
             deleteTas={deleteTas}
           />
