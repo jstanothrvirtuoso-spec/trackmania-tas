@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { OVERRIDE } from "@/utils/constants";
+import { OVERRIDE_TIME_SAVED } from "@/utils/constants";
 import { SortOrder, RecordRow } from "@/utils/typing";
 import SortIndicator from "@/components/SortIndicator"
 import { formatAuthors } from "../FormatLinks";
@@ -26,7 +26,7 @@ export default function TimeSaved({ currentRecords }: { currentRecords: RecordRo
 
         const authors = row.tas.authors;
         const contribution = 1 / authors.length;
-        const override = OVERRIDE[row.track]?.[row.tas.time_ms];
+        const override = OVERRIDE_TIME_SAVED[row.track]?.[row.tas.time_ms];
 
         let timeSaved = 0;
         if (override) {

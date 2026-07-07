@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
 import { useHoverDropdown, useOnClickOutside } from "@/utils/common";
 import { GAME_SLUGS, CURSOR } from "@/utils/constants";
@@ -17,10 +17,11 @@ const MENU_LINKS = [
   { href: "/about", label: "About" },
 ];
 
-export function MainMenu({ pathname, isTouch, profilePublicMe }: { 
+export function MainMenu({ pathname, isTouch, showHeader, profilePublicMe }: { 
   pathname: string, 
-  isTouch: boolean, 
-  profilePublicMe?: ProfilePublic
+  isTouch: boolean,
+  showHeader: boolean,
+  profilePublicMe?: ProfilePublic,
 }) {
 
   const menu = useHoverDropdown();
@@ -28,6 +29,13 @@ export function MainMenu({ pathname, isTouch, profilePublicMe }: {
   const ref = useRef<HTMLDivElement>(null);
 
   useOnClickOutside(ref, menu.closeNow, isTouch);
+
+  useEffect(() => {
+    if (!showHeader) {
+      menu.closeLater()
+      gamesMenu.closeLater()
+    }
+  }, [showHeader, gamesMenu, menu])
 
   return (
     <div 

@@ -60,7 +60,7 @@ export const CATEGORY_FILTERS: Record<Category | "RTA", Set<Category | "RTA">> =
   "RTA": new Set(["RTA"])
 } as const;
 
-export const OVERRIDE: Record<string, Record<number, number>> = {
+export const OVERRIDE_TIME_SAVED: Record<string, Record<number, number>> = {
   "E05-Endurance": { 
     1480790: 61.17,  // Open 2 laps by VIIT
     1354190: 95.94,  // Open 3 laps by KMSS

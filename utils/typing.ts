@@ -44,6 +44,8 @@ type SetDemo = (typeof GAME_SETS["Demo/Beta"])[number];
 type SetTM2 = (typeof GAME_SETS["TM2"])[number];
 export type GameSet = SetTMNF | SetESWC | SetTMUF | SetTMS | SetTMO | SetDemo | SetTM2;
 
+type SetColour = "White" | "Green" | "Blue" | "Red" | "Black"
+
 export type TrackInfo = {
   game: Game;
   id: number;
@@ -53,6 +55,7 @@ export type TrackInfo = {
   baseTrack?: string;  // Reference to original track for no-cut tracks
   noCutTrack?: string;  // Reference to no-cut version for TMNF tracks
   tmx?: Game;  // TMX when track is on a different tmx to the game set
+  colour?: SetColour;  // Colours when different colours are needed within the same gameSet
 };
 
 export type RecordRow = {

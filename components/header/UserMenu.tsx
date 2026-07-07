@@ -1,7 +1,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ const ADMIN_LINKS = [
 
 const supabase = createClient();
 
-export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profilePublicMe: ProfilePublic }) {
+export function UserMenu({ isTouch, showHeader, profilePublicMe }: { isTouch: boolean, showHeader: boolean, profilePublicMe: ProfilePublic }) {
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -28,6 +28,13 @@ export function UserMenu({ isTouch, profilePublicMe }: { isTouch: boolean, profi
   const ref = useRef<HTMLDivElement>(null);
 
   useOnClickOutside(ref, userMenu.closeNow, isTouch);
+
+  useEffect(() => {
+    if (!showHeader) {
+      userMenu.closeLater()
+      adminMenu.closeLater()
+    }
+  }, [showHeader, userMenu, adminMenu])
 
   async function signOut() {
     await supabase.auth.signOut();

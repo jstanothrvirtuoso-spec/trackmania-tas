@@ -59,7 +59,7 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out
-        ${showHeader ? "-translate-y-0.5 opacity-100" : "-translate-y-6 opacity-0 pointer-events-none"}`}
+        ${showHeader ? "-translate-y-0.5 opacity-100 pointer-events-auto" : "-translate-y-6 opacity-0 pointer-events-none"}`}
     >
       <div className="mx-auto w-full max-w-[76rem] px-2">
         <div className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center
@@ -70,6 +70,7 @@ export default function Header() {
           <MainMenu 
             pathname={pathname}
             isTouch={isTouch}
+            showHeader={showHeader}
             profilePublicMe={profilePublicMe}
           />
 
@@ -141,6 +142,7 @@ export default function Header() {
                   <UserMenu 
                     isTouch={isTouch}
                     profilePublicMe={profilePublicMe}
+                    showHeader={showHeader}
                   />
                 ) : (
                   <Link

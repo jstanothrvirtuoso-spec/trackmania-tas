@@ -7,14 +7,10 @@ import { getEnvironmentOptions, getGameSetOptions } from "@/lib/TrackList";
 
 type EnvironmentFilter = Environment | "All Envs";
 
-const CATEGORY_OPTIONS: Partial<Record<Game, Category[]>> = {
-  "TMNF": ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "Low Input"],
-  "TMUF": ["Open", "No Cut", "Low Input"],
-};
-
 interface HeaderOptionsProps {
   game: Game,
   currentRecords: RecordRow[],
+  gameCategories: Category[],
   selectedAuthor: string;
   selectedGameSet: GameSet;
   selectedCategory: Category;
@@ -28,6 +24,7 @@ interface HeaderOptionsProps {
 export default function HeaderOptions({
   game,
   currentRecords,
+  gameCategories,
   selectedAuthor,
   selectedGameSet,
   selectedCategory,
@@ -39,14 +36,15 @@ export default function HeaderOptions({
 }: HeaderOptionsProps) {
 
   const gameSets = getGameSetOptions(game);
-  const categoryOptions = CATEGORY_OPTIONS[game];
   const environmentOptions = getEnvironmentOptions(game);
 
   const authorOptions = useMemo(() => {
     const authorCount = new Map<string, number>();
 
     for (const row of currentRecords) {
-      const authors = row.tas?.authors;
+      if (!row.tas) continue;
+
+      const authors = row.tas.authors;
       if (!authors) continue;
 
       for (const author of authors) {
@@ -62,22 +60,11 @@ export default function HeaderOptions({
   return (
     <div className="flex w-full flex-wrap justify-center items-center gap-3 px-4">
 
-      {/* GameSet */}
-      <DropSelect
-        initialValue={selectedGameSet}
-        options={gameSets.map((gameSet) => ({
-          value: gameSet,
-          label: gameSet,
-        }))}
-        onChange={(value) => onGameSetChange(value as GameSet | "All Sets")}
-        defaultOption={{ value: "All Sets", label: "All Sets" }}
-      />
-
       {/* Categories */}
-      {categoryOptions && (
+      {gameCategories.length > 1 && (
         <DropSelect
           initialValue={selectedCategory as Category}
-          options={categoryOptions.map((category) => ({
+          options={gameCategories.map((category) => ({
             value: category,
             label: category,
           }))}
@@ -108,6 +95,17 @@ export default function HeaderOptions({
           defaultOption={{ value: "All Envs", label: "All Envs" }}
         />
       )}
+
+      {/* GameSet */}
+      <DropSelect
+        initialValue={selectedGameSet}
+        options={gameSets.map((gameSet) => ({
+          value: gameSet,
+          label: gameSet,
+        }))}
+        onChange={(value) => onGameSetChange(value as GameSet | "All Sets")}
+        defaultOption={{ value: "All Sets", label: "All Sets" }}
+      />
 
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { GAME_SETS, CATEGORY_ORDER } from "@/utils/constants";
-import { SortOrder, Game, RecordRow, Category } from "@/utils/typing";
+import { SortOrder, Game, RecordRow, Category, TrackInfo } from "@/utils/typing";
 import { formatTime, formatPercentSaved, formatDate, formatDiff } from "@/utils/formatting";
 import SortIndicator from "@/components/SortIndicator";
 import { EnvironmentIcon, GbxIcon, InputsIcon, ReplayIcon, VideoIcon } from "@/components/Icons";
@@ -12,11 +12,32 @@ import { getReplayURL } from "@/utils/common";
 type SortField = "track" | "time" | "diff" | "percentSaved" | "authors" | "date" | "category" | "rtaTime" | "rtaPlayer" | "rtaDate" | "inputs";
 
 const DIFFICULTY_TINTS: Record<string, [string, string]> = {
-  White: ["bg-white/10", "bg-white/15"],
-  Green: ["bg-green-500/10", "bg-green-500/15"],
-  Blue: ["bg-blue-500/10", "bg-blue-500/15"],
-  Red: ["bg-red-500/10", "bg-red-500/15"],
-  Black: ["bg-black/20", "bg-black/60"],
+  "White": ["bg-white/10", "bg-white/15"],
+  "Green": ["bg-green-500/10", "bg-green-500/15"],
+  "Blue": ["bg-blue-500/10", "bg-blue-500/15"],
+  "Red": ["bg-red-500/10", "bg-red-500/15"],
+  "Black": ["bg-black/20", "bg-black/60"],
+  "Beginner": ["bg-white/10", "bg-white/15"],
+  "Advanced": ["bg-green-500/10", "bg-green-500/15"],
+  "Expert": ["bg-blue-500/10", "bg-blue-500/15"],
+  "Pro": ["bg-red-500/10", "bg-red-500/15"],
+  "Bonus": ["bg-black/20", "bg-black/60"],
+  "TMU": ["bg-violet-500/10", "bg-violet-500/20"],
+  "Race": ["bg-white/10", "bg-white/15"],
+  "Extreme": ["bg-blue-500/10", "bg-blue-500/15"],
+  "Crazy": ["bg-red-500/10", "bg-red-500/15"],
+  "Platform": ["bg-white/10", "bg-white/15"],
+  "Puzzle": ["bg-green-500/10", "bg-green-500/15"],
+  "Stunt": ["bg-blue-500/10", "bg-blue-500/15"],
+  "StuntRace": ["bg-red-500/10", "bg-red-500/15"],
+  "Remix": ["bg-black/20", "bg-black/60"],
+  "Survival": ["bg-violet-500/10", "bg-violet-500/20"],
+  "TM Demo 2": ["bg-violet-500/10", "bg-violet-500/20"],
+  "TMO Demo": ["bg-violet-500/10", "bg-violet-500/20"],
+  "TMSX Demo": ["bg-violet-500/10", "bg-violet-500/20"],
+  "TMU Beta": ["bg-violet-500/10", "bg-violet-500/20"],
+  "ESWC Beta": ["bg-violet-500/10", "bg-violet-500/20"],
+  "Beta": ["bg-violet-500/10", "bg-violet-500/20"],
 };
 
 const HEADER_BASE = "px-2 py-1 bg-slate-900/90 tracking-[0.18em] uppercase transition whitespace-nowrap";
@@ -29,8 +50,10 @@ function classNames(...classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function getTrackDifficultyTint(category: string, index: number) {
-  const tint = DIFFICULTY_TINTS[category];
+function getTrackDifficultyTint(trackInfo: TrackInfo, index: number) {
+
+  const colour = trackInfo.colour ?? trackInfo.gameSet
+  const tint = DIFFICULTY_TINTS[colour];
   return tint ? tint[index % 2] : ["bg-white/10", "bg-white/15"][index % 2];
 }
 
@@ -171,7 +194,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
       <tbody className="font-sans divide-y divide-slate-800 text-center align-middle">
         {sortedRows.map(({tas, rta, track, trackInfo}, index) => {
           const recent = showRecent && tas && isRecentEntry(tas.date);
-          const difficultyClass = getTrackDifficultyTint(trackInfo.gameSet, index);
+          const difficultyClass = getTrackDifficultyTint(trackInfo, index);
           const bgColour = recent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
           const rtaColour = (showRecent && rta && isRecentEntry(rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
           const isLastRow = index === sortedRows.length - 1;
@@ -217,7 +240,9 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
                             : "0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)",
                         }}
                       >
-                        {tas && rta ? `${formatDiff(tas.time_ms, rta.time_ms, isTM2)}` : "-"}
+                        <div className="translate-y-[0px]">
+                          {tas && rta ? `${formatDiff(tas.time_ms, rta.time_ms, isTM2)}` : "-"}
+                        </div>
                       </td>
                     );
                   })()}

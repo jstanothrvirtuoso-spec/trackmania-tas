@@ -116,7 +116,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   };
 
   return (
-    <div className="flex pt-20 flex-col items-center justify-center text-slate-100 pb-3 px-3 sm:pb-5 sm:px-5">
+    <div className="flex pt-20 flex-col items-center justify-center text-slate-100 pb-4 px-2 sm:pb-5 sm:px-5">
 
       {/* Wallpaper */}
       <div
@@ -197,10 +197,10 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       </div>
 
       {track && (
-        <div className="w-full max-w-7xl flex-1 flex flex-col justify-center items-center gap-4 lg:flex-row lg:items-start">
+        <div className="w-full max-w-7xl flex-1 flex flex-col justify-center gap-4 items-center lg:flex-row lg:items-start">
 
           {/* Record table */}
-          <div className="overflow-hidden rounded-xl border border-slate-800 shadow-[0_5px_20px_rgba(0,0,0,0.6)] w-full max-w-160">
+          <div className="w-full max-w-160">
             {records && (
               <TrackRecordTable
                 tmxGame={tmxGame}
@@ -213,7 +213,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
           </div>
 
           {/* Progression graph */}
-          <div className="w-full max-w-180 mb-2">
+          <div className="w-full max-w-180">
             <RecordProgressionGraph 
               records={records}
               graphUnits={graphUnits}

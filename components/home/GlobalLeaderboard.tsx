@@ -3,10 +3,11 @@
 import { useMemo, useState } from "react";
 import { RtaEntry, SortOrder, TasEntry } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
-import { BADGE_IMAGES, BADGE_RANKS, OVERRIDE } from "@/utils/constants";
+import { BADGE_IMAGES, BADGE_RANKS, OVERRIDE_TIME_SAVED } from "@/utils/constants";
 import SortIndicator from "@/components/SortIndicator"
 import { BadgeIcon } from "@/components/Icons";
 import { formatAuthors } from "../FormatLinks";
+import { TRACKS } from "@/lib/TrackList";
 
 type AuthorStat = {
   author: string;
@@ -169,6 +170,9 @@ export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
     const bestTasByTrack = new Map<string, TasEntry>();
 
     Object.values(tasRecords).forEach((entry) => {
+
+      if (TRACKS[entry.track].gameSet === "Stunt") return;
+
       const existing = bestTasByTrack.get(entry.track);
 
       if (
@@ -184,7 +188,7 @@ export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
     bestTasByTrack.forEach((entry) => {
 
       const rta = bestRtaByTrack.get(entry.track);
-      const override = OVERRIDE[entry.track]?.[entry.time_ms];
+      const override = OVERRIDE_TIME_SAVED[entry.track]?.[entry.time_ms];
 
       let savedMs = 0;
       if (override) {
@@ -220,11 +224,11 @@ export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
         const tasIndex = getRankIndex(author.tases, BADGE_RANKS.TAS);
         const contributionIndex = getRankIndex(author.contributions, BADGE_RANKS.Contributions);
         const savedIndex = getRankIndex(author.totalSaved / 1000, BADGE_RANKS.Saved);
-        const average = (tasIndex + contributionIndex + savedIndex) / 3;
+        const badgeIndex = Math.round((tasIndex + contributionIndex + savedIndex) / 3);
 
         return {
           ...author,
-          badge: Math.round(average),
+          badge: badgeIndex,
         };
       }
     );

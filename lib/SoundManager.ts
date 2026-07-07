@@ -59,12 +59,6 @@ class SoundManager {
   unlock() {
     if (this.unlocked) return;
     this.unlocked = true;
-    if (!this.enabled) return;
-
-    ["rain", "electricHum"].forEach((key) => {
-      const audio = this.sounds.get(key);
-      audio?.play().catch(() => {});
-    });
   }
 
   pause(key: string) {

@@ -7,8 +7,18 @@ import { BadgeTable } from "@/components/about/BadgeTable";
 import { Maintainers } from "@/components/about/Maintainers";
 import { CommunityRules } from "@/components/about/CommunityRules";
 import { CategoryTable } from "@/components/about/CategoryTable";
+import { useEffect } from "react";
+import { soundManager } from "@/lib/SoundManager";
 
 export default function Page() {
+
+  useEffect(() => {
+    const unlock = () => soundManager.unlock();
+
+    window.addEventListener("pointerdown", unlock, { once: true });
+
+    return () => window.removeEventListener("pointerdown", unlock);
+  }, []);
 
   return (
     <main className="relative flex min-h-screen flex-col items-center overflow-hidden">
@@ -149,19 +159,16 @@ export default function Page() {
                 <BadgeTable />
               </div>
             </div>
-
           </div>
-          
         </div>
 
         {/* HALL OF FAME (Small screen) */}
-        <div className="justify-center flex xl:hidden">
+        <div className="justify-center flex xl:hidden mb-3">
           <HallOfFame />
         </div>
-
       </div>
 
-      <div className="flex flex-1 items-end justify-center pb-10 pt-5 px-3">
+      <div className="flex-1 items-end justify-center pb-10 pt-5 px-3 hidden sm:flex">
         <CommunityRules />
       </div>
     </main>

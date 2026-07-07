@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Environment, Game, RtaEntry, TasEntry } from "@/utils/typing";
 import { formatDate, formatGame, formatTime } from "@/utils/formatting";
 import { TRACKS } from "@/lib/TrackList";
-import { OVERRIDE } from "@/utils/constants";
+import { OVERRIDE_TIME_SAVED } from "@/utils/constants";
 import { formatAuthors } from "../FormatLinks";
 
 export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: { 
@@ -56,7 +56,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
     let timeSaved = 0;
     recordsBest.forEach((entry) => {
       const rta = bestRtaByTrack.get(entry.track);
-      const override = OVERRIDE[entry.track]?.[entry.time_ms];
+      const override = OVERRIDE_TIME_SAVED[entry.track]?.[entry.time_ms];
       let savedMs = 0;
       if (override) {
         savedMs = override * 1000;

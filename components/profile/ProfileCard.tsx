@@ -303,7 +303,7 @@ export default function ProfileCard({ profile, onEditClick }: {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-[320px] aspect-[0.67] overflow-hidden rounded-1xl bg-white/95 shadow-1xl flex flex-col mt-[3px]"
+      className="relative w-[320px] aspect-[0.67] overflow-hidden rounded-xl bg-white/95 shadow-[0_5px_20px_rgba(0,0,0,0.6)] flex flex-col"
       style={{
         transform: "perspective(1000px) translateZ(0)",
         willChange: "transform",

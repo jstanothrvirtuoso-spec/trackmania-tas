@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation";
 import { use, useState, useMemo } from "react";
-import { CATEGORY_FILTERS, GAME_SLUGS } from "@/utils/constants";
+import { CATEGORIES, CATEGORY_FILTERS, GAME_SLUGS } from "@/utils/constants";
 import { Environment, Category, TasEntry, GameSet } from "@/utils/typing";
 import { TRACKS, tracksByGame } from "@/lib/TrackList";
 import { useBestRtaRecords } from "@/lib/RtaRecords";
@@ -37,6 +37,15 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
     show_rta_leaderboard = true,
     show_recent = true,
   } = profilePrivate ?? {};
+
+  const gameCategories = useMemo(() => {
+    const categories = new Set(
+      tasRecords
+        .filter(tas => tas.game === gameName)
+        .map(tas => tas.category)
+    );
+    return CATEGORIES.filter((category) => categories.has(category));
+  }, [tasRecords, gameName])
 
   const currentRecords = useMemo(() => {
 
@@ -101,6 +110,7 @@ export default function GamePage({ params }: { params: Promise<{ game: string }>
         <HeaderOptions
           game={gameName}
           currentRecords={currentRecords}
+          gameCategories={gameCategories}
           selectedAuthor={selectedAuthorCheck}
           selectedGameSet={selectedGameSet}
           selectedCategory={selectedCategory}

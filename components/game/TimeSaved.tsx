@@ -113,7 +113,9 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
               </td>
 
               <td className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]">
+                <div className="translate-y-[1px]">
                 {formatDiff(category.tasMs, category.rtaMs)}
+                </div>
               </td>
 
               <td className="py-1 font-bold px-1.5 sm:px-3">
@@ -134,7 +136,9 @@ export default function TimeSaved({ currentRecords } : { currentRecords: RecordR
             </td>
 
             <td className="px-2 py-1 border-l border-slate-800 italic text-cyan-300 font-vga tracking-[0.04em]">
-              {formatDiff(total.tasMs, total.rtaMs)}
+              <div className="translate-y-[1px]">
+                {formatDiff(total.tasMs, total.rtaMs)}
+              </div>
             </td>
 
             <td className="px-2 py-1 font-bold px-1.5 sm:px-3">

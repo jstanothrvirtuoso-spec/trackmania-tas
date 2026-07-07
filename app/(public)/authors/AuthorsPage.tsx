@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TasEntry, RecordRow, Game, Environment } from "@/utils/typing";
+import { TasEntry, RecordRow, Environment } from "@/utils/typing";
 import { CATEGORY_FILTERS } from "@/utils/constants";
 import { useProfilePublic } from "@/lib/Profiles";
 import { useAuthors } from "@/lib/Authors";
@@ -14,6 +14,9 @@ import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart } from "@/comp
 import ProfileCard from "@/components/profile/ProfileCard";
 import { AuthorTasTable } from "@/components/authors/AuthorTasTable";
 
+export const CAMPAIGNS = ["TMNF", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "No Cut", "TM2"] as const;
+export type Campaign = (typeof CAMPAIGNS)[number];
+
 export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }) {
 
   const router = useRouter();
@@ -24,7 +27,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   const [hideBeaten, setHideBeaten] = useState(false);
   const [selectedAuthor, setSelectedAuthor] = useState<string>(initialAuthor);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [selectedGame, setSelectedGame] = useState<Campaign | null>(null);
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | null>(null);
 
   const authorOptions = useMemo(() => {
@@ -104,7 +107,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
     if (!selectedYear && !selectedGame && !selectedEnvironment) return visibleRows;
     return visibleRows
       .filter((row) => row.tas && (!selectedYear || new Date(row.tas.date).getFullYear() === selectedYear))
-      .filter((row) => row.tas && (!selectedGame || row.tas.game === selectedGame))
+      .filter((row) => row.tas && (!selectedGame || (selectedGame === "No Cut" && ["TMUF No Cut", "TMNF No Cut"].includes(row.tas.game)) || row.tas.game === selectedGame))
       .filter((row) => row.tas && (!selectedEnvironment || row.trackInfo.environment === selectedEnvironment));
   }, [selectedYear, selectedGame, selectedEnvironment, visibleRows]);
 
@@ -142,7 +145,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
     setSelectedYear(year);
   }
 
-  function updateGame(game: Game | null) {
+  function updateGame(game: Campaign | null) {
     setSelectedGame(game);
   }
 
@@ -174,7 +177,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
         <div className="absolute bottom-[-2%] left-[9%] h-[44%] w-[32%] rotate-3 border border-emerald-400/20 bg-emerald-500/5" />
 
         {/* Vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.1)_40%,rgba(0,0,0,1)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.1)_70%,rgba(0,0,0,1)_100%)]" />
       </div>
 
       {/* Options */}
@@ -211,9 +214,11 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
           )}
 
           {/* TAS table */}
-          <AuthorTasTable
-            rows={filteredRows}
-          />
+          <div className="px-2">
+            <AuthorTasTable
+              rows={filteredRows}
+            />
+          </div>
 
           {/* Stats charts */}
           <div className="flex flex-col items-center gap-4 lg:items-start">
