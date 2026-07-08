@@ -24,6 +24,8 @@ export const CATEGORY_ORDER = Object.fromEntries(CATEGORIES.map((c, i) => [c, i]
 
 export const GRAPH_CATEGORIES = ["Open", "NOseboost", "No Uber", "WR Route", "No Cut", "RTA"] as const;
 
+export const CAMPAIGNS = ["TMNF", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "No Cut", "TM2"] as const;
+
 export const GAME_SETS: Record<Game, string[]> = {
   "TMNF": ["White", "Green", "Blue", "Red", "Black"],
   "TMNF No Cut": ["White", "Green", "Blue", "Red", "Black"],

@@ -10,12 +10,12 @@ Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
 Ideas zone for partial TASes
 
-Can we remove "TMNF No Cut" as a game in supabase?
 Add reactions??
 Migrate pastebin inputs to replay files 
 Allow deletion/clearing of old submission replay files
 Add quick track selection to /admin-tas/rta
-Convert to avif?
+
+Add precise times for short tracks
 
 
 

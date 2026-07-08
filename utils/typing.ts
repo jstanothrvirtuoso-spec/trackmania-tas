@@ -1,5 +1,5 @@
 
-import { GAME_SETS, GAME_LIST, ENVIRONMENT, CATEGORIES } from "./constants";
+import { GAME_SETS, GAME_LIST, ENVIRONMENT, CATEGORIES, CAMPAIGNS } from "./constants";
 
 export type SortOrder = "asc" | "desc";
 
@@ -15,6 +15,7 @@ export type TimeState = {
 export type Game = (typeof GAME_LIST)[number];
 export type Environment = (typeof ENVIRONMENT)[number];
 export type Category = (typeof CATEGORIES)[number];
+export type Campaign = (typeof CAMPAIGNS)[number];
 
 export type SubmitForm = {
   id: string;
@@ -56,6 +57,7 @@ export type TrackInfo = {
   noCutTrack?: string;  // Reference to no-cut version for TMNF tracks
   tmx?: Game;  // TMX when track is on a different tmx to the game set
   colour?: SetColour;  // Colours when different colours are needed within the same gameSet
+  preciseTime?: boolean;  // Short maps where thousanth precision is allowed
 };
 
 export type RecordRow = {

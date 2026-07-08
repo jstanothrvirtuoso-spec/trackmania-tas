@@ -55,122 +55,121 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
   };
 
   return (
-    <div className="rounded-lg shadow-[0_5px_20px_rgba(0,0,0,0.6)] backdrop-blur-xs">
+    <div className="rounded-lg shadow-[0_5px_20px_rgba(0,0,0,0.6)] backdrop-blur-xsl">
       <div className="rounded-lg border border-slate-800 bg-slate-900/60 overflow-hidden">
-        <div className="overflow-x-auto">
-          <div className="overflow-y-auto max-h-[80vh]">
-            <table className="border-separate text-center text-slate-300 text-xs sm:text-sm">
-              <thead>
-                <tr className="text-slate-400 border-b border-slate-700 uppercase tracking-[0.18em]">
-                  <th
-                    onClick={() => handleSort("track")}
-                    className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
+        <div className="overflow-y-auto max-h-[80vh] overflow-x-hidden">
+          <table className="border-separate text-center text-slate-300 text-xs sm:text-sm">
+            <thead>
+              <tr className="text-slate-400 border-b border-slate-700 uppercase tracking-[0.18em]">
+                <th
+                  onClick={() => handleSort("track")}
+                  className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>Track</span>
+                    <SortIndicator active={sortField === "track"} order={sortOrder} />
+                  </div>
+                </th>
+
+                <th
+                  onClick={() => handleSort("time")}
+                  className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>TAS</span>
+                    <SortIndicator active={sortField === "time"} order={sortOrder} />
+                  </div>
+                </th>
+
+                <th
+                  onClick={() => handleSort("diff")}
+                  className="px-2 py-1.5 font-normal hover:text-slate-300 transition hidden sm:table-cell cursor-pointer"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>Diff.</span>
+                    <SortIndicator active={sortField === "diff"} order={sortOrder} />
+                  </div>
+                </th>
+
+                <th
+                  onClick={() => handleSort("date")}
+                  className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>Date</span>
+                    <SortIndicator active={sortField === "date"} order={sortOrder} />
+                  </div>
+                </th>
+
+                <th
+                  onClick={() => handleSort("game")}
+                  className="px-2 py-1.5 font-normal hover:text-slate-300 transition hidden sm:table-cell cursor-pointer"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>Game</span>
+                    <SortIndicator active={sortField === "game"} order={sortOrder} />
+                  </div>
+                </th>
+
+                <th
+                  onClick={() => handleSort("category")}
+                  className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    <span>Cat.</span>
+                    <SortIndicator active={sortField === "category"} order={sortOrder} />
+                  </div>
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {sortedRows.map((row, index) => {
+                if (!row.tas) return null;
+                const tasGame = row.tas.category === "No Cut" && row.trackInfo.noCutTrack ? "TMNF No Cut" : formatGame(row.tas.game)
+                const opacity = row.isCurrentBestTas ? "opacity-100" : "opacity-40"
+
+                return (
+                  <tr
+                    key={ index }
+                    className={`border-b border-slate-800 ${index % 2 === 0 ? "bg-violet-950/20" : "bg-violet-950/50"} ${opacity}`}
                   >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Track</span>
-                      <SortIndicator active={sortField === "track"} order={sortOrder} />
-                    </div>
-                  </th>
+                    <td className="px-2 max-w-50">
+                      <span className="flex flex-row gap-1 items-center">
+                        <div className="hidden sm:flex">
+                          <EnvironmentIcon environment={row.trackInfo.environment} />
+                        </div>
+                        <div className="flex justify-center w-full">
+                          {formatTrack(row.track)}
+                        </div>
+                      </span>
+                    </td>
 
-                  <th
-                    onClick={() => handleSort("time")}
-                    className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>TAS</span>
-                      <SortIndicator active={sortField === "time"} order={sortOrder} />
-                    </div>
-                  </th>
+                    <td className="px-3 py-1.5 whitespace-nowrap
+                    ">
+                      { row.tas.num_inputs ? `${row.tas.num_inputs} input${row.tas.num_inputs > 1 ? "s" : ""}` : formatTime(row.tas.time_ms, row.tas.game === "TM2")}
+                    </td>
 
-                  <th
-                    onClick={() => handleSort("diff")}
-                    className="px-2 py-1.5 font-normal hover:text-slate-300 transition hidden sm:table-cell cursor-pointer"
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Diff.</span>
-                      <SortIndicator active={sortField === "diff"} order={sortOrder} />
-                    </div>
-                  </th>
+                    <td className="px-2 py-1.5 italic hidden sm:table-cell">
+                      { row.rta && !row.tas.num_inputs ? formatDiff(row.tas.time_ms, row.rta.time_ms, row.tas.game === "TM2", true) : "-" }
+                    </td>
 
-                  <th
-                    onClick={() => handleSort("game")}
-                    className="px-2 py-1.5 font-normal hover:text-slate-300 transition hidden sm:table-cell cursor-pointer"
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Game</span>
-                      <SortIndicator active={sortField === "game"} order={sortOrder} />
-                    </div>
-                  </th>
+                    <td className="px-2 py-1.5 whitespace-nowrap">
+                      { formatDate(row.tas.date) }
+                    </td>
 
-                  <th
-                    onClick={() => handleSort("date")}
-                    className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Date</span>
-                      <SortIndicator active={sortField === "date"} order={sortOrder} />
-                    </div>
-                  </th>
+                    <td className="px-2 py-1.5 hidden sm:table-cell sm:whitespace-nowrap">
+                      {tasGame}
+                    </td>
 
-                  <th
-                    onClick={() => handleSort("category")}
-                    className="px-2 py-1.5 font-normal hover:text-slate-300 transition cursor-pointer"
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>Cat.</span>
-                      <SortIndicator active={sortField === "category"} order={sortOrder} />
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {sortedRows.map((row, index) => {
-                  if (!row.tas) return null;
-                  const tasGame = row.tas.category === "No Cut" && row.trackInfo.noCutTrack ? "TMNF No Cut" : formatGame(row.tas.game)
-                  const opacity = row.isCurrentBestTas ? "opacity-100" : "opacity-40"
-
-                  return (
-                    <tr
-                      key={ index }
-                      className={`border-b border-slate-800 ${index % 2 === 0 ? "bg-violet-950/20" : "bg-violet-950/50"} ${opacity}`}
-                    >
-                      <td className="px-2 max-w-45">
-                        <span className="flex flex-row gap-2 items-center">
-                          <div className="hidden sm:flex">
-                            <EnvironmentIcon environment={row.trackInfo.environment} />
-                          </div>
-                          <div className="flex justify-center w-full">
-                            {formatTrack(row.track)}
-                          </div>
-                        </span>
-                      </td>
-
-                      <td className="px-3 py-1.5">
-                        { formatTime(row.tas.time_ms, row.tas.game === "TM2")}
-                      </td>
-
-                      <td className="px-2 py-1.5 italic hidden sm:table-cell">
-                        { row.rta ? formatDiff(row.tas.time_ms, row.rta.time_ms, row.tas.game === "TM2", true) : "-" }
-                      </td>
-
-                      <td className="px-2 py-1.5 hidden sm:table-cell sm:whitespace-nowrap">
-                        {tasGame}
-                      </td>
-
-                      <td className="px-2 py-1.5 whitespace-nowrap">
-                        { formatDate(row.tas.date) }
-                      </td>
-
-                      <td className="px-2 py-1.5 whitespace-nowrap">
-                        { row.tas.category}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                    <td className="px-2 py-1.5 whitespace-nowrap">
+                      { row.tas.category}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

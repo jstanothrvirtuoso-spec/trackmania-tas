@@ -57,6 +57,23 @@ function getTrackDifficultyTint(trackInfo: TrackInfo, index: number) {
   return tint ? tint[index % 2] : ["bg-white/10", "bg-white/15"][index % 2];
 }
 
+function getDiffColour(recent: boolean, tasTime?: number, rtaTime?: number) {
+
+  if (!tasTime || !rtaTime) {
+    return recent ? "text-sky-100" : "text-slate-200";
+  };
+
+  if (rtaTime < tasTime) {
+    return "text-red-400";
+  };
+
+  if (Math.floor(rtaTime / 10) === Math.floor(tasTime / 10)) {
+    return "text-orange-300";
+  };
+
+  return recent ? "text-sky-100" : "text-slate-200";
+}
+
 function isRecentEntry(dateStr: string) {
   const entryDate = new Date(dateStr);
   if (Number.isNaN(entryDate.getTime())) return false;
@@ -193,12 +210,14 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
 
       <tbody className="font-sans divide-y divide-slate-800 text-center align-middle">
         {sortedRows.map(({tas, rta, track, trackInfo}, index) => {
-          const recent = showRecent && tas && isRecentEntry(tas.date);
+          const recent = showRecent && tas ? isRecentEntry(tas.date) : false;
           const difficultyClass = getTrackDifficultyTint(trackInfo, index);
-          const bgColour = recent ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
+          const bgColour = recent ? "italic bg-sky-400/30" : difficultyClass;
           const rtaColour = (showRecent && rta && isRecentEntry(rta.date)) ? "italic bg-sky-400/30 text-sky-100" : difficultyClass;
           const isLastRow = index === sortedRows.length - 1;
-          const replayURL = tas && getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path)
+          const replayURL = tas && getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path);
+          const preciseTime = isTM2 || trackInfo.preciseTime;
+          const diffColour = getDiffColour(recent, tas?.time_ms, rta?.time_ms)
           const rowCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, bgColour);
           const rowRtaCommon = (extra?: string, extra2?: string) => classNames(BODY_BASE, extra, extra2, rtaColour);
 
@@ -222,30 +241,24 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {lowInputCategory ? (
                 <>
                   <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas?.num_inputs ?? "-"}</td>
-                  <td className={rowCommon("px-3 py-1 text-slate-200")}>{tas ? formatTime(tas.time_ms, isTM2) : "-"}</td>
+                  <td className={rowCommon("px-3 py-1 text-slate-200")}>{tas ? formatTime(tas.time_ms, preciseTime) : "-"}</td>
                 </>
               ) : (
                 <>
-                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas ? formatTime(tas.time_ms, isTM2) : "-"}</td>
-                  {(() => {
-                    const isBadDiff = tas && rta && tas.time_ms > rta.time_ms;
-                    const isEqual = tas && rta && tas.time_ms === rta.time_ms;
-                    return (
-                      <td
-                        className={classNames(BODY_BASE, "font-vga px-1.5 py-1 border-slate-800 italic", bgColour, isEqual ? "text-orange-300" : isBadDiff ? "text-red-400" : "text-slate-200")}
-                        style={{
-                          letterSpacing: "0.05em",
-                          textShadow: isBadDiff
-                            ? "0 0 4px #000000, 0 0 10px #000000, 0 0 18px rgba(248, 113, 113, 0.55), 1px 1px 0 rgba(248, 113, 113, 0.35)"
-                            : "0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)",
-                        }}
-                      >
-                        <div className="translate-y-[0px]">
-                          {tas && rta ? `${formatDiff(tas.time_ms, rta.time_ms, isTM2)}` : "-"}
-                        </div>
-                      </td>
-                    );
-                  })()}
+                  <td className={rowCommon("px-1.5 border-l text-slate-200")}>{tas ? formatTime(tas.time_ms, preciseTime) : "-"}</td>
+                  <td
+                    className={classNames(BODY_BASE, "font-vga px-1.5 py-1 border-slate-800 italic", bgColour, diffColour)}
+                    style={{
+                      letterSpacing: "0.05em",
+                      textShadow: diffColour === "text-red-400"
+                        ? "0 0 4px #000000, 0 0 10px #000000, 0 0 18px rgba(248, 113, 113, 0.55), 1px 1px 0 rgba(248, 113, 113, 0.35)"
+                        : "0 0 4px #000000, 0 0 10px #000000, 0 0 18px hsla(0, 0%, 100%, 0.59), 1px 1px 0 hsl(0, 0%, 100%, 0.59)",
+                    }}
+                  >
+                    <div className="translate-y-[0px]">
+                      {tas && rta ? `${formatDiff(tas.time_ms, rta.time_ms, preciseTime)}` : "-"}
+                    </div>
+                  </td>
                   <td className={rowCommon("px-1.5 text-slate-200")}>{tas && rta ? formatPercentSaved(tas.time_ms, rta.time_ms, 3) : "-"}</td>
                 </>
               )}
@@ -275,7 +288,7 @@ export default function RecordTable({ game, showRta, showRecent, currentRecords,
               {showRta && (
                 <>
                   <td className="pl-3" />
-                  <td className={rowRtaCommon(classNames("px-2 border-l text-slate-200", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{rta ? formatTime(rta.time_ms, isTM2) : "-"}</td>
+                  <td className={rowRtaCommon(classNames("px-2 border-l text-slate-200", isLastRow ? "rounded-bl-lg" : ""), rtaColour)}>{rta ? formatTime(rta.time_ms, preciseTime) : "-"}</td>
                   <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{rta?.player ?? "-"}</td>
                   <td className={rowRtaCommon("px-2 border-l whitespace-nowrap text-slate-200", rtaColour)}>{rta ? formatDate(rta.date) : "-"}</td>
                   <td className={rowRtaCommon(classNames("px-2 border-x", isLastRow ? "rounded-br-lg" : ""), rtaColour)}>

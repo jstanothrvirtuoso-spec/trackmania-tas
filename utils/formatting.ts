@@ -1,5 +1,5 @@
 
-export function formatTime(timeMs: number, isTM2: boolean = false, showSign: boolean = false) {
+export function formatTime(timeMs: number, preciseTime: boolean = false, showSign: boolean = false) {
 
   if (timeMs < 0) {
     const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
@@ -9,11 +9,11 @@ export function formatTime(timeMs: number, isTM2: boolean = false, showSign: boo
   const sign = showSign ? timeMs > 0 ? "+" : "-" : "";
   const abs = Math.abs(timeMs);
 
-  const rounded = isTM2 ? Math.round(abs) : Math.round(abs / 10) * 10;
+  const rounded = preciseTime ? Math.round(abs) : Math.round(abs / 10) * 10;
   const minutes = Math.floor(rounded / 60000);
   const seconds = Math.floor((rounded % 60000) / 1000);
-  const split = isTM2 ? rounded % 1000 : Math.floor((rounded % 1000) / 10);
-  const decimals = isTM2 ? 3 : 2
+  const split = preciseTime ? rounded % 1000 : Math.floor((rounded % 1000) / 10);
+  const decimals = preciseTime ? 3 : 2
 
   if (minutes > 0) {
     return `${sign}${minutes}:${seconds
@@ -28,14 +28,14 @@ export function formatTime(timeMs: number, isTM2: boolean = false, showSign: boo
     .padStart(decimals, "0")}`;
 }
 
-export function formatDiff(timeMs: number, rtaMs: number, isTM2: boolean = false, showSign: boolean = true) { 
+export function formatDiff(timeMs: number, rtaMs: number, preciseTime: boolean = false, showSign: boolean = true) { 
 
   if (timeMs < 0) {
     const sign = showSign ? rtaMs < timeMs ? "-" : "+" : "";
     return `${sign}${Math.abs(timeMs - rtaMs) / 1000}`
   };
 
-  return `${showSign ? rtaMs < timeMs ? "+" : "-" : ""}${formatTime(rtaMs - timeMs, isTM2)}`
+  return `${showSign ? rtaMs < timeMs ? "+" : "-" : ""}${formatTime(rtaMs - timeMs, preciseTime)}`
 }
 
 export function formatPercentSaved(timeMs: number, rtaMs: number, numSig: number, showSign: boolean = false) {

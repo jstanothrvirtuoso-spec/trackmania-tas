@@ -86,7 +86,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const isStunt = track ? TRACKS[track].gameSet === "Stunt" : false;
   const useMinutes = rta ? rta.time_ms >= 120000 : false;
   const graphUnits = isStunt ? "pts" : useMinutes ? "min" : "sec";
-  const isTM2 = track ? TRACKS[track].game === "TM2" : false;
+  const preciseTime = track ? TRACKS[track].game === "TM2" || (TRACKS[track].preciseTime ?? false) : false;
   const tmxGame = TRACKS[track].tmx ?? TRACKS[track].game;
   const tmxLink = getTmxLink(TRACKS[track].id, tmxGame);
 
@@ -162,7 +162,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
             tmxLink={tmxLink}
             tas={tas}
             rta={rta}
-            isTM2={isTM2}
+            preciseTime={preciseTime}
             track={track}
           />
         </div>
@@ -205,7 +205,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
               <TrackRecordTable
                 tmxGame={tmxGame}
                 records={records}
-                isTM2={isTM2}
+                preciseTime={preciseTime}
                 track={track}
                 setCurrentRecord={setCurrentRecord}
               />

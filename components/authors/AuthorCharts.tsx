@@ -1,35 +1,38 @@
+"use client"
 
-import { useMemo } from "react";
-import { RecordRow, Environment } from "@/utils/typing";
-import { ENVIRONMENT } from "@/utils/constants";
-import { Campaign, CAMPAIGNS } from "@/app/(public)/authors/AuthorsPage";
+import { useMemo, useState } from "react";
+import { RecordRow, Environment, Category } from "@/utils/typing";
+import { ENVIRONMENT, CAMPAIGNS, CATEGORIES } from "@/utils/constants";
+import { Campaign } from "@/utils/typing";
 
-const SHORT_GAMES = {
-  "TMNF": "TMNF",
-  "ESWC": "ESWC",
-  "TMN Remakes": "TMN R.",
-  "TMUF": "TMUF",
-  "StarTrack": "Star",
-  "TMS": "TMS",
-  "TMO": "TMO",
-  "Demo/Beta": "Demo",
-  "No Cut": "No Cut",
-  "TM2": "TM²",
-};
+const RADIUS = 60;
+const STROKE = 120;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const PALETTE = [
+  "#077692",
+  "#6d28d9",
+  "#057451",
+  "#945105",
+  "#990f31",
+  "#1f4eb4",
+  "#7c7a0f",
+  "#c50b59",
+  "#4d7c0f",
+  "#971d9b",
+  "#1d9b2e",
+] as const;
 
-const SHORT_ENVIRONMENTS = {
-  "Stadium": "Stadium", 
-  "Island": "Island", 
-  "Desert": "Desert", 
-  "Rally": "Rally", 
-  "Bay": "Bay", 
-  "Coast": "Coast", 
-  "Snow": "Snow", 
-  "Canyon": "Cany.", 
-  "Stadium²": "Stad²", 
-  "Valley": "Valley", 
-  "Lagoon": "Lagoon"
-};
+const GAME_COLOUR = Object.fromEntries(
+  CAMPAIGNS.map((e, i) => [e, PALETTE[i]])
+) as Record<Campaign, string>;
+
+const ENVIRONMENT_COLOUR = Object.fromEntries(
+  ENVIRONMENT.map((e, i) => [e, PALETTE[i]])
+) as Record<Environment, string>;
+
+const CATEGORY_COLOUR = Object.fromEntries(
+  CATEGORIES.map((e, i) => [e, PALETTE[i]])
+) as Record<Category, string>;
 
 export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
   rows: RecordRow[]; 
@@ -65,20 +68,20 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
   const maxCount = Math.max(...yearlyCounts.map(([, c]) => c), 1);
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-gradient-to-br from-violet-500/10 via-slate-900/60 to-violet-500/10 p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+    <div className="min-w-[300px] rounded-lg border border-slate-800 bg-gradient-to-br from-violet-500/10 via-slate-900/60 to-violet-500/10 p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)] backdrop-blur-sm">
       <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
         Year
       </h2>
 
       <div
-        className="mx-auto h-40 max-w-80 w-fit gap-1.5"
+        className="mx-auto h-50 w-fit gap-2.5"
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${yearlyCounts.length}, minmax(0, 1fr))`,
         }}
       >
         {yearlyCounts.map(([year, count]) => {
-          const height = (count / maxCount) * 120;
+          const height = (count / maxCount) * 150;
           const isSelected = selectedYear === year;
 
           return (
@@ -94,14 +97,14 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
                 type="button"
                 disabled={count === 0}
                 onClick={() => onSelectYear(isSelected ? null : year)}
-                className={`w-full max-w-10 rounded-t transition focus:outline-none ${count > 0 ? "hover:bg-violet-300 cursor-pointer" : ""} ${isSelected ? "bg-violet-300 ring-2 ring-violet-400" : "bg-violet-400/70"}`}
+                className={`w-full max-w-32 rounded-t transition-all focus:outline-none ${count > 0 ? "hover:bg-violet-300 cursor-pointer" : ""} ${isSelected ? "bg-violet-300 ring-2 ring-violet-400" : "bg-violet-400/70"}`}
                 style={{
                   height: `${height}px`,
                   minHeight: "3px",
                 }}
               />
 
-              <div className="text-xs text-slate-400">
+              <div className="text-sm text-slate-400">
                 {year}
               </div>
             </div>
@@ -113,9 +116,9 @@ export function AuthorYearChart({ rows, selectedYear, onSelectYear }: {
 }
 
 export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
-  rows: RecordRow[]; 
-  selectedGame: Campaign | null; 
-  onSelectGame: (game: Campaign | null) => void 
+  rows: RecordRow[];
+  selectedGame: Campaign | null;
+  onSelectGame: (game: Campaign | null) => void;
 }) {
 
   const gameCounts = useMemo(() => {
@@ -123,76 +126,31 @@ export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
 
     rows.forEach((row) => {
       if (!row.tas) return;
-
       const game = row.tas.game === "TMNF No Cut" || row.tas.game === "TMUF No Cut" ? "No Cut" : row.tas.game;
-
       counts.set(game, (counts.get(game) || 0) + 1);
     });
 
     return CAMPAIGNS
-      .map((game) => [
-        game,
-        counts.get(game) || 0,
-      ] as const)
-      .filter(([, count]) => count > 0);;
+      .map((game) => ({ type: game, count: counts.get(game) || 0 }))
+      .filter((item) => item.count > 0);
   }, [rows]);
 
-  const maxCount = Math.max(
-    ...gameCounts.map(([, c]) => c),
-    1
-  );
-
   return (
-    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-cyan-500/10 p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)] backdrop-blur-sm">
-      <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-        Game
-      </h2>
-
-      <div
-        className="mx-auto h-40 w-fit max-w-80 gap-1.5"
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${gameCounts.length}, minmax(0, 1fr))`,
-        }}
-      >
-        {gameCounts.map(([game, count]) => {
-          const height = (count / maxCount) * 120;
-          const isSelected = selectedGame === game;
-
-          return (
-            <div
-              key={game}
-              className="flex flex-col items-center justify-end gap-1"
-            >
-              <div className="text-xs text-slate-400">
-                {count}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => onSelectGame(isSelected ? null : game)}
-                className={`w-full max-w-8 rounded-t transition focus:outline-none cursor-pointer ${isSelected ? "bg-cyan-300 ring-2 hover:bg-cyan-400" : "bg-cyan-400/70 hover:bg-cyan-300"}`}
-                style={{
-                  height: `${height}px`,
-                  minHeight: "3px",
-                }}
-              />
-
-              <div className="text-[10px] text-slate-400 whitespace-nowrap">
-                {SHORT_GAMES[game]}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    <PieChart
+      title="Game"
+      counts={gameCounts}
+      colours={GAME_COLOUR}
+      gradient="from-amber-500/10 via-slate-900/60 to-amber-500/10"
+      selected={selectedGame}
+      onSelect={onSelectGame}
+    />
   );
 }
 
 export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvironment }: {
   rows: RecordRow[]; 
   selectedEnvironment: Environment | null; 
-  onSelectEnvironment: (environment: Environment | null) => void 
+  onSelectEnvironment: (environment: Environment | null) => void;
 }) {
 
   const environmentCounts = useMemo(() => {
@@ -205,55 +163,134 @@ export function AuthorEnvironmentChart({ rows, selectedEnvironment, onSelectEnvi
     });
 
     return ENVIRONMENT
-      .map((env) => [env, counts.get(env) || 0] as const)
-      .filter(([, count]) => count > 0);
+      .map((env) => ({ type: env, count: counts.get(env) || 0 }))
+      .filter((item) => item.count > 0);
   }, [rows]);
 
-  const maxCount = Math.max(...environmentCounts.map(([, c]) => c), 1);
+  return (
+    <PieChart
+      title="Environment"
+      counts={environmentCounts}
+      colours={ENVIRONMENT_COLOUR}
+      gradient="from-red-500/10 via-slate-900/60 to-red-500/10"
+      selected={selectedEnvironment}
+      onSelect={onSelectEnvironment}
+    />
+  );
+}
+
+export function AuthorCategoryChart({ rows, selectedCategory, onSelectCategory }: {
+  rows: RecordRow[]; 
+  selectedCategory: Category | null; 
+  onSelectCategory: (category: Category | null) => void;
+}) {
+
+  const categoryCounts = useMemo(() => {
+    const counts = new Map<Category, number>();
+
+    rows.forEach((row) => {
+      const category = row.tas?.category;
+      if (!category) return;
+      counts.set(category, (counts.get(category) || 0) + 1);
+    });
+
+    return CATEGORIES
+      .map((category) => ({ type: category, count: counts.get(category) || 0 }))
+      .filter((item) => item.count > 0);
+  }, [rows]);
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-slate-800 bg-gradient-to-br from-emerald-500/10 via-slate-900/60 to-emerald-500/10 items-center p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+    <PieChart
+      title="Category"
+      counts={categoryCounts}
+      colours={CATEGORY_COLOUR}
+      gradient="from-cyan-500/10 via-slate-900/60 to-cyan-500/10"
+      selected={selectedCategory}
+      onSelect={onSelectCategory}
+    />
+  );
+}
+
+function PieChart<T extends string>({ title, counts, colours, gradient, selected, onSelect }: {
+  title: string;
+  counts: { type: T; count: number }[];
+  colours: Record<T, string>;
+  gradient: string;
+  selected: T | null;
+  onSelect: (selected: T | null) => void;
+}) {
+
+  const [hovered, setHovered] = useState<T | null>(null);
+  
+  const total = counts.reduce((sum, item) => sum + item.count, 0);
+
+  const slices = useMemo(() => {
+    let offset = 0;
+
+    return counts.map(({ type, count }) => {
+      const percentage = count / total;
+      const dash = percentage * CIRCUMFERENCE;
+      const slice = { type, dash, offset, count };
+      
+      // eslint-disable-next-line react-hooks/immutability
+      offset += dash;
+      return slice;
+    });
+  }, [counts, total]);
+
+  return (
+    <div className={`min-w-[220px] rounded-lg border border-slate-800 bg-gradient-to-br ${gradient} p-3 shadow-[0_5px_20px_rgba(0,0,0,0.6)] backdrop-blur-sm`}>
       <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-        Environment
+        {title}
       </h2>
 
-      <div
-        className="mx-auto h-40 w-fit max-w-80 gap-1.5"
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${environmentCounts.length}, minmax(0, 1fr))`,
-        }}
-      >
-        {environmentCounts.map(([environment, count]) => {
-          const height = (count / maxCount) * 120;
-          const isSelected = selectedEnvironment === environment;
+      <div className="flex items-start justify-center pl-1 gap-3">
+        <svg
+          viewBox="0 0 250 250"
+          className="h-50 w-50 -rotate-90"
+        >
+          {slices.map(({ type, dash, offset }) => {
+            const isSelected = selected === type;
 
-          return (
-            <div
-              key={environment}
-              className="flex flex-col items-center justify-end gap-1"
-            >
-              <div className="text-xs text-slate-400">
-                {count}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => onSelectEnvironment(isSelected ? null : environment)}
-                className={`w-full max-w-8 rounded-t transition focus:outline-none cursor-pointer ${
-                  isSelected ? "bg-emerald-300 ring-2 hover:bg-emerald-400" : "bg-emerald-400/70 hover:bg-emerald-300"}`}
-                style={{
-                  height: `${height}px`,
-                  minHeight: "3px",
-                }}
+            return (
+              <circle
+                key={type}
+                cx="125"
+                cy="125"
+                r={RADIUS}
+                fill="none"
+                stroke={colours[type]}
+                strokeWidth={hovered === type ? STROKE + 8 : STROKE}
+                strokeDasharray={`${dash} ${CIRCUMFERENCE - dash}`}
+                strokeDashoffset={-offset}
+                opacity={selected && !isSelected ? 0.35 : 1}
+                className="cursor-pointer transition-all duration-350"
+                onMouseEnter={() => setHovered(type)}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => onSelect(isSelected ? null : type)}
               />
-              
-              <div className="text-[9px] text-slate-400">
-                {SHORT_ENVIRONMENTS[environment]}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </svg>
+
+        <div className="flex flex-col justify-start items-start gap-y-1">
+          {counts.map(({ type, count }) => (
+            <button
+              key={type}
+              type="button"
+              onMouseEnter={() => setHovered(type)}
+              onMouseLeave={() => setHovered(null)}
+              onClick={() => onSelect(selected === type ? null : type)}
+              className={`flex items-center gap-1 text-[11px] cursor-pointer ${hovered === type ? "text-slate-200" : "text-slate-400"}`}
+            >
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: colours[type] }}
+              />
+              {type.length > 8 ? `${type.slice(0, 6)}.` : type} ({count})
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

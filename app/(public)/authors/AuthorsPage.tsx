@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TasEntry, RecordRow, Environment } from "@/utils/typing";
+import { TasEntry, RecordRow, Environment, Campaign, Category } from "@/utils/typing";
 import { CATEGORY_FILTERS } from "@/utils/constants";
 import { useProfilePublic } from "@/lib/Profiles";
 import { useAuthors } from "@/lib/Authors";
@@ -10,12 +10,9 @@ import { useTasRecords } from "@/lib/TasRecords";
 import { useBestRtaRecords } from "@/lib/RtaRecords";
 import { TRACKS } from "@/lib/TrackList";
 import { DropSelect } from "@/components/DropSelect";
-import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart } from "@/components/authors/AuthorCharts";
+import { AuthorYearChart, AuthorEnvironmentChart, AuthorGameChart, AuthorCategoryChart } from "@/components/authors/AuthorCharts";
 import ProfileCard from "@/components/profile/ProfileCard";
 import { AuthorTasTable } from "@/components/authors/AuthorTasTable";
-
-export const CAMPAIGNS = ["TMNF", "ESWC", "TMN Remakes", "TMUF", "StarTrack", "TMS", "TMO", "Demo/Beta", "No Cut", "TM2"] as const;
-export type Campaign = (typeof CAMPAIGNS)[number];
 
 export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }) {
 
@@ -28,6 +25,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   const [selectedAuthor, setSelectedAuthor] = useState<string>(initialAuthor);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedGame, setSelectedGame] = useState<Campaign | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | null>(null);
 
   const authorOptions = useMemo(() => {
@@ -104,12 +102,13 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
   const visibleRows = hideBeaten ? rows.filter((r) => r.isCurrentBestTas) : rows;
 
   const filteredRows = useMemo(() => {
-    if (!selectedYear && !selectedGame && !selectedEnvironment) return visibleRows;
+    if (!selectedYear && !selectedGame && !selectedEnvironment && !selectedCategory) return visibleRows;
     return visibleRows
       .filter((row) => row.tas && (!selectedYear || new Date(row.tas.date).getFullYear() === selectedYear))
       .filter((row) => row.tas && (!selectedGame || (selectedGame === "No Cut" && ["TMUF No Cut", "TMNF No Cut"].includes(row.tas.game)) || row.tas.game === selectedGame))
-      .filter((row) => row.tas && (!selectedEnvironment || row.trackInfo.environment === selectedEnvironment));
-  }, [selectedYear, selectedGame, selectedEnvironment, visibleRows]);
+      .filter((row) => row.tas && (!selectedEnvironment || row.trackInfo.environment === selectedEnvironment))
+      .filter((row) => row.tas && (!selectedCategory || row.tas.category === selectedCategory));
+  }, [selectedYear, selectedGame, selectedCategory, selectedEnvironment, visibleRows]);
 
   function updateBeaten() {
     if (!hideBeaten && selectedYear) {
@@ -122,6 +121,12 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
       const visibleRows = rows.filter((r) => r.isCurrentBestTas && r.tas && r.tas.game === selectedGame);
       if (visibleRows.length === 0) {
         setSelectedGame(null)
+      }
+    }
+    if (!hideBeaten && selectedCategory) {
+      const visibleRows = rows.filter((r) => r.isCurrentBestTas && r.tas && r.tas.category === selectedCategory);
+      if (visibleRows.length === 0) {
+        setSelectedCategory(null)
       }
     }
     if (!hideBeaten && selectedEnvironment) {
@@ -137,6 +142,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
     setSelectedAuthor(author);
     setSelectedYear(null);
     setSelectedEnvironment(null);
+    setSelectedCategory(null);
     setSelectedGame(null);
     router.replace(`/authors?${new URLSearchParams({author: author})}`);
   }
@@ -149,12 +155,16 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
     setSelectedGame(game);
   }
 
+  function updateCategory(category: Category | null) {
+    setSelectedCategory(category);
+  }
+
   function updateEnvironment(environment: Environment | null) {
     setSelectedEnvironment(environment);
   }
 
   return (
-    <div className="mx-auto flex w-full flex-col items-center overflow-x-auto pt-20 pb-5 text-slate-100">
+    <div className="mx-auto flex w-full max-w-full flex-col items-center overflow-x-hidden pt-20 pb-5 text-slate-100">
 
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
@@ -206,38 +216,49 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
       {selectedAuthor && (
         <div className="flex flex-col items-center gap-4 lg:gap-2 lg:flex-row lg:items-start">
 
-          {/* Profile card */}
-          {profilePublic && (
-            <ProfileCard 
-              profile={profilePublic}
-            />
-          )}
-
           {/* TAS table */}
-          <div className="px-2">
+          <div className="min-w-0 max-w-full px-2">
             <AuthorTasTable
               rows={filteredRows}
             />
           </div>
 
-          {/* Stats charts */}
-          <div className="flex flex-col items-center gap-4 lg:items-start">
-            <AuthorYearChart
-              rows={visibleRows}
-              selectedYear={selectedYear}
-              onSelectYear={updateYear}
-            />
-            <AuthorGameChart
-              rows={visibleRows}
-              selectedGame={selectedGame}
-              onSelectGame={updateGame}
-            />
-            <AuthorEnvironmentChart
-              rows={visibleRows}
-              selectedEnvironment={selectedEnvironment}
-              onSelectEnvironment={updateEnvironment}
-            />
+          <div className="flex flex-col gap-4 max-w-190 items-center lg:items-start">
+
+            {/* Stats charts */}
+            <div className="flex flex-wrap items-center justify-center gap-4 lg:items-start lg:justify-start">
+              <AuthorYearChart
+                rows={visibleRows}
+                selectedYear={selectedYear}
+                onSelectYear={updateYear}
+              />
+              <AuthorGameChart
+                rows={visibleRows}
+                selectedGame={selectedGame}
+                onSelectGame={updateGame}
+              />
+              <AuthorCategoryChart
+                rows={visibleRows}
+                selectedCategory={selectedCategory}
+                onSelectCategory={updateCategory}
+              />
+              <AuthorEnvironmentChart
+                rows={visibleRows}
+                selectedEnvironment={selectedEnvironment}
+                onSelectEnvironment={updateEnvironment}
+              />
+            </div>
+
+            {/* Profile card */}
+            {profilePublic ? (
+              <ProfileCard
+                profile={profilePublic} 
+              />
+            ) : (
+              <div className="h-1 w-[320px]" />
+            )}
           </div>
+
         </div>
       )}
     </div>

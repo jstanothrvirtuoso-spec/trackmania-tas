@@ -1,17 +1,20 @@
 
 import { TRACKS } from "@/lib/TrackList";
 import { useHoverDropdown, useOnClickOutside } from "@/utils/common";
-import { GAME_LIST } from "@/utils/constants";
-import { Game, GameSet } from "@/utils/typing";
-import { useEffect, useRef, useState } from "react";
+import { CAMPAIGNS } from "@/utils/constants";
+import { Campaign, Game, GameSet } from "@/utils/typing";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-type TrackTree = Record<Game, Record<GameSet, string[]>>;
+type TrackTree = Record<Campaign, Record<GameSet, string[]>>;
 
-export const TRACK_TREE: TrackTree = GAME_LIST.reduce((games, game) => {
+export const TRACK_TREE: TrackTree = CAMPAIGNS.reduce((games, game) => {
   games[game] = {} as Record<GameSet, string[]>;
 
   for (const [track, info] of Object.entries(TRACKS)) {
-    if (info.game !== game) continue;
+
+    const campaign = ["TMNF No Cut", "TMUF No Cut"].includes(info.game) ? "No Cut" : info.game;
+
+    if (campaign !== game) continue;
 
     if (!games[game][info.gameSet]) {
       games[game][info.gameSet] = [];
@@ -21,7 +24,9 @@ export const TRACK_TREE: TrackTree = GAME_LIST.reduce((games, game) => {
   }
 
   for (const gameSet of Object.keys(games[game])) {
-    games[game][gameSet as GameSet].sort();
+    games[game][gameSet as GameSet].sort((a, b) =>
+      a.localeCompare(b, undefined, { numeric: true })
+    );
   }
 
   return games;
@@ -55,16 +60,34 @@ export function TrackSelector({selectedGame, selectedTrack, updateTrack}: TrackS
 
   const ref = useRef<HTMLDivElement>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+  const gameSetRefs = useRef<Record<GameSet, HTMLDivElement | null>>({});
+  const trackRef = useRef<HTMLDivElement>(null);
   const isInTrackColumn = useRef(false);
-  const [hoverPath, setHoverPath] = useState<{ game: Game | null; set: GameSet | null, track: string | null }>({ game: null, set: null, track: null });
+
+  const [hoverPath, setHoverPath] = useState<{ game: Campaign | null; set: GameSet | null, track: string | null }>({ game: null, set: null, track: null });
+  const [trackTop, setTrackTop] = useState(-1);
 
   const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
   const menu = useHoverDropdown();
 
   useOnClickOutside(ref, menu.closeNow, isTouch);
+  
   useEffect(() => {
     return () => clearHoverTimeout();
   }, []);
+
+  useLayoutEffect(() => {
+    if (!hoverPath.set) return;
+
+    const setEl = gameSetRefs.current[hoverPath.set];
+    const trackEl = trackRef.current;
+    if (!setEl || !trackEl) return;
+
+    const setBottom = setEl.offsetTop + setEl.offsetHeight;
+    const top = Math.max(-1, setBottom - trackEl.offsetHeight + 10);
+
+    setTrackTop(top);
+  }, [hoverPath.set]);
 
   function clearHoverTimeout() {
     if (hoverTimeout.current) {
@@ -73,7 +96,7 @@ export function TrackSelector({selectedGame, selectedTrack, updateTrack}: TrackS
     }
   };
 
-  function updateHover(next: { game?: Game; set?: GameSet }) {
+  function updateHover(next: { game?: Campaign; set?: GameSet }) {
     clearHoverTimeout();
 
     hoverTimeout.current = setTimeout(() => {
@@ -129,7 +152,7 @@ export function TrackSelector({selectedGame, selectedTrack, updateTrack}: TrackS
         >
           {/* GAME COLUMN */}
           <div className="min-w-[140px] py-1">
-            {GAME_LIST.map((game) => {
+            {CAMPAIGNS.map((game) => {
               const active = hoverPath.game === game;
               const current = game === selectedGame;
 
@@ -169,6 +192,7 @@ export function TrackSelector({selectedGame, selectedTrack, updateTrack}: TrackS
                 return (
                   <div
                     key={set}
+                    ref={el => { gameSetRefs.current[set as GameSet] = el }}
                     onMouseEnter={() => !isTouch && updateHover({ set: set as GameSet })}
                     onClick={() => setHoverPath((prev) => ({ game: prev.game, set: prev.set === set ? null : (set as GameSet), track: null }))}
                     className={`
@@ -202,7 +226,11 @@ export function TrackSelector({selectedGame, selectedTrack, updateTrack}: TrackS
           const columns = splitEven(tracks, 26);
 
           return (
-            <div className="absolute left-full top-[-1px] -ml-3">
+            <div
+              ref={trackRef}
+              className="absolute left-full -ml-3"
+              style={{ top: trackTop }}
+            >
               <div className="min-w-[140px] flex rounded-2xl border border-cyan-500/15 bg-[linear-gradient(135deg,#0d1620_0%,#070d14_55%,#04070c_100%)] py-2 shadow-[0_20px_80px_rgba(0,0,0,0.6)] backdrop-blur-xl">
                 {columns.map((col, i) => (
                   <div

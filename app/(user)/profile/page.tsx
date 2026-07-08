@@ -20,13 +20,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <>
+    <div>
+
       {/* BACKGROUND WRAPPER */}
       <div className="min-h-screen w-full bg-[url('/wallpapers/profilestadium.webp')] bg-cover bg-center bg-no-repeat bg-fixed text-white fixed"/>
       <div className="absolute inset-0 bg-gradient-to-br from-violet-900/60 to-slate-900/80" />
 
       {/* PAGE CONTENT */}
-      <div className="relative min-h-screen px-2 flex flex-col w-full items-center justify-center gap-6 sm:gap-8 pt-22">
+      <div className="relative min-h-screen px-2 flex flex-col w-full items-center justify-start gap-6 sm:gap-8 pt-24">
 
         {/* Header */}
         <Image
@@ -71,6 +72,6 @@ export default function ProfilePage() {
       {isSaving && (
         <div className="fixed inset-0 z-[9999] cursor-wait" />
       )}
-    </>
+    </div>
   );
 }

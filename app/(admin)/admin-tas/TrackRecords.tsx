@@ -8,6 +8,7 @@ import { DropSelect } from "@/components/DropSelect";
 import { CATEGORIES } from "@/utils/constants";
 import { createClient } from "@/utils/supabase/client";
 import { useAlert } from "@/components/providers/AlertProvider";
+import { TRACKS } from "@/lib/TrackList";
 
 type TrackRecordsProps = {
   track: string;
@@ -89,6 +90,7 @@ export default function TrackRecords({
             records.map((tas) => {
               const isMatch = tas.category === category;
               const replayURL = getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path)
+              const preciseTime = tas.game === "TM2" || (TRACKS[tas.track].preciseTime ?? false)
 
               return (
                 <tr
@@ -115,7 +117,7 @@ export default function TrackRecords({
                   </td>
 
                   <td className="py-2 px-2">
-                    {formatTime(tas.time_ms, tas.game === "TM2")}
+                    {formatTime(tas.time_ms, preciseTime)}
                   </td>
 
                   <td className="py-1 px-1 max-w-80">

@@ -77,6 +77,10 @@ export default function ProfileCard({ profile, onEditClick }: {
     len < 80 ? "text-xl" :
     len < 140 ? "text-lg" :
     "text-base";
+  const displayName = profile.display_name.replace(
+    /(?<!^)([A-Z])/g,
+    "\u200B$1"
+  );
 
   useEffect(() => {
     hueRef.current = profile.theme1;
@@ -359,10 +363,10 @@ export default function ProfileCard({ profile, onEditClick }: {
 
         <div className="text-left z-20">
           <div
-            className={`font-bold text-black leading-tight font-sakura tracking-[0.5px] break-words overflow-wrap-anywhere max-w-45 ${profile.display_name.length > 10 ? "text-xl" : "text-2xl"}`}
+            className={`font-bold text-black leading-tight font-sakura tracking-[0.5px] break-words overflow-wrap-anywhere ${onEditClick ? "max-w-45" : "max-w-55"} ${profile.display_name.length > 10 ? "text-xl" : "text-2xl"}`}
             style={{ textShadow: "0 1px 8px rgba(0, 0, 0, 0.15)" }}
           >
-            {profile.display_name}
+            {displayName}
           </div>
         </div>
       </div>

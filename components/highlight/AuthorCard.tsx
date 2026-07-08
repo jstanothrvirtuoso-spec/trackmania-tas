@@ -1,7 +1,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { Environment, Game, RtaEntry, TasEntry } from "@/utils/typing";
+import { Category, Environment, Game, RtaEntry, TasEntry } from "@/utils/typing";
 import { formatDate, formatGame, formatTime } from "@/utils/formatting";
 import { TRACKS } from "@/lib/TrackList";
 import { OVERRIDE_TIME_SAVED } from "@/utils/constants";
@@ -13,7 +13,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
   bestRtaByTrack: Map<string, RtaEntry>,
 }) {
 
-  const { records, numTASes, numWRs, contributions, timeSaved, firstTas, lastTas, favEnvironment, favGame } = useMemo(() => {
+  const { records, numTASes, numWRs, contributions, timeSaved, firstTas, lastTas, favEnvironment, favCategory, favGame } = useMemo(() => {
 
     const bestTasByTrack = new Map<string, TasEntry>();
 
@@ -37,10 +37,12 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
     const recordsBest = [...records].filter((record) => bestTasByTrack.get(record.track)?.time_ms === record.time_ms)
 
     const envCount = new Map<Environment, number>();
+    const categoryCount = new Map<Category, number>();
     const gameCount = new Map<Game, number>();
     for (const record of recordsBest) {
       const env = TRACKS[record.track].environment
       envCount.set(env, (envCount.get(env) ?? 0) + 1);
+      categoryCount.set(record.category, (categoryCount.get(record.category) ?? 0) + 1);
       gameCount.set(record.game, (gameCount.get(record.game) ?? 0) + 1);
     }
 
@@ -48,6 +50,10 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
     let maxEnv = 0;
     for (const [env, count] of envCount) { if (count > maxEnv) { maxEnv = count; favEnvironment = env } }
 
+    let favCategory: Category = "Open";
+    let maxCategory = 0;
+    for (const [category, count] of categoryCount) { if (count > maxCategory) { maxCategory = count; favCategory = category } }
+    
     let favGame: Game = "TMNF";
     let maxGame = 0;
     for (const [game, count] of gameCount) { if (count > maxGame) { maxGame = count; favGame = game } }
@@ -76,6 +82,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
       firstTas: records[records.length - 1].date,
       lastTas: records[0].date,
       favEnvironment: favEnvironment,
+      favCategory: favCategory,
       favGame: favGame,
     }
   }, [tasRecords, authorOfTheDay, bestRtaByTrack]);
@@ -138,21 +145,31 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
         
         <div>
           <div className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
-            Fav. Env.
-          </div>
-
-          <div className="mt-1 text-slate-200">
-            {favEnvironment}
-          </div>
-        </div>
-
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
             Fav. Game
           </div>
 
           <div className="mt-1 text-slate-200">
             {formatGame(favGame)}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
+            Fav. Cat.
+          </div>
+
+          <div className="mt-1 text-slate-200">
+            {favCategory}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.15em] text-slate-500">
+            Fav. Env.
+          </div>
+
+          <div className="mt-1 text-slate-200">
+            {favEnvironment}
           </div>
         </div>
 

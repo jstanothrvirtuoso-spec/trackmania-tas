@@ -7,11 +7,11 @@ interface TracksTitlesProps {
   tmxLink: string;
   tas: TasEntry | null;
   rta: RtaEntry | null;
-  isTM2: boolean;
+  preciseTime: boolean;
   track: string;
 }
 
-export function TracksTitles({track, tmxLink, tas, rta, isTM2}: TracksTitlesProps) {
+export function TracksTitles({track, tmxLink, tas, rta, preciseTime}: TracksTitlesProps) {
   return(
     <div className="mb-4 mt-6 text-center">
 
@@ -39,7 +39,7 @@ export function TracksTitles({track, tmxLink, tas, rta, isTM2}: TracksTitlesProp
             </div>
 
             <div className="font-mono text-lg font-semibold text-emerald-400 whitespace-nowrap">
-              {tas ? formatTime(tas.time_ms, isTM2) : "-"}
+              {tas ? formatTime(tas.time_ms, preciseTime) : "-"}
               {tas && rta && (<span className="text-xs text-blue-300">{` (${formatPercentSaved(tas.time_ms, rta.time_ms, 3, true)}%)`}</span>)}
             </div>
           </div>
@@ -65,7 +65,7 @@ export function TracksTitles({track, tmxLink, tas, rta, isTM2}: TracksTitlesProp
             </div>
 
             <div className="font-mono text-lg font-semibold text-emerald-400">
-              {rta ? formatTime(rta.time_ms, isTM2) : "-"}
+              {rta ? formatTime(rta.time_ms, preciseTime) : "-"}
             </div>
           </div>
 
