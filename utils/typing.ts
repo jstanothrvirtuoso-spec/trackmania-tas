@@ -121,6 +121,7 @@ export type ReplayState = {
   file: File | null;
   track: string;
   time: TimeState;
+  timeMs?: number;
 };
 
 export type GbxData = {

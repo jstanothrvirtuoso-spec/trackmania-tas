@@ -11,12 +11,11 @@ Fix visitor counter
 Ideas zone for partial TASes
 
 Add reactions??
-Migrate pastebin inputs to replay files 
 Allow deletion/clearing of old submission replay files
 Add quick track selection to /admin-tas/rta
 
-Add precise times for short tracks
-
+Check inputs for all Virtuoso TASes
+Look for replays for all TMNF
 
 
 //////////////////////////////////////////////////////////////////////////

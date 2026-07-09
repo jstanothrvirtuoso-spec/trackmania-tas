@@ -67,6 +67,7 @@ export default function AdminTas() {
     file: null,
     track: "",
     time: timeMsToState(0),
+    timeMs: 0,
   });
 
   const [form, setForm] = useState<TasForm>({
@@ -129,7 +130,7 @@ export default function AdminTas() {
       thousandth: 0,
     });
 
-    setReplay({ file: null, track: "", time: timeMsToState(0) });
+    setReplay({ file: null, track: "", time: timeMsToState(0), timeMs: 0 });
     setWarning("");
   }
 
@@ -162,7 +163,7 @@ export default function AdminTas() {
 
   async function copyTasToForm(tas: TasEntry) {
 
-    setReplay({ file: null, track: "", time: timeMsToState(0) });
+    setReplay({ file: null, track: "", time: timeMsToState(0), timeMs: 0 });
     const replayURL = getReplayURL(tas.game, tas.track, tas.time_ms, tas.replay_path);
 
     if (replayURL) {
@@ -213,7 +214,7 @@ export default function AdminTas() {
 
   async function onFileSelect(file?: File) {
 
-    setReplay({ file: null, track: "", time: timeMsToState(0) });
+    setReplay({ file: null, track: "", time: timeMsToState(0), timeMs: 0 });
 
     if (!file) return;
     if (!file.name.toLowerCase().endsWith(".gbx")) {
@@ -236,6 +237,7 @@ export default function AdminTas() {
       file,
       track: trackIds[parsed.uid] ?? trackIds[`${parsed.uid}-${parsed.version}`] ?? "",
       time: parsed.bestTime && parsed.validable ? timeMsToState(parsed.bestTime) : timeMsToState(0),
+      timeMs: parsed.bestTime && parsed.validable ? parsed.bestTime : 0,
     });
   }
 
@@ -331,6 +333,13 @@ export default function AdminTas() {
     setLoading(true)
 
     try {
+
+      {/* Checks */}
+      if (timeMs === 0) {
+        showAlert("Please fill in the replay time!");
+        return;
+      }
+
       {/* New TAS */}
       if (!selectedCopiedTas) {
 
@@ -634,10 +643,13 @@ export default function AdminTas() {
               ) : (
                 <DropSelect
                   initialValue={form.game}
-                  options={GAME_LIST.map((game) => ({
-                    value: game,
-                    label: formatGame(game),
-                  }))}
+                  options={GAME_LIST
+                    .filter((game) => !["TMUF No Cut", "TMNF No Cut"].includes(game))
+                    .map((game) => ({
+                      value: game,
+                      label: formatGame(game),
+                    }))
+                  }
                   onChange={(value) => updateGame(value)}
                   fullWidth={true}
                 />
@@ -880,7 +892,7 @@ export default function AdminTas() {
                           {replay.track === form.track ? " (Match)" : " (DOES NOT MATCH!)"}
                         </span>
                       </div>
-                      {timeMs > 0 ? (
+                      {replay.timeMs ? (
                         <div className="mt-1 text-slate-300">
                           Time:
                           <span className={`ml-2 font-medium ${timesEqual(replay.time, time) ? "text-emerald-400" : "text-red-400"}`}>

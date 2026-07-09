@@ -7,7 +7,7 @@ import { Copy, Download, Loader2 } from "lucide-react";
 import { getReplayURL } from "@/utils/common";
 import { formatTime } from "@/utils/formatting";
 import { createClient } from "@/utils/supabase/client";
-import { Game } from "@/utils/typing";
+import { Category, Game } from "@/utils/typing";
 import { TRACKS } from "@/lib/TrackList";
 
 type LoadState = "fetching" | "downloading" | "generating" | "done" | "error" | "timeout"
@@ -16,6 +16,7 @@ type RecordData = {
   "Track": string,
   "Time": number,
   "Authors": string,
+  "Category": Category,
 }
 
 const supabase = createClient();
@@ -47,13 +48,20 @@ export default function InputsModal() {
 
   function handleDownload() {
 
+    if (!record) return;
+
     soundManager.play("click");
     const blob = new Blob([inputs], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
+    const fileName = `${record["Track"]}-${record["Time"]}${type === "rta" ? "-RTA" : ""}.txt`
+      .replace(/[()]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^a-zA-Z0-9._-]/g, "")
+      .replace(/-+/g, "-");
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = record ? `${record["Track"]}-${record["Time"]}${type === "rta" ? "-RTA" : ""}.txt` : "inputs.txt";
+    a.download = fileName;
     a.click();
 
     URL.revokeObjectURL(url);
@@ -88,7 +96,8 @@ export default function InputsModal() {
         "Game": data.game,
         "Track": data.track,
         "Time": data.time_ms,
-        "Authors": type === "tas" ? formatAuthors(data.authors) : `by ${data.player} [RTA]`
+        "Authors": type === "tas" ? formatAuthors(data.authors) : `by ${data.player} [RTA]`,
+        "Category": data.category,
       });
 
       const replayURL =
@@ -143,6 +152,9 @@ export default function InputsModal() {
     };
   }, [id, type]);
 
+  const preciseTime = record ? record["Game"] === "TM2" || TRACKS[record["Track"]].preciseTime : false;
+  const displayTrack = record ? record["Category"] === "No Cut" && TRACKS[record["Track"]].noCutTrack ? TRACKS[record["Track"]].noCutTrack : record["Track"] : "-";
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm py-10 px-2
@@ -164,11 +176,11 @@ export default function InputsModal() {
           {/* TAS info */}
           <div className="flex flex-col items-start mt-1">
             <div className="font-vga tracking-[0.1em] font-semibold text-slate-200 text-xl sm:text-2xl">
-              {record ? record["Track"] : "-"}
+              {displayTrack}
             </div>
 
             <div className="font-mono font-semibold text-sky-400 whitespace-nowrap text-lg sm:text-xl">
-              {record ? `${formatTime(record["Time"], record["Game"] === "TM2")}${TRACKS[record["Track"]].gameSet === "Stunt" ? " pts" : ""}` : "-"}
+              {record ? `${formatTime(record["Time"], preciseTime)}${TRACKS[record["Track"]].gameSet === "Stunt" ? " pts" : ""}` : "-"}
             </div>
             
             <div className="font-xs sm:font-sm text-slate-200">
