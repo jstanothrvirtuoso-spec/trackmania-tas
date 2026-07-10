@@ -176,6 +176,25 @@ export default function SubmitForm() {
         return;
       }
 
+      // try {
+      //   await fetch("/api/discord", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       track: replay.track,
+      //       time:
+      //         `${replay.time.minutes > 0 ? replay.time.minutes + ":" : ""}` +
+      //         `${String(replay.time.seconds).padStart(2, "0")}.` +
+      //         `${String(replay.time.hundredths).padStart(2, "0")}`,
+      //       category: form.category,
+      //       authors: cleanAuthors,
+      //       submitter: profilePublicMe.display_name,
+      //     }),
+      //   });
+      // } catch {}
+
       showAlert("Your TAS was submitted successfully! A moderator will review your submission soon. Check your profile to track your submissions status.");
       resetForm();
     } finally {

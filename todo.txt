@@ -4,21 +4,21 @@
 //////////////////////////////////////////////////////////////////////////
 
 Admin panel:
- - Deleting of old replay items
+ - Deleting of old tas submissions items
  - Connecting accounts with authors
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
-Ideas zone for partial TASes
-
-Add reactions??
-Allow deletion/clearing of old submission replay files
-Add quick track selection to /admin-tas/rta
 
 Check inputs for all Virtuoso TASes
 Look for replays for all TMNF
-Drop select width (check all)
+Set categories for all TASes
+Get videos for all TM2 RTA wrs
+Start collecting all historical TASes for non-TMNF
 
+Ideas zone for partial TASes
+Add reactions??
 TMNF Stats - Add Total time (by category) including RTA change since ~2021
+Discord hook to alert for uploaded TASes
 
 
 //////////////////////////////////////////////////////////////////////////

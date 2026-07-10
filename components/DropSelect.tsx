@@ -42,8 +42,8 @@ export function DropSelect<T extends string>({ initialValue, defaultOption, opti
       0,
     );
 
-    const minWidth = small ? 100 : 170;
-    const padding = small ? 5 : 30;
+    const minWidth = small ? 120 : 170;
+    const padding = small ? 20 : 30;
 
     setButtonWidth(
       Math.max(

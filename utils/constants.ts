@@ -135,14 +135,14 @@ export const DISPLAY_SETTINGS = [
   { key: "allow_sounds", label: "Allow Sounds", desc: "Allow/mute all website sounds/music" },
 ] as const;
 
-export const CATEGORY_COLOURS: Record<string, [string, string, string]> = {
-  "Open": ["#c271f8", "bg-[#c271f8]/30", "bg-[#c271f8]/40"],
-  "NOseboost": ["#60a5fa", "bg-[#60a5fa]/30", "bg-[#60a5fa]/40"],
-  "No Uber": ["#34d399", "bg-[#34d399]/20", "bg-[#34d399]/30"],
-  "WR Route": ["#ffc637", "bg-[#ffc637]/20", "bg-[#ffc637]/30"],
-  "No Cut": ["#4d59ff", "bg-[#4d59ff]/20", "bg-[#4d59ff]/30"],
-  "RTA": ["#fa5252", "bg-[#fa5252]/20", "bg-[#fa5252]/30"],
-  "Low Input": ["#000000", "bg-[#000000]/30", "bg-[#000000]/50"],
+export const CATEGORY_COLOURS: Record<string, [string, string, string, string]> = {
+  "Open": ["#c271f8", "bg-[#c271f8]/30", "bg-[#c271f8]/40", "bg-gradient-to-l from-[#120b10]/80 to-[#c271f8]/30"],
+  "NOseboost": ["#60a5fa", "bg-[#60a5fa]/30", "bg-[#60a5fa]/40", "bg-gradient-to-l from-[#120b10]/80 to-[#60a5fa]/30"],
+  "No Uber": ["#34d399", "bg-[#34d399]/20", "bg-[#34d399]/30", "bg-gradient-to-l from-[#120b10]/80 to-[#34d399]/20"],
+  "WR Route": ["#ffc637", "bg-[#ffc637]/20", "bg-[#ffc637]/30", "bg-gradient-to-l from-[#120b10]/80 to-[#ffc637]/20"],
+  "No Cut": ["#4d59ff", "bg-[#4d59ff]/20", "bg-[#4d59ff]/30", "bg-gradient-to-l from-[#120b10]/80 to-[#4d59ff]/20"],
+  "RTA": ["#fa5252", "bg-[#fa5252]/20", "bg-[#fa5252]/30", "bg-gradient-to-l from-[#120b10]/80 to-[#fa5252]/20"],
+  "Low Input": ["#000000", "bg-[#000000]/30", "bg-[#000000]/50", "bg-gradient-to-l from-[#120b10]/80 to-[#000000]/40"],
 } as const;
 
 export const BADGE_RANKS = {
