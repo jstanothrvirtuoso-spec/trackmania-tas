@@ -56,7 +56,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
     }
 
     for (const tas of filteredTasRecords) {
-      if (tas.game !== "TMNF" && tas.game !== "TMNF No Cut") continue;
+      if (tas.game !== "TMNF") continue;
       if (new Date(tas.date).getTime() < START_DATE) continue;
 
       const day = tas.date.slice(0, 10);

@@ -16,6 +16,9 @@ Add quick track selection to /admin-tas/rta
 
 Check inputs for all Virtuoso TASes
 Look for replays for all TMNF
+Drop select width (check all)
+
+TMNF Stats - Add Total time (by category) including RTA change since ~2021
 
 
 //////////////////////////////////////////////////////////////////////////

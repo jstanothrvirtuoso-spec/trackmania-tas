@@ -1,6 +1,5 @@
 
 import { useMemo } from "react";
-import { CATEGORY_FILTERS } from "@/utils/constants";
 import { RtaEntry, TasEntry, Category } from "@/utils/typing";
 import { formatTime } from "@/utils/formatting";
 import { TRACKS } from "@/lib/TrackList";
@@ -9,45 +8,21 @@ import { formatTrack } from "../FormatLinks";
 const CATEGORY_NAMES = ["No Cut", "WR Route", "No Uber", "NOseboost", "Open"] as const;
 const CATEGORY_COLOURS = ["bg-white/20", "bg-green-500/20", "bg-blue-500/20", "bg-red-500/20", "bg-black/20"] as const;
 
-function getVisibleBest(
-  trackMap: Map<string, TasEntry> | undefined,
-  category: keyof typeof CATEGORY_FILTERS
-) {
-  if (!trackMap) return null;
-
-  const allowed = CATEGORY_FILTERS[category];
-
-  let best: TasEntry | null = null;
-
-  for (const [cat, entry] of trackMap.entries()) {
-    if (!allowed.has(cat as Category)) continue;
-
-    if (!best || entry.time_ms < best.time_ms) {
-      best = entry;
-    }
-  }
-
-  return best;
-}
-
 export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
   bestRtaByTrack?: Map<string, RtaEntry>, 
   tasRecords: TasEntry[] 
 } ) {
 
   const bestByTrackAndCategory = useMemo(() => {
-    const map: Map<string, Map<string, TasEntry>> = new Map();
+    const map: Map<string, Map<Category, TasEntry>> = new Map();
 
-    for (const entry of tasRecords as TasEntry[]) {
-      if ((entry.game !== "TMNF" && entry.game !== "TMNF No Cut") || entry.category == "Low Input") continue;
-
-      const trackName = TRACKS[entry.track].baseTrack ?? entry.track
-      const trackMap = map.get(trackName) ?? new Map();
+    for (const entry of tasRecords) {
+      const trackMap = map.get(entry.track) ?? new Map();
       const existing = trackMap.get(entry.category);
 
       if (!existing || entry.time_ms < existing.time_ms) {
         trackMap.set(entry.category, entry);
-        map.set(trackName, trackMap);
+        map.set(entry.track, trackMap);
       }
     }
 
@@ -62,37 +37,29 @@ export default function CategoryTable( { bestRtaByTrack, tasRecords } : {
       .filter(([, info]) => info.game === "TMNF")
       .map(([track]) => {
         const trackMap = bestByTrackAndCategory.get(track);
-        const rta = bestRtaByTrack.get(track);
         let currentBestTime: number | null = null;
         let currentColourIndex = 0;
 
-        const columns = CATEGORY_NAMES.map((cat, i) => {
-          const best = getVisibleBest(trackMap, cat);
-          if (!best) { 
+        const columns = CATEGORY_NAMES.map((category, i) => {
+          const best = trackMap?.get(category);
+          if (!best || (currentBestTime && best.time_ms > currentBestTime)) { 
             return {
               entry: null,
               colourIndex: currentColourIndex,
             };
           };
-          const time = best.time_ms;
-          if (currentBestTime === null || time < currentBestTime) { 
-            currentBestTime = time; 
-            currentColourIndex = i;
-            return {
-              entry: best,
-              colourIndex: i,
-            };
-          };
+          currentBestTime = best.time_ms; 
+          currentColourIndex = i;
           return {
-            entry: null,
-            colourIndex: currentColourIndex,
+            entry: best,
+            colourIndex: i,
           };
         });
 
         return {
           track,
           columns,
-          rta: rta?.time_ms ?? null,
+          rta: bestRtaByTrack.get(track)?.time_ms ?? null,
         };
       });
   }, [bestByTrackAndCategory, bestRtaByTrack]);

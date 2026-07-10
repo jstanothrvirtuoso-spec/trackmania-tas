@@ -18,7 +18,8 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
     const bestTasByTrack = new Map<string, TasEntry>();
 
     Object.values(tasRecords).forEach((entry) => {
-      const existing = bestTasByTrack.get(entry.track);
+      const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
+      const existing = bestTasByTrack.get(track);
 
       if (
         !existing ||
@@ -26,15 +27,18 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
         (entry.time_ms === existing.time_ms &&
           entry.date < existing.date)
       ) {
-        bestTasByTrack.set(entry.track, entry);
+        bestTasByTrack.set(track, entry);
       }
     });
 
     const records = [...tasRecords]
       .filter((record) => record.authors.includes(authorOfTheDay))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || a.time_ms - b.time_ms)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || a.time_ms - b.time_ms);
 
-    const recordsBest = [...records].filter((record) => bestTasByTrack.get(record.track)?.time_ms === record.time_ms)
+    const recordsBest = [...records].filter((record) => {
+      const track = record.category === "No Cut" ? TRACKS[record.track].noCutTrack ?? record.track : record.track;
+      return bestTasByTrack.get(track)?.time_ms === record.time_ms;
+    });
 
     const envCount = new Map<Environment, number>();
     const categoryCount = new Map<Category, number>();
@@ -48,27 +52,34 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
 
     let favEnvironment: Environment | undefined;
     let maxEnv = 0;
-    for (const [env, count] of envCount) { if (count > maxEnv) { maxEnv = count; favEnvironment = env } }
+    for (const [env, count] of envCount) {
+      if (count > maxEnv) { maxEnv = count; favEnvironment = env };
+    };
 
     let favCategory: Category = "Open";
     let maxCategory = 0;
-    for (const [category, count] of categoryCount) { if (count > maxCategory) { maxCategory = count; favCategory = category } }
+    for (const [category, count] of categoryCount) { 
+      if (count > maxCategory) { maxCategory = count; favCategory = category };
+    };
     
     let favGame: Game = "TMNF";
     let maxGame = 0;
-    for (const [game, count] of gameCount) { if (count > maxGame) { maxGame = count; favGame = game } }
+    for (const [game, count] of gameCount) {
+      if (count > maxGame) { maxGame = count; favGame = game };
+    };
     
     let contributions = 0;
     let timeSaved = 0;
     recordsBest.forEach((entry) => {
-      const rta = bestRtaByTrack.get(entry.track);
-      const override = OVERRIDE_TIME_SAVED[entry.track]?.[entry.time_ms];
+      const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
+      const rta = bestRtaByTrack.get(track);
+      const override = OVERRIDE_TIME_SAVED[track]?.[entry.time_ms];
       let savedMs = 0;
       if (override) {
         savedMs = override * 1000;
       } else if (rta) {
         savedMs = Math.max(0, rta.time_ms - entry.time_ms);
-      }
+      };
       contributions += 1 / entry.authors.length;
       timeSaved += savedMs / entry.authors.length;
     });
@@ -202,13 +213,15 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
 
         <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 max-w-full scroll-smooth">
           {records.map((record) => {
-            const rta = bestRtaByTrack.get(record.track);
+            
+            const track = record.category === "No Cut" ? TRACKS[record.track].noCutTrack ?? record.track : record.track;
+            const rta = bestRtaByTrack.get(track);
             const saved = rta ? Math.max(0, rta.time_ms - record.time_ms) : 0;
 
             return (
               <Link
                 key={record.id}
-                href={`/tracks?track=${encodeURIComponent(record.track)}`}
+                href={`/tracks?track=${encodeURIComponent(track)}`}
                 className="
                   snap-start flex-shrink-0 w-[120px] group relative overflow-hidden rounded-xl
                   border border-emerald-500/10 p-3 transition
@@ -225,7 +238,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="text-xs font-medium text-slate-100 truncate group-hover:text-emerald-500 transition">
-                        {record.track}
+                        {track}
                       </div>
 
                       <div className="mt-1 text-[11px] text-slate-500 font-mono">

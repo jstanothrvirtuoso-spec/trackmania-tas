@@ -44,7 +44,13 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       minDate: BASELINE_DATE,
     };
 
-    const tasRows = [...tasRecords].filter((t) => t.track === track);
+    const tasRows = [...tasRecords].filter((tas) => {
+      if (tas.category === "No Cut") {
+        const tasTrack = TRACKS[tas.track].noCutTrack ?? tas.track
+        return tas.track === track || tasTrack === track;
+      }
+      return tas.track === track;
+    });
     const firstTasDate = Math.min(BASELINE_DATE, ...tasRows.map(row => new Date(row.date).getTime()));
     const datePadding = Math.max((nowDate - firstTasDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
     const minDate = firstTasDate - datePadding;
@@ -67,15 +73,14 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
       }));
 
     const tas = tasRows.length === 0 ? null
-      : tasRows.reduce((best, row) => { if (row.time_ms < best.time_ms) return row;
-        if (row.time_ms === best.time_ms && new Date(row.date).getTime() < new Date(best.date).getTime()) { return row }
+      : tasRows.reduce((best, row) => { 
+        if (row.time_ms < best.time_ms) { return row };
+        if (row.time_ms === best.time_ms && new Date(row.date).getTime() < new Date(best.date).getTime()) { return row };
         return best;
       });
     
     return { 
-      records: [...tasRows, ...relevantRtaRows]
-        .filter((t) => t.track === track)
-        .sort((a, b) => a.time_ms - b.time_ms),
+      records: [...tasRows, ...relevantRtaRows].sort((a, b) => a.time_ms - b.time_ms),
       tas: tas,
       rta: trackRtaRecords[trackRtaRecords.length - 1] ?? null,
       minDate: minDate
@@ -91,8 +96,8 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const tmxLink = getTmxLink(TRACKS[track].id, tmxGame);
 
   function updateTrack(track: string) {
-    const game = TRACKS[track].game
-    setGame(game)
+    const game = TRACKS[track].game;
+    setGame(game);
     setTrack(track);
     updateURL(game, track);
     setImageLoaded(false);

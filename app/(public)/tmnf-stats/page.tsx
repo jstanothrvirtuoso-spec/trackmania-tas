@@ -21,17 +21,18 @@ export default function TmnfHistory() {
   const [category, setCategory] = useState<Category>("Open");
 
   const filteredTasRecords = useMemo(() => {
-    if (category === "Open") return tasRecords;
+
+    const tmnfRecords = tasRecords.filter((tas) => tas.game === "TMNF" && tas.category !== "Low Input");
+    if (category === "Open") return tmnfRecords;
 
     const allowed = CATEGORY_FILTERS[category];
 
-    return tasRecords.filter((r) => allowed.has(r.category));
+    return tmnfRecords.filter((r) => allowed.has(r.category));
   }, [tasRecords, category]);
   
-  const authors = useMemo(
-    () => authorData.map((a) => a.author),
-    [authorData]
-  );
+  const authors = useMemo(() => 
+    authorData.map((a) => a.author)
+  , [authorData]);
 
   return (
     <div>
@@ -94,7 +95,8 @@ export default function TmnfHistory() {
             {bestRtaByTrack && filteredTasRecords.length > 0 && (
               <TotalTimeSaved
                 bestRtaByTrack={bestRtaByTrack} 
-                filteredTasRecords={filteredTasRecords}
+                records={filteredTasRecords}
+                category={category}
               />
             )}
           </div>

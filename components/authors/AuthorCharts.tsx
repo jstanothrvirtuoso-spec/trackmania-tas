@@ -126,8 +126,7 @@ export function AuthorGameChart({ rows, selectedGame, onSelectGame }: {
 
     rows.forEach((row) => {
       if (!row.tas) return;
-      const game = row.tas.game === "TMNF No Cut" || row.tas.game === "TMUF No Cut" ? "No Cut" : row.tas.game;
-      counts.set(game, (counts.get(game) || 0) + 1);
+      counts.set(row.tas.game, (counts.get(row.tas.game) || 0) + 1);
     });
 
     return CAMPAIGNS

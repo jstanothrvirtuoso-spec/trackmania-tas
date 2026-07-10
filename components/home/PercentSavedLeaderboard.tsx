@@ -15,10 +15,10 @@ const TIER_COLOURS = [
 
 const TIERS: Record<Category, number[]> = {
   "Open": [50, 60, 70],
-  "NOseboost": [10, 20, 30],
-  "No Uber": [5, 10, 20],
-  "WR Route": [2, 4, 5],
-  "No Cut": [1, 2, 4],
+  "NOseboost": [15, 25, 40],
+  "No Uber": [10, 15, 25],
+  "WR Route": [3.5, 6, 10],
+  "No Cut": [2.5, 3.5, 6],
   "Low Input": [0, 1, 2],
 }
 
@@ -41,7 +41,9 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
     const map = new Map<string, TasEntry>();
 
     for (const entry of filteredTasRecords) {
-      const existing = map.get(entry.track);
+
+      const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track
+      const existing = map.get(track);
 
       if (
         !existing ||
@@ -49,7 +51,7 @@ export default function PercentSavedLeaderboard( { tasRecords, bestRtaByTrack }:
         (entry.time_ms === existing.time_ms &&
           entry.date < existing.date)
       ) {
-        map.set(entry.track, entry);
+        map.set(track, entry);
       }
     }
 

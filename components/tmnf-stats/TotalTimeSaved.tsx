@@ -1,9 +1,9 @@
 
 import { useState, useMemo } from "react";
-import { RtaEntry, TasEntry } from "@/utils/typing";
+import { Category, RtaEntry, TasEntry } from "@/utils/typing";
 import { TRACKS } from "@/lib/TrackList";
 
-type TrackSets = "Overall" | "White" | "Green" | "Blue" | "Red" | "Black"
+type TrackSets = "Overall" | "White" | "Green" | "Blue" | "Red" | "Black";
 
 const START_DATE = new Date("2021-01-01").getTime();
 const WIDTH = 720;
@@ -19,9 +19,10 @@ const TRACK_SET_COLOURS: Record<TrackSets, string> = {
   Black: "#59575a",
 };
 
-export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } : {
+export default function TotalTimeSaved( { bestRtaByTrack, records, category } : {
   bestRtaByTrack: Map<string, RtaEntry>, 
-  filteredTasRecords: TasEntry[] 
+  records: TasEntry[] ,
+  category: Category,
 } ) {
   
   const [maxDate] = useState<number>(() => Date.now());
@@ -31,7 +32,6 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
 
   const points = useMemo(() => {
 
-    const tmnfRecords = filteredTasRecords.filter((e) => e.game === "TMNF" || e.game === "TMNF No Cut")
     const cutoff = new Date("2021-01-01").getTime();
     const bestTasByTrack = new Map<string, number>();
 
@@ -43,19 +43,20 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
       "Black": 0,
       "Overall": 0,
     } satisfies Record<TrackSets, number>;
-
-    const trackSet = {
-      "White": [] as { date: string; time_ms: number }[],
-      "Green": [] as { date: string; time_ms: number }[],
-      "Blue": [] as { date: string; time_ms: number }[],
-      "Red": [] as { date: string; time_ms: number }[],
-      "Black": [] as { date: string; time_ms: number }[],
-      "Overall": [] as { date: string; time_ms: number }[],
+    
+    const trackSet: Record<TrackSets, { date: string, time_ms: number }[]> = {
+      "White": [],
+      "Green": [],
+      "Blue": [],
+      "Red": [],
+      "Black": [],
+      "Overall": [],
     };
 
-    for (const tas of tmnfRecords) {
-      const track = TRACKS[tas.track].baseTrack ?? tas.track
-      const rta = bestRtaByTrack.get(track)!;
+    for (const tas of records) {
+
+      const track = category === "No Cut" ? TRACKS[tas.track].noCutTrack ?? tas.track : tas.track;
+      const rta = bestRtaByTrack.get(track) ?? tas;
       const currentBest = bestTasByTrack.get(track) ?? rta.time_ms;
 
       if (tas.time_ms < currentBest) {
@@ -81,7 +82,7 @@ export default function TotalTimeSaved( { bestRtaByTrack, filteredTasRecords } :
     }
     
     return trackSet;
-  }, [filteredTasRecords, bestRtaByTrack]);
+  }, [records, bestRtaByTrack, category]);
 
   const startYear = new Date(START_DATE).getFullYear();
   const endYear = new Date(maxDate).getFullYear();

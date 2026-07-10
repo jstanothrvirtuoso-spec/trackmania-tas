@@ -20,12 +20,7 @@ const TOTAL_BY_GAME = (() => {
 
   for (const track of TRACK_ARRAY) {
     if (track.game === "TM2") continue;
-
-    const game =
-      track.game === "TMNF No Cut" || track.game === "TMUF No Cut"
-        ? "No Cut"
-        : track.game;
-
+    const game = ["TMNF No Cut", "TMUF No Cut"].includes(track.game) ? "No Cut" : track.game;
     counts[game] = (counts[game] ?? 0) + 1;
   }
 
@@ -39,7 +34,7 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
     const completedByGame = new Map<string, Set<string>>();
     for (const tas of tasRecords) {
       const trackInfo = TRACKS[tas.track]
-      const game = trackInfo.baseTrack ? "No Cut" : trackInfo.game;
+      const game = (tas.category === "No Cut" && trackInfo.noCutTrack) ? "No Cut" : trackInfo.game;
 
       if (!game) continue;
       if (!completedByGame.has(game)) {
@@ -122,5 +117,5 @@ export default function CompletionTable({ tasRecords }: {tasRecords: TasEntry[]}
         </tbody>
       </table>
     </div>
-  )
+  );
 }

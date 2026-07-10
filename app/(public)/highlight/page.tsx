@@ -27,12 +27,13 @@ export default function HighlightPage() {
     const topTasList: TasEntry[] = [];
 
     for (const entry of tasRecords) {
-      const trackMap = bestByTrackAndCategory.get(entry.track) ?? new Map();
+      const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
+      const trackMap = bestByTrackAndCategory.get(track) ?? new Map();
       const existing = trackMap.get(entry.category);
 
       if (!existing || entry.time_ms < existing.time_ms) {
         trackMap.set(entry.category, entry);
-        bestByTrackAndCategory.set(entry.track, trackMap);
+        bestByTrackAndCategory.set(track, trackMap);
       }
     }
 
@@ -40,7 +41,7 @@ export default function HighlightPage() {
       const categoryMap = bestByTrackAndCategory.get(track);
 
       if (!categoryMap) {
-        if (trackInfo.game != "TM2" && bestRtaByTrack && bestRtaByTrack.get(track)?.video) {
+        if (trackInfo.game != "TM2" && bestRtaByTrack?.get(track)?.video) {
           undoneTracks.push(track);
         }
         continue;

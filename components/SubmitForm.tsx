@@ -281,6 +281,7 @@ export default function SubmitForm() {
                 ) : (
                   <div className="font-medium text-red-400">
                     This replay does not seem to be from a nadeo track. Please check before submitting.
+                    Note: If this is a TM2 TAS, it won't be recognised. Please submit it anyway for verification (TM2 replays will not be made public).
                   </div>
                 )}
               </div>

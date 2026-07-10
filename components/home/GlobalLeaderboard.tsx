@@ -171,9 +171,8 @@ export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
 
     Object.values(tasRecords).forEach((entry) => {
 
-      if (TRACKS[entry.track].gameSet === "Stunt") return;
-
-      const existing = bestTasByTrack.get(entry.track);
+      const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
+      const existing = bestTasByTrack.get(track);
 
       if (
         !existing ||
@@ -181,17 +180,19 @@ export default function GlobalLeaderboard( { tasRecords, bestRtaByTrack }: {
         (entry.time_ms === existing.time_ms &&
           entry.date < existing.date)
       ) {
-        bestTasByTrack.set(entry.track, entry);
+        bestTasByTrack.set(track, entry);
       }
     });
 
     bestTasByTrack.forEach((entry) => {
 
-      const rta = bestRtaByTrack.get(entry.track);
-      const override = OVERRIDE_TIME_SAVED[entry.track]?.[entry.time_ms];
+      const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
+      const rta = bestRtaByTrack.get(track);
+      const isStunt = TRACKS[track].gameSet === "Stunt"
+      const override = isStunt ? 0 : OVERRIDE_TIME_SAVED[track]?.[entry.time_ms];
 
       let savedMs = 0;
-      if (override) {
+      if (override || isStunt) {
         savedMs = override * 1000;
       } else if (rta) {
         savedMs = Math.max(0, rta.time_ms - entry.time_ms);

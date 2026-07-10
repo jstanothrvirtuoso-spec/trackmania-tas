@@ -30,13 +30,12 @@ export type TasForm = {
   replay_path: string;
 };
 
+const supabase = createClient();
+const TODAY = new Date().toISOString().split("T")[0];
+const INPUT = "w-full rounded-md bg-slate-800 px-3 py-1.5 text-white outline-none focus:ring-2 focus:ring-slate-500";
+const LABEL = "text-sm text-slate-300 mb-0.5";
 const REPLAY_OPTIONS = ["Keep existing", "Replace"] as const;
 type ReplayOptions = (typeof REPLAY_OPTIONS)[number];
-
-const supabase = createClient();
-const today = new Date().toISOString().split("T")[0];
-const inputClass = "w-full rounded-md bg-slate-800 px-3 py-1.5 text-white outline-none focus:ring-2 focus:ring-slate-500";
-const labelClass = "text-sm text-slate-300 mb-0.5";
 
 function timesEqual(a: TimeState, b: TimeState): boolean {
   return (
@@ -77,7 +76,7 @@ export default function AdminTas() {
     category: "Open",
     num_inputs: 0,
     authors: ["Kimura"],
-    date: today,
+    date: TODAY,
     video: "",
     replay_path: "",
   });
@@ -118,7 +117,7 @@ export default function AdminTas() {
       category: "Open",
       num_inputs: 0,
       authors: ["Kimura"],
-      date: today,
+      date: TODAY,
       video: "",
       replay_path: "",
     });
@@ -154,7 +153,7 @@ export default function AdminTas() {
       category: category,
       num_inputs: 0,
       authors: Array.isArray(submission.authors) ? submission.authors : [],
-      date: submission.date?.slice(0, 10) ?? today,
+      date: submission.date?.slice(0, 10) ?? TODAY,
       video: submission.video ?? "",
       replay_path: "",
     });
@@ -637,7 +636,7 @@ export default function AdminTas() {
 
             {/* GAME */}
             <div>
-              <div className={labelClass}>Game</div>
+              <div className={LABEL}>Game</div>
               {selectedCopiedTas ? (
                 <span className="text-sm text-slate-400 pl-3">{form.game}</span>
               ) : (
@@ -658,7 +657,7 @@ export default function AdminTas() {
 
             {/* GAME SET */}
             <div>
-              <div className={labelClass}>Game Set</div>
+              <div className={LABEL}>Game Set</div>
               {selectedCopiedTas ? (
                 <span className="text-sm text-slate-400 pl-3">{form.gameSet}</span>
               ) : (
@@ -676,7 +675,7 @@ export default function AdminTas() {
 
             {/* TRACK */}
             <div>
-              <div className={labelClass}>Track</div>
+              <div className={LABEL}>Track</div>
               {selectedCopiedTas ? (
                 <span className="text-sm text-slate-400 pl-3">{form.track}</span>
               ) : (
@@ -695,7 +694,7 @@ export default function AdminTas() {
 
             {/* CATEGORY */}
             <div>
-              <div className={labelClass}>Category</div>
+              <div className={LABEL}>Category</div>
               {selectedCopiedTas ? (
                 <span className="text-sm text-slate-400 pl-3">{form.category}</span>
               ) : (
@@ -713,7 +712,7 @@ export default function AdminTas() {
 
             {/* TIME */}
             <div>
-              <div className={labelClass}>Time (minutes | seconds | hundreths | thousandth)</div>
+              <div className={LABEL}>Time (minutes | seconds | hundreths | thousandth)</div>
 
               {!selectedCopiedTas && (
                 <div className="grid grid-cols-4 gap-2">
@@ -721,7 +720,7 @@ export default function AdminTas() {
                     type="number"
                     min={0}
                     max={60}
-                    className={inputClass}
+                    className={INPUT}
                     value={time.minutes}
                     onChange={(e) =>
                       setTime((t) => ({ ...t, minutes: Number(e.target.value) }))
@@ -732,7 +731,7 @@ export default function AdminTas() {
                     type="number"
                     min={0}
                     max={59}
-                    className={inputClass}
+                    className={INPUT}
                     value={time.seconds}
                     onChange={(e) =>
                       setTime((t) => ({ ...t, seconds: Number(e.target.value) }))
@@ -743,7 +742,7 @@ export default function AdminTas() {
                     type="number"
                     min={0}
                     max={99}
-                    className={inputClass}
+                    className={INPUT}
                     value={time.hundredths}
                     onChange={(e) =>
                       setTime((t) => ({ ...t, hundredths: Number(e.target.value) }))
@@ -754,7 +753,7 @@ export default function AdminTas() {
                     type="number"
                     min={0}
                     max={9}
-                    className={inputClass}
+                    className={INPUT}
                     value={time.thousandth}
                     onChange={(e) =>
                       setTime((t) => ({ ...t, thousandth: Number(e.target.value) }))
@@ -774,14 +773,14 @@ export default function AdminTas() {
             {/* NUM INPUTS */}
             {form.category === "Low Input" && (
               <div>
-                <div className={labelClass}>Num Inputs (Low Input TASes only)</div>
+                <div className={LABEL}>Num Inputs (Low Input TASes only)</div>
 
                 <div className="grid grid-cols-4 gap-2">
                   <input
                     type="number"
                     min={0}
                     max={60}
-                    className={inputClass}
+                    className={INPUT}
                     value={form.num_inputs}
                     onChange={(e) => update("num_inputs", Number(e.target.value))}
                   />
@@ -797,10 +796,10 @@ export default function AdminTas() {
 
             {/* DATE */}
             <div>
-              <div className={labelClass}>Date</div>
+              <div className={LABEL}>Date</div>
               <input
                 type="date"
-                className={inputClass}
+                className={INPUT}
                 value={form.date}
                 onChange={(e) => update("date", e.target.value)}
               />
@@ -809,7 +808,7 @@ export default function AdminTas() {
             {/* VIDEO */}
             <div>
               <div className="mb-0.5 flex items-center justify-between">
-                <div className={labelClass}>{"Video"}</div>
+                <div className={LABEL}>{"Video"}</div>
 
                 <button
                   type="button"
@@ -822,7 +821,7 @@ export default function AdminTas() {
               </div>
 
               <input
-                className={`placeholder:text-slate-500 ${inputClass}`}
+                className={`placeholder:text-slate-500 ${INPUT}`}
                 value={form["video"]}
                 onChange={(e) => update("video", e.target.value)}
                 placeholder={"https://youtu.be/<id>"}
@@ -832,7 +831,7 @@ export default function AdminTas() {
             {/* REPLAY */}
             <div className="flex flex-col gap-2">
               <div className="flex flex-row justify-between w-full items-end">
-                <div className={labelClass}>Replay (.gbx)</div>
+                <div className={LABEL}>Replay (.gbx)</div>
 
                 {form.replay_path && (
                   <DropSelect
@@ -937,7 +936,7 @@ export default function AdminTas() {
               ) : (
                 <div className="space-y-3">
                   
-                  <div className={labelClass}>Admin note (mainly to give user reason for rejection)</div>
+                  <div className={LABEL}>Admin note (mainly to give user reason for rejection)</div>
                   <textarea
                     value={adminNote}
                     onChange={(e) => setAdminNote(e.target.value)}

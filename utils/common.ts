@@ -158,6 +158,17 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+export function getRtaReplayURL(game: Game, replay_path: string | null) {
+
+  if (!replay_path) return null;
+
+  if (game === "TM2") {
+    return replay_path.replace("replays/download", "recordgbx");
+  };
+
+  return replay_path;
+}
+
 export function getReplayURL(game: Game, track: string, time_ms: number, replay_path: string | null) {
 
   if (!replay_path) return null;

@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import { ProfilePublic } from "@/lib/Profiles";
 import { Role } from "@/utils/typing";
 import { PROFILE_AVATARS, PROFILE_BANNERS } from "@/utils/constants";
@@ -366,7 +366,16 @@ export default function ProfileCard({ profile, onEditClick }: {
             className={`font-bold text-black leading-tight font-sakura tracking-[0.5px] break-words overflow-wrap-anywhere ${onEditClick ? "max-w-45" : "max-w-55"} ${profile.display_name.length > 10 ? "text-xl" : "text-2xl"}`}
             style={{ textShadow: "0 1px 8px rgba(0, 0, 0, 0.15)" }}
           >
-            {displayName}
+            <div className="font-sakura">
+              {displayName.split("_").map((part, i, arr) => (
+                <Fragment key={i}>
+                  {part}
+                  {i < arr.length - 1 && (
+                    <span className="font-kiwi">_</span>
+                  )}
+                </Fragment>
+              ))}
+            </div>
           </div>
         </div>
       </div>

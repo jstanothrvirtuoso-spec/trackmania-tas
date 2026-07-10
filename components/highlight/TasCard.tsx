@@ -3,11 +3,13 @@ import { formatDate, formatTime, formatPercentSaved, timeAgo, formatGame } from 
 import { RtaEntry, TasEntry } from "@/utils/typing";
 import { getYouTubeId } from "@/utils/common";
 import { formatAuthors, formatTrack } from "../FormatLinks";
+import { TRACKS } from "@/lib/TrackList";
 
 export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry,  bestRtaByTrack: Map<string, RtaEntry> }) {
   
+  const track = tasOfTheDay.category === "No Cut" ? TRACKS[tasOfTheDay.track].noCutTrack ?? tasOfTheDay.track : tasOfTheDay.track;
   const videoId = getYouTubeId(tasOfTheDay.video);
-  const rta = bestRtaByTrack.get(tasOfTheDay.track);
+  const rta = bestRtaByTrack.get(track);
 
   return (
     <section className="rounded-3xl border border-indigo-500/15 bg-gradient-to-br from-indigo-500/10 via-slate-900/80 to-slate-900/80 p-6 backdrop-blur-md">
@@ -20,7 +22,7 @@ export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry
       </div>
 
       <h2 className="mt-2 sm:mt-4 text-2xl sm:text-3xl font-semibold text-white w-fit">
-        {formatTrack(tasOfTheDay.track, "hover:text-indigo-300 text-white")}
+        {formatTrack(track, "hover:text-indigo-300 text-white")}
       </h2>
 
       <div className="mt-3 h-px bg-gradient-to-r from-indigo-500/30 via-slate-700 to-transparent" />

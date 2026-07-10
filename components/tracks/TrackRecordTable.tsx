@@ -1,5 +1,5 @@
 
-import { getReplayURL } from "@/utils/common";
+import { getReplayURL, getRtaReplayURL } from "@/utils/common";
 import { CATEGORY_COLOURS } from "@/utils/constants";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { Category, Game, TasEntry } from "@/utils/typing";
@@ -24,7 +24,7 @@ export function TrackRecordTable({tmxGame, records, preciseTime, track, setCurre
           <div className="overflow-y-auto max-h-[60vh]">
             <table className="min-w-full table-auto bg-slate-800/90 text-xs sm:text-sm">
               <thead>
-                <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/40 ">
+                <tr className="border-x border-slate-800 text-slate-300 bg-slate-900/40">
                   <th className="px-3 py-1.5 text-center whitespace-nowrap">Category</th>
                   <th className="px-2 py-1.5 text-center whitespace-nowrap">Record</th>
                   <th className="px-2 py-1.5 text-center whitespace-nowrap">Authors</th>
@@ -36,11 +36,11 @@ export function TrackRecordTable({tmxGame, records, preciseTime, track, setCurre
               <tbody>
                 {records.map((entry, i) => {
                   
-                  const colourIndex = i % 2 == 0 ? 2 : 1
-                  const rowColour = CATEGORY_COLOURS[entry.category]?.[colourIndex] ?? "bg-slate-500/10"
+                  const colourIndex = i % 2 == 0 ? 2 : 1;
+                  const rowColour = CATEGORY_COLOURS[entry.category]?.[colourIndex] ?? "bg-slate-500/10";
                   const replayType = entry.category === "RTA" as Category ? "rta" : "tas";
-                  const hideInputs = replayType === "rta" && ["ESWC", "TM2"].includes(tmxGame)
-                  const replayURL = replayType === "rta" ? entry.replay_path : getReplayURL(entry.game, entry.track, entry.time_ms, entry.replay_path)
+                  const hideInputs = replayType === "rta" && ["ESWC", "TM2"].includes(tmxGame);
+                  const replayURL = replayType === "rta" ? getRtaReplayURL(entry.game, entry.replay_path) : getReplayURL(entry.game, entry.track, entry.time_ms, entry.replay_path);
                   
                   return (
                     <tr

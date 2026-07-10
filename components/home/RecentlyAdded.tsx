@@ -67,7 +67,7 @@ export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) 
               style={{ backgroundColor: CATEGORY_COLOURS[record.category][0] }}
             />
 
-            <div className="relative flex items-start justify-between gap-4">
+            <div className="relative flex items-start justify-between gap-2">
               <div className="py-1">
                 {formatTrack(record.track, "text-lg font-bold text-white hover:text-emerald-500 whitespace-nowrap")}
 
@@ -75,7 +75,7 @@ export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) 
                   {record.category}
                 </div>
 
-                <div className="text-sm text-slate-400 min-w-30">
+                <div className="text-sm text-slate-400 min-w-30 max-w-50">
                   {formatAuthors(record.authors, 0, false, "text-slate-300 hover:text-emerald-500")}
                 </div>
               </div>

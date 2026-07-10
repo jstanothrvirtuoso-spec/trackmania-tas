@@ -64,7 +64,8 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
             return;
           }
 
-          const key = `${entry.track}|${displayCategory}`;
+          const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
+          const key = `${track}|${displayCategory}`;
           const existing = bestTasByTrackCategory.get(key);
 
           if (!existing || entry.time_ms < existing.time_ms ||
@@ -83,14 +84,15 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
 
     return selectedAuthorTasRecords
       .map((tas) => {
-        const key = `${tas.track}|${tas.category}`;
+        const track = tas.category === "No Cut" ? TRACKS[tas.track].noCutTrack ?? tas.track : tas.track;
+        const key = `${track}|${tas.category}`;
         const currentBest = bestTasByTrackCategory.get(key);
 
         return {
-          track: tas.track,
-          trackInfo: TRACKS[tas.track],
+          track: track,
+          trackInfo: TRACKS[track],
           tas,
-          rta: bestRtaByTrack.get(tas.track) ?? null,
+          rta: bestRtaByTrack.get(track) ?? null,
           isCurrentBestTas: currentBest === tas,
         };
       })
@@ -105,7 +107,7 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
     if (!selectedYear && !selectedGame && !selectedEnvironment && !selectedCategory) return visibleRows;
     return visibleRows
       .filter((row) => row.tas && (!selectedYear || new Date(row.tas.date).getFullYear() === selectedYear))
-      .filter((row) => row.tas && (!selectedGame || (selectedGame === "No Cut" && ["TMUF No Cut", "TMNF No Cut"].includes(row.tas.game)) || row.tas.game === selectedGame))
+      .filter((row) => row.tas && (!selectedGame || row.tas.game === selectedGame))
       .filter((row) => row.tas && (!selectedEnvironment || row.trackInfo.environment === selectedEnvironment))
       .filter((row) => row.tas && (!selectedCategory || row.tas.category === selectedCategory));
   }, [selectedYear, selectedGame, selectedCategory, selectedEnvironment, visibleRows]);

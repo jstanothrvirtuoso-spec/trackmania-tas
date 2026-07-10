@@ -14,9 +14,9 @@ const TIER_COLOURS = [
 const TIERS: Record<Category, number[]> = {
   "Open": [50, 60, 70],
   "NOseboost": [10, 20, 30],
-  "No Uber": [5, 10, 20],
-  "WR Route": [2, 4, 5],
-  "No Cut": [1, 2, 4],
+  "No Uber": [5, 8, 20],
+  "WR Route": [2, 4, 7],
+  "No Cut": [1, 2, 5],
   "Low Input": [0, 1, 2],
 }
 
@@ -31,8 +31,9 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
 
     for (const entry of filteredTasRecords) {
 
-      if (entry.game !== "TMNF" && entry.game !== "TMNF No Cut") continue;
-      const existing = map.get(entry.track);
+      if (entry.game !== "TMNF") continue;
+      const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
+      const existing = map.get(track);
 
       if (
         !existing ||
@@ -40,7 +41,7 @@ export default function PercentSavedTmnf( { bestRtaByTrack, filteredTasRecords, 
         (entry.time_ms === existing.time_ms &&
           entry.date < existing.date)
       ) {
-        map.set(entry.track, entry);
+        map.set(track, entry);
       }
     }
 

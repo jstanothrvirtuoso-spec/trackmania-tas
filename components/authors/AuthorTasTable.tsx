@@ -6,6 +6,7 @@ import { formatDate, formatDiff, formatGame, formatTime } from "@/utils/formatti
 import { CATEGORY_ORDER } from "@/utils/constants";
 import { useMemo, useState } from "react";
 import SortIndicator from "../SortIndicator";
+import { TRACKS } from "@/lib/TrackList";
 
 type SortField = "track" | "time" | "diff" | "game" | "date" | "category";
 
@@ -38,7 +39,7 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
 
       if (typeof aVal === "number" && typeof bVal === "number") {
         return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-      }
+      };
       
       const result = String(aVal).localeCompare(String(bVal));
       return sortOrder === "asc" ? result : -result;
@@ -126,8 +127,7 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
             <tbody>
               {sortedRows.map((row, index) => {
                 if (!row.tas) return null;
-                const tasGame = row.tas.category === "No Cut" && row.trackInfo.noCutTrack ? "TMNF No Cut" : formatGame(row.tas.game)
-                const opacity = row.isCurrentBestTas ? "opacity-100" : "opacity-40"
+                const opacity = row.isCurrentBestTas ? "opacity-100" : "opacity-40";
 
                 return (
                   <tr
@@ -159,7 +159,7 @@ export function AuthorTasTable({ rows }: { rows: RecordRow[] }) {
                     </td>
 
                     <td className="px-2 py-1.5 hidden sm:table-cell sm:whitespace-nowrap">
-                      {tasGame}
+                      {formatGame(row.tas.game)}
                     </td>
 
                     <td className="px-2 py-1.5 whitespace-nowrap">
