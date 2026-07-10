@@ -6,7 +6,6 @@ import { formatDate, formatDiff, formatGame, formatTime } from "@/utils/formatti
 import { CATEGORY_ORDER } from "@/utils/constants";
 import { useMemo, useState } from "react";
 import SortIndicator from "../SortIndicator";
-import { TRACKS } from "@/lib/TrackList";
 
 type SortField = "track" | "time" | "diff" | "game" | "date" | "category";
 
