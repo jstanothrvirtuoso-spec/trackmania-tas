@@ -9,59 +9,33 @@ type Environment = (typeof ENVIRONMENTS)[number];
 type Trick = {
   src: string;
   button: string[];
+  inputs: string[];
   notes: string[];
 };
 
-const copyInputs = async (env: Environment, index: number) => {
-  const fileMap = {
-    STADIUM: {
-      left: "/inputs/inputs/stadiumleft.txt",
-      right: "/inputs/inputs/stadiumright.txt",
-    },
-    COAST: (i: number) => `/inputs/inputs/coasttrick${i}.txt`,
-    ISLAND: (i: number) => `/inputs/inputs/islandtrick${i}.txt`,
-    SNOW: `/inputs/inputs/snowtrick.txt`,
-    BAY: `/inputs/inputs/baytrick.txt`,
-  };
-
-  let path = "";
-
-  if (env === "STADIUM") {
-    path = index === 0 ? fileMap.STADIUM.left : fileMap.STADIUM.right;
-  } else if (env === "COAST") {
-    path = fileMap.COAST(index + 1);
-  } else if (env === "ISLAND") {
-    path = fileMap.ISLAND(index + 1);
-  } else if (env === "SNOW") {
-    path = fileMap.SNOW;
-  } else if (env === "BAY") {
-    path = fileMap.BAY;
-  }
-
-  if (!path) return;
-
-  const res = await fetch(path);
+const copyInputs = async (input: string) => {
+  const res = await fetch(`/inputs/inputs/${input}`);
   const text = await res.text();
   await navigator.clipboard.writeText(text);
-  
   soundManager.play("click");
 };
 
 const tricks: Record<Environment, Trick[]> = {
-  "STADIUM": [ { src: "/inputs/videos/stadiumvideo.webm", button: ["Left", "Right"], notes: ["Bruteforce using the settings above until you reach 208 km/h"]} ],
+  "STADIUM": [ 
+    { src: "/inputs/videos/stadiumvideo.webm", button: ["Left", "Right"], inputs: ["stadiumleft.txt", "stadiumright.txt"], notes: ["Bruteforce using the settings above until you reach 208 km/h"]} ],
   "ISLAND": [
-    { src: "/inputs/videos/island1.webm", button: ["Inputs 1"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/videos/island2.webm", button: ["Inputs 2"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/videos/island3.webm", button: ["Inputs 3"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/videos/island4.webm", button: ["Inputs 4"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island1.webm", button: ["Inputs 1"], inputs: ["islandtrick1.txt"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island2.webm", button: ["Inputs 2"], inputs: ["islandtrick2.txt"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island3.webm", button: ["Inputs 3"], inputs: ["islandtrick3.txt"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/island4.webm", button: ["Inputs 4"], inputs: ["islandtrick4.txt"], notes: ["Bruteforce if the skip gear isn't working"]},
   ],
   "COAST": [
-    { src: "/inputs/videos/coast1.webm", button: ["Inputs 1"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/videos/coast2.webm", button: ["Inputs 2"], notes: ["Bruteforce if the skip gear isn't working"]},
-    { src: "/inputs/videos/coast3.webm", button: ["Inputs 3"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/coast1.webm", button: ["Inputs 1"], inputs: ["coasttrick1.txt"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/coast2.webm", button: ["Inputs 2"], inputs: ["coasttrick2.txt"], notes: ["Bruteforce if the skip gear isn't working"]},
+    { src: "/inputs/videos/coast3.webm", button: ["Inputs 3"], inputs: ["coasttrick3.txt"], notes: ["Bruteforce if the skip gear isn't working"]},
   ],
-  "SNOW": [ { src: "/inputs/videos/snowvideo.webm", button: ["Inputs"], notes: ["No bruteforce needed!"]} ],
-  "BAY": [ { src: "/inputs/videos/bayvideo.webm", button: ["Inputs"], notes: [ "I recommend you make your own start before using the trick", "Every start is different, so you cannot achieve the optimum result every time!"]} ],
+  "SNOW": [ { src: "/inputs/videos/snowvideo.webm", button: ["Inputs"], inputs: ["snowtrick.txt"], notes: ["No bruteforce needed!"]} ],
+  "BAY": [ { src: "/inputs/videos/bayvideo.webm", button: ["Inputs"], inputs: ["baytrick.txt"], notes: ["I recommend you make your own start before using the trick", "Every start is different, so you cannot achieve the optimum result every time!"]} ],
 };
 
 const btnClass = `font-sakura relative px-4 py-2 text-xs uppercase text-sky-100 tracking-[0.12em] leading-none
@@ -73,7 +47,7 @@ const btnClass = `font-sakura relative px-4 py-2 text-xs uppercase text-sky-100 
   text-sm md:text-[15px] tracking-[0.14em] uppercase font-medium
   hover:shadow-[0_0_18px_rgba(236,72,153,0.25)]`;
 
-export function CursorTrail() {
+function CursorTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -173,9 +147,9 @@ export default function InputsPage() {
   const [activeEnv, setActiveEnv] = useState<Environment>("STADIUM");
   const [copied, setCopied] = useState<string | null>(null);
 
-  const handleCopy = async (env: Environment, i: number) => {
-    await copyInputs(env, i);
-    setCopied(`${env}-${i}`);
+  const handleCopy = async (input: string) => {
+    await copyInputs(input);
+    setCopied(input);
     setTimeout(() => setCopied(null), 700);
   };
   
@@ -276,25 +250,29 @@ export default function InputsPage() {
 
                   {/* COPY BUTTONS */}
                   <div className="flex gap-2">
-                    {trick.button.map((label, buttonIndex) => (
-                      <button
-                        key={label}
-                        onClick={() => void handleCopy(activeEnv, buttonIndex)}
-                        className={`${btnClass} flex-1 relative overflow-hidden`}
-                      >
-                        <span className={`absolute inset-0 flex items-center justify-center transition-all duration-300
-                          ${copied === `${activeEnv}-${buttonIndex}` ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+                    {trick.button.map((button, index) => {
+                      const input = trick.inputs[index];
+                      
+                      return (
+                        <button
+                          key={button}
+                          onClick={() => void handleCopy(input)}
+                          className={`${btnClass} flex-1 relative overflow-hidden`}
                         >
-                          {label}
-                        </span>
+                          <span className={`absolute inset-0 flex items-center justify-center transition-all duration-300
+                            ${copied === input ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+                          >
+                            {button}
+                          </span>
 
-                        <span className={`flex items-center justify-center transition-all duration-300
-                          ${copied === `${activeEnv}-${buttonIndex}` ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
-                        >
-                          Copied!
-                        </span>
-                      </button>
-                    ))}
+                          <span className={`flex items-center justify-center transition-all duration-300
+                            ${copied === input ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
+                          >
+                            Copied!
+                          </span>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
 

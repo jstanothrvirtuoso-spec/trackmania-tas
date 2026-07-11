@@ -154,7 +154,7 @@ export function getYouTubeId(input?: string | null): string | null {
 function slugify(value: string) {
   return value
     .replace(/\//g, "")
-    .replace(/[^a-zA-Z0-9.()]+/g, "-")
+    .replace(/[^a-zA-Z0-9.!()']+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 

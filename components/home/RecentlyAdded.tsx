@@ -4,6 +4,7 @@ import { TasEntry } from "@/utils/typing";
 import { formatDate, formatTime } from "@/utils/formatting";
 import { CATEGORY_COLOURS } from "@/utils/constants";
 import { formatAuthors, formatTrack } from "../FormatLinks";
+import { TRACKS } from "@/lib/TrackList";
 
 export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) {
 
@@ -52,46 +53,50 @@ export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) 
           </div>
         ))
         :
-        records.map((record) => (
-          <div
-            key={record.id}
-            className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-2 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.55)]"
-          >
+        records.map((record) => {
+          const preciseTime = record.game === "TM2" || (TRACKS[record.track].preciseTime ?? false);
+
+          return (
             <div
-              className="absolute inset-0 opacity-10"
-              style={{ backgroundColor: CATEGORY_COLOURS[record.category][0] }}
-            />
+              key={record.id}
+              className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 px-4 py-2 backdrop-blur-md shadow-[0_10px_40px_rgba(0,0,0,0.55)]"
+            >
+              <div
+                className="absolute inset-0 opacity-10"
+                style={{ backgroundColor: CATEGORY_COLOURS[record.category][0] }}
+              />
 
-            <div
-              className="absolute top-0 left-0 right-0 h-1"
-              style={{ backgroundColor: CATEGORY_COLOURS[record.category][0] }}
-            />
+              <div
+                className="absolute top-0 left-0 right-0 h-1"
+                style={{ backgroundColor: CATEGORY_COLOURS[record.category][0] }}
+              />
 
-            <div className="relative flex items-start justify-between gap-2">
-              <div className="py-1">
-                {formatTrack(record.track, "text-lg font-bold text-white hover:text-emerald-500 whitespace-nowrap")}
+              <div className="relative flex items-start justify-between gap-2">
+                <div className="py-1">
+                  {formatTrack(record.track, "text-lg font-bold text-white hover:text-emerald-500 whitespace-nowrap")}
 
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500 whitespace-nowrap">
-                  {record.category}
+                  <div className="text-xs uppercase tracking-[0.2em] text-slate-500 whitespace-nowrap">
+                    {record.category}
+                  </div>
+
+                  <div className="text-sm text-slate-400 min-w-30 max-w-45">
+                    {formatAuthors(record.authors, 0, false, "text-slate-300 hover:text-emerald-500")}
+                  </div>
                 </div>
 
-                <div className="text-sm text-slate-400 min-w-30 max-w-50">
-                  {formatAuthors(record.authors, 0, false, "text-slate-300 hover:text-emerald-500")}
-                </div>
-              </div>
+                <div className="text-right">
+                  <div className="font-mono text-xl font-bold text-emerald-400 mt-4 whitespace-nowrap">
+                    {record.category === "Low Input" ? `${record.num_inputs} inputs` : formatTime(record.time_ms, preciseTime)}
+                  </div>
 
-              <div className="text-right">
-                <div className="font-mono text-xl font-bold text-emerald-400 mt-4 whitespace-nowrap">
-                  {record.category === "Low Input" ? `${record.num_inputs} inputs` : formatTime(record.time_ms)}
-                </div>
-
-                <div className="text-xs text-slate-500 whitespace-nowrap">
-                  {formatDate(record.created_at)}
+                  <div className="text-xs text-slate-500 whitespace-nowrap">
+                    {formatDate(record.created_at)}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))
+          )
+        })
       }
     </div>
   );
