@@ -50,7 +50,7 @@ export const TRACKS: Record<string, TrackInfo> = {
   "C13-Race": { game: "TMNF", id: 2364, gameSet: "Blue", environment: "Stadium" },
   "C14-Endurance": { game: "TMNF", id: 2367, gameSet: "Blue", environment: "Stadium", noCutTrack: "C14-Endurance No Cut" },
   "C15-Speed": { game: "TMNF", id: 2370, gameSet: "Blue", environment: "Stadium" },
-  "D01-Race": { game: "TMNF", id: 2375, gameSet: "Red", environment: "Stadium" },
+  "D01-Endurance": { game: "TMNF", id: 2375, gameSet: "Red", environment: "Stadium" },
   "D02-Race": { game: "TMNF", id: 2378, gameSet: "Red", environment: "Stadium", noCutTrack: "D02-Race No Cut" },
   "D03-Acrobatic": { game: "TMNF", id: 2381, gameSet: "Red", environment: "Stadium", noCutTrack: "D03-Acrobatic No Cut" },
   "D04-Race": { game: "TMNF", id: 2423, gameSet: "Red", environment: "Stadium", noCutTrack: "D04-Race No Cut" },

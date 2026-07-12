@@ -105,7 +105,7 @@ function Leaderboard({ data, isLoading, sortField, sortOrder, handleSort }: Lead
               <td className="py-2"><div className="h-4 w-25 bg-slate-700 animate-pulse rounded" /></td>
               <td className="py-2"><div className="h-4 w-12 bg-slate-700 animate-pulse mx-auto rounded" /></td>
               <td className="py-2"><div className="h-4 w-12 bg-slate-700 animate-pulse mx-auto rounded" /></td>
-              <td className="py-2"><div className="h-4 w-15 bg-slate-700 animate-pulse mx-auto rounded" /></td>
+              <td className="py-2 px-1"><div className="h-4 w-13 bg-slate-700 animate-pulse mx-auto rounded" /></td>
             </tr> 
           )) 
           : 

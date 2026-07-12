@@ -53,12 +53,12 @@ export function UserMenu({ isTouch, showHeader, profilePublicMe }: { isTouch: bo
         onClick={userMenu.toggle}
         className={`
           flex items-center gap-3 rounded-full border border-cyan-400/20 
-          bg-slate-950/90 px-3 py-0.5 text-sm text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.18)] 
+          bg-slate-950/90 px-3 py-0.5 text-sm text-cyan-100 shadow-[0_0_30px_rgba(34,211,238,0.12)] 
           transition duration-200 hover:border-cyan-300/50 hover:bg-slate-900/95 ${CURSOR}`}
         aria-label="User menu"
       >
         <div 
-          className="h-6 w-6 rounded-full text-black flex items-center justify-center border border-cyan-400/20 shadow-[0_0_16px_rgba(34,211,238,0.24)]"
+          className="h-6 w-6 rounded-full text-black flex items-center justify-center border border-cyan-400/20 shadow-[0_0_16px_rgba(34,211,238,0.08)]"
           style={{ backgroundColor: `hsl(${profilePublicMe.colour ?? 0}, 80%, 60%)`}}
         >
           <Image
@@ -89,7 +89,7 @@ export function UserMenu({ isTouch, showHeader, profilePublicMe }: { isTouch: bo
           }
         `}
       >
-        <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_60px_rgba(14,116,144,0.24)] backdrop-blur-xl p-2 flex flex-col gap-1">
+        <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_60px_rgba(14,116,144,0.12)] backdrop-blur-xl p-2 flex flex-col gap-1">
           
           {profilePrivate && profilePrivate.submit_permission && (
             <Link
@@ -136,7 +136,7 @@ export function UserMenu({ isTouch, showHeader, profilePublicMe }: { isTouch: bo
                   }
                 `}
               >
-                <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_40px_rgba(14,116,144,0.18)] backdrop-blur-xl p-2 flex flex-col gap-1">
+                <div className="rounded-2xl border border-cyan-500/15 bg-slate-950/95 shadow-[0_18px_40px_rgba(14,116,144,0.12)] backdrop-blur-xl p-2 flex flex-col gap-1">
                   {ADMIN_LINKS
                     .filter(link => {
                       if (link.href === "/admin-authors") {

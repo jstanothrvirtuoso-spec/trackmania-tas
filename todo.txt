@@ -18,7 +18,6 @@ Start collecting all historical TASes for non-TMNF
 Ideas zone for partial TASes
 Add reactions??
 TMNF Stats - Add Total time (by category) including RTA change since ~2021
-Discord hook to alert for uploaded TASes
 
 
 //////////////////////////////////////////////////////////////////////////

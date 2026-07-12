@@ -2,23 +2,41 @@
 
 // import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Category } from "@/utils/typing";
+import { Category, RtaEntry } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useAuthors } from "@/lib/Authors";
 import { DropSelect } from "@/components/DropSelect";
-import { useBestRtaRecords } from "@/lib/RtaRecords";
+import { useGameRtaRecords } from "@/lib/RtaRecords";
 import TotalTimeSaved from "@/components/tmnf-stats/TotalTimeSaved"
 import PercentSavedTmnf from "@/components/tmnf-stats/PercentSavedTmnf";
 import CategoryTable from "@/components/tmnf-stats/CategoryTable";
 import AuthorLeaderboard from "@/components/tmnf-stats/AuthorLeaderboard";
+import TotalTimeGraph from "@/components/tmnf-stats/TotalTimeGraph";
 
 export default function TmnfHistory() {
 
-  const { data: bestRtaByTrack } = useBestRtaRecords();
+  const { data: rtaRecords } = useGameRtaRecords(["TMNF", "TMNF No Cut"]);
   const { data: tasRecords = [] } = useTasRecords();
   const { data: authorData = [] } = useAuthors();
   const [category, setCategory] = useState<Category>("Open");
+
+  const bestRtaByTrack = useMemo(() => {
+    if (!rtaRecords) return new Map();
+
+    const map = new Map<string, RtaEntry>();
+    for (const entry of rtaRecords) {
+      const existing = map.get(entry.track);
+
+      if (!existing || entry.time_ms < existing.time_ms ||
+        (entry.time_ms === existing.time_ms && new Date(entry.date).getTime() < new Date(existing.date).getTime())
+      ) {
+        map.set(entry.track, entry);
+      }
+    }
+
+    return map;
+  }, [rtaRecords]);
 
   const filteredTasRecords = useMemo(() => {
 
@@ -91,6 +109,16 @@ export default function TmnfHistory() {
             </div>
           )}
 
+          {/* <div className="items-start w-full mb-4">
+            {rtaRecords && filteredTasRecords.length > 0 && (
+              <TotalTimeGraph
+                rtaRecords={rtaRecords} 
+                records={filteredTasRecords}
+                category={category}
+              />
+            )}
+          </div> */}
+          
           <div className="items-start w-full mb-4">
             {bestRtaByTrack && filteredTasRecords.length > 0 && (
               <TotalTimeSaved

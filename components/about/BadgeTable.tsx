@@ -35,7 +35,7 @@ export function BadgeTable() {
         />
 
         {/* HEADER */}
-        <div className="relative text-center py-3 tracking-[0.4em] font-kiwi text-pink-100/90 border-b border-pink-200/10 bg-white/5">
+        <div className="relative text-center py-3 px-2 tracking-[0.4em] font-kiwi text-pink-100/90 border-b border-pink-200/10 bg-white/5">
           ACHIEVEMENT SPECIAL ROLES
         </div>
 
@@ -45,8 +45,10 @@ export function BadgeTable() {
         >
           <div>BADGE</div>
           <div>TASES</div>
-          <div>CONTRIBUTION</div>
-          <div>TIME SAVED</div>
+          <div className="block sm:hidden">CONT.</div>
+          <div className="hidden sm:block">CONTRIBUTION</div>
+          <div className="block sm:hidden">SAVED</div>
+          <div className="hidden sm:block">TIME SAVED</div>
         </div>
 
         {/* ROWS */}

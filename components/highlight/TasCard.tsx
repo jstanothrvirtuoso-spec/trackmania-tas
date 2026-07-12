@@ -10,6 +10,7 @@ export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry
   const track = tasOfTheDay.category === "No Cut" ? TRACKS[tasOfTheDay.track].noCutTrack ?? tasOfTheDay.track : tasOfTheDay.track;
   const videoId = getYouTubeId(tasOfTheDay.video);
   const rta = bestRtaByTrack.get(track);
+  const preciseTime = tasOfTheDay.game === "TM2" || (TRACKS[tasOfTheDay.track].preciseTime ?? false);
 
   return (
     <section className="rounded-3xl border border-indigo-500/15 bg-gradient-to-br from-indigo-500/10 via-slate-900/80 to-slate-900/80 p-6 backdrop-blur-md">
@@ -29,12 +30,18 @@ export function TasCard({ tasOfTheDay, bestRtaByTrack }: { tasOfTheDay: TasEntry
 
       <div className="mt-2 flex w-full gap-3 text-sm flex-col justify-between sm:flex-row items-start sm:items-center">
         <div className="flex flex-col mb-2">
-          <div className="font-mono text-2xl font-semibold text-indigo-400 mr-15 whitespace-nowrap">
-            {formatTime(tasOfTheDay.time_ms, tasOfTheDay.game === "TM2")}
-            <span className="text-xs text-blue-300">
-              {` (-${rta ? formatPercentSaved(tasOfTheDay.time_ms, rta.time_ms, 3) : ""}% RTA)`}
-            </span>
-          </div>
+          {tasOfTheDay.num_inputs ? (
+            <div className="font-mono text-2xl font-semibold text-indigo-400 mr-15 whitespace-nowrap">
+              {`${tasOfTheDay.num_inputs} inputs`}
+            </div>
+          ) : (
+            <div className="font-mono text-2xl font-semibold text-indigo-400 mr-15 whitespace-nowrap">
+              {formatTime(tasOfTheDay.time_ms, preciseTime)}
+              <span className="text-xs text-blue-300">
+                {` (-${rta ? formatPercentSaved(tasOfTheDay.time_ms, rta.time_ms, 3) : ""}% RTA)`}
+              </span>
+            </div>
+          )}
           
           <div className="mt-1 font-medium">
             {formatAuthors(tasOfTheDay.authors ?? [""], 0, true, "hover:text-indigo-400")}

@@ -218,6 +218,30 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
       {selectedAuthor && (
         <div className="flex flex-col items-center gap-4 lg:gap-2 lg:flex-row lg:items-start">
 
+          {/* Stats charts */}
+          <div className="flex flex-wrap items-center max-w-170 justify-center gap-4 lg:items-start lg:justify-end">
+            <AuthorYearChart
+              rows={visibleRows}
+              selectedYear={selectedYear}
+              onSelectYear={updateYear}
+            />
+            <AuthorGameChart
+              rows={visibleRows}
+              selectedGame={selectedGame}
+              onSelectGame={updateGame}
+            />
+            <AuthorCategoryChart
+              rows={visibleRows}
+              selectedCategory={selectedCategory}
+              onSelectCategory={updateCategory}
+            />
+            <AuthorEnvironmentChart
+              rows={visibleRows}
+              selectedEnvironment={selectedEnvironment}
+              onSelectEnvironment={updateEnvironment}
+            />
+          </div>
+
           {/* TAS table */}
           <div className="min-w-0 max-w-full px-2">
             <AuthorTasTable
@@ -225,41 +249,14 @@ export default function AuthorsPage({ initialAuthor }: { initialAuthor: string }
             />
           </div>
 
-          <div className="flex flex-col gap-4 max-w-190 items-center lg:items-start">
-
-            {/* Stats charts */}
-            <div className="flex flex-wrap items-center justify-center gap-4 lg:items-start lg:justify-start">
-              <AuthorYearChart
-                rows={visibleRows}
-                selectedYear={selectedYear}
-                onSelectYear={updateYear}
-              />
-              <AuthorGameChart
-                rows={visibleRows}
-                selectedGame={selectedGame}
-                onSelectGame={updateGame}
-              />
-              <AuthorCategoryChart
-                rows={visibleRows}
-                selectedCategory={selectedCategory}
-                onSelectCategory={updateCategory}
-              />
-              <AuthorEnvironmentChart
-                rows={visibleRows}
-                selectedEnvironment={selectedEnvironment}
-                onSelectEnvironment={updateEnvironment}
-              />
-            </div>
-
-            {/* Profile card */}
-            {profilePublic ? (
-              <ProfileCard
-                profile={profilePublic} 
-              />
-            ) : (
-              <div className="h-1 w-[320px]" />
-            )}
-          </div>
+          {/* Profile card */}
+          {profilePublic ? (
+            <ProfileCard
+              profile={profilePublic} 
+            />
+          ) : (
+            <div className="h-1 w-[320px]" />
+          )}
 
         </div>
       )}

@@ -63,6 +63,27 @@ export function useBestRtaRecords() {
   });
 }
 
+// All RTA records from one game
+
+export function useGameRtaRecords(games: string[]) {
+  return useQuery<RtaEntry[]>({
+    queryKey: ["rtaRecords", games],
+    enabled: !!games.length,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rta_records")
+        .select("*")
+        .in("game", games)
+        .order("date", { ascending: true })
+        .order("time_ms", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    staleTime: STALE_TIME,
+  });
+}
+
 // All RTA records from one track
 
 export function useTrackRtaRecords(track?: string) {
