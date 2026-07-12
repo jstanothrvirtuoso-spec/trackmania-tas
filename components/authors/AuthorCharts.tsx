@@ -226,9 +226,11 @@ function PieChart<T extends string>({ title, counts, colours, gradient, selected
   const slices = useMemo(() => {
     let offset = 0;
 
-    return counts.map(({ type, count }) => {
+    return counts.map(({ type, count }, index) => {
       const percentage = count / total;
-      const dash = percentage * CIRCUMFERENCE;
+      const dash = index === counts.length - 1
+        ? CIRCUMFERENCE - offset + 0.01
+        : Number((percentage * CIRCUMFERENCE).toFixed(3));
       const slice = { type, dash, offset, count };
       
       // eslint-disable-next-line react-hooks/immutability
