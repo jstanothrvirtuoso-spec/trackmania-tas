@@ -2,8 +2,11 @@
 import { useState, useMemo } from "react";
 import { Category, RtaEntry, TasEntry } from "@/utils/typing";
 import { TRACKS } from "@/lib/TrackList";
+import { DropSelect } from "../DropSelect";
 
-type TrackSets = "Overall" | "White" | "Green" | "Blue" | "Red" | "Black" | "RTA";
+type TrackSets = "TAS" | "RTA";
+const GRAPH_TYPES = ["Overall", "White", "Green", "Blue", "Red", "Black"] as const;
+type GraphType = (typeof GRAPH_TYPES)[number];
 
 const START_DATE = new Date("2021-01-01").getTime();
 const TAS_START_DATE = new Date("2021-06-01").getTime();
@@ -12,13 +15,8 @@ const HEIGHT = 405;
 const PADDING_X = 45;
 const PADDING_Y = 20;
 const TRACK_SET_COLOURS: Record<TrackSets, string> = {
-  Overall: "#5a0da3",
-  White: "#dbdbdb",
-  Green: "#21b858",
-  Blue: "#185fd1",
-  Red: "#b92020",
-  Black: "#59575a",
-  RTA: "#b92020",
+  "TAS": "#5a0da3",
+  "RTA": "#b92020",
 };
 
 function round(n: number) {
@@ -64,6 +62,7 @@ export default function TotalTimeGraph( { rtaRecords, records, category } : {
 } ) {
   
   const [maxDate] = useState<number>(() => Date.now());
+  const [graphType, setGraphType] = useState<GraphType>("Overall");
   const [visibleSets, setVisibleSets] = useState<Record<string, boolean>>(
     { "Overall": true, "White": true, "Green": true, "Blue": true, "Red": true, "Black": true, "RTA": true }
   );
@@ -74,26 +73,18 @@ export default function TotalTimeGraph( { rtaRecords, records, category } : {
     let bestTasByTrack = new Map<string, number>();
 
     const totalTime = {
-      "White": 0,
-      "Green": 0,
-      "Blue": 0,
-      "Red": 0,
-      "Black": 0,
-      "Overall": 0,
+      "TAS": 0,
       "RTA": 0,
-    } satisfies Record<TrackSets, number>;
+    };
     
-    const points: Record<TrackSets, { date: string, time_ms: number }[]> = {
-      "White": [],
-      "Green": [],
-      "Blue": [],
-      "Red": [],
-      "Black": [],
-      "Overall": [],
+    const points: Record<string, { date: string, time_ms: number }[]> = {
+      "TAS": [],
       "RTA": [],
     };
 
     for (const record of rtaRecords) {
+
+      if (graphType !== "Overall" && TRACKS[record.track].gameSet !== graphType) continue;
 
       if (category === "No Cut") {
         if (record.game === "TMNF" && TRACKS[record.track].noCutTrack) continue;
@@ -115,10 +106,8 @@ export default function TotalTimeGraph( { rtaRecords, records, category } : {
       if (date.getTime() >= START_DATE) {
 
         if (points["RTA"].length === 32) {
-          for (const [track, time] of bestRtaByTrack) {
-            const set = TRACKS[track].gameSet as TrackSets;
-            totalTime[set] += time;
-            totalTime["Overall"] += time;
+          for (const [, time] of bestRtaByTrack) {
+            totalTime["TAS"] += time;
           };
           bestTasByTrack = bestRtaByTrack;
         };
@@ -132,13 +121,13 @@ export default function TotalTimeGraph( { rtaRecords, records, category } : {
 
     for (const tas of records) {
 
+      if (graphType !== "Overall" && TRACKS[tas.track].gameSet !== graphType) continue;
+
       const track = category === "No Cut" ? TRACKS[tas.track].noCutTrack ?? tas.track : tas.track;
-      const gameSet = TRACKS[track].gameSet as TrackSets;
       const previous = bestTasByTrack.get(track)!;
 
       if (tas.time_ms < previous) {
-        totalTime[gameSet] -= previous - tas.time_ms;
-        totalTime["Overall"] -= previous - tas.time_ms;
+        totalTime["TAS"] -= previous - tas.time_ms;
         bestTasByTrack.set(tas.track, tas.time_ms);
       } else {
         continue;
@@ -146,19 +135,15 @@ export default function TotalTimeGraph( { rtaRecords, records, category } : {
 
       const date = new Date(tas.date);
       if (date.getTime() >= TAS_START_DATE) {
-        points[gameSet].push({
+        points["TAS"].push({
           date: tas.date,
-          time_ms: totalTime[gameSet],
-        });
-        points["Overall"].push({
-          date: tas.date,
-          time_ms: totalTime["Overall"],
+          time_ms: totalTime["TAS"],
         });
       }
     };
-    
+
     return points;
-  }, [records, rtaRecords, category]);
+  }, [records, rtaRecords, category, graphType]);
 
   const startYear = new Date(START_DATE).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
@@ -221,9 +206,21 @@ export default function TotalTimeGraph( { rtaRecords, records, category } : {
   return (
     <div className="rounded-xl border border-slate-800 w-full flex-1 shadow-[0_5px_20px_rgba(0,0,0,0.6)] bg-slate-950/90">
       <div className="w-full p-4 rounded-xl">
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">
-          Total Time (Mins)
-        </h2>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
+           Total Time (mins)
+          </h2>
+  
+          <DropSelect
+            initialValue={graphType}
+            options={GRAPH_TYPES.map((label) => ({
+              value: label,
+              label: label,
+            }))}
+            onChange={(value) => setGraphType(value as GraphType)}
+            small={true}
+          />
+        </div>
 
         <div className="w-full aspect-[16/9]">
           <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full h-full">
@@ -307,7 +304,7 @@ export default function TotalTimeGraph( { rtaRecords, records, category } : {
                   d={path}
                   fill="none"
                   stroke={colour}
-                  strokeWidth={set === "Overall" ? 3 : 2}
+                  strokeWidth={3}
                 />
               )
             })}

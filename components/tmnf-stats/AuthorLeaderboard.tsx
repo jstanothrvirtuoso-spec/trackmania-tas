@@ -15,7 +15,7 @@ const WIDTH = 720;
 const HEIGHT = 405;
 const PADDING_X = 35;
 const PADDING_T = 10;
-const PADDING_B = 35;
+const PADDING_B = 37;
 const NUM_AUTHORS = 6;
 const COLOURS = generateGraphColours(NUM_AUTHORS);
 const GRAPH_TYPES = {"TASes": "TASes", "Contributions": "Contributions", "TimeSaved": "Time Saved (sec)"}
@@ -197,8 +197,8 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 py-2 px-4 w-full flex-1 shadow-[0_5px_20px_rgba(0,0,0,0.6)] bg-gradient-to-r from-sky-950/80 via-slate-950/80 to-slate-950/90">
-      <div className="flex items-center justify-between mb-1">
+    <div className="rounded-xl border border-slate-800 py-2 px-4 w-full flex-1 shadow-[0_5px_20px_rgba(0,0,0,0.6)] bg-gradient-to-r from-sky-950/40 via-slate-950/80 to-slate-950/90">
+      <div className="flex items-center justify-between mb-1 p-1">
         <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-200">
           WR History
         </h2>
@@ -210,6 +210,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
             label: label,
           }))}
           onChange={(value) => setGraphType(value as GraphType)}
+          small={true}
         />
       </div>
 
@@ -303,7 +304,7 @@ export default function AuthorLeaderboard( { bestRtaByTrack, filteredTasRecords,
           {selectedYear && (
             <text
               x={WIDTH / 2}
-              y={HEIGHT}
+              y={HEIGHT - 2}
               textAnchor="middle"
               className="fill-emerald-500 text-[14px] cursor-pointer hover:fill-emerald-300"
               onClick={() => setSelectedYear(null)}

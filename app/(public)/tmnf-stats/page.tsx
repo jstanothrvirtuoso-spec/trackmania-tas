@@ -12,7 +12,6 @@ import TotalTimeSaved from "@/components/tmnf-stats/TotalTimeSaved"
 import PercentSavedTmnf from "@/components/tmnf-stats/PercentSavedTmnf";
 import CategoryTable from "@/components/tmnf-stats/CategoryTable";
 import AuthorLeaderboard from "@/components/tmnf-stats/AuthorLeaderboard";
-import TotalTimeGraph from "@/components/tmnf-stats/TotalTimeGraph";
 
 export default function TmnfHistory() {
 
@@ -109,16 +108,6 @@ export default function TmnfHistory() {
             </div>
           )}
 
-          {/* <div className="items-start w-full mb-4">
-            {rtaRecords && filteredTasRecords.length > 0 && (
-              <TotalTimeGraph
-                rtaRecords={rtaRecords} 
-                records={filteredTasRecords}
-                category={category}
-              />
-            )}
-          </div> */}
-          
           <div className="items-start w-full mb-4">
             {bestRtaByTrack && filteredTasRecords.length > 0 && (
               <TotalTimeSaved

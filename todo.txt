@@ -14,6 +14,7 @@ Look for replays for all TMNF
 Set categories for all TASes
 Get videos for all TM2 RTA wrs
 Start collecting all historical TASes for non-TMNF
+Add linesight and yosh as AI category? (https://www.youtube.com/watch?v=cUojVsCJ51I)
 
 Ideas zone for partial TASes
 Add reactions??

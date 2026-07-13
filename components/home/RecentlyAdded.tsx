@@ -71,11 +71,11 @@ export default function RecentlyAdded({ tasRecords }: {tasRecords: TasEntry[]}) 
                 style={{ backgroundColor: CATEGORY_COLOURS[record.category][0] }}
               />
 
-              <div className="relative flex items-start justify-between gap-2">
-                <div className="py-1">
+              <div className="relative flex items-start justify-between gap-1">
+                <div className="py-1 truncate max-w-45">
                   {formatTrack(record.track, "text-lg font-bold text-white hover:text-emerald-500 whitespace-nowrap")}
 
-                  <div className="text-xs uppercase tracking-[0.2em] text-slate-500 whitespace-nowrap">
+                  <div className="text-sm tracking-[0.2em] text-slate-500 whitespace-nowrap">
                     {record.category}
                   </div>
 
