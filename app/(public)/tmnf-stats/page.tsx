@@ -1,13 +1,12 @@
 "use client"
 
-// import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Category, RtaEntry } from "@/utils/typing";
+import { Category } from "@/utils/typing";
 import { CATEGORIES, CATEGORY_FILTERS } from "@/utils/constants";
 import { useTasRecords } from "@/lib/TasRecords";
 import { useAuthors } from "@/lib/Authors";
 import { DropSelect } from "@/components/DropSelect";
-import { useGameRtaRecords } from "@/lib/RtaRecords";
+import { useBestRtaRecords } from "@/lib/RtaRecords";
 import TotalTimeSaved from "@/components/tmnf-stats/TotalTimeSaved"
 import PercentSavedTmnf from "@/components/tmnf-stats/PercentSavedTmnf";
 import CategoryTable from "@/components/tmnf-stats/CategoryTable";
@@ -15,27 +14,10 @@ import AuthorLeaderboard from "@/components/tmnf-stats/AuthorLeaderboard";
 
 export default function TmnfHistory() {
 
-  const { data: rtaRecords } = useGameRtaRecords(["TMNF", "TMNF No Cut"]);
+  const { data: bestRtaByTrack } = useBestRtaRecords();
   const { data: tasRecords = [] } = useTasRecords();
   const { data: authorData = [] } = useAuthors();
   const [category, setCategory] = useState<Category>("Open");
-
-  const bestRtaByTrack = useMemo(() => {
-    if (!rtaRecords) return new Map();
-
-    const map = new Map<string, RtaEntry>();
-    for (const entry of rtaRecords) {
-      const existing = map.get(entry.track);
-
-      if (!existing || entry.time_ms < existing.time_ms ||
-        (entry.time_ms === existing.time_ms && new Date(entry.date).getTime() < new Date(existing.date).getTime())
-      ) {
-        map.set(entry.track, entry);
-      }
-    }
-
-    return map;
-  }, [rtaRecords]);
 
   const filteredTasRecords = useMemo(() => {
 
@@ -47,9 +29,9 @@ export default function TmnfHistory() {
     return tmnfRecords.filter((r) => allowed.has(r.category));
   }, [tasRecords, category]);
   
-  const authors = useMemo(() => 
-    authorData.map((a) => a.author)
-  , [authorData]);
+  const authors = useMemo(() => {
+    return authorData.map((a) => a.author)
+  }, [authorData]);
 
   return (
     <div>

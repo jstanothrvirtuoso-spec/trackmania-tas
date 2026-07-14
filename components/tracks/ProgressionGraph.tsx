@@ -1,7 +1,7 @@
 
 import { useState, useMemo } from "react";
 import { CATEGORY_COLOURS, CATEGORY_FILTERS, GRAPH_CATEGORIES } from "@/utils/constants";
-import { TasEntry } from "@/utils/typing";
+import { Game, TasEntry } from "@/utils/typing";
 
 type GraphCategory = (typeof GRAPH_CATEGORIES)[number];
 type ProgressionGraphPoint = {
@@ -55,13 +55,18 @@ function generateYAxisTicks(min: number, max: number) {
   return { step: niceStep, yTicks: ticks.map((t) => Math.round(t * 1e6) / 1e6) };
 }
 
-export function RecordProgressionGraph({ records, graphUnits, currentRecord, minDate, maxDate }: {
+export function RecordProgressionGraph({ records, game, graphUnits, currentRecord, minDate, maxDate }: {
   records: TasEntry[];
+  game: Game;
   graphUnits: string;
   currentRecord: { category: string, id: number } | null;
   minDate: number;
   maxDate: number;
 }) {
+
+  const [forceZeroY, setForceZeroY] = useState(false);
+  const [forceZeroX, setForceZeroX] = useState(false);
+  const [visibleCategories, setVisibleCategories] = useState(INITIAL_VISIBLE);
 
   const progression = useMemo<Record<GraphCategory, ProgressionGraphPoint[]>>(() => {
 
@@ -72,7 +77,7 @@ export function RecordProgressionGraph({ records, graphUnits, currentRecord, min
     });
 
     const buildPoints = (category: GraphCategory) => {
-      const allowedCategories = CATEGORY_FILTERS[category];
+      const allowedCategories = forceZeroX && category === "RTA" ? new Set(["RTA", "RTA-old"]) : CATEGORY_FILTERS[category];
       const points: ProgressionGraphPoint[] = [];
       
       let best = Infinity;
@@ -89,8 +94,9 @@ export function RecordProgressionGraph({ records, graphUnits, currentRecord, min
             });
           }
         });
-
-      const filterPoints = points.filter((tas) => tas.category === category);
+      
+      const categoryTest = forceZeroX && category === "RTA" ? new Set(["RTA", "RTA-old"]) : new Set([category]);
+      const filterPoints = points.filter((tas) => categoryTest.has(tas.category));
 
       return filterPoints.length > 0 ? points : [];
     };
@@ -103,34 +109,36 @@ export function RecordProgressionGraph({ records, graphUnits, currentRecord, min
       "No Cut": buildPoints("No Cut"),
       "RTA": buildPoints("RTA"),
     };
-  }, [records, graphUnits]);
-
-  const [forceZeroY, setForceZeroY] = useState(false);
-  const [visibleCategories, setVisibleCategories] = useState(INITIAL_VISIBLE);
-
-  const visiblePoints = GRAPH_CATEGORIES
-    .filter(category => visibleCategories[category])
-    .flatMap(category => progression[category] ?? []);
+  }, [records, graphUnits, forceZeroX]);
 
   const { rawMinTime, rawMaxTime } = useMemo(() => {
-    const times = visiblePoints.map(p => p.time);
+
+    const visiblePoints = GRAPH_CATEGORIES
+      .filter(category => visibleCategories[category])
+      .flatMap(category => progression[category] ?? []);
+
+    const times = visiblePoints
+      .filter(p => new Date(p.date).getTime() > new Date("2008-04-30").getTime())
+      .map(p => p.time);
     return {
       rawMinTime: Math.min(...times),
       rawMaxTime: Math.max(...times),
     };
-  }, [visiblePoints]);
+  }, [visibleCategories, progression]);
 
-  const startYear = new Date(minDate).getFullYear();
+  const firstYear = forceZeroX ? new Date("2008-01-01").getTime() : minDate;
+  const startYear = new Date(firstYear).getFullYear();
   const endYear = new Date(maxDate).getFullYear();
   const paddingSeconds = Math.max((rawMaxTime - rawMinTime) * 0.08, Math.max(0.001 * rawMinTime, 0.025));
   const minTime = forceZeroY ? 0 : Math.max(0, rawMinTime - paddingSeconds);
   const maxTime = rawMaxTime + paddingSeconds;
   const { step, yTicks } = generateYAxisTicks(minTime, maxTime);
   const yTickDecimals = step < 0.1 ? 2 : step < 1 ? 1 : 0;
+  const xStep = forceZeroX ? 2 : 1;
 
   function xScale(date: string) {
     const t = new Date(date).getTime();
-    return round(PADDING_X + ((t - minDate) / (maxDate - minDate || 1)) * (WIDTH - PADDING_X * 1.5));
+    return round(PADDING_X + ((t - firstYear) / (maxDate - firstYear || 1)) * (WIDTH - PADDING_X * 1.5));
   };
 
   function yScale(time: number) {
@@ -141,7 +149,7 @@ export function RecordProgressionGraph({ records, graphUnits, currentRecord, min
     const category = currentRecord.category as GraphCategory;
     const points = progression[category] ?? [];
     const index = points.findIndex((p) => p.id === currentRecord.id);
-    return index !== -1 ? { category, index, points } : null;
+    return index !== -1 && visibleCategories[category] ? { category, index, points } : null;
   })() : null;
 
   return (
@@ -170,7 +178,7 @@ export function RecordProgressionGraph({ records, graphUnits, currentRecord, min
           />
 
           {/* Year labels */}
-          {Array.from( { length: endYear - startYear + 1 }, (_, i) => startYear + i).map((year) => {
+          {Array.from( { length: endYear - startYear + 1 }, (_, i) => startYear + i * xStep).map((year) => {
             const x = xScale(`${year}-01-01`);
 
             // Skip labels outside plotting region
@@ -221,6 +229,18 @@ export function RecordProgressionGraph({ records, graphUnits, currentRecord, min
               </g>
             );
           })}
+
+          {game === "TMNF" && (
+            <text
+              x={PADDING_X + 6}
+              y={HEIGHT - PADDING_Y - 8}
+              textAnchor="start"
+              className="fill-emerald-400 text-[15px] cursor-pointer hover:fill-slate-200"
+              onClick={() => setForceZeroX(v => !v)}
+            >
+              {forceZeroX ? "→" : "←"}
+            </text>
+          )}
 
           {/* Graph */}
           {GRAPH_CATEGORIES.map((category) => {

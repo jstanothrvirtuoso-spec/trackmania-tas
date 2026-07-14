@@ -73,9 +73,10 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
     recordsBest.forEach((entry) => {
       const track = entry.category === "No Cut" ? TRACKS[entry.track].noCutTrack ?? entry.track : entry.track;
       const rta = bestRtaByTrack.get(track);
-      const override = OVERRIDE_TIME_SAVED[track]?.[entry.time_ms];
+      const isStunt = TRACKS[track].gameSet === "Stunt"
+      const override = isStunt ? 0 : OVERRIDE_TIME_SAVED[track]?.[entry.time_ms];
       let savedMs = 0;
-      if (override) {
+      if (override || isStunt) {
         savedMs = override * 1000;
       } else if (rta) {
         savedMs = Math.max(0, rta.time_ms - entry.time_ms);

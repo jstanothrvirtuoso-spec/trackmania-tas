@@ -65,21 +65,38 @@ export function useBestRtaRecords() {
 
 // All RTA records from one game
 
+async function getRtaGameRecords(games: string[]): Promise<RtaEntry[]> {
+
+  const pageSize = 2000;
+  const allRows: RtaEntry[] = [];
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("rta_records")
+      .select("*")
+      .in("game", games)
+      .order("date", { ascending: true })
+      .order("time_ms", { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+    if (!data?.length) break;
+    allRows.push(...(data as RtaEntry[]));
+    if (data.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allRows;
+}
+
 export function useGameRtaRecords(games: string[]) {
+
+  console.log('here', games)
   return useQuery<RtaEntry[]>({
     queryKey: ["rtaRecords", games],
     enabled: !!games.length,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rta_records")
-        .select("*")
-        .in("game", games)
-        .order("date", { ascending: true })
-        .order("time_ms", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => getRtaGameRecords(games),
     staleTime: STALE_TIME,
   });
 }
@@ -104,3 +121,20 @@ export function useTrackRtaRecords(track?: string) {
     staleTime: STALE_TIME,
   });
 }
+
+// const bestRtaByTrack = useMemo(() => {
+//   if (!rtaRecords) return new Map();
+
+//   const map = new Map<string, RtaEntry>();
+//   for (const entry of rtaRecords) {
+//     const existing = map.get(entry.track);
+
+//     if (!existing || entry.time_ms < existing.time_ms ||
+//       (entry.time_ms === existing.time_ms && new Date(entry.date).getTime() < new Date(existing.date).getTime())
+//     ) {
+//       map.set(entry.track, entry);
+//     }
+//   }
+
+//   return map;
+// }, [rtaRecords]);

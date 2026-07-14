@@ -35,6 +35,7 @@ export function TrackRecordTable({tmxGame, records, preciseTime, track, setCurre
 
               <tbody>
                 {records.map((entry, i) => {
+                  if (entry.category === "RTA-old" as Category) return;
                   
                   const colourIndex = i % 2 == 0 ? 2 : 1;
                   const rowColour = CATEGORY_COLOURS[entry.category]?.[colourIndex] ?? "bg-slate-500/10";

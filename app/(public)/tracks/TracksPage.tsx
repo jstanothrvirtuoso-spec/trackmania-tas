@@ -55,14 +55,13 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
     const datePadding = Math.max((nowDate - firstTasDate) * 0.03, 1000 * 60 * 60 * 24 * 30);
     const minDate = firstTasDate - datePadding;
     
-    const cutoffIndex = trackRtaRecords.findLastIndex(r => new Date(r.date).getTime() < minDate);
+    const cutoffIndex = trackRtaRecords.findLastIndex(rta => new Date(rta.date).getTime() < minDate);
     const relevantRtaRows: TasEntry[] = trackRtaRecords
-      .slice(Math.max(0, cutoffIndex))
-      .map(rta => ({
+      .map((rta, index) => ({
         id: rta.id,
         game: rta.game,
         track: rta.track,
-        category: "RTA" as Category,
+        category: cutoffIndex >= 0 && index < cutoffIndex ? "RTA-old" as Category : "RTA" as Category,
         time_ms: rta.time_ms,
         num_inputs: 0,
         authors: [rta.player],
@@ -71,7 +70,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
         replay_path: rta.replay,
         created_at: "",
       }));
-
+    
     const tas = tasRows.length === 0 ? null
       : tasRows.reduce((best, row) => { 
         if (row.time_ms < best.time_ms) { return row };
@@ -221,6 +220,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
           <div className="w-full max-w-180">
             <RecordProgressionGraph 
               records={records}
+              game={game}
               graphUnits={graphUnits}
               currentRecord={currentRecord}
               minDate={minDate}

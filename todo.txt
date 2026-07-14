@@ -8,6 +8,7 @@ Admin panel:
  - Connecting accounts with authors
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
+Make open source
 
 Check inputs for all Virtuoso TASes
 Look for replays for all TMNF
@@ -18,7 +19,6 @@ Add linesight and yosh as AI category? (https://www.youtube.com/watch?v=cUojVsCJ
 
 Ideas zone for partial TASes
 Add reactions??
-TMNF Stats - Add Total time (by category) including RTA change since ~2021
 
 
 //////////////////////////////////////////////////////////////////////////
