@@ -8,14 +8,13 @@ Admin panel:
  - Connecting accounts with authors
 Loading symbols for tables while waiting for supabase (noseboosting car??)
 Fix visitor counter
-Make open source
 
-Check inputs for all Virtuoso TASes
 Look for replays for all TMNF
 Set categories for all TASes
 Get videos for all TM2 RTA wrs
 Start collecting all historical TASes for non-TMNF
 Add linesight and yosh as AI category? (https://www.youtube.com/watch?v=cUojVsCJ51I)
+Check all tmnf replays match the TAS
 
 Ideas zone for partial TASes
 Add reactions??

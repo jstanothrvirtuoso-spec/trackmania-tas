@@ -13,6 +13,17 @@ export async function POST(req: Request) {
     );
   }
 
+  const categoryColours: Record<string, number> = {
+    "Open": 0xc271f8,
+    "NOseboost": 0x60a5fa,
+    "No Uber": 0x34d399,
+    "WR Route": 0xffc637,
+    "No Cut": 0x4d59ff,
+    "Low Input": 0x000000,
+  };
+
+  const colour = categoryColours[body.category] ?? 0x00c853;
+
   const response = await fetch(webhook, {
     method: "POST",
     headers: {
@@ -22,7 +33,7 @@ export async function POST(req: Request) {
       embeds: [
         {
           title: "📥 New TAS Submission",
-          color: 0x00c853,
+          color: colour,
           fields: [
             {
               name: "Track",

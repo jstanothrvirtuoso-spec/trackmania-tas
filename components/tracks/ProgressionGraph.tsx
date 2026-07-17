@@ -253,9 +253,9 @@ export function RecordProgressionGraph({ records, game, graphUnits, currentRecor
               const y = yScale(point.time);
 
               if (i === 0) {
-                path += `M ${Math.max(PADDING_X, x)} ${y}`;
+                path += `M ${Math.max(PADDING_X, x)} ${Math.max(PADDING_Y, y)}`;
               } else {
-                path += ` H ${Math.max(PADDING_X, x)} V ${y}`;
+                path += ` H ${Math.max(PADDING_X, x)} V ${Math.max(PADDING_Y, y) }`;
               }
             });
 
@@ -281,6 +281,7 @@ export function RecordProgressionGraph({ records, game, graphUnits, currentRecor
               const x = xScale(p.date);
               const y = yScale(p.time);
 
+              if (y < PADDING_Y) return;
               if (x < PADDING_X) return;
 
               return (
