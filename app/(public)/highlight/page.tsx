@@ -11,6 +11,7 @@ import { AuthorCard } from "@/components/highlight/AuthorCard";
 import { UndoneCard } from "@/components/highlight/UndoneCard";
 import { LegendsCard } from "@/components/highlight/LegendsCard";
 import { getYouTubeId } from "@/utils/common";
+import { Unnoseboosters } from "@/components/highlight/Unnoseboosters";
 
 const reversedCategories = [...CATEGORIES].reverse();
 
@@ -175,9 +176,14 @@ export default function HighlightPage() {
               />
             )}
 
-            {/* LEGENDS */}
+            {/* LEGENDS OF UNDONE */}
             {tasOfTheDay && (
               <LegendsCard />
+            )}
+
+            {/* LEGENDS OF UNNOSEBOOST */}
+            {tasOfTheDay && (
+              <Unnoseboosters />
             )}
 
           </div>

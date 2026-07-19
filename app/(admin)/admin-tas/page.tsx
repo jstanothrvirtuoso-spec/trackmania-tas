@@ -17,6 +17,7 @@ import { trackIds } from "@/lib/TrackId";
 import AuthorSelector from "@/components/AuthorSelector";
 import TrackRecords from "./TrackRecords";
 import TasSubmissions from "./TasSubmissions";
+import { useProfilePublicMe } from "@/lib/Profiles";
 
 export type TasForm = {
   game: Game;
@@ -59,6 +60,7 @@ export default function AdminTas() {
   const [selectedSubmission, setSelectedSubmission] = useState<SubmitForm | null>(null);
   const [selectedCopiedTas, setSelectedCopiedTas] = useState<TasEntry | null>(null);
 
+  const { data: profilePublicMe } = useProfilePublicMe();
   const { data: authorData = [] } = useAuthors();
   const { data: tasRecords = [] } = useTasRecords();
   
@@ -395,6 +397,7 @@ export default function AdminTas() {
   async function processSubmission(status: "approved" | "rejected") {
 
     if (!selectedSubmission) return;
+    if (!profilePublicMe?.display_name) return;
     setLoading(true);
 
     try {
@@ -454,7 +457,27 @@ export default function AdminTas() {
         const { replayUid } = await response.json();
         
         await submit(replayUid)
+
       }
+
+      try {
+        await fetch("/api/discord-processed", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            track: replay.track,
+            time:
+              `${replay.time.minutes > 0 ? replay.time.minutes + ":" : ""}` +
+              `${String(replay.time.seconds).padStart(2, "0")}.` +
+              `${String(replay.time.hundredths).padStart(2, "0")}`,
+            decisionBy: profilePublicMe.display_name,
+            decision: status,
+            submittedBy: selectedSubmission.submitted_by_name,
+          }),
+        });
+      } catch {}
 
       queryClient.setQueryData(["tas_submissions"],
         (old: SubmitForm[] | undefined) => old?.filter((x) => x.id !== selectedSubmission.id)
@@ -947,7 +970,7 @@ export default function AdminTas() {
 
                   <button
                     onClick={() => processSubmission("approved")}
-                    disabled={loading}
+                    disabled={loading || !profilePublicMe?.display_name}
                     className="w-full rounded-md bg-emerald-600 px-4 py-2 font-medium hover:bg-emerald-500 disabled:opacity-50 cursor-pointer"
                   >
                     {loading ? "Processing..." : "Approve user submission and submit"}
@@ -955,7 +978,7 @@ export default function AdminTas() {
 
                   <button
                     onClick={() => processSubmission("rejected")}
-                    disabled={loading}
+                    disabled={loading || !profilePublicMe?.display_name}
                     className="w-full rounded-md bg-red-800 px-4 py-2 font-medium hover:bg-red-500 disabled:opacity-50 cursor-pointer"
                   >
                     {loading ? "Processing..." : "Reject user submission"}

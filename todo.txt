@@ -18,6 +18,7 @@ Check all tmnf replays match the TAS
 
 Ideas zone for partial TASes
 Add reactions??
+Loading B09 in /tracks shows the wrong RTA records in the table???
 
 
 //////////////////////////////////////////////////////////////////////////

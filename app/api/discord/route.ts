@@ -32,7 +32,8 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       embeds: [
         {
-          title: "📥 New TAS Submission",
+          title: `📥  New TAS submission from ${body.submitter}!`,
+          url: "https://www.tas-nadeo.com/admin-tas",
           color: colour,
           fields: [
             {
@@ -46,20 +47,11 @@ export async function POST(req: Request) {
               inline: true,
             },
             {
-              name: "Category",
-              value: body.category,
-              inline: true,
-            },
-            {
               name: "Authors",
               value: body.authors.join(", "),
-            },
-            {
-              name: "Submitted by",
-              value: body.submitter,
+              inline: true,
             },
           ],
-          timestamp: new Date().toISOString(),
         },
       ],
     }),
