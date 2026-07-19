@@ -1,6 +1,6 @@
 
-import { TRACKS } from "@/lib/TrackList";
 import Link from "next/link";
+import { TRACKS } from "@/lib/TrackList";
 
 export function formatTrack(track: string, custom: string = "hover:text-emerald-500 text-slate-200") {
 
@@ -10,6 +10,7 @@ export function formatTrack(track: string, custom: string = "hover:text-emerald-
   
   return (
     <Link
+      prefetch={false}
       href={`/tracks?game=${encodeURIComponent(game)}&track=${encodeURIComponent(track)}`}
       className={`${custom} transition`}
     >
@@ -31,6 +32,7 @@ export function formatAuthors(authors: string[], maxLength: number = 0, fullSent
         <span key={`${author}-${i}`} className="text-slate-300/80">
           {i === 0 && fullSentence ? "by " : ""}
           <Link
+            prefetch={false}
             href={`/authors?author=${encodeURIComponent(author)}`}
             className={`${custom} transition`}
           >

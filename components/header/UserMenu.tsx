@@ -93,6 +93,7 @@ export function UserMenu({ isTouch, showHeader, profilePublicMe }: { isTouch: bo
           
           {profilePrivate && profilePrivate.submit_permission && (
             <Link
+              prefetch={false}
               key="/submit"
               href="/submit"
               className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
@@ -103,6 +104,7 @@ export function UserMenu({ isTouch, showHeader, profilePublicMe }: { isTouch: bo
           )}
         
           <Link
+            prefetch={false}
             key="/profile"
             href="/profile"
             className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"
@@ -146,6 +148,7 @@ export function UserMenu({ isTouch, showHeader, profilePublicMe }: { isTouch: bo
                     })
                     .map(link => (
                       <Link
+                        prefetch={false}
                         key={link.href}
                         href={link.href}
                         className="rounded-xl px-3 py-2 text-sm text-cyan-100 hover:bg-cyan-500/10 transition"

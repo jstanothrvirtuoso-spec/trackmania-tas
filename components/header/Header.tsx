@@ -77,6 +77,7 @@ export default function Header() {
           {/* HOME */}
           <div className="px-3 block sm:hidden">
             <Link
+              prefetch={false}
               href="/"
               className="block border border-white-100 rounded-lg transition-all duration-100 hover:brightness-110 hover:border-cyan-500"
             >
@@ -95,6 +96,7 @@ export default function Header() {
           <div className="mt-[2px] px-3 hidden sm:block w-30">
             <span className="inline-flex overflow-hidden px-1 rounded-xl">
               <Link
+                prefetch={false}
                 href="/"
                 className="
                   font-vga text-2xl text-white whitespace-nowrap transition-transform duration-200 ease-out 
@@ -117,6 +119,7 @@ export default function Header() {
 
                 return (
                   <Link
+                    prefetch={false}
                     key={slug}
                     href={`/${slug}`}
                     className={`font-medium whitespace-nowrap transition [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] ${
@@ -146,6 +149,7 @@ export default function Header() {
                   />
                 ) : (
                   <Link
+                    prefetch={false}
                     href="/login"
                     className={`
                       flex items-center gap-3 rounded-full border border-cyan-400/20 cursor-pointer
@@ -179,6 +183,7 @@ export default function Header() {
             
             {/* TM-TAS */}
             <Link
+              prefetch={false}
               href="https://tmtas.exchange/"
               target="_blank"
               rel="noopener noreferrer"

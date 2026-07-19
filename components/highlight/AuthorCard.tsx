@@ -221,6 +221,7 @@ export function AuthorCard({ authorOfTheDay, tasRecords, bestRtaByTrack }: {
 
             return (
               <Link
+                prefetch={false}
                 key={record.id}
                 href={`/tracks?track=${encodeURIComponent(track)}`}
                 className="

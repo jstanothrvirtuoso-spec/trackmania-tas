@@ -71,6 +71,7 @@ export function MainMenu({ pathname, isTouch, showHeader, profilePublicMe }: {
 
           {!profilePublicMe?.display_name && (
             <Link
+              prefetch={false}
               href={`/login?next=${encodeURIComponent(pathname)}`}
               className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-vga"
               onClick={menu.closeNow}
@@ -99,6 +100,7 @@ export function MainMenu({ pathname, isTouch, showHeader, profilePublicMe }: {
               <div className="flex flex-col gap-1">
                 {Object.entries(GAME_SLUGS).map(([slug, game]) => (
                   <Link
+                    prefetch={false}
                     key={slug}
                     href={`/${slug}`}
                     className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 font-vga"
@@ -116,6 +118,7 @@ export function MainMenu({ pathname, isTouch, showHeader, profilePublicMe }: {
 
           {MENU_LINKS.map((link) => (
             <Link
+              prefetch={false}
               key={link.href}
               href={link.href}
               className="px-2 py-0 text-lg text-slate-200 hover:bg-yellow-700/30 rounded font-vga"
