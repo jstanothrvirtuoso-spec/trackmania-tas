@@ -15,6 +15,7 @@ import { DropSelect } from "@/components/DropSelect";
 import { TrackRecordTable } from "@/components/tracks/TrackRecordTable";
 import { TracksTitles } from "@/components/tracks/TracksTitles";
 import { TrackSelector } from "@/components/tracks/TrackSelector";
+import { formatTrack } from "@/components/FormatLinks";
 
 export type CurrentRecord = {
   category: Category,
@@ -46,8 +47,7 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
 
     const tasRows = [...tasRecords].filter((tas) => {
       if (tas.category === "No Cut") {
-        const tasTrack = TRACKS[tas.track].noCutTrack ?? tas.track
-        return tas.track === track || tasTrack === track;
+        return track === (TRACKS[tas.track].noCutTrack ?? tas.track);
       }
       return tas.track === track;
     });
@@ -93,6 +93,8 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
   const preciseTime = track ? TRACKS[track].game === "TM2" || (TRACKS[track].preciseTime ?? false) : false;
   const tmxGame = TRACKS[track].tmx ?? TRACKS[track].game;
   const tmxLink = getTmxLink(TRACKS[track].id, tmxGame);
+  const noCutTrack = TRACKS[track].noCutTrack ?? null;
+  const baseTrack = TRACKS[track].baseTrack ?? null;
 
   function updateTrack(track: string) {
     const game = TRACKS[track].game;
@@ -226,6 +228,28 @@ export default function TracksPage({ initialGame, initialTrack }: { initialGame:
               minDate={minDate}
               maxDate={nowDate}
             />
+
+            {noCutTrack && (
+              <div className="py-2 px-2 flex flex-row gap-1 text-xs text-slate-400 items-end justify-end">
+                <div>
+                  Click here to see no cut records on this track: 
+                </div>
+                <div onClick={() => updateTrack(noCutTrack)}>
+                  {formatTrack(noCutTrack)}
+                </div>
+              </div>
+            )}
+            
+            {baseTrack && (
+              <div className="py-2 px-2 flex flex-row gap-1 text-xs text-slate-400 items-end justify-end">
+                <div>
+                  Click here to see records on base track: 
+                </div>
+                <div onClick={() => updateTrack(baseTrack)}>
+                  {formatTrack(baseTrack)}
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
